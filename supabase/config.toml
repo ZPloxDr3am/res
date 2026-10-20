@@ -14,7 +14,7 @@ enabled = true
 
 [auth]
 site_url = "http://localhost:3000"
-additional_redirect_urls = ["http://localhost:3000/auth"]
+additional_redirect_urls = ["http://localhost:3000/auth/confirmar"]
 
 [auth.email]
 enable_signup = true
