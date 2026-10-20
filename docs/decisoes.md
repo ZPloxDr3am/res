@@ -1,0 +1,48 @@
+# Decisões de arquitetura — RES
+
+Registro curto de cada decisão, com o motivo. Referências `R-`, `B-`, `T-` apontam para o estudo do BeeFood (`re-beefood/`).
+
+## D-001 Stack: Next.js + Supabase
+- Postgres com Row Level Security para separar lojas, autenticação pronta e tempo real nativo (Realtime) para o quadro de pedidos.
+- Motivo: o BeeFood atualiza o quadro por recarga a cada 90 s e um WebSocket próprio (R-018, R-019); o RES quer push em menos de 2 s (T-018) sem manter infraestrutura de WebSocket.
+
+## D-002 Modelo multiloja: Loja → Marcas
+- `lojas` é a empresa (uma cozinha, um CNPJ). `marcas` são os cardápios/marcas que vendem pela mesma cozinha (dark kitchen).
+- Produtos, setores, grupos e complementos pertencem à loja; cada marca liga, desliga e precifica por canal (`produto_marcas`).
+- Motivo: é como o restaurante piloto opera (3 marcas, uma cozinha).
+
+## D-003 Regras de cadastro valem no banco e no formulário
+- O banco recusa dados inválidos (check, trigger) e o formulário aplica a mesma regra antes de enviar.
+- Motivo: no BeeFood o formulário aceitava valores que o servidor corrigia em silêncio (B-006, R-011).
+
+## D-004 Auditoria calculada no servidor
+- Trigger genérico grava quem, quando, tabela, linha e só as colunas que mudaram (antes/depois) em `auditoria`.
+- Motivo: no BeeFood o "antes" vinha do navegador (B-001).
+
+## D-005 Operações compostas são atômicas
+- Criar produto já com as marcas, criar grupo já vinculado ao produto: uma função no banco, uma transação.
+- Motivo: grupo órfão quando a segunda chamada falha (B-005, R-015).
+
+## D-006 Gravar só em ação explícita
+- Nenhuma tela grava ao abrir; telas de configuração usam versão (`atualizado_em`) para detectar edição simultânea.
+- Motivo: abas do BeeFood regravam a configuração ao abrir (B-010, R-017).
+
+## D-007 Texto em UTF-8 completo
+- Postgres UTF8; teste com emoji em nomes.
+- Motivo: o BeeFood troca emoji por "??" (B-002, R-006).
+
+## D-008 Nenhum segredo de integração no navegador
+- Tokens de pagamento, mapas, Meta, WhatsApp ficam em tabelas sem acesso pelo cliente e são usados só por funções do servidor.
+- Motivo: B-009.
+
+## D-009 Preço de itens com grupos (decisão provisória, Q-009)
+- Formação de preço do grupo:
+  - `soma`: soma de preço × quantidade das opções escolhidas.
+  - `brinde`: opções sem preço.
+  - `maior`: o maior preço entre as opções escolhidas (uma vez).
+  - `proporcional`: cada opção vale preço × fração, fração = quantidade da opção ÷ total escolhido no grupo (pizza meio a meio de 40 e 50 = 45).
+- Preço base do produto por canal: promocional (se houver) → preço do canal na marca → preço padrão do produto.
+- A conferir contra o BeeFood na conta de teste (Q-009); a regra fica isolada em `packages/core/src/preco.ts`.
+
+## D-010 Produto novo: ativo em todas as marcas e canais (paridade com R-008)
+- Mantido por familiaridade do restaurante; a função de criação aceita uma lista de marcas para quem quiser restringir.

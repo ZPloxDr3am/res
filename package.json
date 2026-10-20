@@ -1,0 +1,13 @@
+{
+  "name": "res",
+  "private": true,
+  "description": "RES – sistema de pedidos para restaurantes (delivery e salão) com gestão.",
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "test": "npm run test -w @res/core",
+    "test:db": "scripts/test-db.sh --local",
+    "build": "npm run build -w @res/web",
+    "dev": "npm run dev -w @res/web"
+  },
+  "engines": { "node": ">=20" }
+}

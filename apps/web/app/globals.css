@@ -1,0 +1,68 @@
+/* Identidade própria do RES (clean room: nada copiado do BeeFood). */
+:root {
+  --fundo: #f7f5f0;
+  --superficie: #ffffff;
+  --texto: #1d2321;
+  --texto-suave: #5d6763;
+  --borda: #dcd8cf;
+  --primaria: #1f6f5c;       /* verde-folha */
+  --primaria-texto: #ffffff;
+  --destaque: #e0a526;       /* mel */
+  --delivery: #6a4bc4;
+  --presencial: #2f7fc1;
+  --erro: #b3261e;
+  --raio: 10px;
+  --sombra: 0 1px 2px rgb(0 0 0 / 0.06);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #121614;
+    --superficie: #1b201e;
+    --texto: #eef1ef;
+    --texto-suave: #a5afab;
+    --borda: #2f3633;
+    --primaria: #4fb59a;
+    --primaria-texto: #0b1411;
+    --destaque: #f0bd4f;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--fundo); color: var(--texto); font: 15px/1.45 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+a { color: var(--primaria); }
+h1 { font-size: 1.4rem; margin: 0 0 0.75rem; }
+h2 { font-size: 1.1rem; margin: 0; }
+
+.topo { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem 1rem; background: var(--superficie); border-bottom: 1px solid var(--borda); }
+.marca-res { font-weight: 800; letter-spacing: 0.02em; color: var(--primaria); }
+.conteudo { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+
+.cartao { background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio); box-shadow: var(--sombra); padding: 1rem; }
+.grade { display: grid; gap: 1rem; }
+@media (min-width: 900px) { .grade-2 { grid-template-columns: 1fr 2fr; } }
+
+label { display: grid; gap: 0.25rem; font-size: 0.9rem; color: var(--texto-suave); }
+input[type='text'], input[type='email'], input[type='password'], input[type='number'], select, textarea {
+  font: inherit; color: var(--texto); background: var(--superficie); border: 1px solid var(--borda); border-radius: 8px; padding: 0.5rem 0.6rem;
+}
+.linha { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: end; }
+.check { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--texto); }
+
+button, .botao { font: inherit; border: 1px solid var(--borda); background: var(--superficie); color: var(--texto); border-radius: 8px; padding: 0.5rem 0.9rem; cursor: pointer; }
+.botao-primario { background: var(--primaria); color: var(--primaria-texto); border-color: var(--primaria); font-weight: 600; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.erro { color: var(--erro); font-size: 0.9rem; }
+.dica { color: var(--texto-suave); font-size: 0.85rem; }
+.selo { display: inline-block; font-size: 0.75rem; padding: 0.1rem 0.45rem; border-radius: 999px; border: 1px solid var(--borda); color: var(--texto-suave); }
+.selo-delivery { border-color: var(--delivery); color: var(--delivery); }
+.selo-presencial { border-color: var(--presencial); color: var(--presencial); }
+.selo-pizza { border-color: var(--destaque); color: var(--destaque); }
+
+.lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.item { display: flex; justify-content: space-between; gap: 0.75rem; align-items: center; padding: 0.6rem 0.75rem; border: 1px solid var(--borda); border-radius: 8px; background: var(--superficie); }
+.item-titulo { font-weight: 600; }
+details > summary { cursor: pointer; }

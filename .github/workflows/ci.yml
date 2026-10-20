@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  regras:
+    name: Regras (core)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npm run typecheck -w @res/core
+      - run: npm test
+
+  banco:
+    name: Banco (migrações + testes)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ativar wal_level=logical (Realtime)
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -c "alter system set wal_level = logical"
+          docker restart ${{ job.services.postgres.id }}
+          for i in $(seq 1 30); do pg_isready -h localhost && break; sleep 1; done
+      - run: scripts/test-db.sh
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+
+  web:
+    name: App web (build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npm run typecheck -w @res/web
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://exemplo.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: chave-de-exemplo
