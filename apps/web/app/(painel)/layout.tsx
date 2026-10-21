@@ -1,10 +1,12 @@
 import { NavPainel } from '@/components/nav-painel';
 import { SeletorLoja } from '@/components/seletor-loja';
 import { contextoLoja } from '@/lib/loja';
+import { PedidoFlutuanteProvider } from '@/components/pedido-flutuante';
 
 export default async function PainelLayout({ children }: { children: React.ReactNode }) {
   const ctx = await contextoLoja();
   return (
+    <PedidoFlutuanteProvider lojaId={ctx.lojaId}>
     <div className="painel">
       <aside className="menu" aria-label="Menu principal">
         <div className="menu-topo">
@@ -30,5 +32,6 @@ export default async function PainelLayout({ children }: { children: React.React
       </aside>
       <main className="conteudo">{children}</main>
     </div>
+    </PedidoFlutuanteProvider>
   );
 }

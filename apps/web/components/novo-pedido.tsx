@@ -1,5 +1,5 @@
 'use client';
-import { useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   calcularItem,
@@ -43,13 +43,23 @@ const paraCampoData = (d: Date) => {
   return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`;
 };
 
+/** Resumo do rascunho para a barra minimizada ("Retomar pedido"). */
+export type RascunhoPedido = { itens: number; total: number; cliente: string };
+
 export function NovoPedido({
   marcas,
   areas,
   setores,
   produtos,
   grupos,
+  embutido = false,
+  aoConcluir,
+  aoMudar,
 }: {
+  /** Dentro da janela flutuante: sem título próprio e sem trocar de página ao lançar. */
+  embutido?: boolean;
+  aoConcluir?: (numero: number) => void;
+  aoMudar?: (r: RascunhoPedido) => void;
   marcas: { id: string; nome: string }[];
   /** Bairros atendidos por marca (taxa em centavos). */
   areas: Record<string, { bairro: string; taxa: number }[]>;
@@ -158,12 +168,20 @@ export function NovoPedido({
         }),
       );
       if (!r.ok) return setErro(r.erro);
+      if (aoConcluir) return aoConcluir(r.numero);
       router.push(`/pedidos?criado=${r.numero}`);
     });
 
+  // avisa a janela flutuante do que já foi digitado (para "Retomar pedido")
+  const totalRascunho = resumo.totais?.total ?? carrinho.reduce((s, i) => s + i.unitario * i.quantidade, 0);
+  const nItens = carrinho.reduce((s, i) => s + i.quantidade, 0);
+  useEffect(() => {
+    aoMudar?.({ itens: nItens, total: totalRascunho, cliente: cliente.nome.trim() });
+  }, [aoMudar, nItens, totalRascunho, cliente.nome]);
+
   return (
     <div className="grade">
-      <h1>Novo pedido</h1>
+      {!embutido && <h1>Novo pedido</h1>}
       <div className="grade grade-2">
         {/* ---------------- cardápio */}
         <section className="grade" style={{ alignContent: 'start', gridColumn: 'span 1' }}>

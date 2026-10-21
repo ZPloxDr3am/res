@@ -17,6 +17,7 @@ import {
 import type { PedidoRow } from '@/lib/pedidos';
 import { definirAceiteAutomatico, mudarStatus } from '@/app/(painel)/pedidos/actions';
 import { salvando } from '@/components/tempo-real';
+import { BotaoNovoPedido } from '@/components/pedido-flutuante';
 
 const COLUNAS: StatusPedido[] = ['novo', 'em_preparo', 'pronto', 'em_entrega'];
 const r$ = (v: number) => formatarReais(paraCentavos(Number(v)));
@@ -162,9 +163,7 @@ export function QuadroPedidos({
             />
             Aceite automático
           </label>}
-          <Link href="/pedidos/novo" className="botao botao-primario">
-            + Novo pedido
-          </Link>
+          <BotaoNovoPedido />
         </div>
       </div>
       {erro && <p className="erro" role="alert">{erro}</p>}

@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { usePedidoFlutuante } from '@/components/pedido-flutuante';
 
 // Ícones simples em traço (sem biblioteca), 20×20, herdam a cor do texto.
 const Icone = ({ d }: { d: string }) => (
@@ -21,16 +22,25 @@ const LINKS = [
 
 export function NavPainel() {
   const atual = usePathname();
+  const { abrir, estado } = usePedidoFlutuante();
   // o link mais específico que casa com a rota atual fica marcado
   const ativo = LINKS.filter((l) => atual === l.href || atual.startsWith(l.href + '/')).sort((a, b) => b.href.length - a.href.length)[0]?.href;
   return (
     <ul className="menu-lista">
       {LINKS.map((l) => (
         <li key={l.href}>
+          {l.href === '/pedidos/novo' ? (
+            // abre a janela flutuante por cima da tela atual (a página /pedidos/novo continua existindo)
+            <button type="button" className="menu-item" title={estado === 'minimizado' ? 'Retomar pedido' : l.rotulo} onClick={abrir} data-pendente={estado === 'minimizado' ? 'sim' : undefined}>
+              <Icone d={l.icone} />
+              <span>{estado === 'minimizado' ? 'Retomar pedido' : l.rotulo}</span>
+            </button>
+          ) : (
           <Link href={l.href} className="menu-item" title={l.rotulo} aria-current={ativo === l.href ? 'page' : undefined}>
             <Icone d={l.icone} />
             <span>{l.rotulo}</span>
           </Link>
+          )}
         </li>
       ))}
     </ul>

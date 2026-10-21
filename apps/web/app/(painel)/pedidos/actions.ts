@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import type { FormaPagamento, StatusPedido, TipoPedido } from '@res/core';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import { contextoLoja } from '@/lib/loja';
+import { carregarDadosNovoPedido, type DadosNovoPedido } from '@/lib/novo-pedido';
 
 export type Resultado = { ok: true } | { ok: false; erro: string };
 
@@ -68,4 +69,14 @@ export async function criarPedido(p: NovoPedido): Promise<{ ok: true; numero: nu
   const { data } = await supabase.from('pedidos').select('numero').eq('id', id as string).single();
   revalidatePath('/pedidos');
   return { ok: true, numero: data?.numero ?? 0 };
+}
+
+/** Dados da janela flutuante de novo pedido (carregados na primeira vez que ela abre). */
+export async function dadosNovoPedido(): Promise<{ ok: true; lojaId: string; dados: DadosNovoPedido } | { ok: false; erro: string }> {
+  try {
+    const ctx = await contextoLoja();
+    return { ok: true, lojaId: ctx.lojaId, dados: await carregarDadosNovoPedido(ctx.lojaId, ctx.marcas) };
+  } catch (e) {
+    return { ok: false, erro: (e as Error).message };
+  }
 }
