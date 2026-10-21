@@ -48,12 +48,13 @@ A chave *service_role* nunca vai para o navegador nem para o app (D-008). Toda e
 | Base | Login, cadastro da loja e marcas, permissões por grupo, histórico de alterações no banco |
 | Cardápio | Setores e produtos com edição completa: preços por marca e canal, promoção, etiqueta, foto e ordem. Grupos de opções com frações de pizza, reaproveitados entre produtos. Simulador de preço |
 | Pedidos | Quadro em tempo real (Novo → Em preparo → Pronto → Saiu → Concluído) com alerta sonoro e aceite automático. Lançar pedido com montagem de pizza. Preço recalculado no banco |
+| Cardápio digital | Link e QR por marca (`/c/<endereço>`). O cliente monta e envia o pedido sem login e acompanha por um código secreto. Horários (inclusive depois da meia-noite), abrir/fechar na hora, bairros com taxa, pedido mínimo, formas de pagamento e limite contra pedidos repetidos. Configurado na tela **Delivery** |
 
 ## Próximas etapas
 
 | Etapa | Escopo |
 |---|---|
-| 3b | Cardápio digital público (link/QR) com checkout, horários, área e taxa de entrega por bairro |
+| 3c | Pix online e Mercado Pago no cardápio digital; taxa por bairro preenchida no pedido do balcão; agendamento |
 | 4 | Impressão por setor, KDS, caixa, relatórios |
 | 5 | Entregas e entregador, WhatsApp oficial |
 | 6 | Clientes, cupons, fidelidade |
