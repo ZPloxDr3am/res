@@ -65,7 +65,8 @@ export function precoGrupo(g: Grupo, escolhas: Record<string, number> | undefine
       return Math.max(...itens.map(({ o }) => precoOpcao(o, canal)));
     case 'proporcional': {
       const total = itens.reduce((s, { q }) => s + q, 0);
-      return Math.round(itens.reduce((s, { o, q }) => s + (precoOpcao(o, canal) * q) / total, 0));
+      // Soma inteira primeiro e uma única divisão: o banco faz a mesma conta (paridade exata).
+      return Math.round(itens.reduce((s, { o, q }) => s + precoOpcao(o, canal) * q, 0) / total);
     }
   }
 }

@@ -66,3 +66,37 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .item { display: flex; justify-content: space-between; gap: 0.75rem; align-items: center; padding: 0.6rem 0.75rem; border: 1px solid var(--borda); border-radius: 8px; background: var(--superficie); }
 .item-titulo { font-weight: 600; }
 details > summary { cursor: pointer; }
+
+/* ---- cardápio: edição */
+.mini { padding: 0.15rem 0.45rem; font-size: 0.85rem; line-height: 1.2; }
+.miniatura { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid var(--borda); }
+.foto { width: 96px; height: 96px; object-fit: cover; border-radius: 8px; border: 1px solid var(--borda); }
+.aviso { margin: 0; padding: 0.5rem 0.7rem; border-radius: 8px; border: 1px solid var(--destaque); color: var(--texto); background: color-mix(in srgb, var(--destaque) 12%, transparent); font-size: 0.9rem; }
+fieldset { border: 1px solid var(--borda); border-radius: 8px; padding: 0.6rem 0.75rem; margin: 0; min-width: 0; }
+legend { color: var(--texto-suave); font-size: 0.85rem; padding: 0 0.25rem; }
+nav a { color: var(--texto); text-decoration: none; padding: 0.35rem 0.5rem; border-radius: 6px; }
+nav a[aria-current='page'] { background: color-mix(in srgb, var(--primaria) 14%, transparent); color: var(--primaria); font-weight: 600; }
+
+/* ---- pedidos: quadro */
+.quadro { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); align-items: start; }
+.coluna { background: color-mix(in srgb, var(--borda) 30%, transparent); border-radius: var(--raio); padding: 0.6rem; display: grid; gap: 0.5rem; align-content: start; min-height: 6rem; }
+.coluna > h2 { font-size: 0.95rem; margin: 0; display: flex; justify-content: space-between; }
+.pedido { background: var(--superficie); border: 1px solid var(--borda); border-left: 4px solid var(--borda); border-radius: 8px; padding: 0.6rem 0.7rem; display: grid; gap: 0.35rem; }
+.pedido[data-status='novo'] { border-left-color: var(--erro); animation: piscar 1.6s ease-in-out infinite; }
+.pedido[data-status='em_preparo'] { border-left-color: var(--destaque); }
+.pedido[data-status='pronto'] { border-left-color: var(--primaria); }
+.pedido[data-status='em_entrega'] { border-left-color: var(--delivery); }
+.pedido[data-status='cancelado'] { opacity: 0.65; }
+.pedido-numero { font-weight: 800; font-size: 1.05rem; }
+.pedido ul { margin: 0; padding-left: 1.1rem; font-size: 0.9rem; }
+.atrasado { color: var(--erro); font-weight: 600; }
+@keyframes piscar { 50% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--erro) 35%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .pedido[data-status='novo'] { animation: none; } }
+
+/* ---- novo pedido */
+.produtos-grade { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+.produto-botao { text-align: left; display: grid; gap: 0.2rem; }
+.passo { display: inline-flex; align-items: center; gap: 0.35rem; }
+.passo button { padding: 0.1rem 0.55rem; }
+.total { font-size: 1.2rem; font-weight: 800; }
+.carrinho li { display: grid; gap: 0.15rem; padding: 0.4rem 0; border-bottom: 1px dashed var(--borda); }

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { NavPainel } from '@/components/nav-painel';
 import { contextoLoja } from '@/lib/loja';
 
 export default async function PainelLayout({ children }: { children: React.ReactNode }) {
@@ -12,7 +12,7 @@ export default async function PainelLayout({ children }: { children: React.React
           <span className="dica">{ctx.marcas.map((m) => m.nome).join(' · ')}</span>
         </div>
         <nav className="linha" style={{ alignItems: 'center' }}>
-          <Link href="/cardapio">Cardápio</Link>
+          <NavPainel />
           <form action="/auth/sair" method="post">
             <button>Sair</button>
           </form>
