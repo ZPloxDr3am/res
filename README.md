@@ -47,8 +47,8 @@ A chave *service_role* nunca vai para o navegador nem para o app (D-008). Toda e
 |---|---|
 | Base | Login, cadastro da loja e marcas, permissões por grupo, histórico de alterações no banco |
 | Cardápio | Categorias à esquerda e produtos à direita, com busca e liga/desliga rápido (ativo, delivery, salão). Editor do produto em painel lateral: dados, grupos, preços por canal e foto. Aba **Grupos de opções** como biblioteca: o grupo é criado uma vez e aplicado em vários produtos ("marcar todos da categoria"). Duplicar produto, categoria e grupo. Simulador de preço |
-| Pedidos | Quadro em tempo real (Novo → Em preparo → Pronto → Saiu → Concluído) com alerta sonoro e aceite automático. Lançar pedido com montagem de pizza. Preço recalculado no banco |
-| Cardápio digital | Link e QR por marca (`/c/<endereço>`). O cliente monta e envia o pedido sem login e acompanha por um código secreto. Horários (inclusive depois da meia-noite), abrir/fechar na hora, bairros com taxa, pedido mínimo, formas de pagamento e limite contra pedidos repetidos. Configurado na tela **Delivery** |
+| Pedidos | Quadro em tempo real (Novo → Em preparo → Pronto → Saiu → Concluído) com alerta sonoro e aceite automático. Lançar pedido com montagem de pizza, taxa do bairro preenchida sozinha e opção de agendar. Faixa **Agendados** que solta o pedido em "Novo" na hora de preparar. Preço recalculado no banco |
+| Cardápio digital | Link e QR por marca (`/c/<endereço>`). O cliente monta e envia o pedido sem login e acompanha por um código secreto. Horários (inclusive depois da meia-noite), abrir/fechar na hora, bairros com taxa, pedido mínimo, formas de pagamento, limite contra pedidos repetidos e **pedido agendado** (o cliente escolhe dia e horário; com a loja fechada ainda pode agendar). Configurado na tela **Delivery** |
 | Multilojas | Conta do cliente → lojas → marcas/cardápios, com limites do pacote garantidos no banco. Seletor de loja no menu; tela **Lojas e equipe** (uso do pacote, nova loja, novo cardápio, convites por e-mail com acesso só àquela loja); quadro de pedidos com "ver todas as lojas"; nova loja pode começar com cópia do cardápio de outra loja do grupo, novo cardápio pode compartilhar o catálogo de outra marca da mesma loja, e o Cardápio tem **Importar de outra loja** (categorias escolhidas, sem duplicar ao repetir); horários replicáveis para o grupo |
 | Resumo | Faturamento, pedidos, ticket médio e cancelados de todas as lojas ou de uma só: hoje, ontem, 7 ou 30 dias, mês ou datas escolhidas. Variação vs período anterior (até a mesma hora), gráfico por dia e tabela por loja com participação |
 
@@ -56,7 +56,7 @@ A chave *service_role* nunca vai para o navegador nem para o app (D-008). Toda e
 
 | Etapa | Escopo |
 |---|---|
-| 3c | Pix online e Mercado Pago no cardápio digital; taxa por bairro preenchida no pedido do balcão; agendamento |
+| 3c | Pix online e Mercado Pago no cardápio digital (taxa por bairro no balcão e agendamento já entraram) |
 | 4 | Impressão por setor, KDS, caixa, relatórios |
 | 5 | Entregas e entregador, WhatsApp oficial |
 | 6 | Clientes, cupons, fidelidade |

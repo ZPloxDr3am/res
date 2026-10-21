@@ -5,3 +5,4 @@ export * from './setor.js';
 export * from './permissoes.js';
 export * from './pedido.js';
 export * from './periodo.js';
+export * from './agendamento.js';

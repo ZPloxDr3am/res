@@ -43,13 +43,18 @@ export type MarcaPublica = {
 };
 export type CardapioPublico = { marca: MarcaPublica; setores: SetorPublico[] };
 
+/** public.horarios_agendamento: dias à frente (0 = não agenda) e horários livres em ISO. */
+export type AgendamentoPublico = { dias: number; horarios: string[] };
+
 export type Acompanhamento = {
   numero: number;
   status: StatusPedido;
   tipo: TipoPedido;
   marca: string;
   slug: string;
+  fuso: string;
   criado_em: string;
+  agendado_para: string | null;
   aceito_em: string | null;
   pronto_em: string | null;
   saiu_em: string | null;

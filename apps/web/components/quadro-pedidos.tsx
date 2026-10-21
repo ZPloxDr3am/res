@@ -3,9 +3,12 @@ import { useEffect, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
 import {
   acaoAvancar,
+  faseAgendamento,
+  FOLGA_AGENDADO_MIN,
   formatarReais,
   paraCentavos,
   PAGAMENTO_ROTULO,
+  rotuloHorario,
   STATUS_ROTULO,
   tempoDecorrido,
   TIPO_ROTULO,
@@ -50,6 +53,7 @@ export function QuadroPedidos({
   pedidos,
   aceiteAutomatico,
   tempoPreparo,
+  fuso,
   marcas,
   lojas,
   lojaAtual,
@@ -58,6 +62,7 @@ export function QuadroPedidos({
   pedidos: PedidoRow[];
   aceiteAutomatico: boolean;
   tempoPreparo: number;
+  fuso: string;
   marcas: { id: string; nome: string }[];
   lojas: { id: string; nome: string }[];
   lojaAtual: string;
@@ -88,24 +93,31 @@ export function QuadroPedidos({
     if (novo) bipar();
   };
 
-  // novo pedido que chegou depois de abrir a tela → bipe
+  const agora = new Date();
+  const fase = (p: PedidoRow) => faseAgendamento(p.agendado_para ? new Date(p.agendado_para) : null, tempoPreparo, agora);
+  // agendado que ainda não chegou a hora fica fora das colunas
+  const emEspera = (p: PedidoRow) => p.status === 'novo' && fase(p) === 'agendado';
+  const chaves = pedidos.filter((p) => COLUNAS.includes(p.status)).map((p) => `${p.id}:${emEspera(p) ? 'a' : 'n'}`).join(',');
+
+  // pedido que chegou depois de abrir a tela, ou agendado que chegou a hora de preparar → bipe
   useEffect(() => {
-    const novos = pedidos.filter((p) => p.status === 'novo').map((p) => p.id);
+    const atuais = chaves ? chaves.split(',') : [];
     if (conhecidos.current === null) {
-      conhecidos.current = new Set(pedidos.map((p) => p.id));
+      conhecidos.current = new Set(atuais);
       return;
     }
-    const chegaram = novos.filter((id) => !conhecidos.current!.has(id));
-    for (const p of pedidos) conhecidos.current.add(p.id);
+    const chegaram = atuais.filter((k) => !conhecidos.current!.has(k));
+    for (const k of atuais) conhecidos.current.add(k);
     if (chegaram.length && som) bipar();
-  }, [pedidos, som]);
+  }, [chaves, som]);
 
-  // enquanto houver pedido novo esperando, bipa de novo a cada 20 s
+  // enquanto houver pedido novo esperando aceite, bipa de novo a cada 20 s
+  const esperandoAceite = pedidos.some((p) => p.status === 'novo' && !emEspera(p));
   useEffect(() => {
-    if (!som || !pedidos.some((p) => p.status === 'novo')) return;
+    if (!som || !esperandoAceite) return;
     const t = setInterval(bipar, 20000);
     return () => clearInterval(t);
-  }, [pedidos, som]);
+  }, [esperandoAceite, som]);
 
   // atualiza "há X min"
   useEffect(() => {
@@ -113,7 +125,8 @@ export function QuadroPedidos({
     return () => clearInterval(t);
   }, []);
 
-  const abertos = pedidos.filter((p) => COLUNAS.includes(p.status));
+  const abertos = pedidos.filter((p) => COLUNAS.includes(p.status) && !emEspera(p));
+  const agendados = pedidos.filter(emEspera).sort((a, b) => a.agendado_para!.localeCompare(b.agendado_para!));
   const encerrados = pedidos.filter((p) => !COLUNAS.includes(p.status)).reverse();
   // em "todas as lojas" o cartão mostra a loja; numa loja só, a marca (se houver mais de uma)
   const etiqueta = (p: PedidoRow) => (todas ? lojas.find((l) => l.id === p.loja_id)?.nome : marcas.length > 1 ? marcas.find((m) => m.id === p.marca_id)?.nome : null);
@@ -156,6 +169,19 @@ export function QuadroPedidos({
       </div>
       {erro && <p className="erro" role="alert">{erro}</p>}
 
+      {agendados.length > 0 && (
+        <details open className="agendados">
+          <summary>
+            <strong>Agendados</strong> <span className="dica">{agendados.length} · entram em "Novo", com alerta, {tempoPreparo + FOLGA_AGENDADO_MIN} min antes do horário</span>
+          </summary>
+          <div className="quadro" style={{ paddingTop: '0.5rem' }}>
+            {agendados.map((p) => (
+              <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} fuso={fuso} marca={etiqueta(p)} />
+            ))}
+          </div>
+        </details>
+      )}
+
       <div className="quadro">
         {COLUNAS.map((status) => {
           const lista = abertos.filter((p) => p.status === status);
@@ -165,7 +191,7 @@ export function QuadroPedidos({
                 {STATUS_ROTULO[status]} <span className="dica">{lista.length}</span>
               </h2>
               {lista.map((p) => (
-                <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} marca={etiqueta(p)} />
+                <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} fuso={fuso} marca={etiqueta(p)} />
               ))}
               {lista.length === 0 && <p className="dica" style={{ margin: 0 }}>Nenhum.</p>}
             </section>
@@ -177,7 +203,7 @@ export function QuadroPedidos({
         <summary className="dica">Concluídos e cancelados nas últimas 12 horas ({encerrados.length})</summary>
         <div className="quadro" style={{ paddingTop: '0.5rem' }}>
           {encerrados.map((p) => (
-            <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} marca={etiqueta(p)} />
+            <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} fuso={fuso} marca={etiqueta(p)} />
           ))}
         </div>
       </details>
@@ -185,16 +211,17 @@ export function QuadroPedidos({
   );
 }
 
-function CartaoPedido({ pedido: p, tempoPreparo, marca }: { pedido: PedidoRow; tempoPreparo: number; marca: string | null | undefined }) {
+function CartaoPedido({ pedido: p, tempoPreparo, fuso, marca }: { pedido: PedidoRow; tempoPreparo: number; fuso: string; marca: string | null | undefined }) {
   const [cancelando, setCancelando] = useState(false);
   const [motivo, setMotivo] = useState('');
   const [erro, setErro] = useState<string | null>(null);
   const [pendente, iniciar] = useTransition();
   const avancar = acaoAvancar(p.status, p.tipo);
   const aberto = !['concluido', 'cancelado'].includes(p.status);
-  const referencia = new Date(p.aceito_em ?? p.criado_em);
-  const minutos = (Date.now() - referencia.getTime()) / 60000;
-  const atrasado = (p.status === 'em_preparo' || p.status === 'novo') && minutos > tempoPreparo;
+  const agendado = p.agendado_para ? new Date(p.agendado_para) : null;
+  // agendado: atrasa se passou do horário combinado; imediato: se passou do tempo de preparo
+  const atrasado = (p.status === 'em_preparo' || p.status === 'novo') &&
+    (agendado ? Date.now() > agendado.getTime() : (Date.now() - new Date(p.aceito_em ?? p.criado_em).getTime()) / 60000 > tempoPreparo);
 
   const mudar = (status: StatusPedido, m?: string) =>
     iniciar(async () => {
@@ -209,10 +236,15 @@ function CartaoPedido({ pedido: p, tempoPreparo, marca }: { pedido: PedidoRow; t
         <span className="pedido-numero">#{p.numero}</span>
         <span className={`selo ${p.tipo === 'entrega' ? 'selo-delivery' : 'selo-presencial'}`}>{TIPO_ROTULO[p.tipo]}</span>
         {p.origem === 'cardapio_digital' && <span className="selo selo-pizza" title="Feito pelo cliente no cardápio digital">Online</span>}
-        <span className={atrasado ? 'atrasado' : 'dica'} title={atrasado ? `Passou de ${tempoPreparo} min` : undefined}>
+        <span className={atrasado ? 'atrasado' : 'dica'} title={atrasado ? (agendado ? 'Passou do horário agendado' : `Passou de ${tempoPreparo} min`) : undefined}>
           {aberto ? tempoDecorrido(new Date(p.criado_em)) : STATUS_ROTULO[p.status]}
         </span>
       </div>
+      {agendado && (
+        <div className="selo-agendado" title={`Pedido feito ${tempoDecorrido(new Date(p.criado_em))}`}>
+          ⏰ {p.tipo === 'entrega' ? 'Entregar' : 'Para'} {rotuloHorario(agendado, fuso)}
+        </div>
+      )}
       <div>
         <strong>{p.cliente_nome}</strong>
         {p.cliente_telefone && <span className="dica"> · {telefone(p.cliente_telefone)}</span>}

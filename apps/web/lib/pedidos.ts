@@ -21,6 +21,7 @@ export type PedidoRow = {
   observacao: string | null;
   motivo_cancelamento: string | null;
   criado_em: string;
+  agendado_para: string | null;
   aceito_em: string | null;
   pronto_em: string | null;
   saiu_em: string | null;
@@ -37,7 +38,7 @@ export type PedidoRow = {
   }[];
 };
 
-/** Pedidos em aberto e os encerrados nas últimas 12 horas, do mais antigo para o mais novo. Uma ou várias lojas. */
+/** Pedidos em aberto (inclusive agendados para outro dia) e os encerrados nas últimas 12 horas, do mais antigo para o mais novo. Uma ou várias lojas. */
 export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
   const supabase = await criarClienteServidor();
   const desde = new Date(Date.now() - 12 * 3600 * 1000).toISOString();
@@ -45,13 +46,13 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
     supabase
       .from('pedidos')
       .select(
-        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_nome, nome, quantidade, fracao))',
+        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, agendado_para, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_nome, nome, quantidade, fracao))',
       )
       .in('loja_id', lojaIds)
       .or(`status.not.in.(concluido,cancelado),criado_em.gte.${desde}`)
       .order('criado_em', { ascending: true })
       .limit(500),
-    supabase.from('lojas').select('aceite_automatico, tempo_preparo_min').eq('id', lojaPrincipal).single(),
+    supabase.from('lojas').select('aceite_automatico, tempo_preparo_min, fuso_horario').eq('id', lojaPrincipal).single(),
   ]);
   if (pedidos.error) throw new Error(pedidos.error.message);
   const lista = (pedidos.data ?? []) as unknown as PedidoRow[];
@@ -60,5 +61,6 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
     pedidos: lista,
     aceiteAutomatico: loja.data?.aceite_automatico ?? false,
     tempoPreparo: loja.data?.tempo_preparo_min ?? 30,
+    fuso: (loja.data?.fuso_horario as string | undefined) ?? 'America/Sao_Paulo',
   };
 }

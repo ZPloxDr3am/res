@@ -254,3 +254,8 @@ input[type='date'] { font: inherit; color: var(--texto); background: var(--super
 .grafico-grade { stroke: var(--borda); stroke-dasharray: 3 3; stroke-width: 1; }
 .grafico-base { stroke: var(--borda); stroke-width: 1; }
 .grafico-eixo { fill: var(--texto-suave); font-size: 10px; }
+
+/* pedidos agendados */
+.agendados { border: 1px dashed var(--borda); border-radius: 10px; padding: 0.5rem 0.75rem; }
+.agendados > summary { cursor: pointer; }
+.selo-agendado { justify-self: start; font-size: 0.85rem; font-weight: 700; padding: 0.15rem 0.55rem; border-radius: 8px; color: var(--destaque); background: color-mix(in srgb, var(--destaque) 12%, transparent); }

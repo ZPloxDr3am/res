@@ -12,7 +12,7 @@ export default async function Delivery() {
   const [marcas, horarios, areas, aberta] = await Promise.all([
     supabase
       .from('marcas')
-      .select('id, nome, slug, status_cardapio, pedido_minimo, aceita_entrega, aceita_retirada, formas_pagamento, mensagem_cardapio')
+      .select('id, nome, slug, status_cardapio, pedido_minimo, aceita_entrega, aceita_retirada, formas_pagamento, mensagem_cardapio, agendamento_dias')
       .eq('loja_id', ctx.lojaId)
       .order('ordem'),
     supabase.from('marca_horarios').select('marca_id, dia_semana, abre, fecha').eq('loja_id', ctx.lojaId).order('dia_semana').order('abre'),
@@ -46,6 +46,7 @@ export default async function Delivery() {
           aceitaRetirada: m.aceita_retirada as boolean,
           formasPagamento: m.formas_pagamento as never,
           mensagem: (m.mensagem_cardapio as string | null) ?? '',
+          agendamentoDias: (m.agendamento_dias as number | null) ?? 0,
           horarios: (horarios.data ?? [])
             .filter((x) => x.marca_id === m.id)
             .map((x) => ({ dia: x.dia_semana as number, abre: String(x.abre).slice(0, 5), fecha: String(x.fecha).slice(0, 5) })),
