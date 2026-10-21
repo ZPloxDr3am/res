@@ -7,3 +7,5 @@ export * from './pedido.js';
 export * from './periodo.js';
 export * from './agendamento.js';
 export * from './caixa.js';
+export * from './impressoras.js';
+export * from './cupom.js';

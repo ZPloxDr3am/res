@@ -18,6 +18,8 @@ import type { PedidoRow } from '@/lib/pedidos';
 import { definirAceiteAutomatico, mudarStatus } from '@/app/(painel)/pedidos/actions';
 import { salvando } from '@/components/tempo-real';
 import { BotaoNovoPedido } from '@/components/pedido-flutuante';
+import { useImprimir } from '@/components/impressao/usar-impressao';
+import { cuponsPendentes, imprimirPedido } from '@/app/(painel)/impressoras/actions';
 
 const COLUNAS: StatusPedido[] = ['novo', 'em_preparo', 'pronto', 'em_entrega'];
 const r$ = (v: number) => formatarReais(paraCentavos(Number(v)));
@@ -55,6 +57,7 @@ export function QuadroPedidos({
   aceiteAutomatico,
   tempoPreparo,
   fuso,
+  filaImpressao = 0,
   marcas,
   lojas,
   lojaAtual,
@@ -64,6 +67,7 @@ export function QuadroPedidos({
   aceiteAutomatico: boolean;
   tempoPreparo: number;
   fuso: string;
+  filaImpressao?: number;
   marcas: { id: string; nome: string }[];
   lojas: { id: string; nome: string }[];
   lojaAtual: string;
@@ -167,6 +171,7 @@ export function QuadroPedidos({
         </div>
       </div>
       {erro && <p className="erro" role="alert">{erro}</p>}
+      {!todas && <FilaImpressao n={filaImpressao} />}
 
       {agendados.length > 0 && (
         <details open className="agendados">
@@ -210,11 +215,32 @@ export function QuadroPedidos({
   );
 }
 
+/** Cupons esperando impressão (aceite automático sem agente, impressora desligada…). */
+function FilaImpressao({ n }: { n: number }) {
+  const { imprimir, pendente, aviso } = useImprimir();
+  if (n === 0 && !aviso) return null;
+  return (
+    <div className="aviso linha" style={{ alignItems: 'center', gap: '0.6rem' }}>
+      {n > 0 && (
+        <>
+          <span>🖨 <strong>{n} cupom(ns)</strong> esperando impressão.</span>
+          <button type="button" className="mini botao-primario" disabled={pendente} onClick={() => imprimir(cuponsPendentes)}>
+            {pendente ? 'Imprimindo…' : 'Imprimir aqui'}
+          </button>
+          <Link href="/impressoras?aba=historico" className="dica">ver fila</Link>
+        </>
+      )}
+      {aviso && <span className={aviso.ok ? 'dica' : 'erro'}>{aviso.texto}</span>}
+    </div>
+  );
+}
+
 function CartaoPedido({ pedido: p, tempoPreparo, fuso, marca }: { pedido: PedidoRow; tempoPreparo: number; fuso: string; marca: string | null | undefined }) {
   const [cancelando, setCancelando] = useState(false);
   const [motivo, setMotivo] = useState('');
   const [erro, setErro] = useState<string | null>(null);
   const [pendente, iniciar] = useTransition();
+  const impressao = useImprimir();
   const avancar = acaoAvancar(p.status, p.tipo);
   const aberto = !['concluido', 'cancelado'].includes(p.status);
   const agendado = p.agendado_para ? new Date(p.agendado_para) : null;
@@ -293,6 +319,15 @@ function CartaoPedido({ pedido: p, tempoPreparo, fuso, marca }: { pedido: Pedido
           </button>
         </div>
       )}
+      <div className="linha" style={{ gap: '0.3rem' }}>
+        <button type="button" className="mini" title="Imprimir a via da cozinha" disabled={impressao.pendente} onClick={() => impressao.imprimir(() => imprimirPedido(p.id, 'cozinha'))}>
+          🖨 Cozinha
+        </button>
+        <button type="button" className="mini" title="Imprimir a via completa (caixa/entregador)" disabled={impressao.pendente} onClick={() => impressao.imprimir(() => imprimirPedido(p.id, 'pedido'))}>
+          🖨 Via do pedido
+        </button>
+      </div>
+      {impressao.aviso && <span className={impressao.aviso.ok ? 'dica' : 'erro'} role="status">{impressao.aviso.texto}</span>}
       {cancelando && (
         <form
           className="grade"

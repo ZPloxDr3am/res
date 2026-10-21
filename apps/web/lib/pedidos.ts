@@ -42,7 +42,7 @@ export type PedidoRow = {
 export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
   const supabase = await criarClienteServidor();
   const desde = new Date(Date.now() - 12 * 3600 * 1000).toISOString();
-  const [pedidos, loja] = await Promise.all([
+  const [pedidos, loja, fila] = await Promise.all([
     supabase
       .from('pedidos')
       .select(
@@ -53,6 +53,12 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
       .order('criado_em', { ascending: true })
       .limit(500),
     supabase.from('lojas').select('aceite_automatico, tempo_preparo_min, fuso_horario').eq('id', lojaPrincipal).single(),
+    supabase
+      .from('impressoes')
+      .select('id', { count: 'exact', head: true })
+      .eq('loja_id', lojaPrincipal)
+      .in('status', ['pendente', 'erro'])
+      .gte('criado_em', new Date(Date.now() - 24 * 3600 * 1000).toISOString()),
   ]);
   if (pedidos.error) throw new Error(pedidos.error.message);
   const lista = (pedidos.data ?? []) as unknown as PedidoRow[];
@@ -62,5 +68,6 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
     aceiteAutomatico: loja.data?.aceite_automatico ?? false,
     tempoPreparo: loja.data?.tempo_preparo_min ?? 30,
     fuso: (loja.data?.fuso_horario as string | undefined) ?? 'America/Sao_Paulo',
+    filaImpressao: fila.count ?? 0,
   };
 }
