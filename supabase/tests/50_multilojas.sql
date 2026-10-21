@@ -170,7 +170,12 @@ do $$
 declare r1 jsonb := (select v from saida where chave = 'imp1'); r2 jsonb := (select v from saida where chave = 'imp2'); np uuid;
 begin
   if (r1 ->> 'categorias')::int <> 1 or (r1 ->> 'produtos')::int <> 1 or (r1 ->> 'grupos')::int <> 1 then raise exception 'importar: %', r1; end if;
-  if (r2 ->> 'produtos')::int <> 0 or (r2 ->> 'pulados')::int <> 1 or (r2 ->> 'categorias')::int <> 0 then raise exception 'reimportar não deveria duplicar: %', r2; end if;
+  -- importar de novo não é barrado: entra como cópia (categoria e produto com -Cópia)
+  if (r2 ->> 'produtos')::int <> 1 or (r2 ->> 'categorias')::int <> 1 or (r2 ->> 'renomeados')::int <> 2 then raise exception 'reimportar: %', r2; end if;
+  if (select count(*) from public.produtos p join public.setores s on s.id = p.setor_id
+       where p.loja_id = pg_temp.id('loja3') and p.nome = 'Pizza-Cópia' and s.nome like '%-Cópia') <> 1 then
+    raise exception 'cópia importada: %', (select string_agg(p.nome || '@' || s.nome, ',') from public.produtos p join public.setores s on s.id = p.setor_id where p.loja_id = pg_temp.id('loja3'));
+  end if;
   select id into np from public.produtos where loja_id = pg_temp.id('loja3') and nome = 'Pizza';
   if (select preco_delivery from public.produto_marcas where produto_id = np) <> 55 then raise exception 'preço da marca de origem'; end if;
   if (select count(*) from public.opcoes o join public.produto_grupos pg on pg.grupo_id = o.grupo_id where pg.produto_id = np) <> 2 then raise exception 'opções do grupo copiadas'; end if;
