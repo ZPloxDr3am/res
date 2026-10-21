@@ -47,7 +47,7 @@ export function GestaoLojas({ contas, lojas }: { contas: Conta[]; lojas: LojaInf
               {daConta.map((l) => (
                 <CartaoLoja key={l.id} loja={l} podeCardapio={c.limiteCardapios == null || cardapios < c.limiteCardapios} />
               ))}
-              {c.titular && (daConta.length < c.limiteLojas ? <NovaLoja contaId={c.id} /> : (
+              {c.titular && (daConta.length < c.limiteLojas ? <NovaLoja contaId={c.id} lojas={daConta.map((l) => ({ id: l.id, nome: l.nome }))} /> : (
                 <div className="cartao dica">Seu pacote tem {c.limiteLojas} loja(s), todas em uso. Para abrir outra unidade, fale com a gente para ampliar o pacote.</div>
               ))}
             </div>
@@ -112,6 +112,15 @@ function CartaoLoja({ loja, podeCardapio }: { loja: LojaInfo; podeCardapio: bool
               onChange={(e) => { setNomeCardapio(e.target.value); if (!slugMexido) setSlug(slugDe(e.target.value)); }} /></label>
             <label>Endereço do link<input type="text" name="slug" required value={slug} onChange={(e) => { setSlug(e.target.value); setSlugMexido(true); }} />
               <span className="dica">…/c/{slug || 'endereco'}</span></label>
+            {loja.marcas.length > 0 && (
+              <label>Começar com
+                <select name="base" defaultValue="">
+                  <option value="">Cardápio vazio</option>
+                  {loja.marcas.map((m) => <option key={m.id} value={m.id}>Mesmas categorias e produtos de {m.nome}</option>)}
+                </select>
+                <span className="dica">Compartilhado: produto novo aparece nas duas; preços e liga/desliga são de cada marca.</span>
+              </label>
+            )}
             <div className="linha"><button className="botao-primario" disabled={pendente}>Criar cardápio</button><button type="button" onClick={() => setAbrir(null)}>Cancelar</button></div>
           </form>
         )}
@@ -163,7 +172,7 @@ function CartaoLoja({ loja, podeCardapio }: { loja: LojaInfo; podeCardapio: bool
   );
 }
 
-function NovaLoja({ contaId }: { contaId: string }) {
+function NovaLoja({ contaId, lojas }: { contaId: string; lojas: { id: string; nome: string }[] }) {
   const [aberto, setAberto] = useState(false);
   const [r, setR] = useState<{ ok: boolean; erro?: string; texto?: string } | null>(null);
   const [pendente, iniciar] = useTransition();
@@ -187,7 +196,7 @@ function NovaLoja({ contaId }: { contaId: string }) {
       action={(fd) =>
         iniciar(async () => {
           const res = await salvando(criarLoja(contaId, fd));
-          setR(res.ok ? { ok: true, texto: 'Loja criada. Use "Abrir esta loja" para montar o cardápio dela.' } : res);
+          setR(res.ok ? { ok: true, texto: 'Loja criada. Use "Abrir esta loja" para ver o cardápio dela.' } : res);
           if (res.ok) setAberto(false);
         })
       }
@@ -196,7 +205,14 @@ function NovaLoja({ contaId }: { contaId: string }) {
       <label>Nome da loja (unidade)<input type="text" name="nome" required maxLength={120} placeholder="Ex.: Unidade Trindade" /></label>
       <label>Primeiro cardápio (marca)<input type="text" name="marca" required maxLength={120} value={marca} onChange={(e) => { setMarca(e.target.value); if (!mexido) setSlug(slugDe(e.target.value)); }} /></label>
       <label>Endereço do link<input type="text" name="slug" required value={slug} onChange={(e) => { setSlug(e.target.value); setMexido(true); }} /><span className="dica">…/c/{slug || 'endereco'}</span></label>
-      <p className="dica" style={{ margin: 0 }}>A loja nova começa com o cardápio vazio. Você e os outros titulares da conta entram como donos.</p>
+      <label>Cardápio inicial
+        <select name="copiarDe" defaultValue={lojas[0]?.id ?? ''}>
+          <option value="">Começar vazio</option>
+          {lojas.map((l) => <option key={l.id} value={l.id}>Copiar categorias e produtos de {l.nome}</option>)}
+        </select>
+        <span className="dica">Cópia independente (com fotos, preços e grupos de opções): depois cada loja muda o seu sem afetar a outra.</span>
+      </label>
+      <p className="dica" style={{ margin: 0 }}>Horários, bairros e taxas a loja nova configura na tela Delivery (ou use "Replicar para todas as lojas do grupo"). Você e os outros titulares da conta entram como donos.</p>
       <div className="linha"><button className="botao-primario" disabled={pendente}>{pendente ? 'Criando…' : 'Criar loja'}</button><button type="button" onClick={() => setAberto(false)}>Cancelar</button></div>
       <Msg r={r} />
     </form>

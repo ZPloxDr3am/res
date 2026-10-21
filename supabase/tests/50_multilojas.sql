@@ -159,6 +159,55 @@ do $$ begin
   end if;
 end $$;
 
+-- ---------------------------------------------------------------- 0010: importar cardápio / compartilhar catálogo
+select from pg_temp.como('00000000-0000-0000-0000-0000000000c7', 'ivo@example.com');
+insert into ids values ('sab', public.criar_grupo(pg_temp.id('loja1'), 'Sabores', 'proporcional', true, 1, 2, true, false, '[{"nome":"Calabresa"},{"nome":"Frango","preco":5}]'));
+select from public.definir_grupos_do_produto(pg_temp.id('p1'), array[pg_temp.id('sab')]);
+update public.produto_marcas set preco_delivery = 55 where produto_id = pg_temp.id('p1') and marca_id = (select id from public.marcas where slug = 'pizzaria-ivo');
+insert into saida values ('imp1', public.importar_cardapio(pg_temp.id('loja1'), pg_temp.id('loja3')));
+insert into saida values ('imp2', public.importar_cardapio(pg_temp.id('loja1'), pg_temp.id('loja3')));
+do $$
+declare r1 jsonb := (select v from saida where chave = 'imp1'); r2 jsonb := (select v from saida where chave = 'imp2'); np uuid;
+begin
+  if (r1 ->> 'categorias')::int <> 1 or (r1 ->> 'produtos')::int <> 1 or (r1 ->> 'grupos')::int <> 1 then raise exception 'importar: %', r1; end if;
+  if (r2 ->> 'produtos')::int <> 0 or (r2 ->> 'pulados')::int <> 1 or (r2 ->> 'categorias')::int <> 0 then raise exception 'reimportar não deveria duplicar: %', r2; end if;
+  select id into np from public.produtos where loja_id = pg_temp.id('loja3') and nome = 'Pizza';
+  if (select preco_delivery from public.produto_marcas where produto_id = np) <> 55 then raise exception 'preço da marca de origem'; end if;
+  if (select count(*) from public.opcoes o join public.produto_grupos pg on pg.grupo_id = o.grupo_id where pg.produto_id = np) <> 2 then raise exception 'opções do grupo copiadas'; end if;
+  if (select g.loja_id from public.produto_grupos pg join public.grupos_opcoes g on g.id = pg.grupo_id where pg.produto_id = np) <> pg_temp.id('loja3') then raise exception 'grupo deveria ser da loja de destino'; end if;
+  if (select count(*) from public.grupos_opcoes where loja_id = pg_temp.id('loja3') and nome = 'Sabores') <> 1 then raise exception 'grupo duplicado'; end if;
+end $$;
+-- preço calculado no destino funciona (conferido como administrador: a função é interna)
+reset role;
+do $$
+declare np uuid := (select id from public.produtos where loja_id = pg_temp.id('loja3') and nome = 'Pizza');
+        g uuid := (select grupo_id from public.produto_grupos where produto_id = np);
+        r jsonb;
+begin
+  r := private.preco_item(np, (select id from public.marcas where slug = 'burger-ivo'), 'delivery',
+         jsonb_build_object(g, (select jsonb_object_agg(id, 1) from public.opcoes where grupo_id = g)));
+  if (r ->> 'unitario')::int <> 5750 then raise exception 'preço no destino: %', r; end if;  -- 55 + (0+5)/2
+end $$;
+select from pg_temp.como('00000000-0000-0000-0000-0000000000c7', 'ivo@example.com');
+select from pg_temp.esperar_erro(format($q$select public.importar_cardapio('%s', '%s')$q$, pg_temp.id('loja1'), pg_temp.id('loja1')), 'diferente');
+-- marca nova na Trindade usando o catálogo da marca que já existe lá
+insert into ids values ('doces', public.criar_marca(pg_temp.id('loja2'), 'Doces Trindade', 'doces-trindade'));
+do $$
+declare r jsonb := public.compartilhar_catalogo(pg_temp.id('doces'), (select id from public.marcas where slug = 'pizzaria-ivo-trindade'));
+begin
+  if (r ->> 'produtos')::int <> 1 or (r ->> 'categorias')::int <> 1 then raise exception 'compartilhar: %', r; end if;
+  if (select count(*) from public.produtos where loja_id = pg_temp.id('loja2')) <> 1 then raise exception 'compartilhar não deveria copiar produtos'; end if;
+end $$;
+select from pg_temp.esperar_erro(format($q$select public.compartilhar_catalogo('%s', (select id from public.marcas where slug = 'pizzaria-ivo'))$q$, pg_temp.id('doces')), 'mesma loja');
+reset role;
+-- de fora do grupo / sem permissão
+select from pg_temp.como('00000000-0000-0000-0000-0000000000c8', 'jaque@example.com');
+select from pg_temp.esperar_erro(format($q$select public.importar_cardapio('%s', '%s')$q$, pg_temp.id('loja1'), pg_temp.id('loja2')), 'duas lojas');
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000000a7', 'gil@example.com');
+select from pg_temp.esperar_erro(format($q$select public.importar_cardapio('%s', (select loja_id from public.marcas where slug = 'pizzaria-e'))$q$, pg_temp.id('loja1')), 'duas lojas');
+reset role;
+
 \o
 \pset tuples_only on
 select 'OK: multilojas';
