@@ -19,6 +19,7 @@ import { FormGrupo } from '@/components/form-grupo';
 import { Gaveta } from './gaveta';
 import { EditorProduto, ETIQUETAS, resumoGrupo } from './editor-produto';
 import { AplicarGrupo } from './aplicar-grupo';
+import { ImportarCardapio } from './importar-cardapio';
 
 type Marca = { id: string; nome: string };
 type Painel =
@@ -26,12 +27,13 @@ type Painel =
   | { tipo: 'setor'; id: string | null }
   | { tipo: 'grupo'; id: string | null }
   | { tipo: 'aplicar'; id: string }
+  | { tipo: 'importar' }
   | null;
 
 const TODOS = '__todos';
 const SEM = '__sem';
 
-export function EditorCardapio({ cardapio, marcas, lojaId }: { cardapio: Cardapio; marcas: Marca[]; lojaId: string }) {
+export function EditorCardapio({ cardapio, marcas, lojaId, outrasLojas = [] }: { cardapio: Cardapio; marcas: Marca[]; lojaId: string; outrasLojas?: { id: string; nome: string }[] }) {
   const { setores, produtos, grupos, usos } = cardapio;
   const listaGrupos = useMemo(() => Object.values(grupos).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')), [grupos]);
   const [aba, setAba] = useState<'produtos' | 'grupos'>('produtos');
@@ -68,9 +70,14 @@ export function EditorCardapio({ cardapio, marcas, lojaId }: { cardapio: Cardapi
     <div className="grade">
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>Cardápio</h1>
+        <div className="linha" style={{ alignItems: 'center', gap: '0.5rem' }}>
+        {outrasLojas.length > 0 && (
+          <button type="button" onClick={() => setPainel({ tipo: 'importar' })}>Importar de outra loja</button>
+        )}
         <div className="abas" role="tablist">
           <button role="tab" aria-selected={aba === 'produtos'} onClick={() => setAba('produtos')}>Produtos <span className="dica">{produtos.length}</span></button>
           <button role="tab" aria-selected={aba === 'grupos'} onClick={() => setAba('grupos')}>Grupos de opções <span className="dica">{listaGrupos.length}</span></button>
+        </div>
         </div>
       </div>
       {erro && <p className="erro" role="alert">{erro}</p>}
@@ -136,7 +143,7 @@ export function EditorCardapio({ cardapio, marcas, lojaId }: { cardapio: Cardapi
 
             {visiveis.length === 0 && (
               <div className="cartao dica">
-                {setores.length === 0 ? 'Comece criando uma categoria (ex.: Pizzas, Bebidas) no botão "+ Nova".' : termo ? 'Nenhum produto com esse nome.' : 'Nenhum produto nesta categoria ainda. Use "+ Novo produto".'}
+                {setores.length === 0 ? (outrasLojas.length ? 'Cardápio vazio. Crie uma categoria em "+ Nova" ou traga tudo pronto em "Importar de outra loja".' : 'Comece criando uma categoria (ex.: Pizzas, Bebidas) no botão "+ Nova".') : termo ? 'Nenhum produto com esse nome.' : 'Nenhum produto nesta categoria ainda. Use "+ Novo produto".'}
               </div>
             )}
             <ul className="lista">
@@ -278,6 +285,11 @@ export function EditorCardapio({ cardapio, marcas, lojaId }: { cardapio: Cardapi
       {painel?.tipo === 'aplicar' && grupoEditando && (
         <Gaveta titulo={`Onde aparece "${grupoEditando.nome}"`} aoFechar={() => setPainel(null)}>
           <AplicarGrupo grupo={grupoEditando} setores={setores} produtos={produtos} aoFechar={() => setPainel(null)} />
+        </Gaveta>
+      )}
+      {painel?.tipo === 'importar' && (
+        <Gaveta titulo="Importar de outra loja" aoFechar={() => setPainel(null)}>
+          <ImportarCardapio lojas={outrasLojas} aoFechar={() => setPainel(null)} />
         </Gaveta>
       )}
       {confirmar && (

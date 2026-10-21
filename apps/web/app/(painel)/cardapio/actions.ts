@@ -288,3 +288,36 @@ export async function duplicarGrupo(id: string): Promise<Resultado & { id?: stri
   revalidatePath('/cardapio');
   return { ok: true, id: data as string };
 }
+
+// ---------------------------------------------------------------- importar de outra loja do grupo
+
+export type CategoriaOrigem = { id: string; nome: string; produtos: string[] };
+
+/** Categorias (com nomes dos produtos) e marcas de outra loja, para escolher o que importar. */
+export async function listarCardapioDe(lojaId: string): Promise<{ ok: true; categorias: CategoriaOrigem[]; marcas: { id: string; nome: string }[] } | { ok: false; erro: string }> {
+  const supabase = await criarClienteServidor();
+  const [s, m] = await Promise.all([
+    supabase.from('setores').select('id, nome, ordem, produtos(nome, ordem)').eq('loja_id', lojaId).order('ordem'),
+    supabase.from('marcas').select('id, nome').eq('loja_id', lojaId).order('ordem'),
+  ]);
+  if (s.error) return { ok: false, erro: mensagem(s.error) };
+  const categorias = (s.data ?? []).map((x) => ({
+    id: x.id as string,
+    nome: x.nome as string,
+    produtos: ((x.produtos as { nome: string; ordem: number }[]) ?? []).sort((a, b) => a.ordem - b.ordem).map((p) => p.nome),
+  }));
+  return { ok: true, categorias, marcas: (m.data ?? []) as { id: string; nome: string }[] };
+}
+
+export async function importarDe(
+  origem: string,
+  setores: string[] | null,
+  marcaOrigem: string | null,
+): Promise<{ ok: true; categorias: number; produtos: number; grupos: number; pulados: number } | { ok: false; erro: string }> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('importar_cardapio', { p_origem: origem, p_destino: ctx.lojaId, p_setores: setores, p_marca_origem: marcaOrigem });
+  if (error) return { ok: false, erro: mensagem(error) };
+  revalidatePath('/cardapio');
+  return { ok: true, ...(data as { categorias: number; produtos: number; grupos: number; pulados: number }) };
+}

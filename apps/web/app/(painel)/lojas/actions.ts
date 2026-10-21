@@ -20,9 +20,15 @@ export async function criarLoja(contaId: string, form: FormData): Promise<R> {
   const slug = String(form.get('slug') ?? '').trim().toLowerCase();
   if (!nome || !marca) return { ok: false, erro: 'Informe o nome da loja e do primeiro cardápio.' };
   if (!SLUG.test(slug)) return { ok: false, erro: 'Endereço: letras minúsculas, números e hífen (3 a 60).' };
+  const copiarDe = String(form.get('copiarDe') ?? '');
   const supabase = await criarClienteServidor();
-  const { error } = await supabase.rpc('criar_loja_na_conta', { p_conta: contaId, p_nome: nome, p_marca: marca, p_slug: slug });
+  const { data: novaLoja, error } = await supabase.rpc('criar_loja_na_conta', { p_conta: contaId, p_nome: nome, p_marca: marca, p_slug: slug });
   if (error) return { ok: false, erro: msg(error.message) };
+  if (copiarDe) {
+    const imp = await supabase.rpc('importar_cardapio', { p_origem: copiarDe, p_destino: novaLoja as string });
+    revalidatePath('/', 'layout');
+    if (imp.error) return { ok: false, erro: `A loja foi criada, mas o cardápio não foi copiado: ${imp.error.message}` };
+  }
   revalidatePath('/', 'layout');
   return { ok: true };
 }
@@ -32,9 +38,15 @@ export async function criarCardapio(lojaId: string, form: FormData): Promise<R> 
   const slug = String(form.get('slug') ?? '').trim().toLowerCase();
   if (!nome) return { ok: false, erro: 'Informe o nome do cardápio (marca).' };
   if (!SLUG.test(slug)) return { ok: false, erro: 'Endereço: letras minúsculas, números e hífen (3 a 60).' };
+  const base = String(form.get('base') ?? '');
   const supabase = await criarClienteServidor();
-  const { error } = await supabase.rpc('criar_marca', { p_loja: lojaId, p_nome: nome, p_slug: slug });
+  const { data: nova, error } = await supabase.rpc('criar_marca', { p_loja: lojaId, p_nome: nome, p_slug: slug });
   if (error) return { ok: false, erro: msg(error.message) };
+  if (base) {
+    const c = await supabase.rpc('compartilhar_catalogo', { p_marca_nova: nova as string, p_marca_base: base });
+    revalidatePath('/', 'layout');
+    if (c.error) return { ok: false, erro: `O cardápio foi criado, mas não recebeu os produtos: ${c.error.message}` };
+  }
   revalidatePath('/', 'layout');
   return { ok: true };
 }
