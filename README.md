@@ -13,7 +13,7 @@ Sistema de pedidos para restaurantes, com delivery, salão e gestão. Esta é a 
 |---|---|
 | `packages/core` | Regras de negócio em TypeScript puro: preço, grupos, setores e permissões. Tem testes. |
 | `supabase/migrations` | Banco Postgres com isolamento por loja (RLS), auditoria e operações atômicas |
-| `supabase/tests` | Testes do banco, um por regra de paridade (T-xxx) |
+| `supabase/tests` | Testes do banco: regras de paridade (T-xxx), edição do cardápio e pedidos, incluindo a paridade de preço com o core |
 | `apps/web` | Painel em Next.js com login, cadastro da loja e telas do cardápio |
 | `docs/decisoes.md` | Decisões de projeto D-001 a D-010 |
 
@@ -41,14 +41,24 @@ O GitHub Actions roda os três conjuntos a cada push: regras, banco e build do a
 
 A chave *service_role* nunca vai para o navegador nem para o app (D-008). Toda escrita passa pela RLS com o usuário logado.
 
+## O que já funciona
+
+| Área | Telas |
+|---|---|
+| Base | Login, cadastro da loja e marcas, permissões por grupo, histórico de alterações no banco |
+| Cardápio | Setores e produtos com edição completa: preços por marca e canal, promoção, etiqueta, foto e ordem. Grupos de opções com frações de pizza, reaproveitados entre produtos. Simulador de preço |
+| Pedidos | Quadro em tempo real (Novo → Em preparo → Pronto → Saiu → Concluído) com alerta sonoro e aceite automático. Lançar pedido com montagem de pizza. Preço recalculado no banco |
+
 ## Próximas etapas
 
 | Etapa | Escopo |
 |---|---|
-| 2 | Pedidos e tela de delivery em tempo real |
-| 3 | Cardápio digital público e checkout |
-| 4 | Salão: mesas, comandas e PDV |
-| 5 | Integrações: Pix, iFood, WhatsApp oficial e NFC-e |
+| 3b | Cardápio digital público (link/QR) com checkout, horários, área e taxa de entrega por bairro |
+| 4 | Impressão por setor, KDS, caixa, relatórios |
+| 5 | Entregas e entregador, WhatsApp oficial |
+| 6 | Clientes, cupons, fidelidade |
+| 7 | Salão (mesas, comandas, PDV), estoque, financeiro, fiscal |
+| Integrações | Pix, iFood, NFC-e (dependem de credenciamentos) |
 
 ## Ambiente no ar (piloto)
 
