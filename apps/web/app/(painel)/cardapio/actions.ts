@@ -321,3 +321,27 @@ export async function importarDe(
   revalidatePath('/cardapio');
   return { ok: true, ...(data as { categorias: number; produtos: number; grupos: number; renomeados: number }) };
 }
+
+// ---------------------------------------------------------------- organizar (ordem e categorias)
+
+/** Salva de uma vez a ordem das categorias e, para cada produto, a categoria e a posição. */
+export async function organizarCardapio(
+  setores: string[],
+  produtos: { id: string; setor: string | null }[],
+): Promise<{ ok: true; categorias: number; produtos: number; movidos: number } | { ok: false; erro: string }> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('organizar_cardapio', { p_loja: ctx.lojaId, p_setores: setores, p_produtos: produtos });
+  if (error) return { ok: false, erro: mensagem(error) };
+  revalidatePath('/cardapio');
+  revalidatePath('/cardapio/organizar');
+  return { ok: true, ...(data as { categorias: number; produtos: number; movidos: number }) };
+}
+
+/** Leva um ou mais produtos para outra categoria (null = sem categoria), no fim da lista dela. */
+export async function moverProdutos(ids: string[], setor: string | null): Promise<Resultado> {
+  if (!ids.length) return { ok: true };
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('mover_produtos', { p_produtos: ids, p_setor: setor });
+  return error ? { ok: false, erro: mensagem(error) } : pronto();
+}
