@@ -193,6 +193,7 @@ function CartaoPedido({ pedido: p, tempoPreparo, marca }: { pedido: PedidoRow; t
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center', gap: '0.4rem' }}>
         <span className="pedido-numero">#{p.numero}</span>
         <span className={`selo ${p.tipo === 'entrega' ? 'selo-delivery' : 'selo-presencial'}`}>{TIPO_ROTULO[p.tipo]}</span>
+        {p.origem === 'cardapio_digital' && <span className="selo selo-pizza" title="Feito pelo cliente no cardápio digital">Online</span>}
         <span className={atrasado ? 'atrasado' : 'dica'} title={atrasado ? `Passou de ${tempoPreparo} min` : undefined}>
           {aberto ? tempoDecorrido(new Date(p.criado_em)) : STATUS_ROTULO[p.status]}
         </span>

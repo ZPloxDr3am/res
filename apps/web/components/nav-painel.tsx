@@ -6,6 +6,7 @@ const LINKS = [
   { href: '/pedidos', rotulo: 'Pedidos' },
   { href: '/pedidos/novo', rotulo: 'Novo pedido' },
   { href: '/cardapio', rotulo: 'Cardápio' },
+  { href: '/delivery', rotulo: 'Delivery' },
 ];
 
 export function NavPainel() {
