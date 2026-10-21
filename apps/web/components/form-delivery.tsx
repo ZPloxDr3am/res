@@ -1,7 +1,7 @@
 'use client';
 import { useState, useTransition } from 'react';
 import { formatarReais, PAGAMENTO_ROTULO, type FormaPagamento } from '@res/core';
-import { definirStatus, salvarConfig, type ConfigDelivery } from '@/app/(painel)/delivery/actions';
+import { definirStatus, replicarHorarios, salvarConfig, type ConfigDelivery } from '@/app/(painel)/delivery/actions';
 import { salvando } from '@/components/tempo-real';
 
 const DIAS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -22,7 +22,9 @@ export function FormDelivery({
   qr,
   abertaAgora,
   inicial,
+  outrosCardapios = 0,
 }: {
+  outrosCardapios?: number;
   marcaId: string;
   nome: string;
   link: string;
@@ -35,6 +37,7 @@ export function FormDelivery({
   const [taxas, setTaxas] = useState(inicial.areas.map((a) => reais(a.taxa)));
   const [msg, setMsg] = useState<{ tipo: 'ok' | 'erro'; texto: string } | null>(null);
   const [copiado, setCopiado] = useState(false);
+  const [confirmandoReplicar, setConfirmandoReplicar] = useState(false);
   const [pendente, iniciar] = useTransition();
 
   const mudarStatus = (status: ConfigDelivery['status']) =>
@@ -117,7 +120,37 @@ export function FormDelivery({
           >
             Mesmo horário todos os dias
           </button>
+          {outrosCardapios > 0 && !confirmandoReplicar && (
+            <button type="button" className="botao-primario" disabled={pendente || c.horarios.length === 0} onClick={() => setConfirmandoReplicar(true)}>
+              Replicar para todas as lojas do grupo
+            </button>
+          )}
         </div>
+        {confirmandoReplicar && (
+          <div className="aviso grade" style={{ gap: '0.5rem' }}>
+            <span>
+              Copiar estes {c.horarios.length} horário(s) para os outros <strong>{outrosCardapios} cardápio(s)</strong> das lojas do grupo?
+              Os horários que eles têm hoje serão substituídos. Status (aberto/fechado), bairros e taxas não mudam.
+            </span>
+            <div className="linha" style={{ gap: '0.4rem' }}>
+              <button
+                type="button"
+                className="botao-primario"
+                disabled={pendente}
+                onClick={() =>
+                  iniciar(async () => {
+                    const r = await salvando(replicarHorarios(marcaId, c.horarios));
+                    setConfirmandoReplicar(false);
+                    setMsg(r.ok ? { tipo: 'ok', texto: `Horários salvos aqui e replicados para ${r.n} cardápio(s) do grupo.` } : { tipo: 'erro', texto: r.erro });
+                  })
+                }
+              >
+                {pendente ? 'Replicando…' : 'Sim, replicar'}
+              </button>
+              <button type="button" onClick={() => setConfirmandoReplicar(false)}>Cancelar</button>
+            </div>
+          </div>
+        )}
       </fieldset>
 
       <fieldset className="grade" style={{ gap: '0.4rem' }}>

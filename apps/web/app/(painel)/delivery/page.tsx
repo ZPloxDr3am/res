@@ -21,6 +21,11 @@ export default async function Delivery() {
   ]);
   if (marcas.error) throw new Error(marcas.error.message);
 
+  // cardápios do grupo (todas as lojas da mesma conta que a pessoa acessa), para "replicar horários"
+  const contaAtual = ctx.lojas.find((l) => l.id === ctx.lojaId)?.contaId ?? null;
+  const lojasDoGrupo = ctx.lojas.filter((l) => l.id === ctx.lojaId || (contaAtual && l.contaId === contaAtual)).map((l) => l.id);
+  const { count: cardapiosDoGrupo } = await supabase.from('marcas').select('id', { count: 'exact', head: true }).in('loja_id', lojasDoGrupo);
+
   const h = await headers();
   const origem = `${h.get('x-forwarded-proto') ?? 'https'}://${h.get('x-forwarded-host') ?? h.get('host')}`;
   const abertaPorSlug = new Map(aberta.map(([slug, r]) => [slug, Boolean((r.data as { marca?: { aberta?: boolean } } | null)?.marca?.aberta)]));
@@ -59,7 +64,7 @@ export default async function Delivery() {
         O cliente abre o link (ou lê o QR), monta o pedido e envia. O pedido cai direto no quadro de Pedidos, com alerta sonoro.
       </p>
       {lista.map((m) => (
-        <FormDelivery key={m.id} marcaId={m.id} nome={m.nome} link={m.link} qr={m.qr} abertaAgora={m.abertaAgora} inicial={m.config} />
+        <FormDelivery key={m.id} marcaId={m.id} nome={m.nome} link={m.link} qr={m.qr} abertaAgora={m.abertaAgora} inicial={m.config} outrosCardapios={Math.max(0, (cardapiosDoGrupo ?? 1) - 1)} />
       ))}
     </div>
   );

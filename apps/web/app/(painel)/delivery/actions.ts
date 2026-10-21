@@ -49,3 +49,15 @@ export async function definirStatus(marcaId: string, status: 'auto' | 'aberto' |
   revalidatePath('/delivery');
   return { ok: true as const };
 }
+
+/** Salva os horários desta tela e copia para os outros cardápios de todas as lojas do grupo (conta). */
+export async function replicarHorarios(marcaId: string, horarios: ConfigDelivery['horarios']): Promise<{ ok: true; n: number } | { ok: false; erro: string }> {
+  if (horarios.some((h) => h.abre === h.fecha)) return { ok: false, erro: 'Um horário abre e fecha na mesma hora.' };
+  const supabase = await criarClienteServidor();
+  const salvo = await supabase.rpc('salvar_config_delivery', { p_marca: marcaId, p_config: { horarios } });
+  if (salvo.error) return { ok: false, erro: salvo.error.message };
+  const { data, error } = await supabase.rpc('replicar_horarios', { p_marca: marcaId });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/delivery');
+  return { ok: true, n: data as number };
+}
