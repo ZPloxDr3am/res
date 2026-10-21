@@ -46,7 +46,7 @@ A chave *service_role* nunca vai para o navegador nem para o app (D-008). Toda e
 | Área | Telas |
 |---|---|
 | Base | Login, cadastro da loja e marcas, permissões por grupo, histórico de alterações no banco |
-| Cardápio | Setores e produtos com edição completa: preços por marca e canal, promoção, etiqueta, foto e ordem. Grupos de opções com frações de pizza, reaproveitados entre produtos. Simulador de preço |
+| Cardápio | Categorias à esquerda e produtos à direita, com busca e liga/desliga rápido (ativo, delivery, salão). Editor do produto em painel lateral: dados, grupos, preços por canal e foto. Aba **Grupos de opções** como biblioteca: o grupo é criado uma vez e aplicado em vários produtos ("marcar todos da categoria"). Duplicar produto, categoria e grupo. Simulador de preço |
 | Pedidos | Quadro em tempo real (Novo → Em preparo → Pronto → Saiu → Concluído) com alerta sonoro e aceite automático. Lançar pedido com montagem de pizza. Preço recalculado no banco |
 | Cardápio digital | Link e QR por marca (`/c/<endereço>`). O cliente monta e envia o pedido sem login e acompanha por um código secreto. Horários (inclusive depois da meia-noite), abrir/fechar na hora, bairros com taxa, pedido mínimo, formas de pagamento e limite contra pedidos repetidos. Configurado na tela **Delivery** |
 
