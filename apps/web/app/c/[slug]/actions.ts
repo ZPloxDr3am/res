@@ -11,6 +11,8 @@ export interface PedidoCliente {
   /** centavos */
   trocoPara: number | null;
   observacao?: string;
+  /** ISO de um dos horários de public.horarios_agendamento; null = o quanto antes. */
+  agendadoPara: string | null;
 }
 
 /** Envia o pedido do cliente. O banco confere tudo de novo (aberto, bairro, taxa, preço, mínimo). */
@@ -26,6 +28,7 @@ export async function enviarPedido(slug: string, p: PedidoCliente): Promise<{ ok
       pagamento: p.pagamento,
       troco_para: p.pagamento === 'dinheiro' && p.trocoPara != null ? p.trocoPara / 100 : null,
       observacao: p.observacao || null,
+      agendado_para: p.agendadoPara,
     },
   });
   if (error) return { ok: false, erro: error.message };

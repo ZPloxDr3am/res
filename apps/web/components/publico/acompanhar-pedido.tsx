@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { formatarReais, PAGAMENTO_ROTULO, type StatusPedido } from '@res/core';
+import { formatarReais, PAGAMENTO_ROTULO, rotuloHorario, type StatusPedido } from '@res/core';
 import type { Acompanhamento } from '@/lib/publico';
 
 const hora = (iso: string | null) => (iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : null);
@@ -54,8 +54,18 @@ export function AcompanharPedido({ pedido: p }: { pedido: Acompanhamento }) {
             ))}
           </ol>
         )}
-        {p.status === 'novo' && <p className="dica">Aguardando a loja confirmar. Esta página atualiza sozinha.</p>}
-        {previsao && <p>Previsão de ficar pronto: <strong>{previsao}</strong></p>}
+        {p.agendado_para && p.status !== 'cancelado' && (
+          <p className="aviso">
+            Pedido agendado para <strong>{rotuloHorario(new Date(p.agendado_para), p.fuso)}</strong>
+            {p.tipo === 'entrega' ? ' (entrega)' : ' (retirada)'}.
+          </p>
+        )}
+        {p.status === 'novo' && (
+          <p className="dica">
+            {p.agendado_para ? 'A loja começa a preparar perto do horário marcado.' : 'Aguardando a loja confirmar.'} Esta página atualiza sozinha.
+          </p>
+        )}
+        {previsao && !p.agendado_para && <p>Previsão de ficar pronto: <strong>{previsao}</strong></p>}
 
         <section className="cartao grade" style={{ gap: '0.35rem' }}>
           <h2>Itens</h2>

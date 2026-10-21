@@ -3,10 +3,14 @@ import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   calcularItem,
+  dataNoFuso,
   ErroEscolha,
   ErroPedido,
   formatarReais,
+  horaNoFuso,
   PAGAMENTO_ROTULO,
+  rotuloHorario,
+  taxaDoBairro,
   totalizar,
   troco,
   type Escolhas,
@@ -18,6 +22,7 @@ import {
   grupoCore,
   MARCA_CORE,
   produtoCore,
+  type AgendamentoPublico,
   type CardapioPublico,
   type GrupoPublico,
   type ProdutoPublico,
@@ -64,7 +69,7 @@ function resumoEscolhas(p: ProdutoPublico, e: Escolhas): string {
     .join(', ');
 }
 
-export function CardapioCliente({ cardapio }: { cardapio: CardapioPublico }) {
+export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioPublico; agendamento: AgendamentoPublico }) {
   const { marca, setores } = cardapio;
   const router = useRouter();
   const chaveCarrinho = `res_carrinho_${marca.slug}`;
@@ -110,6 +115,7 @@ export function CardapioCliente({ cardapio }: { cardapio: CardapioPublico }) {
 
   const hoje = diaNoFuso(marca.fuso);
   const horarioHoje = marca.horarios.filter((h) => h.dia === hoje).map((h) => `${h.abre}–${h.fecha}`).join(', ');
+  const podeAgendar = agendamento.horarios.length > 0;
 
   return (
     <div className="pub">
@@ -117,6 +123,9 @@ export function CardapioCliente({ cardapio }: { cardapio: CardapioPublico }) {
         <h1>{marca.nome}</h1>
         <div className="pub-linha">
           <span className={`pub-status ${marca.aberta ? 'aberto' : 'fechado'}`}>{marca.aberta ? 'Aberto agora' : 'Fechado'}</span>
+          {!marca.aberta && podeAgendar && (
+            <span className="dica">Agende para {rotuloHorario(new Date(agendamento.horarios[0]!), marca.fuso)} ou depois</span>
+          )}
           {horarioHoje && <span className="dica">Hoje: {horarioHoje}</span>}
           <span className="dica">Preparo ~{marca.tempo_preparo_min} min</span>
           {marca.pedido_minimo > 0 && <span className="dica">Pedido mínimo {formatarReais(marca.pedido_minimo)}</span>}
@@ -191,6 +200,7 @@ export function CardapioCliente({ cardapio }: { cardapio: CardapioPublico }) {
       {etapa === 'carrinho' && (
         <Checkout
           cardapio={cardapio}
+          agendamento={agendamento}
           itens={calculados}
           subtotal={subtotal}
           alterar={(chave, delta) =>
@@ -309,6 +319,7 @@ function Montador({
 
 function Checkout({
   cardapio,
+  agendamento,
   itens,
   subtotal,
   alterar,
@@ -316,6 +327,7 @@ function Checkout({
   concluido,
 }: {
   cardapio: CardapioPublico;
+  agendamento: AgendamentoPublico;
   itens: ItemCalculado[];
   subtotal: number;
   alterar: (chave: number, delta: number) => void;
@@ -332,6 +344,22 @@ function Checkout({
   const [observacao, setObservacao] = useState('');
   const [erro, setErro] = useState<string | null>(null);
   const [pendente, iniciar] = useTransition();
+  const podeAgendar = agendamento.horarios.length > 0;
+  // fechada agora: só agendando
+  const [agendar, setAgendar] = useState(!marca.aberta && podeAgendar);
+  // horários agrupados por dia no fuso da loja
+  const dias = useMemo(() => {
+    const m = new Map<string, string[]>();
+    for (const h of agendamento.horarios) {
+      const d = dataNoFuso(new Date(h), marca.fuso);
+      (m.get(d) ?? m.set(d, []).get(d)!).push(h);
+    }
+    return [...m.entries()];
+  }, [agendamento.horarios, marca.fuso]);
+  const [dia, setDia] = useState(dias[0]?.[0] ?? '');
+  const [horario, setHorario] = useState(dias[0]?.[1][0] ?? '');
+  const horariosDoDia = dias.find(([d]) => d === dia)?.[1] ?? [];
+  const rotuloDia = (d: string) => rotuloHorario(new Date(dias.find(([x]) => x === d)![1][0]!), marca.fuso).replace(/ \d{2}:\d{2}$/, '');
 
   // dados do cliente lembrados neste aparelho
   useEffect(() => {
@@ -340,8 +368,9 @@ function Checkout({
     if (salvo.endereco) setEndereco(salvo.endereco);
   }, []);
 
-  const area = marca.areas.find((a) => a.bairro === endereco.bairro);
-  const taxa = tipo === 'entrega' ? area?.taxa ?? 0 : 0;
+  const taxaArea = taxaDoBairro(marca.areas, endereco.bairro);
+  const area = taxaArea !== null;
+  const taxa = tipo === 'entrega' ? taxaArea ?? 0 : 0;
   const trocoPara = trocoTxt.trim() ? lerCentavos(trocoTxt) : null;
 
   const conta = (() => {
@@ -355,7 +384,8 @@ function Checkout({
   })();
 
   const faltando: string[] = [];
-  if (!marca.aberta) faltando.push('a loja abrir');
+  if (!marca.aberta && !agendar) faltando.push(podeAgendar ? 'escolher um horário' : 'a loja abrir');
+  if (agendar && !horario) faltando.push('o horário do agendamento');
   if (itens.length === 0) faltando.push('itens no pedido');
   if (subtotal < marca.pedido_minimo) faltando.push(`pedido mínimo de ${formatarReais(marca.pedido_minimo)}`);
   if (cliente.nome.trim().length < 2) faltando.push('seu nome');
@@ -374,6 +404,7 @@ function Checkout({
         pagamento,
         trocoPara: Number.isNaN(trocoPara) ? null : trocoPara,
         observacao,
+        agendadoPara: agendar ? horario : null,
       });
       if (!r.ok) return setErro(r.erro);
       concluido(r.codigo);
@@ -407,6 +438,42 @@ function Checkout({
           <legend>Como você quer receber?</legend>
           <label className="check"><input type="radio" checked={tipo === 'entrega'} onChange={() => setTipo('entrega')} /> Entrega</label>
           <label className="check"><input type="radio" checked={tipo === 'retirada'} onChange={() => setTipo('retirada')} /> Retirar na loja</label>
+        </fieldset>
+      )}
+
+      {(podeAgendar || !marca.aberta) && (
+        <fieldset className="grade" style={{ gap: '0.5rem' }}>
+          <legend>Para quando?</legend>
+          {marca.aberta && (
+            <div className="pub-linha">
+              <label className="check"><input type="radio" checked={!agendar} onChange={() => setAgendar(false)} /> O quanto antes (~{marca.tempo_preparo_min} min)</label>
+              <label className="check"><input type="radio" checked={agendar} onChange={() => setAgendar(true)} /> Agendar</label>
+            </div>
+          )}
+          {!marca.aberta && !podeAgendar && <p className="aviso">A loja está fechada e não aceita pedidos agendados agora.</p>}
+          {!marca.aberta && podeAgendar && <p className="dica" style={{ margin: 0 }}>A loja está fechada agora, mas você pode agendar seu pedido.</p>}
+          {agendar && (
+            <div className="pub-linha">
+              <label style={{ flex: '1 1 8rem' }}>
+                Dia
+                <select
+                  value={dia}
+                  onChange={(e) => {
+                    setDia(e.target.value);
+                    setHorario(dias.find(([d]) => d === e.target.value)?.[1][0] ?? '');
+                  }}
+                >
+                  {dias.map(([d]) => <option key={d} value={d}>{rotuloDia(d)}</option>)}
+                </select>
+              </label>
+              <label style={{ flex: '1 1 6rem' }}>
+                Horário
+                <select value={horario} onChange={(e) => setHorario(e.target.value)}>
+                  {horariosDoDia.map((h) => <option key={h} value={h}>{horaNoFuso(new Date(h), marca.fuso)}</option>)}
+                </select>
+              </label>
+            </div>
+          )}
         </fieldset>
       )}
 
@@ -456,6 +523,7 @@ function Checkout({
         <div className="grade" style={{ gap: '0.2rem' }}>
           <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Subtotal</span><span>{formatarReais(conta.t.subtotal)}</span></div>
           {tipo === 'entrega' && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Entrega</span><span>{area ? (taxa ? formatarReais(taxa) : 'Grátis') : '—'}</span></div>}
+          {agendar && horario && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Agendado</span><span>{rotuloHorario(new Date(horario), marca.fuso)}</span></div>}
           <div className="pub-linha" style={{ justifyContent: 'space-between' }}><strong>Total</strong><span className="total">{formatarReais(conta.t.total)}</span></div>
           {conta.troco != null && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Seu troco</span><span>{formatarReais(conta.troco)}</span></div>}
         </div>
@@ -464,7 +532,7 @@ function Checkout({
       {erro && <p className="erro" role="alert">{erro}</p>}
       {faltando.length > 0 && <p className="dica">Para enviar falta: {faltando.join(', ')}.</p>}
       <button type="button" className="botao-primario pub-cta" disabled={pendente || faltando.length > 0 || !!conta.erro} onClick={enviar}>
-        {pendente ? 'Enviando…' : 'Enviar pedido'}
+        {pendente ? 'Enviando…' : agendar ? 'Agendar pedido' : 'Enviar pedido'}
       </button>
     </main>
   );

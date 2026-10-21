@@ -8,6 +8,7 @@ import {
   formatarReais,
   PAGAMENTO_ROTULO,
   precoBase,
+  taxaDoBairro,
   TIPO_ROTULO,
   totalizar,
   troco,
@@ -36,13 +37,22 @@ const lerCentavos = (t: string): number | null => {
   return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) : null;
 };
 
+/** "2026-10-21T20:00" (datetime-local) a partir de uma data, no horário deste aparelho. */
+const paraCampoData = (d: Date) => {
+  const z = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`;
+};
+
 export function NovoPedido({
   marcas,
+  areas,
   setores,
   produtos,
   grupos,
 }: {
   marcas: { id: string; nome: string }[];
+  /** Bairros atendidos por marca (taxa em centavos). */
+  areas: Record<string, { bairro: string; taxa: number }[]>;
   setores: SetorRow[];
   produtos: ProdutoRow[];
   grupos: Record<string, GrupoRow>;
@@ -56,7 +66,9 @@ export function NovoPedido({
   const [carrinho, setCarrinho] = useState<ItemCarrinho[]>([]);
   const [cliente, setCliente] = useState({ nome: '', telefone: '' });
   const [endereco, setEndereco] = useState({ logradouro: '', numero: '', complemento: '', bairro: '', referencia: '' });
-  const [taxaTxt, setTaxaTxt] = useState('');
+  const [taxaTxt, setTaxaTxt] = useState(''); // vazio = taxa do bairro
+  const [agendar, setAgendar] = useState(false);
+  const [agendaTxt, setAgendaTxt] = useState('');
   const [descontoTxt, setDescontoTxt] = useState('');
   const [pagamento, setPagamento] = useState<FormaPagamento>('pix');
   const [trocoTxt, setTrocoTxt] = useState('');
@@ -102,7 +114,11 @@ export function NovoPedido({
     adicionar(p, {}, unitario, '');
   };
 
-  const taxa = lerCentavos(taxaTxt);
+  const areasMarca = areas[marcaId] ?? [];
+  const taxaAuto = taxaDoBairro(areasMarca, endereco.bairro);
+  const taxaManual = taxaTxt.trim() !== '';
+  const taxa = taxaManual ? lerCentavos(taxaTxt) : taxaAuto ?? 0;
+  const agendadoPara = agendar && agendaTxt ? new Date(agendaTxt) : null;
   const desconto = lerCentavos(descontoTxt);
   const trocoPara = trocoTxt.trim() ? lerCentavos(trocoTxt) : null;
 
@@ -122,6 +138,7 @@ export function NovoPedido({
   if (!cliente.nome.trim()) faltando.push('nome do cliente');
   if (tipo === 'entrega' && (!endereco.logradouro.trim() || !endereco.bairro.trim())) faltando.push('rua e bairro');
   if (carrinho.length === 0) faltando.push('pelo menos um item');
+  if (agendar && (!agendadoPara || Number.isNaN(agendadoPara.getTime()) || agendadoPara.getTime() <= Date.now())) faltando.push('data e hora futuras para o agendamento');
 
   const enviar = () =>
     iniciar(async () => {
@@ -132,7 +149,8 @@ export function NovoPedido({
           cliente: { nome: cliente.nome, telefone: cliente.telefone },
           endereco: tipo === 'entrega' ? endereco : undefined,
           itens: carrinho.map((i) => ({ produtoId: i.produto.id, quantidade: i.quantidade, observacao: i.observacao, escolhas: i.escolhas })),
-          taxaEntrega: taxa ?? 0,
+          taxaEntrega: tipo === 'entrega' && !taxaManual ? null : taxa ?? 0,
+          agendadoPara: agendadoPara ? agendadoPara.toISOString() : null,
           desconto: desconto ?? 0,
           pagamento,
           trocoPara: pagamento === 'dinheiro' ? trocoPara : null,
@@ -264,7 +282,15 @@ export function NovoPedido({
               <div className="linha">
                 <label style={{ flex: '1 1 9rem' }}>
                   Bairro
-                  <input type="text" value={endereco.bairro} onChange={(e) => setEndereco({ ...endereco, bairro: e.target.value })} />
+                  <input type="text" list="bairros-marca" value={endereco.bairro} onChange={(e) => setEndereco({ ...endereco, bairro: e.target.value })} />
+                  <datalist id="bairros-marca">
+                    {areasMarca.map((a) => <option key={a.bairro} value={a.bairro}>{a.taxa ? formatarReais(a.taxa) : 'grátis'}</option>)}
+                  </datalist>
+                  {endereco.bairro.trim() && (
+                    <span className="dica">
+                      {taxaAuto === null ? 'Fora dos bairros cadastrados: informe a taxa.' : `Taxa do bairro: ${taxaAuto ? formatarReais(taxaAuto) : 'grátis'}`}
+                    </span>
+                  )}
                 </label>
                 <label style={{ flex: '1 1 9rem' }}>
                   Complemento
@@ -300,7 +326,18 @@ export function NovoPedido({
               {tipo === 'entrega' && (
                 <label style={{ flex: '1 1 7rem' }}>
                   Taxa de entrega (R$)
-                  <input type="text" inputMode="decimal" value={taxaTxt} onChange={(e) => setTaxaTxt(e.target.value)} placeholder="0,00" />
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={taxaTxt}
+                    onChange={(e) => setTaxaTxt(e.target.value)}
+                    placeholder={taxaAuto != null ? (taxaAuto / 100).toFixed(2).replace('.', ',') : '0,00'}
+                  />
+                  {taxaManual && taxaAuto != null && (
+                    <button type="button" className="dica" style={{ justifySelf: 'start', padding: 0, border: 0, background: 'none' }} onClick={() => setTaxaTxt('')}>
+                      usar a taxa do bairro
+                    </button>
+                  )}
                 </label>
               )}
               <label style={{ flex: '1 1 7rem' }}>
@@ -308,6 +345,28 @@ export function NovoPedido({
                 <input type="text" inputMode="decimal" value={descontoTxt} onChange={(e) => setDescontoTxt(e.target.value)} placeholder="0,00" />
               </label>
             </div>
+          </fieldset>
+
+          <fieldset className="grade" style={{ gap: '0.4rem' }}>
+            <legend>Quando</legend>
+            <div className="linha" style={{ alignItems: 'center' }}>
+              <label className="check"><input type="radio" checked={!agendar} onChange={() => setAgendar(false)} /> Agora</label>
+              <label className="check">
+                <input
+                  type="radio"
+                  checked={agendar}
+                  onChange={() => {
+                    setAgendar(true);
+                    if (!agendaTxt) setAgendaTxt(paraCampoData(new Date(Math.ceil((Date.now() + 3600000) / 900000) * 900000)));
+                  }}
+                />{' '}
+                Agendar para
+              </label>
+              {agendar && (
+                <input type="datetime-local" aria-label="Data e hora do agendamento" value={agendaTxt} min={paraCampoData(new Date())} step={900} onChange={(e) => setAgendaTxt(e.target.value)} />
+              )}
+            </div>
+            {agendar && <span className="dica">Fica em "Agendados" no quadro e entra em "Novo", com alerta, perto da hora de preparar.</span>}
           </fieldset>
 
           <label>

@@ -187,6 +187,15 @@ export function FormDelivery({
             </label>
           ))}
         </div>
+        <label style={{ maxWidth: '22rem' }}>
+          Pedidos agendados
+          <select value={c.agendamentoDias} onChange={(e) => setC({ ...c, agendamentoDias: Number(e.target.value) })}>
+            <option value={0}>Não aceitar</option>
+            <option value={1}>Hoje e amanhã (até 1 dia antes)</option>
+            {[2, 3, 7].map((d) => <option key={d} value={d}>Até {d} dias antes</option>)}
+          </select>
+          <span className="dica">O cliente escolhe um horário dentro do funcionamento. Com a loja fechada, ele ainda pode agendar.</span>
+        </label>
         <label>
           Recado no topo do cardápio (opcional)
           <input type="text" maxLength={300} value={c.mensagem} placeholder={`Ex.: Pedido mínimo ${formatarReais(2000)} · Entregamos até 23h`} onChange={(e) => setC({ ...c, mensagem: e.target.value })} />

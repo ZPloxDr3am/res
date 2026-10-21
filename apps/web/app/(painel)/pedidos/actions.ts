@@ -33,12 +33,15 @@ export interface NovoPedido {
   cliente: { nome: string; telefone?: string };
   endereco?: { logradouro: string; numero?: string; complemento?: string; bairro: string; referencia?: string };
   itens: { produtoId: string; quantidade: number; observacao?: string; escolhas: Record<string, Record<string, number>> }[];
-  /** Valores em centavos. O banco recalcula os preços dos itens a partir do cardápio. */
-  taxaEntrega: number;
+  /** Valores em centavos. O banco recalcula os preços dos itens a partir do cardápio.
+   *  taxaEntrega null = usar a taxa do bairro cadastrada na marca (o banco busca). */
+  taxaEntrega: number | null;
   desconto: number;
   pagamento: FormaPagamento;
   trocoPara: number | null;
   observacao?: string;
+  /** ISO; null = o quanto antes. */
+  agendadoPara?: string | null;
 }
 
 export async function criarPedido(p: NovoPedido): Promise<{ ok: true; numero: number } | { ok: false; erro: string }> {
@@ -53,11 +56,12 @@ export async function criarPedido(p: NovoPedido): Promise<{ ok: true; numero: nu
       cliente: { nome: p.cliente.nome.trim(), telefone: p.cliente.telefone || null },
       endereco: p.tipo === 'entrega' ? p.endereco : null,
       itens: p.itens.map((i) => ({ produto_id: i.produtoId, quantidade: i.quantidade, observacao: i.observacao || null, escolhas: i.escolhas })),
-      taxa_entrega: p.taxaEntrega / 100,
+      taxa_entrega: p.taxaEntrega == null ? null : p.taxaEntrega / 100,
       desconto: p.desconto / 100,
       pagamento: p.pagamento,
       troco_para: p.trocoPara == null ? null : p.trocoPara / 100,
       observacao: p.observacao || null,
+      agendado_para: p.agendadoPara ?? null,
     },
   });
   if (error) return { ok: false, erro: mensagem(error) };

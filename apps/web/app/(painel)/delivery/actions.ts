@@ -10,6 +10,8 @@ export interface ConfigDelivery {
   aceitaRetirada: boolean;
   formasPagamento: FormaPagamento[];
   mensagem: string;
+  /** 0 = não aceita pedido agendado; até 7 dias à frente. */
+  agendamentoDias: number;
   horarios: { dia: number; abre: string; fecha: string }[];
   areas: { bairro: string; taxa: number; ativo: boolean }[]; // taxa em centavos
 }
@@ -32,6 +34,7 @@ export async function salvarConfig(marcaId: string, c: ConfigDelivery): Promise<
       aceita_retirada: c.aceitaRetirada,
       formas_pagamento: c.formasPagamento,
       mensagem: c.mensagem,
+      agendamento_dias: c.agendamentoDias,
       horarios: c.horarios,
       areas: c.areas.map((a) => ({ bairro: a.bairro.trim(), taxa: a.taxa / 100, ativo: a.ativo })),
     },
