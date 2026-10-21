@@ -134,6 +134,31 @@ do $$ begin
 end $$;
 select from pg_temp.esperar_erro($q$select public.resumo_vendas('{}', '2026-10-22', '2026-10-21')$q$, 'Período inválido');
 
+-- ---------------------------------------------------------------- 0009: replicar horários para o grupo
+select from pg_temp.como('00000000-0000-0000-0000-0000000000c7', 'ivo@example.com');
+select from public.salvar_config_delivery((select id from public.marcas where slug = 'pizzaria-ivo'),
+  '{"horarios": [{"dia": 5, "abre": "18:00", "fecha": "02:00"}, {"dia": 6, "abre": "18:00", "fecha": "23:30"}]}');
+select from public.salvar_config_delivery((select id from public.marcas where slug = 'burger-ivo'), '{"horarios": [{"dia": 1, "abre": "11:00", "fecha": "15:00"}]}');
+do $$ begin
+  -- pizzaria-ivo → acai-ivo (mesma loja), pizzaria-ivo-trindade e burger-ivo (outras lojas da conta)
+  if public.replicar_horarios((select id from public.marcas where slug = 'pizzaria-ivo')) <> 3 then raise exception 'deveria replicar para 3 cardápios'; end if;
+  if (select string_agg(m.slug || ':' || h.dia_semana || ' ' || to_char(h.abre, 'HH24:MI') || '-' || to_char(h.fecha, 'HH24:MI'), ',' order by m.slug, h.dia_semana)
+        from public.marca_horarios h join public.marcas m on m.id = h.marca_id where m.slug = 'burger-ivo') <> 'burger-ivo:5 18:00-02:00,burger-ivo:6 18:00-23:30' then
+    raise exception 'horário antigo do burger deveria ter sido trocado';
+  end if;
+end $$;
+reset role;
+-- Jaque (funcionária da Trindade, sem cardapio_digital) não replica; outra conta não é tocada
+select from pg_temp.como('00000000-0000-0000-0000-0000000000c8', 'jaque@example.com');
+select from pg_temp.esperar_erro($q$select public.replicar_horarios((select id from public.marcas where slug = 'pizzaria-ivo-trindade'))$q$, 'permissão');
+reset role;
+do $$ begin
+  if exists (select 1 from public.marca_horarios h join public.marcas m on m.id = h.marca_id where m.slug = 'pizzaria-e' and h.abre = '18:00' and h.dia_semana = 6 and h.fecha = '23:30')
+     and (select count(*) from public.marca_horarios h join public.marcas m on m.id = h.marca_id where m.slug = 'pizzaria-e') <> 2 then
+    raise exception 'outra conta foi alterada';
+  end if;
+end $$;
+
 \o
 \pset tuples_only on
 select 'OK: multilojas';
