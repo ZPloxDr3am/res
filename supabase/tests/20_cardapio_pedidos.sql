@@ -87,12 +87,14 @@ do $$ begin
 end $$;
 select from pg_temp.esperar_erro($q$select public.reordenar('membros', array[]::uuid[])$q$, 'não pode ser reordenada');
 
--- Desvincular: o grupo continua enquanto algum produto usar; some quando ninguém usa.
+-- Desvincular tira o grupo do produto; desde a 0007 o grupo fica na biblioteca para reusar.
 insert into ids values ('tmp_grupo', public.criar_grupo_vinculado(pg_temp.id('refri'), 'Gelo', 'brinde', false, 0, 1, false, '[{"nome":"Com gelo"}]'));
 select from public.desvincular_grupo(pg_temp.id('refri'), pg_temp.id('tmp_grupo'));
 do $$ begin
-  if exists (select 1 from public.grupos_opcoes where id = pg_temp.id('tmp_grupo')) then raise exception 'desvincular: grupo órfão deveria sumir'; end if;
+  if exists (select 1 from public.produto_grupos where grupo_id = pg_temp.id('tmp_grupo')) then raise exception 'desvincular: vínculo deveria sair'; end if;
+  if not exists (select 1 from public.grupos_opcoes where id = pg_temp.id('tmp_grupo')) then raise exception 'desvincular: grupo deveria ficar na biblioteca'; end if;
 end $$;
+delete from public.grupos_opcoes where id = pg_temp.id('tmp_grupo');
 reset role;
 
 -- Fia (outra loja) não mexe nos grupos da Loja C.

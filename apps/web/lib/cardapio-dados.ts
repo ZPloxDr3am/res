@@ -68,6 +68,14 @@ export type SetorRow = {
 
 const c = (v: number | null | undefined) => (v == null ? null : Math.round(Number(v) * 100));
 
+export interface Cardapio {
+  setores: SetorRow[];
+  produtos: ProdutoRow[];
+  grupos: Record<string, GrupoRow>;
+  /** grupoId → quantos produtos usam */
+  usos: Record<string, number>;
+}
+
 export const nomeOpcao = (o: OpcaoRow) => o.nome ?? o.complementos?.nome ?? o.produtos?.nome ?? '';
 
 /** Converte as linhas do banco nos tipos do núcleo de regras (para simular preço na tela). */

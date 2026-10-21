@@ -74,7 +74,7 @@ export async function mover(tabela: 'setores' | 'produtos', id: string, direcao:
 
 // ---------------------------------------------------------------- produtos
 
-export async function criarProduto(form: FormData): Promise<Resultado> {
+export async function criarProduto(form: FormData): Promise<Resultado & { id?: string }> {
   const ctx = await contextoLoja();
   const nome = String(form.get('nome') ?? '').trim();
   if (!nome) return { ok: false, erro: 'Informe o nome do produto.' };
@@ -85,7 +85,7 @@ export async function criarProduto(form: FormData): Promise<Resultado> {
     return { ok: false, erro: 'Preço inválido.' };
   }
   const supabase = await criarClienteServidor();
-  const { error } = await supabase.rpc('criar_produto', {
+  const { data, error } = await supabase.rpc('criar_produto', {
     p_loja: ctx.lojaId,
     p_nome: nome,
     p_setor: (form.get('setor') as string) || null,
@@ -93,7 +93,9 @@ export async function criarProduto(form: FormData): Promise<Resultado> {
     p_descricao: String(form.get('descricao') ?? '') || null,
     p_marcas: null, // R-008 / D-010: nasce em todas as marcas e canais
   });
-  return error ? { ok: false, erro: mensagem(error) } : pronto();
+  if (error) return { ok: false, erro: mensagem(error) };
+  revalidatePath('/cardapio');
+  return { ok: true, id: data as string };
 }
 
 const ETIQUETAS = ['novo', 'recomendado', 'mais_vendido', 'edicao_limitada', 'esgotado'];
@@ -170,7 +172,8 @@ export async function excluirProduto(id: string): Promise<Resultado> {
 export interface DadosGrupo {
   /** Presente ao editar um grupo existente. */
   id?: string;
-  produtoId: string;
+  /** Ao criar: liga o grupo novo a este produto. Sem ele, o grupo vai só para a biblioteca. */
+  produtoId?: string;
   nome: string;
   formacao: FormacaoPreco;
   obrigatorio: boolean;
@@ -182,7 +185,7 @@ export interface DadosGrupo {
 }
 
 /** Cria (vinculado ao produto) ou salva o grupo com as opções, numa transação (D-005). */
-export async function salvarGrupo(g: DadosGrupo): Promise<Resultado> {
+export async function salvarGrupo(g: DadosGrupo): Promise<Resultado & { id?: string }> {
   const erros = validarGrupo(g);
   if (erros.length) return { ok: false, erro: erros.map((e) => e.mensagem).join(' ') };
   const opcoes = g.opcoes.filter((o) => o.nome.trim());
@@ -190,9 +193,21 @@ export async function salvarGrupo(g: DadosGrupo): Promise<Resultado> {
   const supabase = await criarClienteServidor();
   // cada opção pode ir até o máximo do grupo (a repetição é controlada por "permite repetir")
   const json = opcoes.map((o) => ({ ...(o.id ? { id: o.id } : {}), nome: o.nome.trim(), preco: o.preco, max_qtd: g.maxQtd }));
-  const { error } = g.id
+  const { data, error } = g.id
     ? await supabase.rpc('salvar_grupo', {
         p_grupo: g.id,
+        p_nome: g.nome.trim(),
+        p_formacao: g.formacao,
+        p_obrigatorio: g.obrigatorio,
+        p_min: g.minQtd,
+        p_max: g.maxQtd,
+        p_pizza: g.pizza,
+        p_permite_repetir: g.permiteRepetir,
+        p_opcoes: json,
+      })
+    : !g.produtoId
+    ? await supabase.rpc('criar_grupo', {
+        p_loja: (await contextoLoja()).lojaId,
         p_nome: g.nome.trim(),
         p_formacao: g.formacao,
         p_obrigatorio: g.obrigatorio,
@@ -214,7 +229,8 @@ export async function salvarGrupo(g: DadosGrupo): Promise<Resultado> {
         p_permite_repetir: g.permiteRepetir,
       });
   if (error) return { ok: false, erro: mensagem(error) };
-  return pronto();
+  revalidatePath('/cardapio');
+  return { ok: true, id: g.id ?? (data as string) };
 }
 
 export async function vincularGrupo(produtoId: string, grupoId: string): Promise<Resultado> {
@@ -227,4 +243,48 @@ export async function desvincularGrupo(produtoId: string, grupoId: string): Prom
   const supabase = await criarClienteServidor();
   const { error } = await supabase.rpc('desvincular_grupo', { p_produto: produtoId, p_grupo: grupoId });
   return error ? { ok: false, erro: mensagem(error) } : pronto();
+}
+
+export async function excluirGrupo(id: string): Promise<Resultado> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.from('grupos_opcoes').delete().eq('id', id);
+  return error ? { ok: false, erro: mensagem(error) } : pronto();
+}
+
+/** Grupos do produto, na ordem da lista (marca/desmarca e ordena de uma vez). */
+export async function definirGruposDoProduto(produtoId: string, grupos: string[]): Promise<Resultado> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('definir_grupos_do_produto', { p_produto: produtoId, p_grupos: grupos });
+  return error ? { ok: false, erro: mensagem(error) } : pronto();
+}
+
+/** Aplica o grupo nos produtos marcados (e tira dos desmarcados). */
+export async function definirProdutosDoGrupo(grupoId: string, produtos: string[]): Promise<Resultado> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('definir_produtos_do_grupo', { p_grupo: grupoId, p_produtos: produtos });
+  return error ? { ok: false, erro: mensagem(error) } : pronto();
+}
+
+export async function duplicarProduto(id: string): Promise<Resultado & { id?: string }> {
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('duplicar_produto', { p_produto: id });
+  if (error) return { ok: false, erro: mensagem(error) };
+  revalidatePath('/cardapio');
+  return { ok: true, id: data as string };
+}
+
+export async function duplicarSetor(id: string): Promise<Resultado & { id?: string }> {
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('duplicar_setor', { p_setor: id });
+  if (error) return { ok: false, erro: mensagem(error) };
+  revalidatePath('/cardapio');
+  return { ok: true, id: data as string };
+}
+
+export async function duplicarGrupo(id: string): Promise<Resultado & { id?: string }> {
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('duplicar_grupo', { p_grupo: id });
+  if (error) return { ok: false, erro: mensagem(error) };
+  revalidatePath('/cardapio');
+  return { ok: true, id: data as string };
 }

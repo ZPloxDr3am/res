@@ -50,16 +50,20 @@ const vazio = { nome: '', obrigatorio: false, minQtd: 0, maxQtd: 1, formacao: 's
 /** Grupo de opções (criar ou editar) com as mesmas regras do banco e um simulador de preço ao vivo. */
 export function FormGrupo({
   produtoId,
-  precoProduto,
+  precoProduto = 0,
   inicial,
   usos = 1,
   aoTerminar,
+  aoCancelar,
 }: {
-  produtoId: string;
-  precoProduto: number;
+  /** Ao criar: liga o grupo a este produto. Sem ele, vai só para a biblioteca. */
+  produtoId?: string;
+  /** Preço do produto, só para o simulador (centavos). */
+  precoProduto?: number;
   inicial?: GrupoInicial;
   usos?: number;
-  aoTerminar?: () => void;
+  aoTerminar?: (id?: string) => void;
+  aoCancelar?: () => void;
 }) {
   const [g, setG] = useState(() => (inicial ? { ...inicial } : { ...vazio }));
   const [opcoes, setOpcoes] = useState<OpcaoForm[]>(() =>
@@ -120,7 +124,7 @@ export function FormGrupo({
         setOpcoes([{ nome: '', preco: '' }]);
         setSimulacao({});
       }
-      aoTerminar?.();
+      aoTerminar?.(r.id);
     });
 
   return (
@@ -209,8 +213,8 @@ export function FormGrupo({
         <button type="button" className="botao-primario" disabled={pendente || erros.length > 0 || precoInvalido || validas.length === 0} onClick={enviar}>
           {pendente ? 'Salvando…' : inicial ? 'Salvar grupo' : 'Criar grupo'}
         </button>
-        {aoTerminar && inicial && (
-          <button type="button" onClick={aoTerminar} disabled={pendente}>
+        {aoCancelar && (
+          <button type="button" onClick={aoCancelar} disabled={pendente}>
             Cancelar
           </button>
         )}
