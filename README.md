@@ -49,3 +49,12 @@ A chave *service_role* nunca vai para o navegador nem para o app (D-008). Toda e
 | 3 | Cardápio digital público e checkout |
 | 4 | Salão: mesas, comandas e PDV |
 | 5 | Integrações: Pix, iFood, WhatsApp oficial e NFC-e |
+
+## Ambiente no ar (piloto)
+
+| Peça | Onde |
+|---|---|
+| Painel | https://res-iqzs.vercel.app (Vercel, projeto `res-iqzs`, pasta `apps/web`) |
+| Banco | Supabase, projeto **RES - PRÓPRIO** (São Paulo), ref `avodakkmqyvnbabfwydr` |
+| Código | github.com/ZPloxDr3am/res, com deploy automático a cada push na `main` |
+| Auth | Site URL é o painel; o redirect de confirmação é `/auth/confirmar` |
