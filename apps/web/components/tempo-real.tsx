@@ -22,7 +22,7 @@ export async function salvando<T>(acao: Promise<T>): Promise<T> {
 }
 
 /** T-005: mudança feita em outro aparelho aparece aqui sem recarregar. A RLS filtra o que chega. */
-export function TempoReal({ lojaId, tabelas = CARDAPIO }: { lojaId: string; tabelas?: string[] }) {
+export function TempoReal({ lojaId, tabelas = CARDAPIO, todasAsLojas = false }: { lojaId: string; tabelas?: string[]; todasAsLojas?: boolean }) {
   const chave = tabelas.join(',');
   const router = useRouter();
   useEffect(() => {
@@ -38,14 +38,14 @@ export function TempoReal({ lojaId, tabelas = CARDAPIO }: { lojaId: string; tabe
       // a ação local já trouxe a tela nova (revalidatePath); descarta os avisos dela
       clearTimeout(espera);
     };
-    let canal = supabase.channel(`${chave}:${lojaId}`);
-    for (const t of chave.split(',')) canal = canal.on('postgres_changes', { event: '*', schema: 'public', table: t, filter: `loja_id=eq.${lojaId}` }, agendar);
+    let canal = supabase.channel(`${chave}:${todasAsLojas ? 'todas' : lojaId}`);
+    for (const t of chave.split(',')) canal = canal.on('postgres_changes', todasAsLojas ? { event: '*', schema: 'public', table: t } : { event: '*', schema: 'public', table: t, filter: `loja_id=eq.${lojaId}` }, agendar);
     canal.subscribe();
     return () => {
       clearTimeout(espera);
       aoTerminar = null;
       void supabase.removeChannel(canal);
     };
-  }, [lojaId, chave, router]);
+  }, [lojaId, chave, todasAsLojas, router]);
   return null;
 }

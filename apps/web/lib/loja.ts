@@ -7,9 +7,11 @@ export interface ContextoLoja {
   lojaNome: string;
   papel: string;
   marcas: { id: string; nome: string; slug: string }[];
+  /** Todas as lojas que a pessoa acessa (para o seletor e as visões "todas as lojas"). */
+  lojas: { id: string; nome: string; contaId: string | null }[];
 }
 
-/** Loja ativa do usuário (cookie `res_loja`, ou a primeira). Sem loja → onboarding. */
+/** Loja ativa do usuário (cookie `res_loja`, ou a primeira). Sem loja → aceita convites → onboarding. */
 export async function contextoLoja(): Promise<ContextoLoja> {
   const supabase = await criarClienteServidor();
   const {
@@ -17,17 +19,26 @@ export async function contextoLoja(): Promise<ContextoLoja> {
   } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
-  const { data: membros, error } = await supabase
-    .from('membros')
-    .select('loja_id, papel, lojas(nome)')
-    .eq('user_id', user.id)
-    .eq('ativo', true);
+  const buscar = () =>
+    supabase.from('membros').select('loja_id, papel, lojas(nome, conta_id)').eq('user_id', user.id).eq('ativo', true);
+  let { data: membros, error } = await buscar();
   if (error) throw new Error(error.message);
-  if (!membros || membros.length === 0) redirect('/onboarding');
+  if (!membros || membros.length === 0) {
+    // convidado pela equipe de uma loja? vira membro agora
+    const { data: aceitos } = await supabase.rpc('aceitar_convites');
+    if (aceitos) ({ data: membros } = await buscar());
+    if (!membros || membros.length === 0) redirect('/onboarding');
+  }
+
+  const lojas = membros
+    .map((m) => {
+      const l = m.lojas as unknown as { nome: string; conta_id: string | null } | null;
+      return { id: m.loja_id as string, nome: l?.nome ?? '', contaId: l?.conta_id ?? null };
+    })
+    .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
 
   const preferida = (await cookies()).get('res_loja')?.value;
-  const m = membros.find((x) => x.loja_id === preferida) ?? membros[0]!;
-  const loja = m.lojas as unknown as { nome: string } | null;
+  const m = membros.find((x) => x.loja_id === preferida) ?? membros.find((x) => x.loja_id === lojas[0]!.id)!;
 
   const { data: marcas } = await supabase
     .from('marcas')
@@ -36,7 +47,13 @@ export async function contextoLoja(): Promise<ContextoLoja> {
     .order('ordem')
     .order('nome');
 
-  return { lojaId: m.loja_id, lojaNome: loja?.nome ?? '', papel: m.papel, marcas: marcas ?? [] };
+  return {
+    lojaId: m.loja_id,
+    lojaNome: lojas.find((l) => l.id === m.loja_id)?.nome ?? '',
+    papel: m.papel,
+    marcas: marcas ?? [],
+    lojas,
+  };
 }
 
 /** Converte reais (texto "49,90" ou "49.90") em número com 2 casas; vazio → null. */

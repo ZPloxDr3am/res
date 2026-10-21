@@ -10,10 +10,12 @@ const Icone = ({ d }: { d: string }) => (
 );
 
 const LINKS = [
+  { href: '/resumo', rotulo: 'Resumo', icone: 'M4 20V10M10 20V4M16 20v-7M22 20H2' },
   { href: '/pedidos', rotulo: 'Pedidos', icone: 'M4 5h16M4 12h16M4 19h10' },
   { href: '/pedidos/novo', rotulo: 'Novo pedido', icone: 'M12 5v14M5 12h14' },
   { href: '/cardapio', rotulo: 'Cardápio', icone: 'M6 3h12v18l-6-4-6 4zM9 8h6M9 12h6' },
   { href: '/delivery', rotulo: 'Delivery', icone: 'M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z' },
+  { href: '/lojas', rotulo: 'Lojas e equipe', icone: 'M3 10l9-6 9 6M5 10v10h14V10M9 20v-6h6v6' },
 ];
 
 export function NavPainel() {

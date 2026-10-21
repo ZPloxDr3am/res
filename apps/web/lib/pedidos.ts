@@ -3,6 +3,7 @@ import { criarClienteServidor } from './supabase/server';
 
 export type PedidoRow = {
   id: string;
+  loja_id: string;
   numero: number;
   status: StatusPedido;
   tipo: TipoPedido;
@@ -36,21 +37,21 @@ export type PedidoRow = {
   }[];
 };
 
-/** Pedidos em aberto e os encerrados nas últimas 12 horas, do mais antigo para o mais novo. */
-export async function carregarQuadro(lojaId: string) {
+/** Pedidos em aberto e os encerrados nas últimas 12 horas, do mais antigo para o mais novo. Uma ou várias lojas. */
+export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
   const supabase = await criarClienteServidor();
   const desde = new Date(Date.now() - 12 * 3600 * 1000).toISOString();
   const [pedidos, loja] = await Promise.all([
     supabase
       .from('pedidos')
       .select(
-        'id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_nome, nome, quantidade, fracao))',
+        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_nome, nome, quantidade, fracao))',
       )
-      .eq('loja_id', lojaId)
+      .in('loja_id', lojaIds)
       .or(`status.not.in.(concluido,cancelado),criado_em.gte.${desde}`)
       .order('criado_em', { ascending: true })
-      .limit(300),
-    supabase.from('lojas').select('aceite_automatico, tempo_preparo_min').eq('id', lojaId).single(),
+      .limit(500),
+    supabase.from('lojas').select('aceite_automatico, tempo_preparo_min').eq('id', lojaPrincipal).single(),
   ]);
   if (pedidos.error) throw new Error(pedidos.error.message);
   const lista = (pedidos.data ?? []) as unknown as PedidoRow[];

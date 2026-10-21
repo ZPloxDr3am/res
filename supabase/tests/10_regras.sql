@@ -33,6 +33,10 @@ grant all on ids to authenticated;
 -- ---------------------------------------------------------------- lojas
 select from pg_temp.como('00000000-0000-0000-0000-0000000000a1');
 insert into ids values ('loja_a', public.criar_loja('Loja A 🍕', 'Pizzaria Teste', 'pizzaria-teste', 'Ana'));
+reset role;
+-- (0008) conta nova nasce no pacote básico; este teste usa 2 marcas, então amplia como a equipe RES faria
+update public.contas set limite_cardapios = 5 where id = (select conta_id from public.lojas where id = (select id from ids where chave = 'loja_a'));
+select from pg_temp.como('00000000-0000-0000-0000-0000000000a1');
 insert into public.marcas (loja_id, nome, slug) select id, 'Burger Teste', 'burger-teste' from ids where chave = 'loja_a';
 insert into ids select 'marca_pizza', id from public.marcas where slug = 'pizzaria-teste';
 insert into ids select 'marca_burger', id from public.marcas where slug = 'burger-teste';

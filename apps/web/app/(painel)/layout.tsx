@@ -1,4 +1,5 @@
 import { NavPainel } from '@/components/nav-painel';
+import { SeletorLoja } from '@/components/seletor-loja';
 import { contextoLoja } from '@/lib/loja';
 
 export default async function PainelLayout({ children }: { children: React.ReactNode }) {
@@ -8,7 +9,11 @@ export default async function PainelLayout({ children }: { children: React.React
       <aside className="menu" aria-label="Menu principal">
         <div className="menu-topo">
           <span className="marca-res">RES</span>
-          <span className="menu-loja" title={ctx.lojaNome}>{ctx.lojaNome}</span>
+          {ctx.lojas.length > 1 ? (
+            <SeletorLoja lojas={ctx.lojas} atual={ctx.lojaId} />
+          ) : (
+            <span className="menu-loja" title={ctx.lojaNome}>{ctx.lojaNome}</span>
+          )}
           {ctx.marcas.length > 1 && <span className="dica menu-marcas">{ctx.marcas.map((m) => m.nome).join(' · ')}</span>}
         </div>
         <nav>

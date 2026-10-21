@@ -5,13 +5,23 @@ import { TempoReal } from '@/components/tempo-real';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Pedidos() {
+export default async function Pedidos({ searchParams }: { searchParams: Promise<{ todas?: string }> }) {
   const ctx = await contextoLoja();
-  const { pedidos, aceiteAutomatico, tempoPreparo } = await carregarQuadro(ctx.lojaId);
+  const todas = ctx.lojas.length > 1 && (await searchParams).todas === '1';
+  const ids = todas ? ctx.lojas.map((l) => l.id) : [ctx.lojaId];
+  const { pedidos, aceiteAutomatico, tempoPreparo } = await carregarQuadro(ids, ctx.lojaId);
   return (
     <>
-      <TempoReal lojaId={ctx.lojaId} tabelas={['pedidos']} />
-      <QuadroPedidos pedidos={pedidos} aceiteAutomatico={aceiteAutomatico} tempoPreparo={tempoPreparo} marcas={ctx.marcas} />
+      <TempoReal lojaId={ctx.lojaId} tabelas={['pedidos']} todasAsLojas={todas} />
+      <QuadroPedidos
+        pedidos={pedidos}
+        aceiteAutomatico={aceiteAutomatico}
+        tempoPreparo={tempoPreparo}
+        marcas={ctx.marcas}
+        lojas={ctx.lojas}
+        lojaAtual={ctx.lojaNome}
+        todas={todas}
+      />
     </>
   );
 }

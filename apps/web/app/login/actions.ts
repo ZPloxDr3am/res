@@ -11,6 +11,7 @@ export async function entrar(form: FormData) {
   const supabase = await criarClienteServidor();
   const { error } = await supabase.auth.signInWithPassword(credenciais(form));
   if (error) redirect(`/login?erro=${encodeURIComponent('E-mail ou senha incorretos.')}`);
+  await supabase.rpc('aceitar_convites'); // convites de equipe para este e-mail viram acesso às lojas
   redirect('/pedidos');
 }
 
