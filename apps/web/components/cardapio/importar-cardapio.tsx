@@ -37,7 +37,7 @@ export function ImportarCardapio({ lojas, aoFechar }: { lojas: { id: string; nom
     <div className="grade">
       <p className="dica" style={{ margin: 0 }}>
         Copia as categorias escolhidas para esta loja, com produtos, fotos, preços e grupos de opções. É uma cópia: depois cada loja muda o seu.
-        Importar de novo não duplica (produtos com o mesmo nome na mesma categoria são pulados).
+        Nada é barrado: se já existir categoria ou produto com o mesmo nome aqui, ele entra como "NOME-Cópia" para você revisar.
       </p>
       <div className="linha">
         <label style={{ flex: '1 1 12rem' }}>De qual loja
@@ -91,7 +91,7 @@ export function ImportarCardapio({ lojas, aoFechar }: { lojas: { id: string; nom
                 `Pronto: ${r.produtos} produto(s) importado(s)` +
                   (r.categorias ? `, ${r.categorias} categoria(s) nova(s)` : '') +
                   (r.grupos ? `, ${r.grupos} grupo(s) de opções` : '') +
-                  (r.pulados ? `. ${r.pulados} já existia(m) e foi(ram) pulado(s)` : '') + '.',
+                  (r.renomeados ? `. ${r.renomeados} já existia(m) com o mesmo nome e entrou(aram) como "-Cópia"` : '') + '.',
               );
             })
           }

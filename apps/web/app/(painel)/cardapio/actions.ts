@@ -313,11 +313,11 @@ export async function importarDe(
   origem: string,
   setores: string[] | null,
   marcaOrigem: string | null,
-): Promise<{ ok: true; categorias: number; produtos: number; grupos: number; pulados: number } | { ok: false; erro: string }> {
+): Promise<{ ok: true; categorias: number; produtos: number; grupos: number; renomeados: number } | { ok: false; erro: string }> {
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
   const { data, error } = await supabase.rpc('importar_cardapio', { p_origem: origem, p_destino: ctx.lojaId, p_setores: setores, p_marca_origem: marcaOrigem });
   if (error) return { ok: false, erro: mensagem(error) };
   revalidatePath('/cardapio');
-  return { ok: true, ...(data as { categorias: number; produtos: number; grupos: number; pulados: number }) };
+  return { ok: true, ...(data as { categorias: number; produtos: number; grupos: number; renomeados: number }) };
 }
