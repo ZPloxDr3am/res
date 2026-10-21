@@ -34,7 +34,7 @@ export default async function Onboarding({ searchParams }: { searchParams: Promi
         </label>
         <label>
           Endereço do cardápio
-          <input type="text" name="slug" required pattern="[a-z0-9]([a-z0-9-]{1,58}[a-z0-9])?" placeholder="pizzaria-do-bairro" />
+          <input type="text" name="slug" required pattern="[a-z0-9]([a-z0-9\-]{1,58}[a-z0-9])?" placeholder="pizzaria-do-bairro" />
           <span className="dica">Letras minúsculas, números e hífen. Vira o link do seu cardápio digital.</span>
         </label>
         <label>

@@ -1,4 +1,5 @@
 'use client';
+import { salvando } from '@/components/tempo-real';
 import { useState, useTransition } from 'react';
 import {
   alterarMaximo,
@@ -71,7 +72,7 @@ export function FormGrupo({ produtoId, precoProduto }: { produtoId: string; prec
         produtoId, nome: g.nome, formacao: g.formacao, obrigatorio: g.obrigatorio, minQtd: g.minQtd, maxQtd: g.maxQtd, pizza: g.pizza,
         opcoes: opcoes.map((o, i) => ({ nome: o.nome, preco: precos[i] ?? null })).filter((o) => o.nome.trim()),
       };
-      const r = await criarGrupo(dados);
+      const r = await salvando(criarGrupo(dados));
       if (r.ok) {
         setG({ nome: '', obrigatorio: false, minQtd: 0, maxQtd: 1, formacao: 'soma', pizza: false });
         setOpcoes([{ nome: '', preco: '' }]);

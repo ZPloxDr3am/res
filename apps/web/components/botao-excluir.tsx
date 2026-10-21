@@ -1,4 +1,5 @@
 'use client';
+import { salvando } from '@/components/tempo-real';
 import { useState, useTransition } from 'react';
 
 /** Exclusão com confirmação em duas etapas, sem diálogo do navegador. */
@@ -23,7 +24,7 @@ export function BotaoExcluir({ rotulo, confirmacao, acao }: { rotulo: string; co
         disabled={pendente}
         onClick={() =>
           iniciar(async () => {
-            const r = await acao();
+            const r = await salvando(acao());
             if (!r.ok) setErro(r.erro ?? 'Não foi possível excluir.');
             setConfirmando(false);
           })

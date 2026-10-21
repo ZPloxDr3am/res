@@ -1,4 +1,5 @@
 'use client';
+import { salvando } from '@/components/tempo-real';
 import { useRef, useState, useTransition } from 'react';
 import { criarProduto } from '@/app/(painel)/cardapio/actions';
 
@@ -13,7 +14,7 @@ export function FormProduto({ setores }: { setores: { id: string; nome: string }
       className="cartao grade"
       action={(fd) =>
         iniciar(async () => {
-          const r = await criarProduto(fd);
+          const r = await salvando(criarProduto(fd));
           if (r.ok) {
             ref.current?.reset();
             setErro(null);

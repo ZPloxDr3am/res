@@ -1,4 +1,5 @@
 'use client';
+import { salvando } from '@/components/tempo-real';
 import { useState, useTransition } from 'react';
 import { novoSetor, validarSetor, type SetorForm } from '@res/core';
 import { salvarSetor } from '@/app/(painel)/cardapio/actions';
@@ -23,7 +24,7 @@ export function FormSetor({ marcas }: { marcas: Marca[] }) {
       action={(fd) =>
         iniciar(async () => {
           setOk(false);
-          const r = await salvarSetor(fd);
+          const r = await salvando(salvarSetor(fd));
           if (r.ok) {
             setS(inicial());
             setErro(null);

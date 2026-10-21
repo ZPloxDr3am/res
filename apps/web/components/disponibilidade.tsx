@@ -1,4 +1,5 @@
 'use client';
+import { salvando } from '@/components/tempo-real';
 import { useOptimistic, useState, useTransition } from 'react';
 import { alterarDisponibilidade } from '@/app/(painel)/cardapio/actions';
 
@@ -38,7 +39,7 @@ export function Disponibilidade({ produtoId, marcas, estado }: { produtoId: stri
                     const valor = ev.target.checked;
                     iniciar(async () => {
                       aplicar({ marca: m.id, campo, valor });
-                      const r = await alterarDisponibilidade(produtoId, m.id, campo, valor);
+                      const r = await salvando(alterarDisponibilidade(produtoId, m.id, campo, valor));
                       setErro(r.ok ? null : r.erro);
                     });
                   }}
