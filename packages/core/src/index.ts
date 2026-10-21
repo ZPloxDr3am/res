@@ -6,3 +6,4 @@ export * from './permissoes.js';
 export * from './pedido.js';
 export * from './periodo.js';
 export * from './agendamento.js';
+export * from './caixa.js';

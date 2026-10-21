@@ -16,6 +16,8 @@ export default async function Lojas() {
     supabase.from('convites').select('id, loja_id, email, nome, papel, criado_em').in('loja_id', ids).is('aceito_em', null).order('criado_em'),
     supabase.auth.getUser(),
   ]);
+  const { data: logins } = await supabase.from('usuarios_login').select('user_id, usuario').in('user_id', (membros.data ?? []).map((m) => m.user_id));
+  const usuarioDe = new Map((logins ?? []).map((u) => [u.user_id as string, u.usuario as string]));
   const h = await headers();
   const origem = `${h.get('x-forwarded-proto') ?? 'https'}://${h.get('x-forwarded-host') ?? h.get('host')}`;
   const { data: titularDe } = await supabase.from('contas_titulares').select('conta_id').eq('user_id', titular.data.user?.id ?? '');
@@ -26,7 +28,7 @@ export default async function Lojas() {
     contaId: l.contaId,
     atual: l.id === ctx.lojaId,
     marcas: (marcas.data ?? []).filter((m) => m.loja_id === l.id).map((m) => ({ id: m.id, nome: m.nome, link: `${origem}/c/${m.slug}` })),
-    equipe: (membros.data ?? []).filter((m) => m.loja_id === l.id).map((m) => ({ id: m.id, nome: m.nome, papel: m.papel, ativo: m.ativo, eu: m.user_id === titular.data.user?.id })),
+    equipe: (membros.data ?? []).filter((m) => m.loja_id === l.id).map((m) => ({ id: m.id, userId: m.user_id, usuario: usuarioDe.get(m.user_id) ?? null, nome: m.nome, papel: m.papel, ativo: m.ativo, eu: m.user_id === titular.data.user?.id })),
     convites: (convites.data ?? []).filter((c) => c.loja_id === l.id).map((c) => ({ id: c.id, email: c.email, nome: c.nome, papel: c.papel })),
   }));
 

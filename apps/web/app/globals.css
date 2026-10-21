@@ -301,3 +301,27 @@ input[type='date'] { font: inherit; color: var(--texto); background: var(--super
 .coluna-rotulo strong { display: flex; justify-content: center; align-items: center; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .grafico-segmento { transition: opacity 0.15s; }
 .grafico-dica ul { list-style: none; margin: 0.15rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.1rem 0.9rem; }
+
+/* ---------- caixa */
+.caixas-grade { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); align-items: start; }
+.caixa-cartao[data-aberto] { border-color: color-mix(in srgb, var(--primaria) 55%, var(--borda)); }
+.caixa-cadastro { padding: 0.6rem 0; border-top: 1px solid var(--borda); }
+.calc { display: grid; gap: 0.4rem; border: 1px solid var(--borda); border-radius: var(--raio); padding: 0.6rem 0.75rem; }
+.calc-colunas { display: grid; gap: 0.2rem 1.25rem; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.calc-colunas > div { display: grid; gap: 0.25rem; align-content: start; }
+.calc-linha { display: grid; grid-template-columns: 4.2rem auto 4.5rem 1fr; align-items: center; gap: 0.4rem; font-variant-numeric: tabular-nums; }
+.calc-linha input { width: 100%; padding: 0.25rem 0.4rem; text-align: right; }
+.calc-nota, .calc-moeda { font-weight: 700; font-size: 0.85rem; padding: 0.15rem 0.4rem; border-radius: 6px; text-align: center; }
+.calc-nota { background: color-mix(in srgb, var(--primaria) 14%, transparent); }
+.calc-moeda { background: color-mix(in srgb, var(--destaque) 18%, transparent); border-radius: 999px; }
+.calc-sub { text-align: right; font-size: 0.85rem; color: var(--texto-suave); }
+.calc-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px dashed var(--borda); padding-top: 0.4rem; }
+.calc-total strong { font-size: 1.4rem; font-variant-numeric: tabular-nums; }
+.assinaturas { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2.5rem; }
+.assinaturas span { border-top: 1px solid var(--texto); padding-top: 0.3rem; text-align: center; font-size: 0.85rem; }
+@media print {
+  .menu, .nao-imprimir { display: none !important; }
+  .painel { display: block; }
+  .conteudo { padding: 0; }
+  .relatorio-caixa .cartao { border: 0; box-shadow: none; }
+}

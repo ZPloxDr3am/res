@@ -1,6 +1,6 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { cancelarConvite, convidar, criarCardapio, criarLoja, definirAtivo, trocarLoja } from '@/app/(painel)/lojas/actions';
+import { cancelarConvite, convidar, criarCardapio, criarLoja, criarUsuarioCaixa, definirAtivo, trocarLoja, trocarSenhaUsuario } from '@/app/(painel)/lojas/actions';
 import { salvando } from '@/components/tempo-real';
 
 export type LojaInfo = {
@@ -9,7 +9,7 @@ export type LojaInfo = {
   contaId: string | null;
   atual: boolean;
   marcas: { id: string; nome: string; link: string }[];
-  equipe: { id: string; nome: string; papel: string; ativo: boolean; eu: boolean }[];
+  equipe: { id: string; userId: string; usuario: string | null; nome: string; papel: string; ativo: boolean; eu: boolean }[];
   convites: { id: string; email: string; nome: string; papel: string }[];
 };
 type Conta = { id: string; nome: string; plano: string; limiteLojas: number; limiteCardapios: number | null; titular: boolean };
@@ -74,7 +74,9 @@ function Uso({ rotulo, usado, limite }: { rotulo: string; usado: number; limite:
 }
 
 function CartaoLoja({ loja, podeCardapio }: { loja: LojaInfo; podeCardapio: boolean }) {
-  const [abrir, setAbrir] = useState<'cardapio' | 'convite' | null>(null);
+  const [abrir, setAbrir] = useState<'cardapio' | 'convite' | 'usuario' | null>(null);
+  const [senhaDe, setSenhaDe] = useState<string | null>(null);
+  const [novaSenha, setNovaSenha] = useState('');
   const [r, setR] = useState<{ ok: boolean; erro?: string; texto?: string } | null>(null);
   const [pendente, iniciar] = useTransition();
   const [nomeCardapio, setNomeCardapio] = useState('');
@@ -132,11 +134,34 @@ function CartaoLoja({ loja, podeCardapio }: { loja: LojaInfo; podeCardapio: bool
         <ul className="lista" style={{ gap: '0.25rem' }}>
           {loja.equipe.map((m) => (
             <li key={m.id} className="linha" style={{ justifyContent: 'space-between', alignItems: 'center', opacity: m.ativo ? 1 : 0.55 }}>
-              <span>{m.nome}{m.eu && <span className="dica"> (você)</span>} <span className="selo">{PAPEL[m.papel] ?? m.papel}</span>{!m.ativo && <span className="dica"> · sem acesso</span>}</span>
-              {!m.eu && m.papel !== 'dono' && (
-                <button type="button" className="mini" disabled={pendente} onClick={() => fazer(() => definirAtivo(m.id, !m.ativo), m.ativo ? 'Acesso removido.' : 'Acesso devolvido.')}>
-                  {m.ativo ? 'Tirar acesso' : 'Devolver acesso'}
-                </button>
+              <span>
+                {m.nome}{m.eu && <span className="dica"> (você)</span>} <span className="selo">{PAPEL[m.papel] ?? m.papel}</span>
+                {m.usuario && <span className="dica" title="Entra com este usuário"> · usuário <strong>{m.usuario}</strong></span>}
+                {!m.ativo && <span className="dica"> · sem acesso</span>}
+              </span>
+              <span className="linha" style={{ gap: '0.3rem' }}>
+                {m.usuario && senhaDe !== m.userId && (
+                  <button type="button" className="mini" disabled={pendente} onClick={() => { setSenhaDe(m.userId); setNovaSenha(''); setR(null); }}>Trocar senha</button>
+                )}
+                {!m.eu && m.papel !== 'dono' && (
+                  <button type="button" className="mini" disabled={pendente} onClick={() => fazer(() => definirAtivo(m.id, !m.ativo), m.ativo ? 'Acesso removido.' : 'Acesso devolvido.')}>
+                    {m.ativo ? 'Tirar acesso' : 'Devolver acesso'}
+                  </button>
+                )}
+              </span>
+              {senhaDe === m.userId && (
+                <form
+                  className="linha"
+                  style={{ gap: '0.4rem', width: '100%' }}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    fazer(() => trocarSenhaUsuario(loja.id, m.userId, novaSenha), `Senha de ${m.nome} trocada.`, () => setSenhaDe(null));
+                  }}
+                >
+                  <input type="text" aria-label={`Nova senha de ${m.nome}`} placeholder="Nova senha (mín. 8)" minLength={8} maxLength={72} required value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)} autoComplete="new-password" style={{ flex: '1 1 10rem' }} />
+                  <button className="mini botao-primario" disabled={pendente}>Salvar senha</button>
+                  <button type="button" className="mini" onClick={() => setSenhaDe(null)}>Cancelar</button>
+                </form>
               )}
             </li>
           ))}
@@ -147,7 +172,38 @@ function CartaoLoja({ loja, podeCardapio }: { loja: LojaInfo; podeCardapio: bool
             </li>
           ))}
         </ul>
-        {abrir !== 'convite' && <button type="button" className="mini" style={{ justifySelf: 'start' }} onClick={() => { setAbrir('convite'); setR(null); }}>+ Convidar pessoa</button>}
+        {abrir === null && (
+          <div className="linha" style={{ gap: '0.4rem' }}>
+            <button type="button" className="mini" onClick={() => { setAbrir('usuario'); setR(null); }}>+ Usuário de caixa (usuário e senha)</button>
+            <button type="button" className="mini" onClick={() => { setAbrir('convite'); setR(null); }}>+ Convidar por e-mail</button>
+          </div>
+        )}
+        {abrir === 'usuario' && (
+          <form
+            className="grade"
+            style={{ gap: '0.4rem' }}
+            action={(fd) => fazer(() => criarUsuarioCaixa(loja.id, fd), `Usuário criado. A pessoa entra em ${typeof window !== 'undefined' ? window.location.host : ''}/login com o usuário e a senha.`, () => setAbrir(null))}
+          >
+            <div className="linha">
+              <label style={{ flex: '1 1 9rem' }}>Nome<input type="text" name="nome" required maxLength={120} placeholder="Ex.: Ana Souza" /></label>
+              <label style={{ flex: '1 1 9rem' }}>Usuário<input type="text" name="usuario" required minLength={3} maxLength={30} pattern="[A-Za-z0-9][A-Za-z0-9._\-]{2,29}" placeholder="ana.caixa" autoCapitalize="none" spellCheck={false} /></label>
+              <label style={{ flex: '1 1 9rem' }}>Senha<input type="text" name="senha" required minLength={8} maxLength={72} autoComplete="new-password" /></label>
+              <label style={{ flex: '1 1 8rem' }}>Função
+                <select name="papel" defaultValue="funcionario">
+                  <option value="funcionario">Funcionário (caixa)</option>
+                  <option value="gerente">Gerente</option>
+                  <option value="garcom">Garçom</option>
+                  <option value="entregador">Entregador</option>
+                </select>
+              </label>
+            </div>
+            <p className="dica" style={{ margin: 0 }}>
+              Não precisa de e-mail: a pessoa entra digitando só o usuário e a senha. Usuário com letras sem acento, números, ponto ou hífen.
+              Depois, na tela <strong>Caixa</strong>, defina qual caixa ela opera.
+            </p>
+            <div className="linha"><button className="botao-primario" disabled={pendente}>{pendente ? 'Criando…' : 'Criar usuário'}</button><button type="button" onClick={() => setAbrir(null)}>Cancelar</button></div>
+          </form>
+        )}
         {abrir === 'convite' && (
           <form className="grade" style={{ gap: '0.4rem' }} action={(fd) => fazer(() => convidar(loja.id, fd), 'Convite criado. Peça para a pessoa criar a conta (ou entrar) com esse e-mail.', () => setAbrir(null))}>
             <div className="linha">

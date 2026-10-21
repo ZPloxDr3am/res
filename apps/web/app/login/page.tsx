@@ -13,8 +13,9 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
         {aviso && <p className="dica" role="status">{aviso}</p>}
         <form className="grade">
           <label>
-            E-mail
-            <input type="email" name="email" required autoComplete="email" />
+            E-mail ou usuário
+            <input type="text" name="email" required autoComplete="username" autoCapitalize="none" spellCheck={false} />
+            <span className="dica">Equipe do caixa: digite só o seu usuário (ex.: ana.caixa).</span>
           </label>
           <label>
             Senha
