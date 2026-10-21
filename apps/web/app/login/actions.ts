@@ -11,7 +11,7 @@ export async function entrar(form: FormData) {
   const supabase = await criarClienteServidor();
   const { error } = await supabase.auth.signInWithPassword(credenciais(form));
   if (error) redirect(`/login?erro=${encodeURIComponent('E-mail ou senha incorretos.')}`);
-  redirect('/cardapio');
+  redirect('/pedidos');
 }
 
 export async function cadastrar(form: FormData) {

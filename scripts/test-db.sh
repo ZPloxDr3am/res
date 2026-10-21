@@ -30,4 +30,6 @@ for f in supabase/migrations/*.sql; do
   echo "migração: $(basename "$f")"
   "${PSQL[@]}" -f "$f"
 done
-"${PSQL[@]}" -f supabase/tests/10_regras.sql
+for f in supabase/tests/[1-9]*.sql; do
+  "${PSQL[@]}" -f "$f"
+done

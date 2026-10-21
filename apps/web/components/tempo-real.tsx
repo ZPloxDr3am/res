@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { clienteNavegador } from '@/lib/supabase/client';
 
-const TABELAS = ['setores', 'setor_marcas', 'produtos', 'produto_marcas', 'grupos_opcoes', 'opcoes', 'produto_grupos'];
+const CARDAPIO = ['setores', 'setor_marcas', 'produtos', 'produto_marcas', 'grupos_opcoes', 'opcoes', 'produto_grupos'];
 
 // Ações salvando nesta aba. Enquanto houver alguma, não recarregamos: um refresh no meio
 // de uma server action aborta a resposta e o botão fica preso em "Salvando…".
@@ -22,7 +22,8 @@ export async function salvando<T>(acao: Promise<T>): Promise<T> {
 }
 
 /** T-005: mudança feita em outro aparelho aparece aqui sem recarregar. A RLS filtra o que chega. */
-export function TempoReal({ lojaId }: { lojaId: string }) {
+export function TempoReal({ lojaId, tabelas = CARDAPIO }: { lojaId: string; tabelas?: string[] }) {
+  const chave = tabelas.join(',');
   const router = useRouter();
   useEffect(() => {
     const supabase = clienteNavegador();
@@ -37,14 +38,14 @@ export function TempoReal({ lojaId }: { lojaId: string }) {
       // a ação local já trouxe a tela nova (revalidatePath); descarta os avisos dela
       clearTimeout(espera);
     };
-    let canal = supabase.channel(`cardapio:${lojaId}`);
-    for (const t of TABELAS) canal = canal.on('postgres_changes', { event: '*', schema: 'public', table: t }, agendar);
+    let canal = supabase.channel(`${chave}:${lojaId}`);
+    for (const t of chave.split(',')) canal = canal.on('postgres_changes', { event: '*', schema: 'public', table: t, filter: `loja_id=eq.${lojaId}` }, agendar);
     canal.subscribe();
     return () => {
       clearTimeout(espera);
       aoTerminar = null;
       void supabase.removeChannel(canal);
     };
-  }, [lojaId, router]);
+  }, [lojaId, chave, router]);
   return null;
 }
