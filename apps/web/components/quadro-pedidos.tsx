@@ -51,11 +51,17 @@ export function QuadroPedidos({
   aceiteAutomatico,
   tempoPreparo,
   marcas,
+  lojas,
+  lojaAtual,
+  todas,
 }: {
   pedidos: PedidoRow[];
   aceiteAutomatico: boolean;
   tempoPreparo: number;
   marcas: { id: string; nome: string }[];
+  lojas: { id: string; nome: string }[];
+  lojaAtual: string;
+  todas: boolean;
 }) {
   const [som, setSom] = useState(false);
   const [, setTique] = useState(0);
@@ -109,17 +115,26 @@ export function QuadroPedidos({
 
   const abertos = pedidos.filter((p) => COLUNAS.includes(p.status));
   const encerrados = pedidos.filter((p) => !COLUNAS.includes(p.status)).reverse();
-  const nomeMarca = (id: string) => (marcas.length > 1 ? marcas.find((m) => m.id === id)?.nome : null);
+  // em "todas as lojas" o cartão mostra a loja; numa loja só, a marca (se houver mais de uma)
+  const etiqueta = (p: PedidoRow) => (todas ? lojas.find((l) => l.id === p.loja_id)?.nome : marcas.length > 1 ? marcas.find((m) => m.id === p.marca_id)?.nome : null);
 
   return (
     <div className="grade">
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Pedidos</h1>
+        <div className="grade" style={{ gap: '0.1rem' }}>
+          <h1 style={{ margin: 0 }}>Pedidos</h1>
+          {lojas.length > 1 && (
+            <span className="dica">
+              {todas ? `Todas as lojas (${lojas.length})` : lojaAtual} ·{' '}
+              <Link href={todas ? '/pedidos' : '/pedidos?todas=1'}>{todas ? `só ${lojaAtual}` : 'ver todas as lojas'}</Link>
+            </span>
+          )}
+        </div>
         <div className="linha" style={{ alignItems: 'center' }}>
           <button type="button" onClick={alternarSom} aria-pressed={som}>
             {som ? '🔔 Som ligado' : '🔕 Ligar som'}
           </button>
-          <label className="check" title="Pedidos novos já entram em preparo">
+          {!todas && <label className="check" title="Pedidos novos já entram em preparo">
             <input
               type="checkbox"
               checked={aceiteAutomatico}
@@ -133,7 +148,7 @@ export function QuadroPedidos({
               }}
             />
             Aceite automático
-          </label>
+          </label>}
           <Link href="/pedidos/novo" className="botao botao-primario">
             + Novo pedido
           </Link>
@@ -150,7 +165,7 @@ export function QuadroPedidos({
                 {STATUS_ROTULO[status]} <span className="dica">{lista.length}</span>
               </h2>
               {lista.map((p) => (
-                <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} marca={nomeMarca(p.marca_id)} />
+                <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} marca={etiqueta(p)} />
               ))}
               {lista.length === 0 && <p className="dica" style={{ margin: 0 }}>Nenhum.</p>}
             </section>
@@ -162,7 +177,7 @@ export function QuadroPedidos({
         <summary className="dica">Concluídos e cancelados nas últimas 12 horas ({encerrados.length})</summary>
         <div className="quadro" style={{ paddingTop: '0.5rem' }}>
           {encerrados.map((p) => (
-            <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} marca={nomeMarca(p.marca_id)} />
+            <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} marca={etiqueta(p)} />
           ))}
         </div>
       </details>
