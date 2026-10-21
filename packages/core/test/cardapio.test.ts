@@ -34,7 +34,7 @@ test('descrição da seleção acompanha mínimo e máximo', () => {
 test('T-001 / T-002: setor novo nasce nas marcas e canais; sem marca é recusado com mensagem clara', () => {
   const s = novoSetor(['m1', 'm2']);
   assert.deepEqual([s.delivery, s.presencial, s.marcas], [true, true, ['m1', 'm2']]);
-  assert.deepEqual(validarSetor({ ...s, nome: 'Pizzas', marcas: [] }), ['O setor precisa estar em pelo menos uma marca.']);
+  assert.deepEqual(validarSetor({ ...s, nome: 'Pizzas', marcas: [] }), ['A categoria precisa estar em pelo menos uma marca.']);
 });
 
 test('T-003: setor sem canais não aparece', () => {

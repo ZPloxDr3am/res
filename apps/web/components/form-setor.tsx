@@ -28,7 +28,7 @@ export function FormSetor({
 
   return (
     <form
-      className={inicial ? 'grade' : 'cartao grade'}
+      className="grade"
       action={(fd) =>
         iniciar(async () => {
           setOk(false);
@@ -43,7 +43,6 @@ export function FormSetor({
         })
       }
     >
-      {!inicial && <h2>Novo setor</h2>}
       {inicial && <input type="hidden" name="id" value={inicial.id} />}
       <label>
         Nome
@@ -62,7 +61,7 @@ export function FormSetor({
           <input type="checkbox" name="presencial" checked={s.presencial} onChange={(e) => setS({ ...s, presencial: e.target.checked })} /> Presencial
         </label>
       </fieldset>
-      {!s.delivery && !s.presencial && <p className="dica">Sem canais, o setor fica escondido do cardápio e da tela de pedidos.</p>}
+      {!s.delivery && !s.presencial && <p className="dica">Sem canais, a categoria fica escondida do cardápio e da tela de pedidos.</p>}
       <fieldset className="linha">
         <legend>Marcas</legend>
         {marcas.map((m) => (
@@ -71,14 +70,14 @@ export function FormSetor({
           </label>
         ))}
       </fieldset>
-      {s.marcas.length === 0 && <p className="erro">O setor precisa estar em pelo menos uma marca.</p>}
+      {s.marcas.length === 0 && <p className="erro">A categoria precisa estar em pelo menos uma marca.</p>}
       {erro && <p className="erro" role="alert">{erro}</p>}
-      {ok && <p className="dica" role="status">Setor criado.</p>}
+      {ok && <p className="dica" role="status">Categoria criada.</p>}
       <div className="linha">
         <button className="botao-primario" disabled={pendente || erros.length > 0}>
-          {pendente ? 'Salvando…' : inicial ? 'Salvar setor' : 'Criar setor'}
+          {pendente ? 'Salvando…' : inicial ? 'Salvar categoria' : 'Criar categoria'}
         </button>
-        {inicial && aoTerminar && (
+        {aoTerminar && (
           <button type="button" onClick={aoTerminar} disabled={pendente}>
             Cancelar
           </button>

@@ -16,10 +16,10 @@ export function novoSetor(todasAsMarcas: string[]): SetorForm {
 export function validarSetor(s: SetorForm): string[] {
   const erros: string[] = [];
   const nome = s.nome.trim();
-  if (!nome) erros.push('Informe o nome do setor.');
+  if (!nome) erros.push('Informe o nome da categoria.');
   if ([...nome].length > 150) erros.push('O nome pode ter até 150 caracteres.');
   if (s.nomePublico && [...s.nomePublico].length > 150) erros.push('O nome público pode ter até 150 caracteres.');
-  if (s.marcas.length === 0) erros.push('O setor precisa estar em pelo menos uma marca.'); // R-001, com mensagem clara (T-001)
+  if (s.marcas.length === 0) erros.push('A categoria precisa estar em pelo menos uma marca.'); // R-001, com mensagem clara (T-001)
   return erros;
 }
 

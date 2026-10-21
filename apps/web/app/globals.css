@@ -173,3 +173,46 @@ legend { color: var(--texto-suave); font-size: 0.85rem; padding: 0 0.25rem; }
   .menu-rodape { border-top: 0; padding: 0; }
 }
 a.botao { text-decoration: none; display: inline-flex; align-items: center; }
+
+/* ---- cardápio: categorias | produtos */
+h3 { font-size: 1rem; margin: 0; }
+.abas { display: inline-flex; gap: 0.25rem; padding: 0.25rem; border-radius: 10px; background: color-mix(in srgb, var(--borda) 45%, transparent); }
+.abas button { border: 0; background: none; padding: 0.45rem 0.9rem; border-radius: 8px; }
+.abas button[aria-selected='true'] { background: var(--superficie); box-shadow: var(--sombra); font-weight: 600; }
+.cd { display: grid; grid-template-columns: 250px 1fr; gap: 1rem; align-items: start; }
+.cd-categorias { position: sticky; top: 1rem; background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio); padding: 0.75rem; display: grid; gap: 0.6rem; max-height: calc(100vh - 2rem); overflow-y: auto; }
+.cd-categorias h2, .cd-produtos h2 { font-size: 1rem; margin: 0; }
+.cd-cat { width: 100%; display: flex; justify-content: space-between; gap: 0.5rem; border: 0; background: none; text-align: left; padding: 0.5rem 0.6rem; border-radius: 8px; }
+.cd-cat:hover { background: color-mix(in srgb, var(--borda) 40%, transparent); }
+.cd-cat[aria-current] { background: color-mix(in srgb, var(--primaria) 14%, transparent); color: var(--primaria); font-weight: 600; }
+.cd-cat-acoes { display: flex; flex-wrap: wrap; gap: 0.25rem; padding: 0.25rem 0.5rem 0.5rem; }
+.cd-produtos { display: grid; gap: 0.75rem; min-width: 0; }
+.cd-produto { background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio); display: grid; gap: 0.4rem; padding: 0.5rem 0.6rem; }
+.cd-produto.inativo { opacity: 0.6; }
+.cd-produto-principal { display: grid; grid-template-columns: 44px 1fr auto; gap: 0.75rem; align-items: center; border: 0; background: none; text-align: left; padding: 0.15rem; border-radius: 8px; width: 100%; }
+.cd-produto-principal:hover { background: color-mix(in srgb, var(--borda) 30%, transparent); }
+.cd-preco { font-weight: 700; white-space: nowrap; }
+.cd-produto-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.6rem; padding-left: calc(44px + 0.9rem); }
+.cd-sep { flex: 1; }
+.miniatura.vazia { display: inline-block; background: color-mix(in srgb, var(--borda) 50%, transparent); }
+.interruptor { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.85rem; color: var(--texto); }
+.chip { border-radius: 999px; padding: 0.25rem 0.7rem; font-size: 0.85rem; border-style: dashed; }
+.cd-grupos { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+.botao-perigo { background: var(--erro); color: #fff; border-color: var(--erro); font-weight: 600; }
+input[type='search'] { font: inherit; color: var(--texto); background: var(--superficie); border: 1px solid var(--borda); border-radius: 8px; padding: 0.45rem 0.6rem; min-width: 12rem; }
+@media (max-width: 900px) {
+  .cd { grid-template-columns: 1fr; }
+  .cd-categorias { position: static; max-height: none; }
+  .cd-produto-acoes { padding-left: 0; }
+}
+
+/* ---- painel lateral (gaveta) */
+.gaveta-fundo { position: fixed; inset: 0; background: rgb(0 0 0 / 0.35); z-index: 20; display: flex; justify-content: flex-end; }
+.gaveta { background: var(--fundo); width: 100%; height: 100%; display: flex; flex-direction: column; box-shadow: -8px 0 24px rgb(0 0 0 / 0.15); animation: entrar 0.18s ease-out; }
+.gaveta-topo { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.9rem 1rem; border-bottom: 1px solid var(--borda); background: var(--superficie); }
+.gaveta-topo h2 { margin: 0; font-size: 1.05rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gaveta-corpo { flex: 1; overflow-y: auto; padding: 1rem; display: grid; gap: 1rem; align-content: start; }
+.gaveta-corpo section { background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio); padding: 0.8rem; }
+.gaveta-acoes { position: sticky; bottom: -1rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; padding: 0.75rem 0; background: var(--fundo); }
+@keyframes entrar { from { transform: translateX(24px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .gaveta { animation: none; } }

@@ -1,15 +1,8 @@
 import { criarClienteServidor } from './supabase/server';
-import type { GrupoRow, ProdutoRow, SetorRow } from './cardapio-dados';
+import type { Cardapio, GrupoRow, ProdutoRow, SetorRow } from './cardapio-dados';
 
 export * from './cardapio-dados';
 
-export interface Cardapio {
-  setores: SetorRow[];
-  produtos: ProdutoRow[];
-  grupos: Record<string, GrupoRow>;
-  /** grupoId → quantos produtos usam */
-  usos: Record<string, number>;
-}
 
 /** Cardápio inteiro da loja, já ordenado. A RLS garante que só vem o que é da loja do usuário. */
 export async function carregarCardapio(lojaId: string): Promise<Cardapio> {
