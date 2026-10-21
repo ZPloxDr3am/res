@@ -49,6 +49,8 @@ A chave *service_role* nunca vai para o navegador nem para o app (D-008). Toda e
 | Cardápio | Categorias à esquerda e produtos à direita, com busca e liga/desliga rápido (ativo, delivery, salão). Editor do produto em painel lateral: dados, grupos, preços por canal e foto. Aba **Grupos de opções** como biblioteca: o grupo é criado uma vez e aplicado em vários produtos ("marcar todos da categoria"). Duplicar produto, categoria e grupo. Simulador de preço |
 | Pedidos | Quadro em tempo real (Novo → Em preparo → Pronto → Saiu → Concluído) com alerta sonoro e aceite automático. Lançar pedido com montagem de pizza. Preço recalculado no banco |
 | Cardápio digital | Link e QR por marca (`/c/<endereço>`). O cliente monta e envia o pedido sem login e acompanha por um código secreto. Horários (inclusive depois da meia-noite), abrir/fechar na hora, bairros com taxa, pedido mínimo, formas de pagamento e limite contra pedidos repetidos. Configurado na tela **Delivery** |
+| Multilojas | Conta do cliente → lojas → marcas/cardápios, com limites do pacote garantidos no banco. Seletor de loja no menu; tela **Lojas e equipe** (uso do pacote, nova loja, novo cardápio, convites por e-mail com acesso só àquela loja); quadro de pedidos com "ver todas as lojas" |
+| Resumo | Faturamento, pedidos, ticket médio e cancelados de todas as lojas ou de uma só: hoje, ontem, 7 ou 30 dias, mês ou datas escolhidas. Variação vs período anterior (até a mesma hora), gráfico por dia e tabela por loja com participação |
 
 ## Próximas etapas
 
@@ -60,6 +62,16 @@ A chave *service_role* nunca vai para o navegador nem para o app (D-008). Toda e
 | 6 | Clientes, cupons, fidelidade |
 | 7 | Salão (mesas, comandas, PDV), estoque, financeiro, fiscal |
 | Integrações | Pix, iFood, NFC-e (dependem de credenciamentos) |
+
+## Pacotes (equipe RES)
+
+O pacote de cada cliente fica na tabela `contas` (`plano`, `limite_lojas`, `limite_cardapios`; `null` = sem limite). Só a equipe RES muda, pelo SQL Editor do Supabase:
+
+```sql
+update public.contas set plano = 'multilojas', limite_lojas = 3, limite_cardapios = 3 where nome = 'Nome do cliente';
+```
+
+Conta nova nasce no básico (1 loja, 1 cardápio).
 
 ## Ambiente no ar (piloto)
 

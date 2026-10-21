@@ -9,6 +9,7 @@ const semana = (dia: string) => DIAS[new Date(`${dia}T12:00:00Z`).getUTCDay()];
 /** Barras do faturamento por dia (uma série; o título nomeia). Passe o mouse para ver o valor. */
 export function GraficoDias({ serie }: { serie: { dia: string; faturamento: number; pedidos: number }[] }) {
   const [foco, setFoco] = useState<number | null>(null);
+  if (serie.every((s) => s.faturamento === 0)) return <p className="dica" style={{ margin: 0 }}>Sem vendas no período.</p>;
   const max = Math.max(1, ...serie.map((s) => s.faturamento));
   // escala "redonda" para a linha de referência
   const passo = 10 ** Math.floor(Math.log10(max));
@@ -46,7 +47,7 @@ export function GraficoDias({ serie }: { serie: { dia: string; faturamento: numb
             <g key={s.dia} onMouseEnter={() => setFoco(i)} onClick={() => setFoco(i)}>
               <rect x={i * larg} y={0} width={larg} height={A} fill="transparent" />
               {h > 0 && <path d={`M${x},${A} V${A - h + Math.min(4, h)} q0,-${Math.min(4, h)} ${Math.min(4, barra / 2)},-${Math.min(4, h)} H${x + barra - Math.min(4, barra / 2)} q${Math.min(4, barra / 2)},0 ${Math.min(4, barra / 2)},${Math.min(4, h)} V${A} Z`} className={`grafico-barra ${foco === i ? 'ativa' : ''}`} />}
-              {i % marcarCada === 0 && <text x={i * larg + larg / 2} y={A + 15} textAnchor="middle" className="grafico-eixo">{rotulo(s.dia)}</text>}
+              {i % marcarCada === 0 && <text x={i === 0 ? 0 : i * larg + larg / 2} y={A + 15} textAnchor={i === 0 ? 'start' : 'middle'} className="grafico-eixo">{rotulo(s.dia)}</text>}
             </g>
           );
         })}
