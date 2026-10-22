@@ -51,7 +51,7 @@ A chave *service_role* nunca vai para o navegador (D-008). Ela só existe no ser
 | Cardápio digital | Link e QR por marca (`/c/<endereço>`). O cliente monta e envia o pedido sem login e acompanha por um código secreto. Horários (inclusive depois da meia-noite), abrir/fechar na hora, bairros com taxa, pedido mínimo, formas de pagamento, limite contra pedidos repetidos e **pedido agendado** (o cliente escolhe dia e horário; com a loja fechada ainda pode agendar). Configurado na tela **Delivery** |
 | Multilojas | Conta do cliente → lojas → marcas/cardápios, com limites do pacote garantidos no banco. Seletor de loja no menu; tela **Lojas e equipe** (uso do pacote, nova loja, novo cardápio, convites por e-mail com acesso só àquela loja); quadro de pedidos com "ver todas as lojas"; nova loja pode começar com cópia do cardápio de outra loja do grupo, novo cardápio pode compartilhar o catálogo de outra marca da mesma loja, e o Cardápio tem **Importar de outra loja** (categorias escolhidas, sem duplicar ao repetir); horários replicáveis para o grupo |
 | Caixa | Caixas da loja e quem opera cada um. Usuário de caixa com **usuário e senha** (sem e-mail), criado em Lojas e equipe. Abrir com troco contado por cédula, sangria e suprimento, pedidos concluídos entram sozinhos, **fechamento cego** com sobra/falta por forma e relatório para imprimir |
-| Impressoras | Catálogo de modelos homologados (Epson, Elgin, Bematech, Daruma, Tanca…) com parâmetros prontos; regras da cozinha por canal, por categoria ou por produto, marketplace "só sem vínculo", via do pedido com troco; layout do cupom por marca com prévia; fila com histórico e reimpressão. Botões 🖨 no pedido. Impressão pelo navegador até o agente do Windows chegar |
+| Impressoras | Catálogo de modelos homologados (Epson, Elgin, Bematech, Daruma, Tanca…) com parâmetros prontos; regras da cozinha por canal, por categoria ou por produto, marketplace "só sem vínculo", via do pedido com troco; layout do cupom por marca com prévia; fila com histórico e reimpressão. Botões 🖨 no pedido. Impressão automática pelo programa **RES Impressão** no computador da impressora (conectar com código no painel; baixa em Impressoras); sem ele, imprime pelo navegador |
 | Resumo | Faturamento, pedidos, ticket médio e cancelados de todas as lojas ou de uma só: hoje, ontem, 7 ou 30 dias, mês ou datas escolhidas. Variação vs período anterior (até a mesma hora), gráfico por dia e tabela por loja com participação |
 
 ## Próximas etapas
@@ -59,7 +59,7 @@ A chave *service_role* nunca vai para o navegador (D-008). Ela só existe no ser
 | Etapa | Escopo |
 |---|---|
 | 3c | Pix online e Mercado Pago no cardápio digital (taxa por bairro no balcão e agendamento já entraram) |
-| 4 | Agente de impressão do Windows e KDS (caixa e regras de impressão já entraram) |
+| 4 | KDS (caixa, impressão e agente do Windows já entraram) |
 | 5 | Entregas e entregador, WhatsApp oficial |
 | 6 | Clientes, cupons, fidelidade |
 | 7 | Salão (mesas, comandas, PDV), estoque, financeiro, fiscal |

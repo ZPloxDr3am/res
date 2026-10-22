@@ -1,5 +1,6 @@
 'use client';
-import { useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   LAYOUT_PADRAO,
@@ -12,6 +13,8 @@ import {
 } from '@res/core';
 import {
   excluirImpressora,
+  gerarCodigoAgente,
+  removerAgente,
   imprimirTeste,
   reimprimir,
   salvarConfigImpressao,
@@ -48,7 +51,10 @@ export type DadosPainelImpressoras = {
     impressora_id: string | null;
     tentativas: number;
   }[];
+  agentes: { id: string; nome: string; versao: string | null; impressoras_windows: string[]; ultimo_sinal: string | null; criado_em: string }[];
 };
+
+export const LINK_AGENTE = 'https://github.com/ZPloxDr3am/res/releases/download/agente-latest/RES-Impressao.exe';
 type Msg = { ok: boolean; texto: string } | null;
 
 const ABAS: { id: Aba; rotulo: string }[] = [
@@ -73,7 +79,7 @@ export function PainelImpressoras({ aba, dados }: { aba: Aba; dados: DadosPainel
         ))}
       </nav>
       {!dados.podeEditar && aba !== 'historico' && <p className="aviso">Você pode ver, mas só quem tem a permissão "Impressoras" muda a configuração.</p>}
-      <Agente impressoras={dados.impressoras} />
+      <Agente dados={dados} />
       {aba === 'impressoras' && <AbaImpressoras dados={dados} />}
       {aba === 'regras' && <AbaRegras dados={dados} />}
       {aba === 'layout' && <AbaLayout dados={dados} />}
@@ -82,20 +88,113 @@ export function PainelImpressoras({ aba, dados }: { aba: Aba; dados: DadosPainel
   );
 }
 
-/** Situação do agente do Windows (próxima entrega). Por enquanto, tudo sai pelo navegador. */
-function Agente({ impressoras }: { impressoras: Impressora[] }) {
-  const online = impressoras.some((i) => agenteOnline(i.ultimo_sinal));
+/** Computadores com o agente RES Impressão: conectar (código), situação e desconectar. */
+function Agente({ dados }: { dados: DadosPainelImpressoras }) {
+  const [codigo, setCodigo] = useState<{ codigo: string; expira_em: string } | null>(null);
+  const [m, setM] = useState<Msg>(null);
+  const [pendente, iniciar] = useTransition();
+  const router = useRouter();
+  const algumOnline = dados.agentes.some((a) => agenteOnline(a.ultimo_sinal));
+  // situação dos computadores: confere a cada 3 s enquanto espera o pareamento, senão a cada 30 s
+  useEffect(() => {
+    const t = setInterval(() => router.refresh(), codigo ? 3000 : 30000);
+    return () => clearInterval(t);
+  }, [codigo, router]);
+  const pareou = codigo && dados.agentes.some((a) => new Date(a.criado_em) > new Date(new Date(codigo.expira_em).getTime() - 600_000));
+
   return (
-    <section className="cartao linha" style={{ alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
-      <div className="grade" style={{ gap: '0.15rem', flex: '1 1 20rem' }}>
-        <strong>RES Impressão · agente do Windows</strong>
-        <span className="dica">
-          {online
-            ? 'Conectado: os pedidos aceitos saem sozinhos nas impressoras.'
-            : 'Ainda não instalado. Enquanto isso, use os botões 🖨 do pedido ou "Imprimir aqui" na fila: o cupom abre na janela de impressão do navegador, já no tamanho do papel.'}
-        </span>
+    <section className="cartao grade" style={{ gap: '0.6rem' }}>
+      <div className="linha" style={{ alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
+        <div className="grade" style={{ gap: '0.15rem', flex: '1 1 20rem' }}>
+          <strong>RES Impressão · impressão automática</strong>
+          <span className="dica">
+            {algumOnline
+              ? 'Ligado: os pedidos aceitos e os testes saem sozinhos, sem abrir a janela de impressão.'
+              : dados.agentes.length
+                ? 'O computador da impressora está desligado ou sem o programa aberto. Enquanto isso, os cupons esperam na fila (ou use "Imprimir aqui").'
+                : 'Instale o programa no computador ligado à impressora para imprimir sozinho, sem a janela do Windows.'}
+          </span>
+        </div>
+        <span className={`pub-status ${algumOnline ? 'aberto' : 'fechado'}`}>{algumOnline ? 'Ligado' : 'Desligado'}</span>
       </div>
-      <span className={`pub-status ${online ? 'aberto' : 'fechado'}`}>{online ? 'Conectado' : 'Sem agente'}</span>
+
+      {dados.agentes.length > 0 && (
+        <ul className="lista" style={{ gap: '0.3rem' }}>
+          {dados.agentes.map((a) => (
+            <li key={a.id} className="linha" style={{ alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+              <span>
+                <span className={`selo ${agenteOnline(a.ultimo_sinal) ? 'selo-presencial' : ''}`}>{agenteOnline(a.ultimo_sinal) ? '● Ligado' : '○ Desligado'}</span>{' '}
+                <strong>{a.nome}</strong>
+                <span className="dica">
+                  {' '}· {a.impressoras_windows.length} impressora(s) no Windows{a.versao ? ` · versão ${a.versao}` : ''}
+                  {a.ultimo_sinal && !agenteOnline(a.ultimo_sinal) ? ` · último sinal ${new Date(a.ultimo_sinal).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}` : ''}
+                </span>
+              </span>
+              {dados.podeEditar && (
+                <button
+                  type="button"
+                  className="mini"
+                  disabled={pendente}
+                  onClick={() =>
+                    iniciar(async () => {
+                      if (!window.confirm(`Desconectar "${a.nome}"? Ele para de imprimir até ser pareado de novo.`)) return;
+                      const r = await salvando(removerAgente(a.id));
+                      setM(r.ok ? { ok: true, texto: 'Computador desconectado.' } : { ok: false, texto: r.erro });
+                    })
+                  }
+                >
+                  Desconectar
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {dados.podeEditar && !codigo && (
+        <div className="linha" style={{ gap: '0.4rem' }}>
+          <button
+            type="button"
+            className="botao-primario"
+            disabled={pendente}
+            onClick={() =>
+              iniciar(async () => {
+                const r = await salvando(gerarCodigoAgente());
+                if (!r.ok) return setM({ ok: false, texto: r.erro });
+                setCodigo({ codigo: r.codigo, expira_em: r.expira_em });
+                setM(null);
+              })
+            }
+          >
+            {dados.agentes.length ? '+ Conectar outro computador' : 'Conectar computador'}
+          </button>
+          <a className="botao" href={LINK_AGENTE}>Baixar RES Impressão (.exe)</a>
+        </div>
+      )}
+
+      {codigo && (
+        <div className="aviso grade" style={{ gap: '0.5rem' }}>
+          {pareou ? (
+            <strong>✓ Computador conectado! Confira abaixo se a impressora aparece como pronta.</strong>
+          ) : (
+            <>
+              <strong>No computador ligado à impressora:</strong>
+              <ol style={{ margin: 0, paddingLeft: '1.2rem' }}>
+                <li>
+                  Baixe e abra o <a href={LINK_AGENTE}>RES-Impressao.exe</a>. Se o Windows avisar "O Windows protegeu o computador", clique em <em>Mais informações → Executar assim mesmo</em>.
+                </li>
+                <li>Quando ele pedir, digite este código:</li>
+              </ol>
+              <span className="codigo-agente">{codigo.codigo}</span>
+              <span className="dica">
+                Vale até {new Date(codigo.expira_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} e só uma vez. Depois disso o programa abre sozinho junto com o Windows.
+              </span>
+            </>
+          )}
+          <button type="button" className="mini" style={{ justifySelf: 'start' }} onClick={() => setCodigo(null)}>{pareou ? 'Fechar' : 'Cancelar'}</button>
+        </div>
+      )}
+      {m && <p className={m.ok ? 'dica' : 'erro'} style={{ margin: 0 }}>{m.texto}</p>}
     </section>
   );
 }
@@ -111,6 +210,8 @@ function AbaImpressoras({ dados }: { dados: DadosPainelImpressoras }) {
   const teste = useImprimir();
   const [m, setM] = useState<Msg>(null);
   const [pendente, iniciar] = useTransition();
+  // impressoras que os computadores conectados enxergam no Windows
+  const windows = [...new Set(dados.agentes.flatMap((a) => a.impressoras_windows))].sort();
 
   return (
     <section className="cartao grade" style={{ gap: '0.6rem' }}>
@@ -118,7 +219,7 @@ function AbaImpressoras({ dados }: { dados: DadosPainelImpressoras }) {
         <h2 style={{ margin: 0, fontSize: '1rem' }}>Impressoras cadastradas</h2>
         {dados.podeEditar && editando !== 'nova' && <button type="button" className="mini botao-primario" onClick={() => setEditando('nova')}>+ Adicionar impressora</button>}
       </div>
-      {editando === 'nova' && <FormImpressora inicial={novoForm()} id={null} fechar={() => setEditando(null)} />}
+      {editando === 'nova' && <FormImpressora inicial={novoForm()} id={null} fechar={() => setEditando(null)} windows={windows} />}
       {dados.impressoras.length === 0 && editando !== 'nova' && <p className="dica" style={{ margin: 0 }}>Nenhuma impressora cadastrada.</p>}
       {dados.impressoras.length > 0 && (
         <div className="tabela-rolagem">
@@ -148,7 +249,7 @@ function AbaImpressoras({ dados }: { dados: DadosPainelImpressoras }) {
       {teste.aviso && <p className={teste.aviso.ok ? 'dica' : 'erro'} style={{ margin: 0 }}>{teste.aviso.texto}</p>}
       {dados.impressoras.filter((i) => i.id === editando).map((i) => (
         <div key={i.id} className="grade" style={{ gap: '0.4rem' }}>
-          <FormImpressora inicial={i} id={i.id} fechar={() => setEditando(null)} />
+          <FormImpressora inicial={i} id={i.id} fechar={() => setEditando(null)} windows={windows} />
           <button
             type="button"
             className="mini erro"
@@ -186,7 +287,7 @@ function AbaImpressoras({ dados }: { dados: DadosPainelImpressoras }) {
   );
 }
 
-function FormImpressora({ inicial, id, fechar }: { inicial: DadosImpressora; id: string | null; fechar: () => void }) {
+function FormImpressora({ inicial, id, fechar, windows }: { inicial: DadosImpressora; id: string | null; fechar: () => void; windows: string[] }) {
   const [d, setD] = useState<DadosImpressora>({ ...inicial, endereco: inicial.endereco ?? '' });
   const [avancado, setAvancado] = useState(false);
   const [m, setM] = useState<Msg>(null);
@@ -236,14 +337,28 @@ function FormImpressora({ inicial, id, fechar }: { inicial: DadosImpressora; id:
         </fieldset>
         <label style={{ flex: '2 1 14rem' }}>
           {d.conexao === 'usb' ? 'Nome da impressora no Windows' : 'IP e porta'}
-          <input
-            type="text"
-            maxLength={120}
-            value={d.endereco}
-            placeholder={d.conexao === 'usb' ? 'Ex.: EPSON TM-T20X Receipt' : '192.168.0.50:9100'}
-            onChange={(e) => setD({ ...d, endereco: e.target.value })}
-          />
-          <span className="dica">{d.conexao === 'usb' ? 'Como aparece em Configurações → Impressoras do Windows. O agente vai listar para você escolher.' : 'Porta padrão das térmicas de rede: 9100.'}</span>
+          {d.conexao === 'usb' && windows.length > 0 ? (
+            <select value={d.endereco} onChange={(e) => setD({ ...d, endereco: e.target.value })}>
+              <option value="">Escolha a impressora do Windows</option>
+              {d.endereco && !windows.includes(d.endereco) && <option value={d.endereco}>{d.endereco} (não encontrada agora)</option>}
+              {windows.map((w) => <option key={w} value={w}>{w}</option>)}
+            </select>
+          ) : (
+            <input
+              type="text"
+              maxLength={120}
+              value={d.endereco}
+              placeholder={d.conexao === 'usb' ? 'Ex.: EPSON TM-T20X-II Receipt' : '192.168.0.50:9100'}
+              onChange={(e) => setD({ ...d, endereco: e.target.value })}
+            />
+          )}
+          <span className="dica">
+            {d.conexao === 'usb'
+              ? windows.length
+                ? 'Lista vinda do computador conectado (RES Impressão).'
+                : 'Exatamente como aparece em Configurações → Impressoras do Windows. Conectando o computador, ela aparece numa lista.'
+              : 'Porta padrão das térmicas de rede: 9100.'}
+          </span>
         </label>
       </div>
       <div className="linha">

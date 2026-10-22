@@ -1,0 +1,55 @@
+name: Agente de impressão (Windows)
+
+# Gera o RES-Impressao.exe (Node "single executable") e publica na release "agente-latest".
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/agente/**'
+      - 'packages/core/src/**'
+      - '.github/workflows/agente.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npm test -w @res/agente
+      - name: Empacotar
+        working-directory: packages/agente
+        shell: pwsh
+        run: |
+          npm run build
+          node --experimental-sea-config sea-config.json
+          node -e "require('fs').copyFileSync(process.execPath, 'dist/RES-Impressao.exe')"
+          $signtool = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\x64\signtool.exe" -ErrorAction SilentlyContinue | Select-Object -Last 1
+          if ($signtool) { & $signtool.FullName remove /s dist/RES-Impressao.exe }
+          npx --yes postject@1.0.0-alpha.6 dist/RES-Impressao.exe NODE_SEA_BLOB dist/sea-prep.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
+      - name: Conferir que o .exe abre
+        working-directory: packages/agente
+        shell: pwsh
+        run: |
+          $env:APPDATA = "$PWD\teste-appdata"
+          $p = Start-Process -FilePath dist\RES-Impressao.exe -ArgumentList '--codigo','XXXX-XXXX','--painel','http://127.0.0.1:9' -PassThru -NoNewWindow -RedirectStandardOutput saida.txt
+          Start-Sleep -Seconds 4
+          if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force }
+          Get-Content saida.txt
+          if (-not (Select-String -Path saida.txt -Pattern 'RES Impress')) { throw 'o .exe não iniciou' }
+      - name: Publicar
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          gh release view agente-latest *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create agente-latest --title "RES Impressão (agente do Windows)" --notes "Baixe RES-Impressao.exe, abra no computador ligado à impressora e digite o código mostrado no painel (Impressoras → Conectar computador)." --latest=false
+          }
+          gh release upload agente-latest packages/agente/dist/RES-Impressao.exe --clobber
