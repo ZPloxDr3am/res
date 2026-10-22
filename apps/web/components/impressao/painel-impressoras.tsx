@@ -557,7 +557,7 @@ const EXEMPLO: CupomDados = {
   cliente: { nome: 'Maria Souza', telefone: '47999990000' },
   endereco: { logradouro: 'Rua 300', numero: '120', complemento: 'ap 402', bairro: 'Centro', referencia: 'perto da praça' },
   observacao: 'Tocar o interfone', pagamento: 'dinheiro', troco_para: 15000,
-  subtotal: 11880, taxa_entrega: 700, desconto: 1000, total: 11580,
+  subtotal: 11880, taxa_entrega: 700, desconto: 1000, total: 11580, qr: 'exemplo',
   itens: [
     { quantidade: 1, nome: 'Pizza Grande', total: 8990, observacao: 'bem assada', opcoes: [
       { grupo: 'Sabores', nome: 'Calabresa', quantidade: 1, fracao: 0.5 },

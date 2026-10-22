@@ -1,10 +1,13 @@
 import { NavPainel } from '@/components/nav-painel';
 import { SeletorLoja } from '@/components/seletor-loja';
+import { redirect } from 'next/navigation';
 import { contextoLoja } from '@/lib/loja';
 import { PedidoFlutuanteProvider } from '@/components/pedido-flutuante';
 
 export default async function PainelLayout({ children }: { children: React.ReactNode }) {
   const ctx = await contextoLoja();
+  // motoboy usa o app do celular, não o painel
+  if (ctx.papel === 'entregador' && ctx.lojas.length >= 1) redirect('/m');
   return (
     <PedidoFlutuanteProvider lojaId={ctx.lojaId}>
     <div className="painel">

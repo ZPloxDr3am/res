@@ -353,3 +353,59 @@ input[type='date'] { font: inherit; color: var(--texto); background: var(--super
 .lista-rolagem { display: grid; gap: 0.3rem; max-height: 22rem; overflow: auto; padding-right: 0.25rem; }
 .papel-cupom { background: #fff; color: #000; padding: 0.75rem 0.6rem 1.5rem; border-radius: 4px; box-shadow: 0 6px 18px rgb(0 0 0 / 0.15); max-width: 100%; overflow-x: auto; background-image: linear-gradient(135deg, transparent 6px, #fff 0), linear-gradient(225deg, transparent 6px, #fff 0); }
 .codigo-agente { font: 700 2rem/1.1 ui-monospace, "Courier New", monospace; letter-spacing: 0.15em; padding: 0.4rem 0.8rem; background: var(--superficie); border: 2px dashed var(--primaria); border-radius: 10px; justify-self: start; user-select: all; }
+
+/* ---------- quadro: motoboy */
+.selo-motoboy { font-size: 0.85rem; padding: 0.2rem 0.5rem; border-radius: 8px; background: color-mix(in srgb, var(--delivery) 14%, transparent); color: var(--texto); justify-self: start; }
+
+/* ---------- app do motoboy (celular, alto contraste, botões grandes) */
+.mb { min-height: 100dvh; background: #0f1513; color: #f2f5f3; font-size: 17px; }
+.mb .dica, .mb-dica { color: #a9b6b0; font-size: 0.9rem; margin: 0; }
+.mb-tela, .mb-vazio { max-width: 560px; margin: 0 auto; padding: 0.75rem 0.85rem 3rem; display: grid; gap: 1rem; }
+.mb-topo { display: flex; justify-content: space-between; align-items: center; }
+.mb-topo > div { display: grid; }
+.mb-marca { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: #f0bd4f; font-weight: 800; }
+.mb-topo strong { font-size: 1.25rem; }
+.mb-sair { background: transparent; color: #a9b6b0; border: 1px solid #33413b; border-radius: 10px; padding: 0.45rem 0.8rem; font: inherit; }
+.mb-ler { width: 100%; min-height: 4.2rem; font: 800 1.3rem/1 system-ui, sans-serif; color: #0b1411; background: #4fb59a; border: 0; border-radius: 16px; display: flex; align-items: center; justify-content: center; gap: 0.6rem; box-shadow: 0 6px 18px rgb(0 0 0 / 0.35); }
+.mb-ler:disabled { opacity: 0.7; }
+.mb-aviso { margin: 0; padding: 0.8rem 1rem; border-radius: 12px; font-weight: 700; font-size: 1.05rem; }
+.mb-aviso.ok { background: #1d4a3d; color: #d9fbe9; }
+.mb-aviso.erro { background: #5a1d1a; color: #ffe1de; }
+.mb-titulo { margin: 0; font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.04em; color: #c6d2cc; display: flex; align-items: center; gap: 0.5rem; }
+.mb-titulo span { background: #33413b; border-radius: 999px; padding: 0.05rem 0.55rem; font-size: 0.9rem; color: #fff; }
+.mb-entrega { background: #18211e; border: 1px solid #2b3833; border-radius: 18px; padding: 1rem; display: grid; gap: 0.75rem; }
+.mb-entrega-topo { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.mb-numero { font-size: 2rem; font-weight: 900; }
+.mb-cobrar { display: grid; gap: 0.15rem; padding: 0.85rem 1rem; border-radius: 14px; }
+.mb-cobrar strong { font-size: 1.6rem; font-weight: 900; letter-spacing: 0.01em; }
+.mb-cobrar span { font-size: 1rem; font-weight: 600; }
+.mb-cobrar.sim { background: #c0392b; color: #fff; }
+.mb-cobrar.nao { background: #1e8e5a; color: #fff; }
+.mb-rotulo { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: #8fa199; }
+.mb-cliente, .mb-endereco { display: grid; gap: 0.1rem; }
+.mb-cliente strong { font-size: 1.2rem; }
+.mb-endereco strong { font-size: 1.45rem; line-height: 1.2; }
+.mb-bairro { font-size: 1.15rem; font-weight: 800; color: #f0bd4f; }
+.mb-ref { color: #d5dfda; }
+.mb-obs { margin: 0; padding: 0.6rem 0.8rem; border-radius: 10px; background: #3b3215; color: #ffe9a8; font-weight: 600; }
+.mb-botoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 0.5rem; }
+.mb-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 3.2rem; padding: 0.5rem 0.8rem; border-radius: 12px; border: 1px solid #3b4a44; background: #222d29; color: #f2f5f3; font: 700 1rem/1.1 system-ui, sans-serif; text-decoration: none; text-align: center; }
+.mb-btn.maps { grid-column: 1 / -1; background: #2a6fdb; border-color: #2a6fdb; font-size: 1.15rem; min-height: 3.6rem; }
+.mb-entregue { width: 100%; min-height: 3.6rem; border: 0; border-radius: 14px; background: #1e8e5a; color: #fff; font: 800 1.2rem/1 system-ui, sans-serif; }
+.mb-confirma { margin: 0; font-weight: 800; font-size: 1.1rem; text-align: center; }
+.mb-itens summary { color: #a9b6b0; }
+.mb-itens ul { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.mb-prontos { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.mb-prontos li { display: grid; grid-template-columns: auto 1fr auto; gap: 0.1rem 0.6rem; align-items: center; background: #18211e; border: 1px solid #2b3833; border-radius: 12px; padding: 0.6rem 0.8rem; }
+.mb-prontos li .mb-dica { grid-column: 1 / -1; }
+.mb-etq { font-size: 0.8rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 999px; background: #33413b; }
+.mb-etq.pronto { background: #f0bd4f; color: #241c05; }
+.mb-hoje { display: grid; gap: 0.5rem; }
+.mb-hoje-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.mb-hoje-grade div { background: #18211e; border: 1px solid #2b3833; border-radius: 12px; padding: 0.6rem 0.75rem; display: grid; }
+.mb-hoje-grade span { font-size: 0.8rem; color: #a9b6b0; }
+.mb-hoje-grade strong { font-size: 1.25rem; }
+.mb-leitor { display: grid; gap: 0.6rem; }
+.mb-video { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 16px; background: #000; border: 3px solid #4fb59a; }
+.mb-manual { display: flex; gap: 0.4rem; }
+.mb-manual input { flex: 1; min-height: 3rem; border-radius: 10px; border: 1px solid #3b4a44; background: #18211e; color: #fff; padding: 0 0.7rem; font: inherit; }

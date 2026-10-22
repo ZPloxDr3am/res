@@ -1,7 +1,7 @@
 import { entrar, cadastrar } from './actions';
 
-export default async function Login({ searchParams }: { searchParams: Promise<{ erro?: string; aviso?: string }> }) {
-  const { erro, aviso } = await searchParams;
+export default async function Login({ searchParams }: { searchParams: Promise<{ erro?: string; aviso?: string; voltar?: string }> }) {
+  const { erro, aviso, voltar } = await searchParams;
   return (
     <main className="conteudo" style={{ maxWidth: 420, marginTop: '8vh' }}>
       <div className="cartao grade">
@@ -12,6 +12,8 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
         {erro && <p className="erro" role="alert">{erro}</p>}
         {aviso && <p className="dica" role="status">{aviso}</p>}
         <form className="grade">
+          {voltar && <input type="hidden" name="voltar" value={voltar} />}
+          {voltar?.startsWith('/m') && <p className="aviso" style={{ margin: 0 }}>Motoboy: entre com seu usuário e senha para levar o pedido.</p>}
           <label>
             E-mail ou usuário
             <input type="text" name="email" required autoComplete="username" autoCapitalize="none" spellCheck={false} />

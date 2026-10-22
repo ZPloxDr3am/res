@@ -24,6 +24,8 @@ export interface CupomDados {
   taxa_entrega: Centavos;
   desconto: Centavos;
   total: Centavos;
+  /** código do QR do motoboy (só pedido de entrega) */
+  qr?: string | null;
   itens: { quantidade: number; nome: string; total: Centavos; observacao: string | null; opcoes: { grupo: string; nome: string; quantidade: number; fracao: number | null }[] }[];
 }
 
@@ -57,7 +59,11 @@ export const LAYOUT_PADRAO: Record<'cozinha' | 'pedido', Required<LayoutCupom>> 
 };
 
 /** Uma linha já cortada na largura do papel. `grande` = dupla altura e largura (ocupa metade das colunas). */
-export type Linha = { t: string; negrito?: boolean; grande?: boolean; centro?: boolean } | { sep: '-' | '=' };
+export type Linha = { t: string; negrito?: boolean; grande?: boolean; centro?: boolean } | { sep: '-' | '=' } | { qr: string };
+
+/** Endereço que o QR da comanda abre: o app do motoboy despacha o pedido com quem escaneou. */
+export const URL_PAINEL = 'https://res-iqzs.vercel.app';
+export const urlQrMotoboy = (token: string) => `${URL_PAINEL}/m/d/${token}`;
 
 const FRACAO: Record<string, string> = { '0.5': '1/2', '0.3333': '1/3', '0.25': '1/4', '0.6667': '2/3', '0.75': '3/4' };
 const fracaoTexto = (f: number | null) => (f == null || f >= 1 ? '' : `${FRACAO[String(Number(f))] ?? `${Math.round(f * 100)}%`} `);
@@ -188,6 +194,12 @@ export function montarCupom(tipo: TipoCupom, dados: CupomDados | CupomTeste, col
     }
     L.push({ sep: '-' });
   }
+  if (tipo === 'pedido' && d.qr && d.tipo_pedido === 'entrega') {
+    add('MOTOBOY: ESCANEIE PARA SAIR', { negrito: true, centro: true });
+    L.push({ qr: urlQrMotoboy(d.qr) });
+    add(`Pedido #${d.numero}`, { centro: true });
+    L.push({ sep: '-' });
+  }
   if (lay.rodape) add(lay.rodape, { centro: true });
   return L;
 }
@@ -197,6 +209,7 @@ export function cupomTexto(linhas: Linha[], colunas: number): string {
   return linhas
     .map((l) => {
       if ('sep' in l) return l.sep.repeat(colunas);
+      if ('qr' in l) return '[QR]'.padStart(Math.floor(colunas / 2) + 2);
       const larg = l.grande ? Math.floor(colunas / 2) : colunas;
       if (!l.centro) return l.t;
       const pad = Math.max(0, Math.floor((larg - l.t.length) / 2));

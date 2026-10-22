@@ -20,6 +20,7 @@ export default async function Lojas() {
   const usuarioDe = new Map((logins ?? []).map((u) => [u.user_id as string, u.usuario as string]));
   const h = await headers();
   const origem = `${h.get('x-forwarded-proto') ?? 'https'}://${h.get('x-forwarded-host') ?? h.get('host')}`;
+  const { data: cidades } = await supabase.from('lojas').select('id, cidade').in('id', ids);
   const { data: titularDe } = await supabase.from('contas_titulares').select('conta_id').eq('user_id', titular.data.user?.id ?? '');
 
   const lojas: LojaInfo[] = ctx.lojas.map((l) => ({
@@ -27,6 +28,7 @@ export default async function Lojas() {
     nome: l.nome,
     contaId: l.contaId,
     atual: l.id === ctx.lojaId,
+    cidade: (cidades ?? []).find((c) => c.id === l.id)?.cidade ?? null,
     marcas: (marcas.data ?? []).filter((m) => m.loja_id === l.id).map((m) => ({ id: m.id, nome: m.nome, link: `${origem}/c/${m.slug}` })),
     equipe: (membros.data ?? []).filter((m) => m.loja_id === l.id).map((m) => ({ id: m.id, userId: m.user_id, usuario: usuarioDe.get(m.user_id) ?? null, nome: m.nome, papel: m.papel, ativo: m.ativo, eu: m.user_id === titular.data.user?.id })),
     convites: (convites.data ?? []).filter((c) => c.loja_id === l.id).map((c) => ({ id: c.id, email: c.email, nome: c.nome, papel: c.papel })),
