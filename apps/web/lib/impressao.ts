@@ -32,12 +32,17 @@ export function cupomHtml(linhas: Linha[], colunas: number): string {
     .join('');
 }
 
+// Na tela (prévia): tamanho fixo. Na impressão pelo navegador o cupom ocupa a largura útil do papel
+// com letra grossa (as térmicas imprimem fraco as fontes finas como Courier).
 export const CSS_CUPOM = `
-.cupom{font-family:"Courier New",ui-monospace,monospace;font-size:12px;line-height:1.25;color:#000;background:#fff;white-space:pre;}
-.cupom .b{font-weight:700}
-.cupom .g{font-size:24px;line-height:1.15}
+.cupom{font-family:"Lucida Console",Consolas,"Courier New",ui-monospace,monospace;font-size:12px;line-height:1.25;color:#000;background:#fff;white-space:pre;font-weight:600}
+.cupom .b{font-weight:800}
+.cupom .g{font-size:2em;line-height:1.1}
 .cupom .c{text-align:center}
 `;
+
+/** Colunas usadas na impressão pelo navegador: menos colunas = letra maior no mesmo papel. */
+export const colunasNavegador = (colunas: number) => (colunas <= 32 ? 32 : Math.min(colunas, 40));
 
 export function linhasDoCupom(c: Pick<CupomFila, 'tipo' | 'conteudo' | 'layout' | 'colunas' | 'motivo'>): Linha[] {
   return montarCupom(c.tipo, c.conteudo, c.colunas, c.layout ?? {}, c.motivo === 'reimpressao');
@@ -51,8 +56,14 @@ export function imprimirNoNavegador(cupons: CupomFila[]): Promise<void> {
   return new Promise((resolve) => {
     if (cupons.length === 0) return resolve();
     const largura = Math.max(...cupons.map((c) => c.colunas)) <= 32 ? 58 : 80;
+    const util = largura === 58 ? 48 : 72; // mm imprimíveis
     const corpo = cupons
-      .map((c) => `<div class="cupom" style="width:${c.colunas}ch">${cupomHtml(linhasDoCupom(c), c.colunas)}</div>`)
+      .map((c) => {
+        const cols = colunasNavegador(c.colunas);
+        // letra do tamanho que enche a largura do papel (caractere monoespaçado ≈ 0,6 da altura)
+        const fonte = (util / (cols * 0.6)).toFixed(2);
+        return `<div class="cupom" style="width:${util}mm;font-size:${fonte}mm">${cupomHtml(linhasDoCupom({ ...c, colunas: cols }), cols)}</div>`;
+      })
       .join('<div style="page-break-after:always"></div>');
     const iframe = document.createElement('iframe');
     iframe.setAttribute('aria-hidden', 'true');
@@ -62,7 +73,7 @@ export function imprimirNoNavegador(cupons: CupomFila[]): Promise<void> {
     doc.open();
     doc.write(`<!doctype html><html><head><meta charset="utf-8"><title>Cupom</title><style>
 @page{size:${largura}mm auto;margin:2mm}
-html,body{margin:0;padding:0;background:#fff}
+html,body{margin:0;padding:0;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 ${CSS_CUPOM}
 </style></head><body>${corpo}</body></html>`);
     doc.close();
