@@ -58,6 +58,13 @@ select from pg_temp.esperar_erro(format($q$select public.salvar_impressora('%s',
 -- usuário de caixa (funcionário) sem a permissão "impressoras"
 select public.registrar_usuario_caixa(pg_temp.id('loja'), '00000000-0000-0000-0000-0000000000ab', 'joca', 'Joca');
 reset role;
+-- 0017: a 1ª impressora já vira a padrão da loja ("uma impressora só"); as seguintes não trocam a padrão
+do $$ begin
+  if (select (modo_destino, impressora_padrao) from public.impressao_config where loja_id = pg_temp.id('loja')) <> ('unica'::text, pg_temp.id('forno')) then
+    raise exception 'config automática: %', (select (modo_destino, impressora_padrao) from public.impressao_config where loja_id = pg_temp.id('loja'));
+  end if;
+end $$;
+delete from public.impressao_config where loja_id = pg_temp.id('loja');  -- daqui em diante: loja sem regras
 
 -- Sem configuração: aceite não imprime nada sozinho.
 select from pg_temp.como('00000000-0000-0000-0000-0000000000aa');
