@@ -12,7 +12,7 @@ export default async function Impressoras({ searchParams }: { searchParams: Prom
   const ctx = await contextoLoja();
   const aba = (ABAS.includes((await searchParams).aba as Aba) ? (await searchParams).aba : 'impressoras') as Aba;
   const supabase = await criarClienteServidor();
-  const [pode, imps, cfg, destinos, layouts, setores, produtos, hist] = await Promise.all([
+  const [pode, imps, cfg, destinos, layouts, setores, produtos, hist, agentes] = await Promise.all([
     supabase.rpc('posso', { p_loja: ctx.lojaId, p_recurso: 'impressoras' }),
     supabase.from('impressoras').select('*').eq('loja_id', ctx.lojaId).order('nome'),
     supabase.from('impressao_config').select('*').eq('loja_id', ctx.lojaId).maybeSingle(),
@@ -26,6 +26,7 @@ export default async function Impressoras({ searchParams }: { searchParams: Prom
       .eq('loja_id', ctx.lojaId)
       .order('criado_em', { ascending: false })
       .limit(100),
+    supabase.from('agentes_loja').select('id, nome, versao, impressoras_windows, ultimo_sinal, criado_em').eq('loja_id', ctx.lojaId).order('criado_em'),
   ]);
 
   const c = cfg.data;
@@ -51,6 +52,7 @@ export default async function Impressoras({ searchParams }: { searchParams: Prom
     setores: (setores.data ?? []) as DadosPainelImpressoras['setores'],
     produtos: (produtos.data ?? []) as DadosPainelImpressoras['produtos'],
     historico: (hist.data ?? []) as DadosPainelImpressoras['historico'],
+    agentes: (agentes.data ?? []) as DadosPainelImpressoras['agentes'],
   };
 
   return (

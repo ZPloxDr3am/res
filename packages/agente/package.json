@@ -1,0 +1,17 @@
+{
+  "name": "@res/agente",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RES Impressão: agente do Windows que imprime os cupons da fila direto na impressora térmica.",
+  "scripts": {
+    "test": "tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "esbuild src/main.ts --bundle --platform=node --target=node22 --format=cjs --outfile=dist/agente.cjs --legal-comments=none"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "esbuild": "0.24.0",
+    "tsx": "4.19.2",
+    "typescript": "5.6.3"
+  }
+}

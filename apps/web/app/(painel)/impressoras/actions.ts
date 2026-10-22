@@ -129,3 +129,21 @@ export async function marcarImpressao(ids: string[], status: 'impresso' | 'erro'
   revalidatePath('/impressoras');
   return { ok: true };
 }
+
+/** Código de uso único (10 min) para conectar o computador da impressora (agente). */
+export async function gerarCodigoAgente(): Promise<{ ok: true; codigo: string; expira_em: string } | { ok: false; erro: string }> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('gerar_codigo_agente', { p_loja: ctx.lojaId });
+  if (error) return { ok: false, erro: msg(error) };
+  const r = data as { codigo: string; expira_em: string };
+  return { ok: true, codigo: r.codigo, expira_em: r.expira_em };
+}
+
+export async function removerAgente(id: string): Promise<R> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('remover_agente', { p_agente: id });
+  if (error) return { ok: false, erro: msg(error) };
+  revalidatePath('/impressoras');
+  return { ok: true };
+}
