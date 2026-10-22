@@ -52,6 +52,8 @@ export type DadosPainelImpressoras = {
     tentativas: number;
   }[];
   agentes: { id: string; nome: string; versao: string | null; impressoras_windows: string[]; ultimo_sinal: string | null; criado_em: string }[];
+  /** lojas do grupo (mesma conta) que compartilham impressoras e computadores */
+  lojasGrupo: string[];
 };
 
 export const LINK_AGENTE = 'https://github.com/ZPloxDr3am/res/releases/download/agente-latest/RES-Impressao.exe';
@@ -107,6 +109,7 @@ function Agente({ dados }: { dados: DadosPainelImpressoras }) {
       <div className="linha" style={{ alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
         <div className="grade" style={{ gap: '0.15rem', flex: '1 1 20rem' }}>
           <strong>RES Impressão · impressão automática</strong>
+          {dados.lojasGrupo.length > 1 && <span className="dica">Um computador atende os pedidos de todas as lojas do grupo ({dados.lojasGrupo.join(', ')}).</span>}
           <span className="dica">
             {algumOnline
               ? 'Ligado: os pedidos aceitos e os testes saem sozinhos, sem abrir a janela de impressão.'
@@ -216,7 +219,12 @@ function AbaImpressoras({ dados }: { dados: DadosPainelImpressoras }) {
   return (
     <section className="cartao grade" style={{ gap: '0.6rem' }}>
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 style={{ margin: 0, fontSize: '1rem' }}>Impressoras cadastradas</h2>
+        <div className="grade" style={{ gap: '0.1rem' }}>
+          <h2 style={{ margin: 0, fontSize: '1rem' }}>Impressoras cadastradas</h2>
+          {dados.lojasGrupo.length > 1 && (
+            <span className="dica">Valem para as {dados.lojasGrupo.length} lojas do grupo: {dados.lojasGrupo.join(', ')}. Cadastrou em uma, já funciona em todas.</span>
+          )}
+        </div>
         {dados.podeEditar && editando !== 'nova' && <button type="button" className="mini botao-primario" onClick={() => setEditando('nova')}>+ Adicionar impressora</button>}
       </div>
       {editando === 'nova' && <FormImpressora inicial={novoForm()} id={null} fechar={() => setEditando(null)} windows={windows} />}
