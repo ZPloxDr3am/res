@@ -47,6 +47,13 @@ test('via do pedido: endereço, totais e troco a levar', () => {
   for (const l of linhas) if ('t' in l) assert.ok(l.t.length <= (l.grande ? 16 : 32), `linha longa: "${l.t}"`);
 });
 
+test('via do pedido de entrega leva o QR do motoboy', () => {
+  const comQr = montarCupom('pedido', { ...pedido, qr: 'abc123' }, 48);
+  assert.ok(comQr.some((l) => 'qr' in l && l.qr === 'https://res-iqzs.vercel.app/m/d/abc123'));
+  assert.ok(!montarCupom('cozinha', { ...pedido, qr: 'abc123' }, 48).some((l) => 'qr' in l), 'cozinha não leva QR');
+  assert.ok(!montarCupom('pedido', { ...pedido, tipo_pedido: 'retirada', qr: 'abc123' }, 48).some((l) => 'qr' in l));
+});
+
 test('layout: grupos, sem destaque e rodapé', () => {
   const txt = cupomTexto(montarCupom('cozinha', pedido, 48, { fonte: 'normal', mostrar_grupos: true, destacar_obs: false, rodape: 'Bom trabalho' }), 48);
   assert.match(txt, /- Sabores: 1\/2 Calabresa, 1\/2 Frango/);

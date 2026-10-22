@@ -23,6 +23,11 @@ jobs:
           node-version: 22
       - run: npm install --no-audit --no-fund
       - run: npm test -w @res/agente
+      - name: Versão do código = versão do package.json
+        shell: pwsh
+        run: |
+          $v = (Get-Content packages/agente/package.json | ConvertFrom-Json).version
+          if (-not (Select-String -Path packages/agente/src/main.ts -SimpleMatch "const VERSAO = '$v'")) { throw "VERSAO no main.ts diferente de $v" }
       - name: Empacotar
         working-directory: packages/agente
         shell: pwsh
@@ -52,4 +57,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             gh release create agente-latest --title "RES Impressão (agente do Windows)" --notes "Baixe RES-Impressao.exe, abra no computador ligado à impressora e digite o código mostrado no painel (Impressoras → Conectar computador)." --latest=false
           }
+          $v = (Get-Content packages/agente/package.json | ConvertFrom-Json).version
+          Set-Content -Path versao.txt -Value $v -NoNewline -Encoding ascii
+          # primeiro o .exe, depois a versão: o agente só vê a versão nova quando o .exe já está lá
           gh release upload agente-latest packages/agente/dist/RES-Impressao.exe --clobber
+          gh release upload agente-latest versao.txt --clobber

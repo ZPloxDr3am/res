@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { codificar } from '../src/codepage.js';
-import { gerarEscPos } from '../src/escpos.js';
+import { gerarEscPos, qrEscPos } from '../src/escpos.js';
 import { montarCupom } from '../../core/src/cupom.js';
 
 const temSeq = (b: Uint8Array, seq: number[]) => {
@@ -40,4 +40,13 @@ test('ESC/POS: início, página, estilos, avanço, corte e gaveta', () => {
 test('sem corte nem gaveta e espaço padrão', () => {
   const b = gerarEscPos([{ t: 'oi' }], { protocolo: 'CustomPos', colunas: 32, pagina_codigo: '850', espaco_linhas: 0, pular_linhas: 2, corte: false, gaveta: false });
   assert.deepEqual([...b], [0x1b, 0x40, 0x1b, 0x74, 2, 0x1b, 0x32, 0x6f, 0x69, 0x0a, 0x1b, 0x64, 2]);
+});
+
+test('QR nativo na via do pedido', () => {
+  const url = 'https://res-iqzs.vercel.app/m/d/abc';
+  const q = qrEscPos(url, 7);
+  assert.deepEqual(q.slice(0, 9), [0x1d, 0x28, 0x6b, 0x04, 0x00, 0x31, 0x41, 0x32, 0x00]);
+  assert.ok(temSeq(Uint8Array.from(q), [0x1d, 0x28, 0x6b, url.length + 3, 0x00, 0x31, 0x50, 0x30]));
+  const b = gerarEscPos([{ t: 'x' }, { qr: url }], { protocolo: 'EscPosEpson', colunas: 48, pagina_codigo: '860', espaco_linhas: 0, pular_linhas: 3, corte: true, gaveta: false });
+  assert.ok(temSeq(b, [0x1b, 0x61, 1, ...q]), 'centralizado');
 });

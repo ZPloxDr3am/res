@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PUBLICAS = ['/login', '/auth', '/c/', '/api/agente/']; // /api/agente: pareamento do agente de impressão // /c/: cardápio digital do cliente (sem login)
+const PUBLICAS = ['/login', '/auth', '/c/', '/api/agente/', '/m/manifest.webmanifest']; // /api/agente: pareamento do agente de impressão // /c/: cardápio digital do cliente (sem login)
 
 export async function middleware(request: NextRequest) {
   let resposta = NextResponse.next({ request });
@@ -27,6 +27,9 @@ export async function middleware(request: NextRequest) {
   if (!user && !publica) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
+    url.search = '';
+    // depois de entrar, volta para onde ia (ex.: QR da comanda → app do motoboy)
+    if (request.nextUrl.pathname.startsWith('/m')) url.searchParams.set('voltar', request.nextUrl.pathname);
     return NextResponse.redirect(url);
   }
   return resposta;

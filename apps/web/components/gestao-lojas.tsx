@@ -1,6 +1,6 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { cancelarConvite, convidar, criarCardapio, criarLoja, criarUsuarioCaixa, definirAtivo, trocarLoja, trocarSenhaUsuario } from '@/app/(painel)/lojas/actions';
+import { cancelarConvite, convidar, definirCidade, criarCardapio, criarLoja, criarUsuarioCaixa, definirAtivo, trocarLoja, trocarSenhaUsuario } from '@/app/(painel)/lojas/actions';
 import { salvando } from '@/components/tempo-real';
 
 export type LojaInfo = {
@@ -8,6 +8,7 @@ export type LojaInfo = {
   nome: string;
   contaId: string | null;
   atual: boolean;
+  cidade: string | null;
   marcas: { id: string; nome: string; link: string }[];
   equipe: { id: string; userId: string; usuario: string | null; nome: string; papel: string; ativo: boolean; eu: boolean }[];
   convites: { id: string; email: string; nome: string; papel: string }[];
@@ -99,6 +100,18 @@ function CartaoLoja({ loja, podeCardapio }: { loja: LojaInfo; podeCardapio: bool
         )}
       </div>
 
+      <form
+        className="linha"
+        style={{ alignItems: 'end', gap: '0.4rem' }}
+        action={(fd) => fazer(() => definirCidade(loja.id, String(fd.get('cidade') ?? '')), 'Cidade salva.')}
+      >
+        <label style={{ flex: '1 1 12rem' }}>
+          Cidade <span className="dica">(para o Google Maps do motoboy)</span>
+          <input type="text" name="cidade" maxLength={80} defaultValue={loja.cidade ?? ''} placeholder="Ex.: Itapema - SC" />
+        </label>
+        <button className="mini" disabled={pendente}>Salvar</button>
+      </form>
+
       <div className="grade" style={{ gap: '0.35rem' }}>
         <h3>Cardápios (marcas)</h3>
         {loja.marcas.map((m) => (
@@ -174,7 +187,7 @@ function CartaoLoja({ loja, podeCardapio }: { loja: LojaInfo; podeCardapio: bool
         </ul>
         {abrir === null && (
           <div className="linha" style={{ gap: '0.4rem' }}>
-            <button type="button" className="mini" onClick={() => { setAbrir('usuario'); setR(null); }}>+ Usuário de caixa (usuário e senha)</button>
+            <button type="button" className="mini" onClick={() => { setAbrir('usuario'); setR(null); }}>+ Usuário com senha (caixa, motoboy…)</button>
             <button type="button" className="mini" onClick={() => { setAbrir('convite'); setR(null); }}>+ Convidar por e-mail</button>
           </div>
         )}
@@ -193,12 +206,12 @@ function CartaoLoja({ loja, podeCardapio }: { loja: LojaInfo; podeCardapio: bool
                   <option value="funcionario">Funcionário (caixa)</option>
                   <option value="gerente">Gerente</option>
                   <option value="garcom">Garçom</option>
-                  <option value="entregador">Entregador</option>
+                  <option value="entregador">Motoboy (app de entregas)</option>
                 </select>
               </label>
             </div>
             <p className="dica" style={{ margin: 0 }}>
-              Não precisa de e-mail: a pessoa entra digitando só o usuário e a senha. Usuário com letras sem acento, números, ponto ou hífen.
+              Motoboy entra pelo celular e cai direto no app de entregas (lê o QR da comanda). Não precisa de e-mail: a pessoa entra digitando só o usuário e a senha. Usuário com letras sem acento, números, ponto ou hífen.
               Depois, na tela <strong>Caixa</strong>, defina qual caixa ela opera.
             </p>
             <div className="linha"><button className="botao-primario" disabled={pendente}>{pendente ? 'Criando…' : 'Criar usuário'}</button><button type="button" onClick={() => setAbrir(null)}>Cancelar</button></div>

@@ -275,6 +275,9 @@ function CartaoPedido({ pedido: p, tempoPreparo, fuso, marca }: { pedido: Pedido
         {p.cliente_telefone && <span className="dica"> · {telefone(p.cliente_telefone)}</span>}
         {marca && <span className="dica"> · {marca}</span>}
       </div>
+      {p.entregador_nome && (p.status === 'em_entrega' || p.status === 'concluido') && (
+        <div className="selo-motoboy">🛵 {p.status === 'em_entrega' ? 'Saiu com' : 'Entregue por'} <strong>{p.entregador_nome}</strong>{p.saiu_em ? ` · ${new Date(p.saiu_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : ''}</div>
+      )}
       {p.endereco && (
         <div className="dica">
           {p.endereco.logradouro}

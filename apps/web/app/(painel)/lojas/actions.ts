@@ -141,3 +141,15 @@ export async function trocarSenhaUsuario(lojaId: string, userId: string, senha: 
   if (r.error) return { ok: false, erro: r.error.message };
   return { ok: true };
 }
+
+/** Cidade da loja: completa o endereço que o motoboy abre no Google Maps. */
+export async function definirCidade(lojaId: string, cidade: string): Promise<R> {
+  const c = cidade.trim();
+  if (c && (c.length < 2 || c.length > 80)) return { ok: false, erro: 'Cidade com 2 a 80 letras (ex.: Itapema - SC).' };
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.from('lojas').update({ cidade: c || null }).eq('id', lojaId).select('id');
+  if (error) return { ok: false, erro: error.message };
+  if (!data?.length) return { ok: false, erro: 'Só quem cuida dos dados da empresa pode mudar a cidade.' };
+  revalidatePath('/lojas');
+  return { ok: true };
+}

@@ -21,10 +21,13 @@ export const agenteOnline = (ultimoSinal: string | null | undefined) => !!ultimo
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-/** Linhas do cupom → HTML monoespaçado na largura do papel. */
-export function cupomHtml(linhas: Linha[], colunas: number): string {
+/** Linhas do cupom → HTML monoespaçado na largura do papel. `qrs`: SVG de cada QR (sem ele, um quadro marca o lugar). */
+export function cupomHtml(linhas: Linha[], colunas: number, qrs: Record<string, string> = {}): string {
   return linhas
     .map((l) => {
+      if ('qr' in l) {
+        return `<div class="c qr">${qrs[l.qr] ?? '<span class="qr-lugar">QR do motoboy</span>'}</div>`;
+      }
       if ('sep' in l) return `<div class="l">${l.sep.repeat(colunas)}</div>`;
       const cls = ['l', l.negrito ? 'b' : '', l.grande ? 'g' : '', l.centro ? 'c' : ''].filter(Boolean).join(' ');
       return `<div class="${cls}">${esc(l.t) || '&nbsp;'}</div>`;
@@ -39,6 +42,9 @@ export const CSS_CUPOM = `
 .cupom .b{font-weight:800}
 .cupom .g{font-size:2em;line-height:1.1}
 .cupom .c{text-align:center}
+.cupom .qr{padding:1.5mm 0;white-space:normal}
+.cupom .qr svg{width:34mm;height:34mm;display:inline-block}
+.cupom .qr-lugar{display:inline-grid;place-items:center;width:30mm;height:30mm;border:2px dashed #000;font-size:10px}
 `;
 
 /** Colunas usadas na impressão pelo navegador: menos colunas = letra maior no mesmo papel. */
@@ -52,7 +58,19 @@ export function linhasDoCupom(c: Pick<CupomFila, 'tipo' | 'conteudo' | 'layout' 
  * Abre a janela de impressão do navegador com os cupons (um por página).
  * Resolve quando a janela fecha. Não dá para saber se a pessoa cancelou: tratamos como impresso.
  */
-export function imprimirNoNavegador(cupons: CupomFila[]): Promise<void> {
+/** SVG de cada QR que aparece nos cupons. */
+async function qrsDosCupons(cupons: CupomFila[]): Promise<Record<string, string>> {
+  const urls = new Set<string>();
+  for (const c of cupons) for (const l of linhasDoCupom({ ...c, colunas: colunasNavegador(c.colunas) })) if ('qr' in l) urls.add(l.qr);
+  if (urls.size === 0) return {};
+  const QR = await import('qrcode');
+  const out: Record<string, string> = {};
+  for (const u of urls) out[u] = await QR.toString(u, { type: 'svg', margin: 0, errorCorrectionLevel: 'M' });
+  return out;
+}
+
+export async function imprimirNoNavegador(cupons: CupomFila[]): Promise<void> {
+  const qrs = await qrsDosCupons(cupons);
   return new Promise((resolve) => {
     if (cupons.length === 0) return resolve();
     const largura = Math.max(...cupons.map((c) => c.colunas)) <= 32 ? 58 : 80;
@@ -62,7 +80,7 @@ export function imprimirNoNavegador(cupons: CupomFila[]): Promise<void> {
         const cols = colunasNavegador(c.colunas);
         // letra do tamanho que enche a largura do papel (caractere monoespaçado ≈ 0,6 da altura)
         const fonte = (util / (cols * 0.6)).toFixed(2);
-        return `<div class="cupom" style="width:${util}mm;font-size:${fonte}mm">${cupomHtml(linhasDoCupom({ ...c, colunas: cols }), cols)}</div>`;
+        return `<div class="cupom" style="width:${util}mm;font-size:${fonte}mm">${cupomHtml(linhasDoCupom({ ...c, colunas: cols }), cols, qrs)}</div>`;
       })
       .join('<div style="page-break-after:always"></div>');
     const iframe = document.createElement('iframe');

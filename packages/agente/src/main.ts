@@ -3,7 +3,7 @@
 // se instala em %LOCALAPPDATA% e liga junto com o Windows. Depois fica buscando os cupons da fila
 // a cada poucos segundos e imprime direto na térmica (USB pelo spooler em modo RAW, ou rede TCP 9100).
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync, statSync, renameSync } from 'node:fs';
-import { execFile } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import { hostname } from 'node:os';
 import { join, dirname } from 'node:path';
 import { createInterface } from 'node:readline/promises';
@@ -12,7 +12,8 @@ import { gerarEscPos } from './escpos.js';
 import type { Pagina } from './codepage.js';
 import { imprimirRede, imprimirWindows, listarImpressorasWindows, testarRede } from './saida.js';
 
-const VERSAO = '1.0.0';
+const VERSAO = '1.1.0'; // igual ao package.json (o GitHub publica em versao.txt)
+const URL_RELEASE = 'https://github.com/ZPloxDr3am/res/releases/download/agente-latest';
 const PAINEL_PADRAO = 'https://res-iqzs.vercel.app';
 const INTERVALO_MS = 3000;
 
@@ -160,6 +161,39 @@ async function parear(c: Config): Promise<Config> {
   }
 }
 
+// ---------------------------------------------------------------- atualização automática
+const maisNova = (a: string, b: string) => {
+  const pa = a.split('.').map(Number);
+  const pb = b.split('.').map(Number);
+  for (let i = 0; i < 3; i++) if ((pa[i] ?? 0) !== (pb[i] ?? 0)) return (pa[i] ?? 0) > (pb[i] ?? 0);
+  return false;
+};
+
+/** Baixa a versão nova publicada no GitHub, troca o .exe instalado e reabre. */
+async function atualizarSePrecisar() {
+  const exe = process.execPath;
+  if (!/\.exe$/i.test(exe) || /node\.exe$/i.test(exe)) return;
+  try {
+    const v = (await fetch(`${URL_RELEASE}/versao.txt`, { signal: AbortSignal.timeout(15_000) }).then((r) => (r.ok ? r.text() : ''))).trim();
+    if (!/^\d+\.\d+\.\d+$/.test(v) || !maisNova(v, VERSAO)) return;
+    log(`Nova versão ${v} disponível. Baixando…`);
+    const r = await fetch(`${URL_RELEASE}/RES-Impressao.exe`, { signal: AbortSignal.timeout(300_000) });
+    const dados = Buffer.from(await r.arrayBuffer());
+    if (!r.ok || dados.length < 10_000_000) throw new Error(`download incompleto (${dados.length} bytes)`);
+    mkdirSync(DIR_PROGRAMA, { recursive: true });
+    const novo = join(DIR_PROGRAMA, 'RES-Impressao-novo.exe');
+    const destino = join(DIR_PROGRAMA, 'RES-Impressao.exe');
+    writeFileSync(novo, dados);
+    const bat = join(DIR, 'atualizar.bat');
+    writeFileSync(bat, `@echo off\r\ntimeout /t 3 /nobreak >nul\r\nmove /y "${novo}" "${destino}" >nul\r\nstart "" "${destino}"\r\n`, 'utf8');
+    log(`Atualizando para ${v}. O programa vai fechar e abrir de novo em alguns segundos.`);
+    spawn('cmd.exe', ['/c', bat], { detached: true, stdio: 'ignore', windowsHide: true }).unref();
+    setTimeout(() => process.exit(0), 500);
+  } catch (e) {
+    log(`Não consegui atualizar agora: ${(e as Error).message}`);
+  }
+}
+
 // ---------------------------------------------------------------- laço principal
 let impressorasWin: string[] = [];
 let impressorasWinEm = 0;
@@ -213,7 +247,12 @@ async function rodar(c: Config) {
   let imps: Impressora[] = [];
   let ultimoResumo = '';
   let falhas = 0;
+  let checouAtualizacao = 0;
   for (;;) {
+    if (Date.now() - checouAtualizacao > 6 * 3600_000) {
+      checouAtualizacao = Date.now();
+      await atualizarSePrecisar();
+    }
     try {
       await atualizarWindows();
       const r = await rpc<{ loja: string; impressoras: Impressora[]; cupons: Cupom[] }>(c, 'agente_sincronizar', {
