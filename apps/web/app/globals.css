@@ -409,3 +409,4 @@ input[type='date'] { font: inherit; color: var(--texto); background: var(--super
 .mb-video { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 16px; background: #000; border: 3px solid #4fb59a; }
 .mb-manual { display: flex; gap: 0.4rem; }
 .mb-manual input { flex: 1; min-height: 3rem; border-radius: 10px; border: 1px solid #3b4a44; background: #18211e; color: #fff; padding: 0 0.7rem; font: inherit; }
+.selo-cobrar { border-color: var(--erro); color: var(--erro); font-weight: 700; }

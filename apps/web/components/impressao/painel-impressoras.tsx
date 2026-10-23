@@ -583,7 +583,7 @@ function EditorLayout({ dados, marca, setMarca, tipo, setTipo, salvo }: { dados:
   const ro = !dados.podeEditar;
   const nomeMarca = dados.marcas.find((x) => x.id === marca)?.nome ?? 'Marca';
   const html = cupomHtml(linhasDoCupom({ tipo, conteudo: { ...EXEMPLO, marca: nomeMarca }, layout: l, colunas, motivo: 'manual' }), colunas);
-  const chave = (k: 'negrito_itens' | 'destacar_obs' | 'mostrar_grupos' | 'mostrar_cliente' | 'mostrar_endereco' | 'mostrar_precos', rotulo: string) => (
+  const chave = (k: 'negrito_itens' | 'destacar_obs' | 'mostrar_grupos' | 'mostrar_cliente' | 'mostrar_endereco' | 'mostrar_precos' | 'mostrar_qr', rotulo: string) => (
     <label className="check"><input type="checkbox" disabled={ro} checked={!!l[k]} onChange={(e) => setL({ ...l, [k]: e.target.checked })} /> {rotulo}</label>
   );
 
@@ -608,6 +608,7 @@ function EditorLayout({ dados, marca, setMarca, tipo, setTipo, salvo }: { dados:
           {chave('destacar_obs', 'Destacar observações (MAIÚSCULAS e negrito)')}
           {chave('mostrar_grupos', 'Agrupar opções pelo nome do grupo (ex.: "Sabores: ½ Calabresa, ½ Frango")')}
           {chave('mostrar_precos', 'Mostrar preços')}
+          {chave('mostrar_qr', 'QR do motoboy e COBRAR/PAGO nos pedidos de entrega')}
         </fieldset>
         <fieldset className="grade" style={{ gap: '0.3rem' }}>
           <legend>Cliente</legend>

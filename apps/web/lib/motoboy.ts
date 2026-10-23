@@ -16,6 +16,8 @@ export type Entrega = {
   total: number;
   troco_para: number | null;
   cobrar: boolean;
+  /** marcado como pago no painel (ex.: Pix antecipado) */
+  pago_em?: string | null;
   itens: { quantidade: number; nome: string }[];
   entregador: string | null;
   saiu_em: string | null;
@@ -45,7 +47,7 @@ export const linkWhats = (tel: string, texto: string) => `https://wa.me/55${soDi
 
 /** O que o motoboy precisa saber do pagamento, em uma frase. */
 export function cobranca(e: Entrega): { cobrar: boolean; titulo: string; detalhe: string } {
-  if (!e.cobrar) return { cobrar: false, titulo: 'PAGO — NÃO COBRAR', detalhe: 'O cliente já pagou online.' };
+  if (!e.cobrar) return { cobrar: false, titulo: 'PAGO — NÃO COBRAR', detalhe: e.pagamento === 'online' ? 'O cliente já pagou online.' : `Pagamento (${PAGAMENTO_ROTULO[e.pagamento]}) já recebido pela loja.` };
   const valor = formatarReais(e.total);
   if (e.pagamento === 'dinheiro') {
     if (e.troco_para && e.troco_para > e.total) {

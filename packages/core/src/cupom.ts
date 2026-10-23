@@ -26,6 +26,8 @@ export interface CupomDados {
   total: Centavos;
   /** código do QR do motoboy (só pedido de entrega) */
   qr?: string | null;
+  /** já pago (online ou marcado no painel): não cobrar na entrega */
+  pago?: boolean;
   itens: { quantidade: number; nome: string; total: Centavos; observacao: string | null; opcoes: { grupo: string; nome: string; quantidade: number; fracao: number | null }[] }[];
 }
 
@@ -49,13 +51,15 @@ export interface LayoutCupom {
   mostrar_cliente?: boolean;
   mostrar_endereco?: boolean;
   mostrar_precos?: boolean;
+  /** QR do motoboy nos pedidos de entrega (escaneia e sai com o pedido) */
+  mostrar_qr?: boolean;
   cabecalho?: string;
   rodape?: string;
 }
 
 export const LAYOUT_PADRAO: Record<'cozinha' | 'pedido', Required<LayoutCupom>> = {
-  cozinha: { fonte: 'grande', negrito_itens: true, destacar_obs: true, mostrar_grupos: false, mostrar_cliente: true, mostrar_endereco: false, mostrar_precos: false, cabecalho: '', rodape: '' },
-  pedido: { fonte: 'normal', negrito_itens: true, destacar_obs: true, mostrar_grupos: false, mostrar_cliente: true, mostrar_endereco: true, mostrar_precos: true, cabecalho: '', rodape: 'Obrigado pela preferência!' },
+  cozinha: { fonte: 'grande', negrito_itens: true, destacar_obs: true, mostrar_grupos: false, mostrar_cliente: true, mostrar_endereco: false, mostrar_precos: false, mostrar_qr: true, cabecalho: '', rodape: '' },
+  pedido: { fonte: 'normal', negrito_itens: true, destacar_obs: true, mostrar_grupos: false, mostrar_cliente: true, mostrar_endereco: true, mostrar_precos: true, mostrar_qr: true, cabecalho: '', rodape: 'Obrigado pela preferência!' },
 };
 
 /** Uma linha já cortada na largura do papel. `grande` = dupla altura e largura (ocupa metade das colunas). */
@@ -194,10 +198,16 @@ export function montarCupom(tipo: TipoCupom, dados: CupomDados | CupomTeste, col
     }
     L.push({ sep: '-' });
   }
-  if (tipo === 'pedido' && d.qr && d.tipo_pedido === 'entrega') {
+  // QR do motoboy: na via da cozinha e na via do pedido (a loja pode imprimir só uma delas)
+  if (lay.mostrar_qr && d.qr && d.tipo_pedido === 'entrega') {
     add('MOTOBOY: ESCANEIE PARA SAIR', { negrito: true, centro: true });
     L.push({ qr: urlQrMotoboy(d.qr) });
-    add(`Pedido #${d.numero}`, { centro: true });
+    add(`Pedido #${d.numero}${d.endereco?.bairro ? ` · ${d.endereco.bairro}` : ''}`, { centro: true });
+    if (d.pago || d.pagamento === 'online') add('PAGO - NAO COBRAR', { negrito: true, grande: true, centro: true });
+    else add(`COBRAR ${formatarReais(d.total)}`, { negrito: true, grande: true, centro: true });
+    if (!(d.pago || d.pagamento === 'online')) {
+      add(`${PAGAMENTO_ROTULO[d.pagamento] ?? d.pagamento}${d.pagamento === 'dinheiro' && d.troco_para ? ` · levar ${formatarReais(Math.max(0, d.troco_para - d.total))} de troco` : ''}`, { centro: true });
+    }
     L.push({ sep: '-' });
   }
   if (lay.rodape) add(lay.rodape, { centro: true });

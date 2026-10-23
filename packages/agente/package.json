@@ -1,6 +1,6 @@
 {
   "name": "@res/agente",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "description": "RES Impressão: agente do Windows que imprime os cupons da fila direto na impressora térmica.",
   "scripts": {

@@ -50,7 +50,12 @@ test('via do pedido: endereço, totais e troco a levar', () => {
 test('via do pedido de entrega leva o QR do motoboy', () => {
   const comQr = montarCupom('pedido', { ...pedido, qr: 'abc123' }, 48);
   assert.ok(comQr.some((l) => 'qr' in l && l.qr === 'https://res-iqzs.vercel.app/m/d/abc123'));
-  assert.ok(!montarCupom('cozinha', { ...pedido, qr: 'abc123' }, 48).some((l) => 'qr' in l), 'cozinha não leva QR');
+  const coz = montarCupom('cozinha', { ...pedido, qr: 'abc123' }, 48);
+  assert.ok(coz.some((l) => 'qr' in l), 'via da cozinha também leva o QR (loja que imprime só ela)');
+  assert.match(cupomTexto(coz, 48), /COBRAR R\$\s90,00/);
+  assert.match(cupomTexto(coz, 48), /levar R\$\s10,00 de troco/);
+  assert.match(cupomTexto(montarCupom('cozinha', { ...pedido, qr: 'abc123', pago: true }, 48), 48), /PAGO - NAO COBRAR/);
+  assert.ok(!montarCupom('cozinha', { ...pedido, qr: 'abc123' }, 48, { mostrar_qr: false }).some((l) => 'qr' in l), 'dá para desligar no layout');
   assert.ok(!montarCupom('pedido', { ...pedido, tipo_pedido: 'retirada', qr: 'abc123' }, 48).some((l) => 'qr' in l));
 });
 

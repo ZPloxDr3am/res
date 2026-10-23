@@ -97,3 +97,8 @@ Registro curto de cada decisão, com o motivo. Referências `R-`, `B-`, `T-` apo
 - No celular: COBRAR (vermelho, valor, forma, troco a levar) ou PAGO — NÃO COBRAR (verde, só "Pago online"); endereço grande com bairro e referência; Google Maps/Waze já com a rota; ligar e WhatsApp; "Entregue" conclui o pedido (e ele entra no caixa aberto). Resumo do dia: entregas, dinheiro a prestar contas, cartão/Pix na porta, taxas.
 - A cidade da loja (Lojas e equipe) completa o endereço do mapa.
 - O RES Impressão passa a se atualizar sozinho (versão nova publicada no GitHub → baixa, troca e reabre).
+
+## D-018 Comanda do motoboy completa e "já pago"
+- O QR do motoboy sai também na **via da cozinha** dos pedidos de entrega (muitas lojas imprimem só ela), com o número, o bairro e, em letra grande, **COBRAR R$ X** (forma e troco a levar) ou **PAGO - NÃO COBRAR**. Dá para desligar no layout do cupom ("QR do motoboy").
+- O pedido pode ser **marcado como pago** no quadro (ex.: Pix recebido antes). Aí o celular do motoboy mostra PAGO — NÃO COBRAR e o valor não entra no "a prestar contas" do dia dele. Pago online já conta como pago. Fica no histórico do pedido.
+- RES Impressão 1.2.0 (a partir da 1.1.0 ele se atualiza sozinho).
