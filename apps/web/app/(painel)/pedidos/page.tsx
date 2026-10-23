@@ -12,7 +12,7 @@ export default async function Pedidos({ searchParams }: { searchParams: Promise<
   const { pedidos, aceiteAutomatico, tempoPreparo, fuso, filaImpressao } = await carregarQuadro(ids, ctx.lojaId);
   return (
     <>
-      <TempoReal lojaId={ctx.lojaId} tabelas={['pedidos', 'impressoes']} todasAsLojas={todas} />
+      <TempoReal lojaId={ctx.lojaId} tabelas={['pedidos', 'impressoes']} reservaMs={20000} todasAsLojas={todas} />
       <QuadroPedidos
         pedidos={pedidos}
         aceiteAutomatico={aceiteAutomatico}
