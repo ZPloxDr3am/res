@@ -15,7 +15,7 @@ import {
   type StatusPedido,
 } from '@res/core';
 import type { PedidoRow } from '@/lib/pedidos';
-import { definirAceiteAutomatico, mudarStatus } from '@/app/(painel)/pedidos/actions';
+import { definirAceiteAutomatico, marcarPago, mudarStatus } from '@/app/(painel)/pedidos/actions';
 import { salvando } from '@/components/tempo-real';
 import { BotaoNovoPedido } from '@/components/pedido-flutuante';
 import { useImprimir } from '@/components/impressao/usar-impressao';
@@ -308,6 +308,27 @@ function CartaoPedido({ pedido: p, tempoPreparo, fuso, marca }: { pedido: Pedido
         </span>
         <strong>{r$(p.total)}</strong>
       </div>
+      {p.pagamento !== 'online' && (
+        <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center', gap: '0.4rem' }}>
+          <span className={`selo ${p.pago_em ? 'selo-presencial' : 'selo-cobrar'}`}>{p.pago_em ? '✓ Pago — não cobrar' : '💰 Cobrar na entrega'}</span>
+          {aberto && (
+            <button
+              type="button"
+              className="mini"
+              disabled={pendente}
+              title={p.pago_em ? 'Voltar a cobrar na entrega' : 'O cliente já pagou (ex.: Pix antes). O motoboy vai ver NÃO COBRAR.'}
+              onClick={() =>
+                iniciar(async () => {
+                  const r = await salvando(marcarPago(p.id, !p.pago_em));
+                  setErro(r.ok ? null : r.erro);
+                })
+              }
+            >
+              {p.pago_em ? 'Desfazer pago' : 'Marcar como pago'}
+            </button>
+          )}
+        </div>
+      )}
       {p.status === 'cancelado' && p.motivo_cancelamento && <div className="dica">Motivo: {p.motivo_cancelamento}</div>}
 
       {aberto && !cancelando && (

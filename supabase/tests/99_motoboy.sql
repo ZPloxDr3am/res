@@ -116,6 +116,34 @@ do $$ begin
   end if;
 end $$;
 
+-- 0019: pedido marcado como pago (Pix antecipado) → NÃO COBRAR no celular e na comanda
+select from pg_temp.como('00000000-0000-0000-0000-0000000000af');
+insert into ids values ('pix', public.criar_pedido(pg_temp.id('loja'), pg_temp.id('marca'), jsonb_build_object('tipo', 'entrega',
+  'cliente', jsonb_build_object('nome', 'Pix Ana', 'telefone', '47988887777'), 'endereco', jsonb_build_object('logradouro', 'Rua 2', 'bairro', 'Centro'),
+  'pagamento', 'pix', 'itens', jsonb_build_array(jsonb_build_object('produto_id', pg_temp.id('pz'), 'quantidade', 1)))));
+select public.mudar_status_pedido(pg_temp.id('pix'), 'em_preparo');
+select public.marcar_pago(pg_temp.id('pix'), true);
+select public.marcar_pago(pg_temp.id('pix'), true);  -- de novo: não duplica
+reset role;
+insert into tokens select 'pix', qr_token from public.pedidos where id = pg_temp.id('pix');
+do $$ begin
+  if (private.dados_cupom(pg_temp.id('pix')) ->> 'pago')::boolean is not true then raise exception 'cupom deveria dizer pago'; end if;
+  if (select count(*) from public.pedido_eventos where pedido_id = pg_temp.id('pix') and motivo = 'Marcado como pago') <> 1 then raise exception 'evento pago'; end if;
+end $$;
+select from pg_temp.como('00000000-0000-0000-0000-0000000000b0');
+insert into saida values ('dpix', public.motoboy_despachar(pg_temp.token('pix')));
+select public.motoboy_entregar(pg_temp.id('pix'));
+insert into saida values ('p3', public.motoboy_painel());
+select from pg_temp.esperar_erro(format($q$select public.marcar_pago('%s', false)$q$, pg_temp.id('pix')), 'não encontrado');  -- motoboy não mexe
+reset role;
+do $$ begin
+  if (pg_temp.v('dpix') ->> 'cobrar')::boolean or pg_temp.v('dpix') ->> 'pago_em' is null then raise exception 'pix pago deveria ser NÃO COBRAR: %', pg_temp.v('dpix'); end if;
+  if (pg_temp.v('p3') #>> '{hoje,entregas}')::int <> 2 or (pg_temp.v('p3') #>> '{hoje,cobrado_outros}')::int <> 0 then raise exception 'pago não entra no a prestar contas: %', pg_temp.v('p3') -> 'hoje'; end if;
+end $$;
+select from pg_temp.como('00000000-0000-0000-0000-0000000000af');
+select from pg_temp.esperar_erro(format($q$select public.marcar_pago('%s', false)$q$, pg_temp.id('pix')), 'encerrado');
+reset role;
+
 \o
 \pset tuples_only on
 select 'OK: app do motoboy';

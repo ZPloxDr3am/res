@@ -80,3 +80,12 @@ export async function dadosNovoPedido(): Promise<{ ok: true; lojaId: string; dad
     return { ok: false, erro: (e as Error).message };
   }
 }
+
+/** Marca (ou desmarca) o pedido como já pago — ex.: Pix recebido antes. O motoboy vê "NÃO COBRAR". */
+export async function marcarPago(pedidoId: string, pago: boolean): Promise<Resultado> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('marcar_pago', { p_pedido: pedidoId, p_pago: pago });
+  if (error) return { ok: false, erro: mensagem(error) };
+  revalidatePath('/pedidos');
+  return { ok: true };
+}

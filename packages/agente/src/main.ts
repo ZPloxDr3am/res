@@ -12,7 +12,7 @@ import { gerarEscPos } from './escpos.js';
 import type { Pagina } from './codepage.js';
 import { imprimirRede, imprimirWindows, listarImpressorasWindows, testarRede } from './saida.js';
 
-const VERSAO = '1.1.0'; // igual ao package.json (o GitHub publica em versao.txt)
+const VERSAO = '1.2.0'; // igual ao package.json (o GitHub publica em versao.txt)
 const URL_RELEASE = 'https://github.com/ZPloxDr3am/res/releases/download/agente-latest';
 const PAINEL_PADRAO = 'https://res-iqzs.vercel.app';
 const INTERVALO_MS = 3000;
