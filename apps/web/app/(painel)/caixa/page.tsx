@@ -82,7 +82,7 @@ export default async function Caixa() {
 
   return (
     <>
-      <TempoReal lojaId={ctx.lojaId} tabelas={['pedidos']} />
+      <TempoReal lojaId={ctx.lojaId} tabelas={['pedidos']} reservaMs={30000} />
       <PainelCaixa meus={meus} resumos={resumos} historico={historico} cadastro={caixasCadastro} membros={membros} />
     </>
   );

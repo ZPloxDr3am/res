@@ -22,7 +22,11 @@ export async function salvando<T>(acao: Promise<T>): Promise<T> {
 }
 
 /** T-005: mudança feita em outro aparelho aparece aqui sem recarregar. A RLS filtra o que chega. */
-export function TempoReal({ lojaId, tabelas = CARDAPIO, todasAsLojas = false }: { lojaId: string; tabelas?: string[]; todasAsLojas?: boolean }) {
+/**
+ * `reservaMs`: confere de novo de tempos em tempos (e ao voltar para a aba), caso a conexão em
+ * tempo real caia sem avisar — internet oscilando, computador que dormiu, aba parada muito tempo.
+ */
+export function TempoReal({ lojaId, tabelas = CARDAPIO, todasAsLojas = false, reservaMs }: { lojaId: string; tabelas?: string[]; todasAsLojas?: boolean; reservaMs?: number }) {
   const chave = tabelas.join(',');
   const router = useRouter();
   useEffect(() => {
@@ -41,11 +45,21 @@ export function TempoReal({ lojaId, tabelas = CARDAPIO, todasAsLojas = false }: 
     let canal = supabase.channel(`${chave}:${todasAsLojas ? 'todas' : lojaId}`);
     for (const t of chave.split(',')) canal = canal.on('postgres_changes', todasAsLojas ? { event: '*', schema: 'public', table: t } : { event: '*', schema: 'public', table: t, filter: `loja_id=eq.${lojaId}` }, agendar);
     canal.subscribe();
+    const visivel = () => document.visibilityState === 'visible';
+    const reserva = reservaMs ? setInterval(() => visivel() && agendar(), reservaMs) : undefined;
+    const aoVoltar = () => visivel() && agendar();
+    if (reservaMs) {
+      document.addEventListener('visibilitychange', aoVoltar);
+      window.addEventListener('online', aoVoltar);
+    }
     return () => {
+      clearInterval(reserva);
+      document.removeEventListener('visibilitychange', aoVoltar);
+      window.removeEventListener('online', aoVoltar);
       clearTimeout(espera);
       aoTerminar = null;
       void supabase.removeChannel(canal);
     };
-  }, [lojaId, chave, todasAsLojas, router]);
+  }, [lojaId, chave, todasAsLojas, router, reservaMs]);
   return null;
 }
