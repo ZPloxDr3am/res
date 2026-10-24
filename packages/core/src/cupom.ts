@@ -28,7 +28,7 @@ export interface CupomDados {
   qr?: string | null;
   /** já pago (online ou marcado no painel): não cobrar na entrega */
   pago?: boolean;
-  itens: { quantidade: number; nome: string; total: Centavos; observacao: string | null; opcoes: { grupo: string; nome: string; quantidade: number; fracao: number | null }[] }[];
+  itens: { quantidade: number; nome: string; total: Centavos; observacao: string | null; opcoes: OpcaoCupom[] }[];
 }
 
 export interface CupomTeste {
@@ -70,6 +70,9 @@ export const URL_PAINEL = 'https://res-iqzs.vercel.app';
 export const urlQrMotoboy = (token: string) => `${URL_PAINEL}/m/d/${token}`;
 
 const FRACAO: Record<string, string> = { '0.5': '1/2', '0.3333': '1/3', '0.25': '1/4', '0.6667': '2/3', '0.75': '3/4' };
+/** Linha de opção de um item. passo = escolha de um passo do combo (o produto escolhido). */
+export type OpcaoCupom = { grupo: string; nome: string; quantidade: number; fracao: number | null; passo?: boolean };
+
 const fracaoTexto = (f: number | null) => (f == null || f >= 1 ? '' : `${FRACAO[String(Number(f))] ?? `${Math.round(f * 100)}%`} `);
 
 /** Quebra o texto em linhas de até `largura`, sem cortar palavras (palavra maior que a linha é cortada).
@@ -123,7 +126,9 @@ export function montarCupom(tipo: TipoCupom, dados: CupomDados | CupomTeste, col
   const w = Math.max(24, Math.min(64, colunas));
   const meia = Math.floor(w / 2);
   const add = (t: string, o: { negrito?: boolean; grande?: boolean; centro?: boolean; recuo?: string } = {}) => {
-    for (const s of quebrar(t, o.grande ? meia : w, o.recuo)) L.push({ t: s, negrito: o.negrito, grande: o.grande, centro: o.centro });
+    // espaços no começo = recuo fixo (blocos do combo); o resto quebra dentro da largura que sobra
+    const lead = /^ +/.exec(t)?.[0] ?? '';
+    for (const s of quebrar(t.slice(lead.length), (o.grande ? meia : w) - lead.length, o.recuo)) L.push({ t: lead + s, negrito: o.negrito, grande: o.grande, centro: o.centro });
   };
 
   if ('teste' in dados) {
@@ -168,10 +173,17 @@ export function montarCupom(tipo: TipoCupom, dados: CupomDados | CupomTeste, col
 
   for (const it of d.itens) {
     const nome = `${it.quantidade}x ${it.nome}`;
+    const blocos = blocosCombo(it.opcoes);
     if (lay.mostrar_precos) {
       for (const s of colunasLR(nome, formatarReais(it.total), w)) L.push({ t: s, negrito: lay.negrito_itens });
     } else add(nome, { negrito: lay.negrito_itens, grande: lay.fonte === 'grande' });
-    if (lay.mostrar_grupos) {
+    if (blocos) {
+      // combo: um bloco por escolha, sempre no mesmo formato (cozinha não confunde)
+      for (const b of blocos) {
+        add(`  > ${b.titulo.toUpperCase()}`, { negrito: true, recuo: '  ', grande: lay.fonte === 'grande' && tipo === 'cozinha' });
+        for (const x of b.itens) add(`     - ${x}`, { recuo: '  ', grande: lay.fonte === 'grande' && tipo === 'cozinha' });
+      }
+    } else if (lay.mostrar_grupos) {
       const porGrupo = new Map<string, string[]>();
       for (const o of it.opcoes) (porGrupo.get(o.grupo) ?? porGrupo.set(o.grupo, []).get(o.grupo)!).push(`${fracaoTexto(o.fracao)}${o.quantidade > 1 && o.fracao == null ? `${o.quantidade}x ` : ''}${o.nome}`);
       for (const [g, ops] of porGrupo) add(`- ${g}: ${ops.join(', ')}`, { recuo: '  ', grande: lay.fonte === 'grande' && tipo === 'cozinha' });
@@ -226,4 +238,22 @@ export function cupomTexto(linhas: Linha[], colunas: number): string {
       return ' '.repeat(pad) + l.t;
     })
     .join('\n');
+}
+
+const textoOpcao = (o: OpcaoCupom) => `${fracaoTexto(o.fracao)}${o.quantidade > 1 && o.fracao == null ? `${o.quantidade}x ` : ''}${o.nome}`;
+
+/**
+ * Combo em blocos para a comanda e o quadro (D-024): cada escolha vira um título e suas linhas.
+ * Produto com sabores/adicionais → título = nome do produto ("Pizza Gigante 40cm") e as linhas são
+ * os sabores; produto simples → título = o passo ("Refrigerante 2L") e a linha é o produto ("Kuat").
+ * null quando o item não é combo.
+ */
+export function blocosCombo(opcoes: OpcaoCupom[]): { titulo: string; itens: string[] }[] | null {
+  if (!opcoes.some((o) => o.passo)) return null;
+  const brutos: { passo: string; produto: string; subs: string[] }[] = [];
+  for (const o of opcoes) {
+    if (o.passo) brutos.push({ passo: o.grupo, produto: o.nome, subs: [] });
+    else if (brutos.length) brutos[brutos.length - 1]!.subs.push(textoOpcao(o));
+  }
+  return brutos.map((b) => (b.subs.length ? { titulo: b.produto, itens: b.subs } : { titulo: b.passo, itens: [b.produto] }));
 }

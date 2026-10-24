@@ -110,6 +110,16 @@ do $$ begin
   if not (select combo from public.produtos where id = pg_temp.id('copia')) or (select count(*) from public.combo_passos where combo_id = pg_temp.id('copia')) <> 2 then raise exception 'cópia do combo'; end if;
 end $$;
 
+-- comanda (0024): linhas do combo na ordem escolhida, com o passo marcado
+do $$
+declare o jsonb := private.dados_cupom(pg_temp.id('pedido')) #> '{itens,0,opcoes}';
+begin
+  if (o #>> '{0,passo}')::boolean is not true or o #>> '{0,nome}' <> 'Pizza Gigante' or (o #>> '{1,passo}')::boolean or o #>> '{1,nome}' <> 'Calabresa'
+     or (o #>> '{2,passo}')::boolean is not true or o #>> '{2,nome}' <> 'Coca 2L' then
+    raise exception 'comanda do combo: %', o;
+  end if;
+end $$;
+
 -- cardápio público: combo com passos e produtos; Bebidas marcada como up-sell
 insert into saida values ('pub', public.cardapio_publico('pizza-c'));
 do $$

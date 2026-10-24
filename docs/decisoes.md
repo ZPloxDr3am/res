@@ -134,3 +134,9 @@ Registro curto de cada decisão, com o motivo. Referências `R-`, `B-`, `T-` apo
 - **% na categoria**: tem a mesma agenda da promoção do produto e vale sobre o preço normal do canal. Se o produto já tem promoção própria valendo, fica o menor preço. `private.preco_base` (banco) e `precoBase` (core) fazem a conta. Pizza com preço só nos sabores (base 0) não recebe o %.
 - **Cupons** são por loja, com opção de criar o mesmo cupom nas outras lojas do grupo. Tipos: % do pedido, R$ fixo ou entrega grátis. Regras: pedido mínimo, primeira compra (pelo telefone), vezes por cliente, total de usos, dias e validade. O cardápio digital confere antes (`validar_cupom`) e o banco recalcula ao gravar (`aplicar_cupom`); no cardápio digital o troco é conferido depois do cupom. A tela conta clientes distintos (telefone), usos e desconto dado, sem os pedidos cancelados, e mostra quem usou.
 - **Desconto no balcão** sempre pede motivo. Quem não é dono/gerente tem o limite da loja (`lojas.limite_desconto_pct`). Acima dele, um gerente digita usuário e senha numa sessão à parte, que não troca quem está logado, e isso gera uma autorização de uso único válida por 10 minutos. O pedido grava quem autorizou.
+
+## D-024 Comanda do combo em blocos
+- Na comanda (cozinha e via do pedido) e no quadro, o combo sai sempre no mesmo formato, um bloco por escolha:
+  `> PIZZA GIGANTE 40CM` com os sabores embaixo, `> PIZZA BROTO 25CM` com o sabor, `> REFRIGERANTE 2L` com `- Kuat 2 litros`. Produto com sabores ou adicionais usa o nome do produto como título; produto simples usa o título da escolha.
+- `pedido_item_opcoes.ordem` guarda a ordem escolhida. Antes a comanda ordenava pelo id, que é aleatório. `dados_cupom` marca as linhas de passo (`passo`).
+- O agente de impressão monta o cupom com o core, por isso sobe para a versão **1.3.0**, que se atualiza sozinha.

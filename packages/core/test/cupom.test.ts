@@ -72,3 +72,24 @@ test('catálogo de modelos', () => {
   assert.equal(modeloPorId('generica-58')?.papel, 58);
   assert.equal(MODELOS_IMPRESSORA.filter((x) => x.homologada).length, 23);
 });
+
+test('combo sai em blocos organizados na comanda', async () => {
+  const { blocosCombo } = await import('../src/cupom.js');
+  const opcoes = [
+    { grupo: 'Pizza', nome: 'Pizza Gigante 40cm', quantidade: 1, fracao: null, passo: true },
+    { grupo: 'Pizza Gigante 40cm · Sabores Gigante', nome: 'Calabresa', quantidade: 1, fracao: 0.5 },
+    { grupo: 'Pizza Gigante 40cm · Sabores Gigante', nome: 'Costela Supreme', quantidade: 1, fracao: 0.5 },
+    { grupo: 'Pizza pequena', nome: 'Pizza Broto 25cm', quantidade: 1, fracao: null, passo: true },
+    { grupo: 'Pizza Broto 25cm · Sabores Broto', nome: 'Do Cheff', quantidade: 1, fracao: null },
+    { grupo: 'Refrigerante 2L', nome: 'Kuat 2 litros', quantidade: 1, fracao: null, passo: true },
+  ];
+  assert.deepEqual(blocosCombo(opcoes), [
+    { titulo: 'Pizza Gigante 40cm', itens: ['1/2 Calabresa', '1/2 Costela Supreme'] },
+    { titulo: 'Pizza Broto 25cm', itens: ['Do Cheff'] },
+    { titulo: 'Refrigerante 2L', itens: ['Kuat 2 litros'] },
+  ]);
+  const texto = cupomTexto(montarCupom('cozinha', { ...pedido, itens: [{ quantidade: 1, nome: 'Combo Família', total: 13690, observacao: null, opcoes }] }, 48), 48);
+  assert.ok(texto.includes('1x Combo Família'));
+  assert.match(texto, /> PIZZA GIGANTE 40CM\n\s+- 1\/2 Calabresa\n\s+- 1\/2 Costela\s+Supreme\n\s+> PIZZA BROTO 25CM\n\s+- Do Cheff\n\s+> REFRIGERANTE 2L\n\s+- Kuat 2 litros/);
+  assert.equal(blocosCombo([{ grupo: 'Sabores', nome: 'Calabresa', quantidade: 1, fracao: null }]), null);
+});

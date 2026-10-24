@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
 import {
+  blocosCombo,
   acaoAvancar,
   faseAgendamento,
   FOLGA_AGENDADO_MIN,
@@ -290,7 +291,18 @@ function CartaoPedido({ pedido: p, tempoPreparo, fuso, marca }: { pedido: Pedido
         {p.pedido_itens.map((i) => (
           <li key={i.id}>
             {i.quantidade}× {i.nome}
-            {i.pedido_item_opcoes.length > 0 && (
+            {(() => {
+              // combo: um bloco por escolha (D-024)
+              const blocos = blocosCombo(i.pedido_item_opcoes.map((o) => ({ grupo: o.grupo_nome, nome: o.nome, quantidade: o.quantidade, fracao: o.fracao, passo: o.grupo_id == null && o.opcao_id == null })));
+              return blocos ? (
+                <ul className="qp-combo">
+                  {blocos.map((b, k) => (
+                    <li key={k}><strong>{b.titulo}</strong>: {b.itens.join(', ')}</li>
+                  ))}
+                </ul>
+              ) : null;
+            })()}
+            {i.pedido_item_opcoes.length > 0 && !i.pedido_item_opcoes.some((o) => o.grupo_id == null && o.opcao_id == null) && (
               <span className="dica">
                 {' '}
                 — {i.pedido_item_opcoes.map((o) => `${fracao(o.fracao)}${o.quantidade > 1 && o.fracao == null ? `${o.quantidade}× ` : ''}${o.nome}`).join(', ')}
