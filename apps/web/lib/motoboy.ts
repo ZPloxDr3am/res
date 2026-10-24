@@ -39,6 +39,9 @@ export function enderecoMapa(e: Entrega): string {
 
 /** Abre o Google Maps já com a rota (no celular abre o app do Maps). */
 export const linkMaps = (e: Entrega) => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(enderecoMapa(e))}&travelmode=driving`;
+/** APK do app Android do motoboy (gerado pelo GitHub Actions, release motoboy-latest). */
+export const LINK_APP_ANDROID = 'https://github.com/ZPloxDr3am/res/releases/download/motoboy-latest/RES-Motoboy.apk';
+
 export const linkWaze = (e: Entrega) => `https://waze.com/ul?q=${encodeURIComponent(enderecoMapa(e))}&navigate=yes`;
 
 const soDigitos = (t: string) => t.replace(/\D/g, '');

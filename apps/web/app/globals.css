@@ -410,3 +410,5 @@ input[type='date'] { font: inherit; color: var(--texto); background: var(--super
 .mb-manual { display: flex; gap: 0.4rem; }
 .mb-manual input { flex: 1; min-height: 3rem; border-radius: 10px; border: 1px solid #3b4a44; background: #18211e; color: #fff; padding: 0 0.7rem; font: inherit; }
 .selo-cobrar { border-color: var(--erro); color: var(--erro); font-weight: 700; }
+.mb-baixar { display: grid; gap: 0.45rem; margin: 0 1rem 1.5rem; padding: 0.9rem 1rem; border-radius: 14px; background: #17312a; border: 1px solid #2f5a4c; color: #f2f5f3; text-align: center; }
+.mb-baixar strong { font-size: 1.05rem; }
