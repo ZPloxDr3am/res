@@ -16,6 +16,8 @@ export interface ProdutoMarca {
   precoDelivery?: Centavos | null;
   precoPresencial?: Centavos | null;
   precoPromocional?: Centavos | null;
+  /** % de desconto da categoria valendo agora (D-023); vale sobre o preço normal do canal */
+  descontoPct?: number | null;
 }
 
 export interface Produto {

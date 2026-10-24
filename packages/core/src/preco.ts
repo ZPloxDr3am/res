@@ -10,14 +10,19 @@ export class ErroEscolha extends Error {
   }
 }
 
-/** Preço base do produto numa marca e canal: promocional → preço do canal → preço padrão. */
+/**
+ * Preço base do produto numa marca e canal (espelho de private.preco_base): o normal é o preço do
+ * canal ou o padrão; a promoção própria e o % da categoria, quando valem, entram e fica o menor.
+ */
 export function precoBase(produto: Produto, marcaId: string, canal: Canal): Centavos | null {
   const pm = produto.marcas.find((m) => m.marcaId === marcaId);
   if (!pm || !pm.ativo || !pm[canal]) return null; // indisponível nesta marca/canal
-  if (pm.precoPromocional != null) return pm.precoPromocional;
   const doCanal = canal === 'delivery' ? pm.precoDelivery : pm.precoPresencial;
-  if (doCanal != null) return doCanal;
-  return produto.preco ?? 0;
+  const normal = doCanal ?? produto.preco ?? 0;
+  const promo = pm.precoPromocional ?? null;
+  const cat = pm.descontoPct && normal > 0 ? Math.round(normal * (1 - pm.descontoPct / 100)) : null;
+  if (promo != null && cat != null) return Math.min(promo, cat);
+  return promo ?? cat ?? normal;
 }
 
 /** Preço de uma opção no canal: preço do canal na opção → preço da opção → preço do item. */

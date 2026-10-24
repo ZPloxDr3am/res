@@ -19,7 +19,7 @@ import {
   type TipoPedido,
 } from '@res/core';
 import { nomeOpcao, paraGrupoCore, paraProdutoCore, passosCore, type Cardapio, type GrupoRow, type PassoRow, type ProdutoRow, type SetorRow } from '@/lib/cardapio-dados';
-import { criarPedido } from '@/app/(painel)/pedidos/actions';
+import { autorizarDesconto, criarPedido } from '@/app/(painel)/pedidos/actions';
 import { salvando } from '@/components/tempo-real';
 
 type ItemCarrinho = {
@@ -57,6 +57,7 @@ export function NovoPedido({
   produtos,
   grupos,
   passos = {},
+  regrasDesconto = { limitePct: null, gestor: true },
   embutido = false,
   aoConcluir,
   aoMudar,
@@ -72,6 +73,7 @@ export function NovoPedido({
   produtos: ProdutoRow[];
   grupos: Record<string, GrupoRow>;
   passos?: Record<string, PassoRow[]>;
+  regrasDesconto?: { limitePct: number | null; gestor: boolean };
 }) {
   const router = useRouter();
   const cardapio: Cardapio = useMemo(() => ({ setores, produtos, grupos, usos: {}, passos }), [setores, produtos, grupos, passos]);
@@ -87,6 +89,13 @@ export function NovoPedido({
   const [agendar, setAgendar] = useState(false);
   const [agendaTxt, setAgendaTxt] = useState('');
   const [descontoTxt, setDescontoTxt] = useState('');
+  const [motivo, setMotivo] = useState('');
+  const [cupomTxt, setCupomTxt] = useState('');
+  const [autorizacao, setAutorizacao] = useState<{ id: string; nome: string } | null>(null);
+  const [pedindoAut, setPedindoAut] = useState(false);
+  const [gerente, setGerente] = useState({ usuario: '', senha: '' });
+  const [erroAut, setErroAut] = useState<string | null>(null);
+  const [autorizando, iniciarAut] = useTransition();
   const [pagamento, setPagamento] = useState<FormaPagamento>('pix');
   const [trocoTxt, setTrocoTxt] = useState('');
   const [observacao, setObservacao] = useState('');
@@ -158,7 +167,22 @@ export function NovoPedido({
     }
   }, [carrinho, tipo, taxa, desconto, pagamento, trocoPara, trocoTxt]);
 
+  const subtotalAtual = carrinho.reduce((s, i) => s + i.unitario * i.quantidade, 0);
+  const limiteCent = regrasDesconto.limitePct == null || regrasDesconto.gestor ? null : Math.round((subtotalAtual * regrasDesconto.limitePct) / 100);
+  const acimaDoLimite = limiteCent != null && (desconto ?? 0) > limiteCent;
+  const pedirAutorizacao = () =>
+    iniciarAut(async () => {
+      const r = await autorizarDesconto(gerente.usuario, gerente.senha);
+      setGerente({ usuario: '', senha: '' });
+      if (!r.ok) return setErroAut(r.erro);
+      setErroAut(null);
+      setAutorizacao({ id: r.id, nome: r.nome });
+      setPedindoAut(false);
+    });
+
   const faltando: string[] = [];
+  if ((desconto ?? 0) > 0 && motivo.trim().length < 3) faltando.push('motivo do desconto');
+  if (acimaDoLimite && !autorizacao) faltando.push('autorização do gerente para o desconto');
   if (!cliente.nome.trim()) faltando.push('nome do cliente');
   if (tipo === 'entrega' && (!endereco.logradouro.trim() || !endereco.bairro.trim())) faltando.push('rua e bairro');
   if (carrinho.length === 0) faltando.push('pelo menos um item');
@@ -176,12 +200,18 @@ export function NovoPedido({
           taxaEntrega: tipo === 'entrega' && !taxaManual ? null : taxa ?? 0,
           agendadoPara: agendadoPara ? agendadoPara.toISOString() : null,
           desconto: desconto ?? 0,
+          descontoMotivo: motivo,
+          autorizacao: acimaDoLimite ? autorizacao?.id ?? null : null,
+          cupom: cupomTxt,
           pagamento,
           trocoPara: pagamento === 'dinheiro' ? trocoPara : null,
           observacao,
         }),
       );
-      if (!r.ok) return setErro(r.erro);
+      if (!r.ok) {
+        if (/autorização do gerente/.test(r.erro)) setAutorizacao(null);
+        return setErro(r.erro);
+      }
       if (aoConcluir) return aoConcluir(r.numero);
       router.push(`/pedidos?criado=${r.numero}`);
     });
@@ -397,9 +427,50 @@ export function NovoPedido({
               )}
               <label style={{ flex: '1 1 7rem' }}>
                 Desconto (R$)
-                <input type="text" inputMode="decimal" value={descontoTxt} onChange={(e) => setDescontoTxt(e.target.value)} placeholder="0,00" />
+                <input type="text" inputMode="decimal" value={descontoTxt} onChange={(e) => { setDescontoTxt(e.target.value); setAutorizacao(null); }} placeholder="0,00" />
+              </label>
+              <label style={{ flex: '1 1 8rem' }}>
+                Cupom <span className="dica">(opcional)</span>
+                <input type="text" value={cupomTxt} maxLength={30} onChange={(e) => setCupomTxt(e.target.value.toUpperCase())} placeholder="PRIMEIRA10" />
+                {cupomTxt.trim() && <span className="dica">O desconto do cupom é conferido e entra ao lançar.</span>}
               </label>
             </div>
+            {(desconto ?? 0) > 0 && (
+              <label>
+                Motivo do desconto
+                <input type="text" value={motivo} maxLength={120} onChange={(e) => setMotivo(e.target.value)} placeholder="Ex.: cliente fiel, pizza atrasou" />
+              </label>
+            )}
+            {acimaDoLimite && (
+              <div className="np-autorizacao grade" style={{ gap: '0.4rem' }}>
+                {autorizacao ? (
+                  <span>✓ Desconto autorizado por <strong>{autorizacao.nome}</strong> (vale para este pedido).</span>
+                ) : (
+                  <>
+                    <span>
+                      Desconto acima de <strong>{regrasDesconto.limitePct}%</strong> ({formatarReais(limiteCent ?? 0)}) precisa da autorização de um gerente.
+                    </span>
+                    {!pedindoAut ? (
+                      <button type="button" style={{ justifySelf: 'start' }} onClick={() => setPedindoAut(true)}>Pedir autorização do gerente</button>
+                    ) : (
+                      <div className="linha" style={{ alignItems: 'flex-end' }}>
+                        <label style={{ flex: '1 1 8rem' }}>
+                          Usuário do gerente
+                          <input type="text" autoComplete="off" value={gerente.usuario} onChange={(e) => setGerente({ ...gerente, usuario: e.target.value })} />
+                        </label>
+                        <label style={{ flex: '1 1 8rem' }}>
+                          Senha
+                          <input type="password" autoComplete="new-password" value={gerente.senha} onChange={(e) => setGerente({ ...gerente, senha: e.target.value })} onKeyDown={(e) => e.key === 'Enter' && pedirAutorizacao()} />
+                        </label>
+                        <button type="button" className="botao-primario" disabled={autorizando} onClick={pedirAutorizacao}>{autorizando ? 'Conferindo…' : 'Autorizar'}</button>
+                        <button type="button" onClick={() => setPedindoAut(false)}>Cancelar</button>
+                      </div>
+                    )}
+                    {erroAut && <span className="erro">{erroAut}</span>}
+                  </>
+                )}
+              </div>
+            )}
           </fieldset>
 
           <fieldset className="grade" style={{ gap: '0.4rem' }}>

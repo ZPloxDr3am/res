@@ -20,6 +20,8 @@ export interface PedidoCliente {
   observacao?: string;
   /** ISO de um dos horários de public.horarios_agendamento; null = o quanto antes. */
   agendadoPara: string | null;
+  /** código do cupom (o banco confere e calcula o desconto) */
+  cupom?: string | null;
 }
 
 /** Envia o pedido do cliente. O banco confere tudo de novo (aberto, bairro, taxa, preço, mínimo). */
@@ -41,9 +43,26 @@ export async function enviarPedido(slug: string, p: PedidoCliente): Promise<{ ok
       troco_para: p.pagamento === 'dinheiro' && p.trocoPara != null ? p.trocoPara / 100 : null,
       observacao: p.observacao || null,
       agendado_para: p.agendadoPara,
+      cupom: p.cupom || null,
     },
   });
   if (error) return { ok: false, erro: error.message };
   const r = data as { codigo: string; numero: number };
   return { ok: true, codigo: r.codigo, numero: r.numero };
+}
+
+/** Confere o cupom antes de enviar (centavos). O desconto final é recalculado pelo banco ao gravar. */
+export async function conferirCupom(
+  slug: string,
+  codigo: string,
+  subtotal: number,
+  taxa: number,
+  tipo: 'entrega' | 'retirada',
+  telefone: string,
+): Promise<{ ok: true; codigo: string; desconto: number; descricao: string } | { ok: false; erro: string }> {
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('validar_cupom', { p_slug: slug, p_codigo: codigo, p_subtotal: subtotal, p_taxa: taxa, p_tipo: tipo, p_telefone: telefone });
+  if (error) return { ok: false, erro: error.message };
+  const r = data as { codigo: string; desconto: number; descricao: string };
+  return { ok: true, codigo: r.codigo, desconto: Number(r.desconto), descricao: r.descricao };
 }

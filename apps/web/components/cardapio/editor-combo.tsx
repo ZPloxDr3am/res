@@ -62,6 +62,16 @@ export function EditorCombo({
     return precoSeparado(passosCore(falso, 'x'), marcaId, 'delivery');
   }, [cardapio, passos, marcaId]);
   const economia = preco != null && separado > preco ? separado - preco : 0;
+  // pizza no combo sem grupo de sabores: o cliente não escolheria sabor
+  const semSabores = [
+    ...new Set(
+      passos.flatMap((p) =>
+        (p.modo === 'produtos' ? vendaveis.filter((x) => p.produtos.includes(x.id)) : vendaveis.filter((x) => x.setor_id === p.setorId))
+          .filter((x) => x.produto_grupos.length === 0 && /pizza/i.test(x.nome))
+          .map((x) => x.nome),
+      ),
+    ),
+  ];
 
   const salvar = () =>
     iniciar(async () => {
@@ -157,6 +167,7 @@ export function EditorCombo({
                             onChange={(e) => mudar(p.chave, { produtos: e.target.checked ? [...p.produtos, x.id] : p.produtos.filter((y) => y !== x.id) })}
                           />
                           {x.nome} <span className="dica">{x.preco == null ? '' : formatarReais(paraCentavos(Number(x.preco)))}</span>
+                          {x.produto_grupos.length === 0 && /pizza/i.test(x.nome) && <span className="cd-aviso-mini" title="Esse produto não tem grupo de sabores: no combo o cliente não escolhe sabor">sem sabores</span>}
                         </label>
                       ))}
                     </fieldset>
@@ -166,6 +177,11 @@ export function EditorCombo({
             )}
           </div>
         ))}
+        {semSabores.length > 0 && (
+          <p className="aviso" style={{ margin: 0 }}>
+            {semSabores.join(', ')} não {semSabores.length === 1 ? 'tem' : 'têm'} grupo de sabores — no combo o cliente não vai escolher o sabor. Aplique o grupo &quot;Sabores&quot; nesses produtos (Cardápio → Grupos de opções → Escolher produtos).
+          </p>
+        )}
         <button type="button" style={{ justifySelf: 'start' }} disabled={passos.length >= 10} onClick={() => setPassos((ps) => [...ps, { chave: Date.now(), titulo: '', quantidade: 1, setorId: null, produtos: [], modo: 'produtos' }])}>
           + Outra escolha
         </button>

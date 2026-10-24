@@ -7,6 +7,6 @@ export const dynamic = 'force-dynamic';
 /** Página inteira (link direto). No dia a dia o novo pedido abre na janela flutuante sobre o quadro. */
 export default async function PaginaNovoPedido() {
   const ctx = await contextoLoja();
-  const d = await carregarDadosNovoPedido(ctx.lojaId, ctx.marcas);
+  const d = await carregarDadosNovoPedido(ctx.lojaId, ctx.marcas, ctx.papel);
   return <NovoPedido {...d} />;
 }
