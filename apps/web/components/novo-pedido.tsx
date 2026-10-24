@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import {
+  calcularCombo,
   calcularItem,
   ErroEscolha,
   ErroPedido,
@@ -12,11 +13,12 @@ import {
   TIPO_ROTULO,
   totalizar,
   troco,
+  type EscolhaPasso,
   type Escolhas,
   type FormaPagamento,
   type TipoPedido,
 } from '@res/core';
-import { nomeOpcao, paraGrupoCore, paraProdutoCore, type GrupoRow, type ProdutoRow, type SetorRow } from '@/lib/cardapio-dados';
+import { nomeOpcao, paraGrupoCore, paraProdutoCore, passosCore, type Cardapio, type GrupoRow, type PassoRow, type ProdutoRow, type SetorRow } from '@/lib/cardapio-dados';
 import { criarPedido } from '@/app/(painel)/pedidos/actions';
 import { salvando } from '@/components/tempo-real';
 
@@ -28,6 +30,8 @@ type ItemCarrinho = {
   unitario: number;
   resumo: string;
   observacao: string;
+  /** combo: o que foi escolhido em cada passo */
+  passos?: EscolhaPasso[];
 };
 
 const lerCentavos = (t: string): number | null => {
@@ -52,6 +56,7 @@ export function NovoPedido({
   setores,
   produtos,
   grupos,
+  passos = {},
   embutido = false,
   aoConcluir,
   aoMudar,
@@ -66,8 +71,10 @@ export function NovoPedido({
   setores: SetorRow[];
   produtos: ProdutoRow[];
   grupos: Record<string, GrupoRow>;
+  passos?: Record<string, PassoRow[]>;
 }) {
   const router = useRouter();
+  const cardapio: Cardapio = useMemo(() => ({ setores, produtos, grupos, usos: {}, passos }), [setores, produtos, grupos, passos]);
   const [marcaId, setMarcaId] = useState(marcas[0]?.id ?? '');
   const [tipo, setTipo] = useState<TipoPedido>('entrega');
   const canal = tipo === 'balcao' ? 'presencial' : 'delivery';
@@ -102,7 +109,9 @@ export function NovoPedido({
     let saiu = 0;
     for (const item of carrinho) {
       try {
-        const r = calcularItem(paraProdutoCore(item.produto), item.produto.produto_grupos.map((pg) => grupos[pg.grupo_id]).filter((g): g is GrupoRow => !!g).map(paraGrupoCore), item.escolhas, novaMarca, c);
+        const r = item.produto.combo
+          ? calcularCombo(paraProdutoCore(item.produto), passosCore(cardapio, item.produto.id), item.passos ?? [], novaMarca, c)
+          : calcularItem(paraProdutoCore(item.produto), item.produto.produto_grupos.map((pg) => grupos[pg.grupo_id]).filter((g): g is GrupoRow => !!g).map(paraGrupoCore), item.escolhas, novaMarca, c);
         ficam.push({ ...item, unitario: r.unitario });
       } catch {
         saiu++;
@@ -112,14 +121,19 @@ export function NovoPedido({
     setErro(saiu ? `${saiu} item(ns) não estão disponíveis nesse canal/marca e saíram do pedido.` : null);
   };
 
-  const adicionar = (produto: ProdutoRow, escolhas: Escolhas, unitario: number, resumo: string) => {
-    setCarrinho((c) => [...c, { chave: contador, produto, quantidade: 1, escolhas, unitario, resumo, observacao: '' }]);
+  const adicionar = (produto: ProdutoRow, escolhas: Escolhas, unitario: number, resumo: string, passosEscolhidos?: EscolhaPasso[]) => {
+    setCarrinho((c) => [...c, { chave: contador, produto, quantidade: 1, escolhas, unitario, resumo, observacao: '', ...(passosEscolhidos ? { passos: passosEscolhidos } : {}) }]);
     setContador((x) => x + 1);
     setMontando(null);
   };
 
+  // "Peça também": categorias de up-sell, produtos que ainda não estão no pedido
+  const sugestoes = produtos
+    .filter((p) => !p.combo && disponivel(p) && setoresVisiveis.some((s) => s.upsell && s.id === p.setor_id) && !carrinho.some((i) => i.produto.id === p.id))
+    .slice(0, 8);
+
   const clicarProduto = (p: ProdutoRow) => {
-    if (gruposDe(p).length) return setMontando(p);
+    if (p.combo || gruposDe(p).length) return setMontando(p);
     const unitario = precoBase(paraProdutoCore(p), marcaId, canal) ?? 0;
     adicionar(p, {}, unitario, '');
   };
@@ -158,7 +172,7 @@ export function NovoPedido({
           tipo,
           cliente: { nome: cliente.nome, telefone: cliente.telefone },
           endereco: tipo === 'entrega' ? endereco : undefined,
-          itens: carrinho.map((i) => ({ produtoId: i.produto.id, quantidade: i.quantidade, observacao: i.observacao, escolhas: i.escolhas })),
+          itens: carrinho.map((i) => ({ produtoId: i.produto.id, quantidade: i.quantidade, observacao: i.observacao, escolhas: i.escolhas, ...(i.passos ? { passos: i.passos } : {}) })),
           taxaEntrega: tipo === 'entrega' && !taxaManual ? null : taxa ?? 0,
           agendadoPara: agendadoPara ? agendadoPara.toISOString() : null,
           desconto: desconto ?? 0,
@@ -219,9 +233,9 @@ export function NovoPedido({
                 const base = precoBase(paraProdutoCore(p), marcaId, canal);
                 return (
                   <button key={p.id} type="button" className="produto-botao" onClick={() => clicarProduto(p)}>
-                    <strong>{p.nome}</strong>
+                    <strong>{p.combo && <span className="selo selo-combo">Combo</span>} {p.nome}</strong>
                     <span className="dica">
-                      {gruposDe(p).length ? `a partir de ${formatarReais(base ?? 0)} · montar` : formatarReais(base ?? 0)}
+                      {p.combo ? `${formatarReais(base ?? 0)} · montar` : gruposDe(p).length ? `a partir de ${formatarReais(base ?? 0)} · montar` : formatarReais(base ?? 0)}
                     </span>
                   </button>
                 );
@@ -229,7 +243,20 @@ export function NovoPedido({
               {visiveis.length === 0 && <p className="dica">Nenhum produto disponível neste canal.</p>}
             </div>
           </div>
-          {montando && (
+          {montando?.combo && (
+            <MontadorCombo
+              key={montando.id + marcaId + canal}
+              combo={montando}
+              passos={passosCore(cardapio, montando.id)}
+              produtos={produtos}
+              grupos={grupos}
+              marcaId={marcaId}
+              canal={canal}
+              aoAdicionar={adicionar}
+              aoCancelar={() => setMontando(null)}
+            />
+          )}
+          {montando && !montando.combo && (
             <Montador
               key={montando.id + marcaId + canal}
               produto={montando}
@@ -269,6 +296,16 @@ export function NovoPedido({
             ))}
             {carrinho.length === 0 && <li className="dica">Clique nos produtos para adicionar.</li>}
           </ul>
+          {carrinho.length > 0 && sugestoes.length > 0 && (
+            <div className="np-sugestoes" aria-label="Peça também">
+              <span className="dica">Ofereça também:</span>
+              {sugestoes.map((p) => (
+                <button key={p.id} type="button" className="mini" onClick={() => clicarProduto(p)}>
+                  + {p.nome} {formatarReais(precoBase(paraProdutoCore(p), marcaId, canal) ?? 0)}
+                </button>
+              ))}
+            </div>
+          )}
 
           <fieldset className="grade" style={{ gap: '0.5rem' }}>
             <legend>Cliente</legend>
@@ -414,26 +451,10 @@ export function NovoPedido({
   );
 }
 
-/** Monta um item com grupos (sabores da pizza, adicionais…) mostrando o preço na hora. */
-function Montador({
-  produto,
-  grupos,
-  marcaId,
-  canal,
-  aoAdicionar,
-  aoCancelar,
-}: {
-  produto: ProdutoRow;
-  grupos: GrupoRow[];
-  marcaId: string;
-  canal: 'delivery' | 'presencial';
-  aoAdicionar: (p: ProdutoRow, e: Escolhas, unitario: number, resumo: string) => void;
-  aoCancelar: () => void;
-}) {
-  const [escolhas, setEscolhas] = useState<Escolhas>({});
+/** Seleção das opções dos grupos de um produto (sabores, adicionais…). */
+function GruposBalcao({ grupos, canal, escolhas, setEscolhas }: { grupos: GrupoRow[]; canal: 'delivery' | 'presencial'; escolhas: Escolhas; setEscolhas: (f: (e: Escolhas) => Escolhas) => void }) {
   const qtd = (g: string, o: string) => escolhas[g]?.[o] ?? 0;
   const totalGrupo = (g: string) => Object.values(escolhas[g] ?? {}).reduce((s, q) => s + q, 0);
-
   const alterar = (g: GrupoRow, o: string, delta: number) => {
     setEscolhas((e) => {
       const atual = { ...(e[g.id] ?? {}) };
@@ -450,33 +471,8 @@ function Montador({
       return { ...e, [g.id]: atual };
     });
   };
-
-  const calc = (() => {
-    try {
-      return { r: calcularItem(paraProdutoCore(produto), grupos.map(paraGrupoCore), escolhas, marcaId, canal) };
-    } catch (e) {
-      return { aviso: e instanceof ErroEscolha ? e.message : 'Escolha incompleta.' };
-    }
-  })();
-
-  const resumo = grupos
-    .flatMap((g) =>
-      g.opcoes
-        .filter((o) => qtd(g.id, o.id) > 0)
-        .map((o) => {
-          const q = qtd(g.id, o.id);
-          const tot = totalGrupo(g.id);
-          return g.pizza && tot > 1 ? `${q}/${tot} ${nomeOpcao(o)}` : `${q > 1 ? `${q}× ` : ''}${nomeOpcao(o)}`;
-        }),
-    )
-    .join(', ');
-
   return (
-    <div className="cartao grade">
-      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>{produto.nome}</h2>
-        <button type="button" onClick={aoCancelar}>Fechar</button>
-      </div>
+    <>
       {grupos.map((g) => (
         <fieldset key={g.id} className="grade" style={{ gap: '0.35rem' }}>
           <legend>
@@ -502,10 +498,139 @@ function Montador({
             })}
         </fieldset>
       ))}
+    </>
+  );
+}
+
+function resumoDe(grupos: GrupoRow[], escolhas: Escolhas): string {
+  return grupos
+    .flatMap((g) => {
+      const tot = Object.values(escolhas[g.id] ?? {}).reduce((s, q) => s + q, 0);
+      return g.opcoes
+        .filter((o) => (escolhas[g.id]?.[o.id] ?? 0) > 0)
+        .map((o) => {
+          const q = escolhas[g.id]![o.id]!;
+          return g.pizza && tot > 1 ? `${q}/${tot} ${nomeOpcao(o)}` : `${q > 1 ? `${q}× ` : ''}${nomeOpcao(o)}`;
+        });
+    })
+    .join(', ');
+}
+
+/** Monta um item com grupos (sabores da pizza, adicionais…) mostrando o preço na hora. */
+function Montador({
+  produto,
+  grupos,
+  marcaId,
+  canal,
+  aoAdicionar,
+  aoCancelar,
+}: {
+  produto: ProdutoRow;
+  grupos: GrupoRow[];
+  marcaId: string;
+  canal: 'delivery' | 'presencial';
+  aoAdicionar: (p: ProdutoRow, e: Escolhas, unitario: number, resumo: string) => void;
+  aoCancelar: () => void;
+}) {
+  const [escolhas, setEscolhas] = useState<Escolhas>({});
+  const calc = (() => {
+    try {
+      return { r: calcularItem(paraProdutoCore(produto), grupos.map(paraGrupoCore), escolhas, marcaId, canal) };
+    } catch (e) {
+      return { aviso: e instanceof ErroEscolha ? e.message : 'Escolha incompleta.' };
+    }
+  })();
+  return (
+    <div className="cartao grade">
+      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2>{produto.nome}</h2>
+        <button type="button" onClick={aoCancelar}>Fechar</button>
+      </div>
+      <GruposBalcao grupos={grupos} canal={canal} escolhas={escolhas} setEscolhas={setEscolhas} />
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         {calc.r ? <span className="total">{formatarReais(calc.r.unitario)}</span> : <span className="dica">{calc.aviso}</span>}
-        <button type="button" className="botao-primario" disabled={!calc.r} onClick={() => calc.r && aoAdicionar(produto, escolhas, calc.r.unitario, resumo)}>
+        <button type="button" className="botao-primario" disabled={!calc.r} onClick={() => calc.r && aoAdicionar(produto, escolhas, calc.r.unitario, resumoDe(grupos, escolhas))}>
           Adicionar ao pedido
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** Combo no balcão: escolhe o produto de cada passo e monta (sabores…). */
+function MontadorCombo({
+  combo,
+  passos,
+  produtos,
+  grupos,
+  marcaId,
+  canal,
+  aoAdicionar,
+  aoCancelar,
+}: {
+  combo: ProdutoRow;
+  passos: ReturnType<typeof passosCore>;
+  produtos: ProdutoRow[];
+  grupos: Record<string, GrupoRow>;
+  marcaId: string;
+  canal: 'delivery' | 'presencial';
+  aoAdicionar: (p: ProdutoRow, e: Escolhas, unitario: number, resumo: string, passos: EscolhaPasso[]) => void;
+  aoCancelar: () => void;
+}) {
+  const vagas = passos.flatMap((p) => Array.from({ length: p.quantidade }, (_, n) => ({ passo: p, n: n + 1 })));
+  const [esc, setEsc] = useState<{ produtoId: string | null; escolhas: Escolhas }[]>(() => vagas.map((v) => ({ produtoId: v.passo.opcoes.length === 1 ? v.passo.opcoes[0]!.produto.id : null, escolhas: {} })));
+  const gruposDoProduto = (id: string) => {
+    const p = produtos.find((x) => x.id === id);
+    return (p?.produto_grupos ?? []).map((pg) => grupos[pg.grupo_id]).filter((g): g is GrupoRow => !!g && g.ativo && (canal === 'delivery' ? g.delivery : g.presencial));
+  };
+  const escolhidos: EscolhaPasso[] = vagas.flatMap((v, i) => (esc[i]?.produtoId ? [{ passoId: v.passo.id, produtoId: esc[i]!.produtoId!, escolhas: esc[i]!.escolhas }] : []));
+  const calc = (() => {
+    try {
+      return { r: calcularCombo(paraProdutoCore(combo), passos, escolhidos, marcaId, canal) };
+    } catch (e) {
+      return { aviso: e instanceof ErroEscolha ? e.message : 'Escolha incompleta.' };
+    }
+  })();
+  const resumo = escolhidos
+    .map((e) => {
+      const nome = produtos.find((x) => x.id === e.produtoId)?.nome ?? '';
+      const r = resumoDe(gruposDoProduto(e.produtoId), e.escolhas);
+      return r ? `${nome} (${r})` : nome;
+    })
+    .join(' + ');
+  return (
+    <div className="cartao grade">
+      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2><span className="selo selo-combo">Combo</span> {combo.nome}</h2>
+        <button type="button" onClick={aoCancelar}>Fechar</button>
+      </div>
+      {vagas.map((v, i) => (
+        <section key={`${v.passo.id}-${v.n}`} className="grade np-passo" style={{ gap: '0.4rem' }}>
+          <strong>{i + 1}. {v.passo.titulo}{v.passo.quantidade > 1 ? ` (${v.n} de ${v.passo.quantidade})` : ''}</strong>
+          {v.passo.opcoes.length > 1 && (
+            <div className="linha" style={{ gap: '0.35rem' }}>
+              {v.passo.opcoes.map((o) => (
+                <button key={o.produto.id} type="button" aria-pressed={esc[i]?.produtoId === o.produto.id} className={esc[i]?.produtoId === o.produto.id ? 'botao-primario' : ''}
+                  onClick={() => setEsc((es) => es.map((e, j) => (j === i ? { produtoId: o.produto.id, escolhas: {} } : e)))}>
+                  {o.produto.nome}
+                </button>
+              ))}
+            </div>
+          )}
+          {esc[i]?.produtoId && (
+            <GruposBalcao
+              grupos={gruposDoProduto(esc[i]!.produtoId!)}
+              canal={canal}
+              escolhas={esc[i]!.escolhas}
+              setEscolhas={(f) => setEsc((es) => es.map((e, j) => (j === i ? { ...e, escolhas: f(e.escolhas) } : e)))}
+            />
+          )}
+        </section>
+      ))}
+      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        {calc.r ? <span className="total">{formatarReais(calc.r.unitario)}</span> : <span className="dica">{calc.aviso}</span>}
+        <button type="button" className="botao-primario" disabled={!calc.r} onClick={() => calc.r && aoAdicionar(combo, {}, calc.r.unitario, resumo, escolhidos)}>
+          Adicionar combo
         </button>
       </div>
     </div>

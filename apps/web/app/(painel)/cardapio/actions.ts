@@ -34,7 +34,7 @@ export async function salvarSetor(form: FormData): Promise<Resultado> {
   if (erros.length) return { ok: false, erro: erros.join(' ') };
 
   const supabase = await criarClienteServidor();
-  const { error } = await supabase.rpc('salvar_setor', {
+  const { data: id, error } = await supabase.rpc('salvar_setor', {
     p_loja: ctx.lojaId,
     p_id: (form.get('id') as string) || null,
     p_nome: dados.nome.trim(),
@@ -43,7 +43,34 @@ export async function salvarSetor(form: FormData): Promise<Resultado> {
     p_presencial: dados.presencial,
     p_marcas: dados.marcas,
   });
-  return error ? { ok: false, erro: mensagem(error) } : pronto();
+  if (error) return { ok: false, erro: mensagem(error) };
+  // categoria de up-sell ("Peça também" no carrinho e no balcão)
+  const up = await supabase.from('setores').update({ upsell: form.get('upsell') === 'on' }).eq('id', id as string);
+  return up.error ? { ok: false, erro: mensagem(up.error) } : pronto();
+}
+
+// ---------------------------------------------------------------- combos
+
+export type PassoForm = { titulo: string; quantidade: number; setorId: string | null; produtos: string[] };
+
+/** Cria ou atualiza um combo (preço em centavos). Devolve o id. */
+export async function salvarCombo(id: string | null, dados: { nome: string; descricao: string; preco: number; setorId: string | null; passos: PassoForm[] }): Promise<Resultado & { id?: string }> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('salvar_combo', {
+    p_loja: ctx.lojaId,
+    p_combo: id,
+    p_dados: {
+      nome: dados.nome.trim(),
+      descricao: dados.descricao.trim() || null,
+      preco: dados.preco / 100,
+      setor_id: dados.setorId,
+      passos: dados.passos.map((p) => ({ titulo: p.titulo.trim(), quantidade: p.quantidade, setor_id: p.setorId, produtos: p.produtos })),
+    },
+  });
+  if (error) return { ok: false, erro: mensagem(error) };
+  revalidatePath('/cardapio');
+  return { ok: true, id: data as string };
 }
 
 export async function excluirSetor(id: string): Promise<Resultado> {

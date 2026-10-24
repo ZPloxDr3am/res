@@ -121,3 +121,10 @@ Registro curto de cada decisão, com o motivo. Referências `R-`, `B-`, `T-` apo
 - A promoção De/Por usa o `preco_promocional` que já existia e ganha uma agenda: dias da semana, horário (pode passar da meia-noite; a madrugada conta no dia em que a promoção começou) e último dia. `private.promo_vigente` decide no banco (preço do item e cardápio público com o preço riscado); `promoVale` (core) faz a mesma conta na tela. Os dois usam os mesmos casos de teste.
 - A promoção vale para todas as marcas (cardápios) do produto. As cópias (duplicar, importar, compartilhar catálogo) levam a agenda junto.
 - Próximas fases: combos com escolhas e categoria de up-sell ("Peça também"); depois % por categoria, cupons (com contagem de clientes e usos) e desconto no balcão com limite.
+
+## D-022 Combos com escolhas e categoria de up-sell
+- O combo é um produto marcado como combo (preço, foto, categoria, promoção e cópia funcionam igual) com "passos": em cada passo o cliente escolhe um dos produtos permitidos (lista ou uma categoria inteira) e monta normalmente (sabores, borda).
+- Preço = preço do combo + o que cada escolha cobra além do preço base dela (sabor mais caro, borda). `private.preco_combo` no banco e `calcularCombo` no core usam os mesmos casos de teste.
+- No pedido o combo é um item só; as escolhas viram linhas de opção ("Pizza: Pizza Gigante", "Pizza Gigante · Sabores: Calabresa") e a comanda já imprime. Como a impressão por categoria usa a categoria do item, o combo sai na impressora da categoria do combo (ou na padrão).
+- Combos não vêm no "Importar de outra loja", porque as escolhas apontam para produtos daquela loja. Duplicar um combo copia as escolhas.
+- Categoria de up-sell (marcada na própria categoria): o cardápio digital mostra "Peça também" no carrinho, com produtos dessas categorias que ainda não estão no pedido, e o pedido do balcão mostra "Ofereça também".

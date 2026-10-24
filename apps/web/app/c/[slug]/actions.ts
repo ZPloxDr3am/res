@@ -6,7 +6,14 @@ export interface PedidoCliente {
   tipo: 'entrega' | 'retirada';
   cliente: { nome: string; telefone: string };
   endereco?: { logradouro: string; numero?: string; complemento?: string; bairro: string; referencia?: string };
-  itens: { produtoId: string; quantidade: number; observacao?: string; escolhas: Record<string, Record<string, number>> }[];
+  itens: {
+    produtoId: string;
+    quantidade: number;
+    observacao?: string;
+    escolhas: Record<string, Record<string, number>>;
+    /** combo: o que o cliente escolheu em cada passo */
+    passos?: { passoId: string; produtoId: string; escolhas: Record<string, Record<string, number>> }[];
+  }[];
   pagamento: FormaPagamento;
   /** centavos */
   trocoPara: number | null;
@@ -24,7 +31,12 @@ export async function enviarPedido(slug: string, p: PedidoCliente): Promise<{ ok
       tipo: p.tipo,
       cliente: p.cliente,
       endereco: p.tipo === 'entrega' ? p.endereco : null,
-      itens: p.itens.map((i) => ({ produto_id: i.produtoId, quantidade: i.quantidade, observacao: i.observacao || null, escolhas: i.escolhas })),
+      itens: p.itens.map((i) => ({
+        produto_id: i.produtoId,
+        quantidade: i.quantidade,
+        observacao: i.observacao || null,
+        escolhas: i.passos ? { passos: i.passos.map((x) => ({ passo_id: x.passoId, produto_id: x.produtoId, escolhas: x.escolhas })) } : i.escolhas,
+      })),
       pagamento: p.pagamento,
       troco_para: p.pagamento === 'dinheiro' && p.trocoPara != null ? p.trocoPara / 100 : null,
       observacao: p.observacao || null,

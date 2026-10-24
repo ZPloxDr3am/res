@@ -2,8 +2,10 @@
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import {
+  calcularCombo,
   calcularItem,
   dataNoFuso,
+  precoSeparado,
   ErroEscolha,
   ErroPedido,
   formatarReais,
@@ -13,6 +15,7 @@ import {
   taxaDoBairro,
   totalizar,
   troco,
+  type EscolhaPasso,
   type Escolhas,
   type FormaPagamento,
 } from '@res/core';
@@ -21,6 +24,7 @@ import {
   diaNoFuso,
   grupoCore,
   MARCA_CORE,
+  passosPublicosCore,
   produtoCore,
   type AgendamentoPublico,
   type CardapioPublico,
@@ -29,7 +33,7 @@ import {
 } from '@/lib/publico';
 import { enviarPedido } from '@/app/c/[slug]/actions';
 
-type Item = { chave: number; produtoId: string; quantidade: number; escolhas: Escolhas; observacao: string };
+type Item = { chave: number; produtoId: string; quantidade: number; escolhas: Escolhas; observacao: string; passos?: EscolhaPasso[] };
 type ItemCalculado = Item & { produto: ProdutoPublico; unitario: number; resumo: string };
 
 const ler = <T,>(chave: string, padrao: T): T => {
@@ -69,6 +73,18 @@ function resumoEscolhas(p: ProdutoPublico, e: Escolhas): string {
     .join(', ');
 }
 
+function resumoCombo(p: ProdutoPublico, passos: EscolhaPasso[]): string {
+  return passos
+    .map((e) => {
+      const filho = p.passos?.find((x) => x.id === e.passoId)?.produtos.find((x) => x.id === e.produtoId);
+      if (!filho) return '';
+      const r = resumoEscolhas(filho, e.escolhas);
+      return r ? `${filho.nome} (${r})` : filho.nome;
+    })
+    .filter(Boolean)
+    .join(' + ');
+}
+
 export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioPublico; agendamento: AgendamentoPublico }) {
   const { marca, setores } = cardapio;
   const router = useRouter();
@@ -97,6 +113,10 @@ export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioP
         const p = produtos.get(i.produtoId);
         if (!p || p.etiqueta === 'esgotado') return [];
         try {
+          if (p.combo) {
+            const r = calcularCombo(produtoCore(p), passosPublicosCore(p), i.passos ?? [], MARCA_CORE, 'delivery');
+            return [{ ...i, produto: p, unitario: r.unitario, resumo: resumoCombo(p, i.passos ?? []) }];
+          }
           const r = calcularItem(produtoCore(p), p.grupos.map(grupoCore), i.escolhas, MARCA_CORE, 'delivery');
           return [{ ...i, produto: p, unitario: r.unitario, resumo: resumoEscolhas(p, i.escolhas) }];
         } catch {
@@ -108,10 +128,16 @@ export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioP
   const quantidade = calculados.reduce((s, i) => s + i.quantidade, 0);
   const subtotal = calculados.reduce((s, i) => s + i.unitario * i.quantidade, 0);
 
-  const adicionar = (p: ProdutoPublico, escolhas: Escolhas, observacao: string) => {
-    setItens((x) => [...x, { chave: Date.now(), produtoId: p.id, quantidade: 1, escolhas, observacao }]);
+  const adicionar = (p: ProdutoPublico, escolhas: Escolhas, observacao: string, passos?: EscolhaPasso[]) => {
+    setItens((x) => [...x, { chave: Date.now(), produtoId: p.id, quantidade: 1, escolhas, observacao, ...(passos ? { passos } : {}) }]);
     setAbrindo(null);
   };
+  const abrir = (p: ProdutoPublico) => (p.combo || p.grupos.length ? setAbrindo(p) : adicionar(p, {}, ''));
+  // "Peça também": produtos das categorias de up-sell que ainda não estão no pedido
+  const sugestoes = useMemo(() => {
+    const no = new Set(itens.map((i) => i.produtoId));
+    return setores.filter((s) => s.upsell).flatMap((s) => s.produtos).filter((p) => !p.combo && p.etiqueta !== 'esgotado' && !no.has(p.id)).slice(0, 6);
+  }, [setores, itens]);
 
   const hoje = diaNoFuso(marca.fuso);
   const horarioHoje = marca.horarios.filter((h) => h.dia === hoje).map((h) => `${h.abre}–${h.fecha}`).join(', ');
@@ -176,14 +202,16 @@ export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioP
                       type="button"
                       className="pub-produto"
                       disabled={esgotado}
-                      onClick={() => (p.grupos.length ? setAbrindo(p) : adicionar(p, {}, ''))}
+                      onClick={() => abrir(p)}
                     >
                       <span className="pub-produto-texto">
                         <strong>{p.nome}</strong>
+                        {p.combo && <span className="selo selo-combo">Combo</span>}
+                        {p.preco_original != null && p.preco_original > p.preco && <span className="selo selo-promo">-{Math.round(((p.preco_original - p.preco) / p.preco_original) * 100)}%</span>}
                         {p.etiqueta && <span className="selo">{ETIQUETA[p.etiqueta]}</span>}
                         {p.descricao && <span className="dica">{p.descricao}</span>}
                         <span>
-                          {p.grupos.length > 0 && p.preco === 0 ? 'Monte o seu' : (p.grupos.length > 0 ? 'A partir de ' : '') + formatarReais(p.preco)}
+                          {!p.combo && p.grupos.length > 0 && p.preco === 0 ? 'Monte o seu' : (!p.combo && p.grupos.length > 0 ? 'A partir de ' : '') + formatarReais(p.preco)}
                           {p.preco_original != null && <s className="dica"> {formatarReais(p.preco_original)}</s>}
                         </span>
                       </span>
@@ -203,6 +231,8 @@ export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioP
           agendamento={agendamento}
           itens={calculados}
           subtotal={subtotal}
+          sugestoes={sugestoes}
+          aoSugerir={abrir}
           alterar={(chave, delta) =>
             setItens((x) => x.flatMap((i) => (i.chave !== chave ? [i] : i.quantidade + delta <= 0 ? [] : [{ ...i, quantidade: Math.min(99, i.quantidade + delta) }])))
           }
@@ -223,25 +253,16 @@ export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioP
         </div>
       )}
 
-      {abrindo && <Montador produto={abrindo} aoAdicionar={adicionar} aoFechar={() => setAbrindo(null)} />}
+      {abrindo && !abrindo.combo && <Montador produto={abrindo} aoAdicionar={adicionar} aoFechar={() => setAbrindo(null)} />}
+      {abrindo?.combo && <MontadorCombo combo={abrindo} aoAdicionar={(passos, obs) => adicionar(abrindo, {}, obs, passos)} aoFechar={() => setAbrindo(null)} />}
     </div>
   );
 }
 
-function Montador({
-  produto,
-  aoAdicionar,
-  aoFechar,
-}: {
-  produto: ProdutoPublico;
-  aoAdicionar: (p: ProdutoPublico, e: Escolhas, obs: string) => void;
-  aoFechar: () => void;
-}) {
-  const [escolhas, setEscolhas] = useState<Escolhas>({});
-  const [obs, setObs] = useState('');
+/** Escolha das opções dos grupos de um produto (sabores, borda…). */
+function EscolhaGrupos({ produto, escolhas, setEscolhas }: { produto: ProdutoPublico; escolhas: Escolhas; setEscolhas: (f: (e: Escolhas) => Escolhas) => void }) {
   const qtd = (g: string, o: string) => escolhas[g]?.[o] ?? 0;
   const tot = (g: string) => Object.values(escolhas[g] ?? {}).reduce((s, q) => s + q, 0);
-
   const alterar = (g: GrupoPublico, o: string, delta: number) =>
     setEscolhas((e) => {
       const atual = { ...(e[g.id] ?? {}) };
@@ -257,6 +278,55 @@ function Montador({
       else atual[o] = novo;
       return { ...e, [g.id]: atual };
     });
+  return (
+    <>
+      {produto.grupos.map((g) => (
+        <fieldset key={g.id} className="grade" style={{ gap: '0.35rem' }}>
+          <legend>
+            <strong>{g.nome}</strong>{' '}
+            <span className="dica">
+              {g.obrigatorio ? 'Obrigatório' : 'Opcional'} · {g.min === g.max ? `escolha ${g.max}` : `até ${g.max}`}
+              {g.pizza && g.max > 1 ? ' (sabores dividem a pizza)' : ''} · {tot(g.id)}/{g.max}
+            </span>
+          </legend>
+          {g.opcoes.map((o) => (
+            <div key={o.id} className="pub-linha" style={{ justifyContent: 'space-between' }}>
+              <span>
+                {o.nome} {o.preco > 0 && <span className="dica">{formatarReais(o.preco)}</span>}
+              </span>
+              <span className="passo">
+                <button type="button" aria-label={`Menos ${o.nome}`} disabled={qtd(g.id, o.id) === 0} onClick={() => alterar(g, o.id, -1)}>−</button>
+                <span aria-live="polite">{qtd(g.id, o.id)}</span>
+                <button type="button" aria-label={`Mais ${o.nome}`} onClick={() => alterar(g, o.id, 1)}>+</button>
+              </span>
+            </div>
+          ))}
+        </fieldset>
+      ))}
+    </>
+  );
+}
+
+function useEsc(aoFechar: () => void) {
+  useEffect(() => {
+    const f = (ev: KeyboardEvent) => ev.key === 'Escape' && aoFechar();
+    window.addEventListener('keydown', f);
+    return () => window.removeEventListener('keydown', f);
+  }, [aoFechar]);
+}
+
+function Montador({
+  produto,
+  aoAdicionar,
+  aoFechar,
+}: {
+  produto: ProdutoPublico;
+  aoAdicionar: (p: ProdutoPublico, e: Escolhas, obs: string) => void;
+  aoFechar: () => void;
+}) {
+  const [escolhas, setEscolhas] = useState<Escolhas>({});
+  const [obs, setObs] = useState('');
+  useEsc(aoFechar);
 
   const calc = (() => {
     try {
@@ -265,13 +335,6 @@ function Montador({
       return { aviso: e instanceof ErroEscolha ? e.message : 'Escolha incompleta.' };
     }
   })();
-
-  // Esc fecha
-  useEffect(() => {
-    const f = (ev: KeyboardEvent) => ev.key === 'Escape' && aoFechar();
-    window.addEventListener('keydown', f);
-    return () => window.removeEventListener('keydown', f);
-  }, [aoFechar]);
 
   return (
     <div className="pub-folha-fundo" onClick={aoFechar}>
@@ -282,29 +345,7 @@ function Montador({
         </div>
         {produto.imagem_url && <img src={produto.imagem_url} alt="" className="pub-foto" />}
         {produto.descricao && <p className="dica">{produto.descricao}</p>}
-        {produto.grupos.map((g) => (
-          <fieldset key={g.id} className="grade" style={{ gap: '0.35rem' }}>
-            <legend>
-              <strong>{g.nome}</strong>{' '}
-              <span className="dica">
-                {g.obrigatorio ? 'Obrigatório' : 'Opcional'} · {g.min === g.max ? `escolha ${g.max}` : `até ${g.max}`}
-                {g.pizza && g.max > 1 ? ' (sabores dividem a pizza)' : ''} · {tot(g.id)}/{g.max}
-              </span>
-            </legend>
-            {g.opcoes.map((o) => (
-              <div key={o.id} className="pub-linha" style={{ justifyContent: 'space-between' }}>
-                <span>
-                  {o.nome} {o.preco > 0 && <span className="dica">{formatarReais(o.preco)}</span>}
-                </span>
-                <span className="passo">
-                  <button type="button" aria-label={`Menos ${o.nome}`} disabled={qtd(g.id, o.id) === 0} onClick={() => alterar(g, o.id, -1)}>−</button>
-                  <span aria-live="polite">{qtd(g.id, o.id)}</span>
-                  <button type="button" aria-label={`Mais ${o.nome}`} onClick={() => alterar(g, o.id, 1)}>+</button>
-                </span>
-              </div>
-            ))}
-          </fieldset>
-        ))}
+        <EscolhaGrupos produto={produto} escolhas={escolhas} setEscolhas={setEscolhas} />
         <label>
           Alguma observação?
           <input type="text" maxLength={300} value={obs} onChange={(e) => setObs(e.target.value)} placeholder="Ex.: sem cebola" />
@@ -317,11 +358,78 @@ function Montador({
   );
 }
 
+/** Combo: em cada passo o cliente escolhe o produto e monta (sabores, borda…). */
+function MontadorCombo({ combo, aoAdicionar, aoFechar }: { combo: ProdutoPublico; aoAdicionar: (passos: EscolhaPasso[], obs: string) => void; aoFechar: () => void }) {
+  // uma vaga por unidade de cada passo
+  const vagas = useMemo(() => (combo.passos ?? []).flatMap((p) => Array.from({ length: p.quantidade }, (_, i) => ({ passo: p, n: i + 1 }))), [combo]);
+  const [escolhidos, setEscolhidos] = useState<{ produtoId: string | null; escolhas: Escolhas }[]>(() => vagas.map((v) => ({ produtoId: v.passo.produtos.length === 1 ? v.passo.produtos[0]!.id : null, escolhas: {} })));
+  const [obs, setObs] = useState('');
+  useEsc(aoFechar);
+  const passos: EscolhaPasso[] = vagas.flatMap((v, i) => (escolhidos[i]?.produtoId ? [{ passoId: v.passo.id, produtoId: escolhidos[i]!.produtoId!, escolhas: escolhidos[i]!.escolhas }] : []));
+  const calc = (() => {
+    try {
+      return { r: calcularCombo(produtoCore(combo), passosPublicosCore(combo), passos, MARCA_CORE, 'delivery') };
+    } catch (e) {
+      return { aviso: e instanceof ErroEscolha ? e.message : 'Escolha incompleta.' };
+    }
+  })();
+  const separado = precoSeparado(passosPublicosCore(combo), MARCA_CORE, 'delivery');
+  const mudar = (i: number, x: Partial<{ produtoId: string | null; escolhas: Escolhas }>) => setEscolhidos((es) => es.map((e, j) => (j === i ? { ...e, ...x } : e)));
+
+  return (
+    <div className="pub-folha-fundo" onClick={aoFechar}>
+      <div className="pub-folha" role="dialog" aria-modal="true" aria-label={combo.nome} onClick={(e) => e.stopPropagation()}>
+        <div className="pub-linha" style={{ justifyContent: 'space-between' }}>
+          <h2>{combo.nome}</h2>
+          <button type="button" onClick={aoFechar} aria-label="Fechar">✕</button>
+        </div>
+        {combo.imagem_url && <img src={combo.imagem_url} alt="" className="pub-foto" />}
+        {combo.descricao && <p className="dica">{combo.descricao}</p>}
+        {separado > combo.preco && <p className="pub-economia">Você economiza {formatarReais(separado - combo.preco)} em relação a pedir separado.</p>}
+        {vagas.map((v, i) => {
+          const atual = escolhidos[i];
+          const filho = v.passo.produtos.find((x) => x.id === atual?.produtoId) ?? null;
+          return (
+            <section key={`${v.passo.id}-${v.n}`} className="pub-passo grade" style={{ gap: '0.45rem' }}>
+              <strong>
+                {i + 1}. {v.passo.titulo}
+                {v.passo.quantidade > 1 ? ` (${v.n} de ${v.passo.quantidade})` : ''}
+              </strong>
+              {v.passo.produtos.length > 1 && (
+                <div className="pub-linha" style={{ gap: '0.4rem' }}>
+                  {v.passo.produtos.map((x) => (
+                    <button key={x.id} type="button" className={`pub-opcao ${atual?.produtoId === x.id ? 'on' : ''}`} aria-pressed={atual?.produtoId === x.id} onClick={() => mudar(i, { produtoId: x.id, escolhas: {} })}>
+                      {x.nome}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {v.passo.produtos.length === 0 && <span className="dica">Nenhum produto disponível agora.</span>}
+              {filho && filho.grupos.length > 0 && (
+                <EscolhaGrupos produto={filho} escolhas={atual!.escolhas} setEscolhas={(f) => setEscolhidos((es) => es.map((e, j) => (j === i ? { ...e, escolhas: f(e.escolhas) } : e)))} />
+              )}
+            </section>
+          );
+        })}
+        <label>
+          Alguma observação?
+          <input type="text" maxLength={300} value={obs} onChange={(e) => setObs(e.target.value)} placeholder="Ex.: sem cebola" />
+        </label>
+        <button type="button" className="botao-primario pub-cta" disabled={!calc.r} onClick={() => calc.r && aoAdicionar(passos, obs)}>
+          {calc.r ? `Adicionar combo · ${formatarReais(calc.r.unitario)}` : calc.aviso}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function Checkout({
   cardapio,
   agendamento,
   itens,
   subtotal,
+  sugestoes,
+  aoSugerir,
   alterar,
   voltar,
   concluido,
@@ -330,6 +438,8 @@ function Checkout({
   agendamento: AgendamentoPublico;
   itens: ItemCalculado[];
   subtotal: number;
+  sugestoes: ProdutoPublico[];
+  aoSugerir: (p: ProdutoPublico) => void;
   alterar: (chave: number, delta: number) => void;
   voltar: () => void;
   concluido: (codigo: string) => void;
@@ -400,7 +510,7 @@ function Checkout({
         tipo,
         cliente,
         endereco: tipo === 'entrega' ? endereco : undefined,
-        itens: itens.map((i) => ({ produtoId: i.produtoId, quantidade: i.quantidade, observacao: i.observacao, escolhas: i.escolhas })),
+        itens: itens.map((i) => ({ produtoId: i.produtoId, quantidade: i.quantidade, observacao: i.observacao, escolhas: i.escolhas, ...(i.passos ? { passos: i.passos } : {}) })),
         pagamento,
         trocoPara: Number.isNaN(trocoPara) ? null : trocoPara,
         observacao,
@@ -432,6 +542,23 @@ function Checkout({
         ))}
         {itens.length === 0 && <li className="dica">Seu pedido está vazio.</li>}
       </ul>
+
+      {sugestoes.length > 0 && (
+        <section className="pub-sugestoes" aria-label="Peça também">
+          <strong>Peça também</strong>
+          <div className="pub-sugestoes-lista">
+            {sugestoes.map((p) => (
+              <button key={p.id} type="button" onClick={() => aoSugerir(p)}>
+                {p.imagem_url && <img src={p.imagem_url} alt="" loading="lazy" />}
+                <span>
+                  <b>+ {p.nome}</b>
+                  <span className="dica">{formatarReais(p.preco)}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
 
       {tiposAceitos.length > 1 && (
         <fieldset className="pub-linha">

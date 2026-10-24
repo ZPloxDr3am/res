@@ -11,3 +11,4 @@ export * from './impressoras.js';
 export * from './cupom.js';
 export * from './entregas.js';
 export * from './promocao.js';
+export * from './combo.js';
