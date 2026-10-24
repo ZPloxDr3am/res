@@ -412,3 +412,27 @@ input[type='date'] { font: inherit; color: var(--texto); background: var(--super
 .selo-cobrar { border-color: var(--erro); color: var(--erro); font-weight: 700; }
 .mb-baixar { display: grid; gap: 0.45rem; margin: 0 1rem 1.5rem; padding: 0.9rem 1rem; border-radius: 14px; background: #17312a; border: 1px solid #2f5a4c; color: #f2f5f3; text-align: center; }
 .mb-baixar strong { font-size: 1.05rem; }
+
+/* Entregas: bairros e preços, fechamento dos motoboys (D-020) */
+.abas .aba-link { padding: 0.45rem 0.9rem; border-radius: 8px; color: inherit; text-decoration: none; }
+.abas .aba-link[aria-selected='true'] { background: var(--superficie); box-shadow: var(--sombra); font-weight: 600; }
+.tabela-bairros td { padding: 0.3rem 0.4rem; vertical-align: middle; }
+.tabela-bairros input:not([type='checkbox']) { width: 7.5rem; }
+.tabela-bairros td:first-child input { width: 13rem; }
+.tabela-bairros tr[data-inativo] input:not([type='checkbox']) { opacity: 0.55; }
+.fech-numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: 0.5rem; }
+.fech-numeros > div { display: grid; gap: 0.15rem; padding: 0.6rem 0.75rem; border: 1px solid var(--borda); border-radius: var(--raio); background: color-mix(in srgb, var(--borda) 18%, var(--superficie)); }
+.fech-numeros span { font-size: 0.8rem; color: var(--texto-suave); }
+.fech-numeros strong { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.fech-numeros small { font-size: 0.75rem; color: var(--texto-suave); }
+.fech-numeros .destaque { border-color: var(--primaria); background: color-mix(in srgb, var(--primaria) 12%, var(--superficie)); }
+.fech-acerto { padding: 0.3rem 0.7rem; border-radius: 999px; background: color-mix(in srgb, var(--borda) 40%, transparent); }
+.fech-acerto.devolve { background: color-mix(in srgb, var(--destaque) 25%, transparent); }
+.fech-acerto.recebe { background: color-mix(in srgb, var(--primaria) 20%, transparent); }
+.mb-km { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.mb-km span { padding: 0.3rem 0.65rem; border-radius: 999px; background: #22302b; color: #f2f5f3; font-weight: 600; font-size: 0.95rem; }
+.mb-km span.ganho { background: #e0a526; color: #1d1a10; }
+.mb-feitas { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
+.mb-feitas li { display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.9rem; }
+.mb-acerto { margin: 0; padding: 0.6rem 0.8rem; border-radius: 12px; font-weight: 700; background: #22302b; color: #f2f5f3; text-align: center; }
+.mb-hoje-grade .mb-ganho { border-color: #e0a526; background: #2b2615; }

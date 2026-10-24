@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { formatarReais, tempoDecorrido } from '@res/core';
-import { despachar, entregar } from '@/app/m/actions';
+import { formatarKm, formatarReais, tempoDecorrido } from '@res/core';
+import { despachar, entregar, medirEntrega } from '@/app/m/actions';
 import { cobranca, LINK_APP_ANDROID, linkLigar, linkMaps, linkWaze, linkWhats, type Entrega, type PainelMotoboy } from '@/lib/motoboy';
 
 type Aviso = { ok: boolean; texto: string } | null;
@@ -82,11 +82,26 @@ export function AppMotoboy({ painel }: { painel: PainelMotoboy }) {
         <h2 className="mb-titulo">Hoje</h2>
         <div className="mb-hoje-grade">
           <div><span>Entregas</span><strong>{painel.hoje.entregas}</strong></div>
+          <div><span>Km rodados</span><strong>{formatarKm(Number(painel.hoje.km ?? 0))}</strong></div>
+          <div className="mb-ganho"><span>Você recebe</span><strong>{formatarReais(painel.hoje.a_receber ?? painel.hoje.taxas)}</strong></div>
           <div><span>Dinheiro recebido</span><strong>{formatarReais(painel.hoje.cobrado_dinheiro)}</strong></div>
           <div><span>Cartão/Pix na porta</span><strong>{formatarReais(painel.hoje.cobrado_outros)}</strong></div>
-          <div><span>Taxas de entrega</span><strong>{formatarReais(painel.hoje.taxas)}</strong></div>
         </div>
-        <p className="mb-dica">"Dinheiro recebido" é o que você deve entregar no caixa ao fim do turno.</p>
+        {painel.hoje.entregas > 0 && <Acerto dinheiro={painel.hoje.cobrado_dinheiro} receber={painel.hoje.a_receber ?? painel.hoje.taxas} />}
+        {(painel.feitas?.length ?? 0) > 0 && (
+          <details className="mb-itens">
+            <summary>Entregas feitas ({painel.feitas!.length})</summary>
+            <ul className="mb-feitas">
+              {painel.feitas!.map((f) => (
+                <li key={`${f.loja}-${f.numero}`}>
+                  <span>#{f.numero} · {f.bairro ?? '—'}{f.distancia_km != null ? ` · ${formatarKm(Number(f.distancia_km))}` : ''}</span>
+                  <strong>{formatarReais(f.valor_motoboy)}</strong>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
+        <p className="mb-dica">O dia vai das 05:00 às 05:00 — a madrugada conta na noite anterior.</p>
       </section>
       {!noApp && (
         <section className="mb-baixar">
@@ -97,6 +112,20 @@ export function AppMotoboy({ painel }: { painel: PainelMotoboy }) {
         </section>
       )}
     </main>
+  );
+}
+
+/** Acerto do turno: o dinheiro em mãos menos o que ele tem a receber pelas entregas. */
+function Acerto({ dinheiro, receber }: { dinheiro: number; receber: number }) {
+  const saldo = dinheiro - receber;
+  return (
+    <p className="mb-acerto">
+      {saldo > 0 && `Acerto: entregar ${formatarReais(saldo)} na loja`}
+      {saldo < 0 && `Acerto: a loja te paga ${formatarReais(-saldo)}`}
+      {saldo === 0 && 'Acerto zerado'}
+      <br />
+      <small style={{ fontWeight: 400 }}>dinheiro {formatarReais(dinheiro)} − suas entregas {formatarReais(receber)}</small>
+    </p>
   );
 }
 
@@ -114,6 +143,25 @@ function CartaoEntrega({ e, aoEntregar }: { e: Entrega; aoEntregar: (numero: num
   const [pendente, iniciar] = useTransition();
   const c = cobranca(e);
   const a = e.endereco;
+  const [km, setKm] = useState<{ km: number | null; fonte: Entrega['distancia_fonte'] }>({ km: e.distancia_km == null ? null : Number(e.distancia_km), fonte: e.distancia_fonte ?? null });
+  const [medindo, setMedindo] = useState(false);
+
+  // mede a rota real até o endereço (uma vez); até lá vale o km do bairro
+  useEffect(() => {
+    if (km.fonte === 'rota' || km.fonte === 'manual' || e.loja_lat == null || !a) return;
+    let vivo = true;
+    setMedindo(true);
+    medirEntrega(e.id)
+      .then((r) => {
+        if (vivo && r) setKm({ km: r.km, fonte: r.fonte });
+      })
+      .catch(() => {})
+      .finally(() => vivo && setMedindo(false));
+    return () => {
+      vivo = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [e.id]);
 
   return (
     <article className="mb-entrega">
@@ -125,6 +173,14 @@ function CartaoEntrega({ e, aoEntregar }: { e: Entrega; aoEntregar: (numero: num
       <div className={`mb-cobrar ${c.cobrar ? 'sim' : 'nao'}`}>
         <strong>{c.titulo}</strong>
         <span>{c.detalhe}</span>
+      </div>
+
+      <div className="mb-km">
+        <span>
+          📍 {km.km != null ? `${km.fonte === 'rota' || km.fonte === 'manual' ? '' : '~'}${formatarKm(km.km)}` : medindo ? 'medindo…' : 'km —'}
+          {medindo && km.km != null ? ' …' : ''}
+        </span>
+        {e.valor_motoboy != null && <span className="ganho">💵 Você recebe {formatarReais(e.valor_motoboy)}</span>}
       </div>
 
       <div className="mb-cliente">

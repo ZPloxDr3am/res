@@ -1,6 +1,7 @@
 'use server';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import type { PainelMotoboy, Entrega } from '@/lib/motoboy';
+import { localizarEntrega, medir } from '@/lib/geo';
 
 export async function painelMotoboy(): Promise<PainelMotoboy | null> {
   const supabase = await criarClienteServidor();
@@ -24,4 +25,24 @@ export async function entregar(pedidoId: string): Promise<{ ok: true } | { ok: f
   const { error } = await supabase.rpc('motoboy_entregar', { p_pedido: pedidoId });
   if (error) return { ok: false, erro: error.message };
   return { ok: true };
+}
+
+/**
+ * Mede o km da loja até o endereço do cliente (pela rua) e grava no pedido. Lê o pedido do próprio
+ * painel do motoboy (não confia no endereço vindo do celular). null = não deu para medir agora.
+ */
+export async function medirEntrega(pedidoId: string): Promise<{ km: number; fonte: 'rota' | 'reta' } | null> {
+  const supabase = await criarClienteServidor();
+  const { data } = await supabase.rpc('motoboy_painel');
+  const e = (data as PainelMotoboy | null)?.em_rota.find((x) => x.id === pedidoId);
+  if (!e?.endereco || e.loja_lat == null || e.loja_lng == null) return null;
+  if (e.distancia_fonte === 'rota' || e.distancia_fonte === 'manual') return null;
+  const loja = { lat: e.loja_lat, lng: e.loja_lng };
+  const achado = await localizarEntrega(e.endereco, e.cidade, loja);
+  if (!achado) return null;
+  // só achou o bairro e o bairro já tem km cadastrado: fica o do cadastro
+  if (achado.precisao === 'bairro' && e.distancia_fonte === 'bairro') return null;
+  const m = await medir(loja, achado.ponto);
+  const { error } = await supabase.rpc('registrar_distancia', { p_pedido: pedidoId, p_km: m.km, p_fonte: m.fonte });
+  return error ? null : m;
 }
