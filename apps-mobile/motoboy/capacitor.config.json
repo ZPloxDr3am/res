@@ -1,0 +1,14 @@
+{
+  "appId": "app.res.motoboy",
+  "appName": "RES Motoboy",
+  "webDir": "www",
+  "server": {
+    "url": "https://res-iqzs.vercel.app/m",
+    "cleartext": false,
+    "allowNavigation": ["res-iqzs.vercel.app"]
+  },
+  "android": {
+    "appendUserAgent": "RESMotoboyApp",
+    "backgroundColor": "#1f6f5c"
+  }
+}

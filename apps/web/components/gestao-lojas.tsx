@@ -211,7 +211,7 @@ function CartaoLoja({ loja, podeCardapio }: { loja: LojaInfo; podeCardapio: bool
               </label>
             </div>
             <p className="dica" style={{ margin: 0 }}>
-              Motoboy entra pelo celular e cai direto no app de entregas (lê o QR da comanda). Não precisa de e-mail: a pessoa entra digitando só o usuário e a senha. Usuário com letras sem acento, números, ponto ou hífen.
+              Motoboy entra pelo celular e cai direto no app de entregas (lê o QR da comanda) — no Android, de preferência pelo <a href="https://github.com/ZPloxDr3am/res/releases/download/motoboy-latest/RES-Motoboy.apk">app RES Motoboy</a>. Não precisa de e-mail: a pessoa entra digitando só o usuário e a senha. Usuário com letras sem acento, números, ponto ou hífen.
               Depois, na tela <strong>Caixa</strong>, defina qual caixa ela opera.
             </p>
             <div className="linha"><button className="botao-primario" disabled={pendente}>{pendente ? 'Criando…' : 'Criar usuário'}</button><button type="button" onClick={() => setAbrir(null)}>Cancelar</button></div>

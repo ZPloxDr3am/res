@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { formatarReais, tempoDecorrido } from '@res/core';
 import { despachar, entregar } from '@/app/m/actions';
-import { cobranca, linkLigar, linkMaps, linkWaze, linkWhats, type Entrega, type PainelMotoboy } from '@/lib/motoboy';
+import { cobranca, LINK_APP_ANDROID, linkLigar, linkMaps, linkWaze, linkWhats, type Entrega, type PainelMotoboy } from '@/lib/motoboy';
 
 type Aviso = { ok: boolean; texto: string } | null;
 
@@ -12,6 +12,9 @@ export function AppMotoboy({ painel }: { painel: PainelMotoboy }) {
   const [lendo, setLendo] = useState(false);
   const [aviso, setAviso] = useState<Aviso>(null);
   const [pendente, iniciar] = useTransition();
+  // dentro do app Android o aviso de "baixar o app" some
+  const [noApp, setNoApp] = useState(true);
+  useEffect(() => setNoApp(/RESMotoboyApp/.test(navigator.userAgent)), []);
 
   // atualiza sozinho (pedidos prontos, entregas novas)
   useEffect(() => {
@@ -85,7 +88,14 @@ export function AppMotoboy({ painel }: { painel: PainelMotoboy }) {
         </div>
         <p className="mb-dica">"Dinheiro recebido" é o que você deve entregar no caixa ao fim do turno.</p>
       </section>
-      <p className="mb-dica" style={{ textAlign: 'center' }}>Dica: no Chrome, toque em ⋮ → "Adicionar à tela inicial" para abrir como aplicativo.</p>
+      {!noApp && (
+        <section className="mb-baixar">
+          <strong>📲 App RES Motoboy</strong>
+          <span>Android: baixe o app — câmera liberada para ler o QR e login guardado.</span>
+          <a className="mb-btn" href={LINK_APP_ANDROID}>Baixar app Android</a>
+          <span className="mb-dica">iPhone: no Safari, toque em Compartilhar → "Adicionar à Tela de Início".</span>
+        </section>
+      )}
     </main>
   );
 }
@@ -178,7 +188,11 @@ function CartaoEntrega({ e, aoEntregar }: { e: Entrega; aoEntregar: (numero: num
   );
 }
 
-/** Leitor de QR pela câmera (BarcodeDetector do Chrome/Android). Sem suporte: orienta usar a câmera do celular. */
+/**
+ * Leitor de QR pela câmera. Usa o leitor nativo do navegador quando existe (Chrome/Android) e, senão,
+ * decodifica os quadros da câmera na própria página (jsQR) — funciona no iPhone, Samsung Internet e
+ * dentro do app RES Motoboy.
+ */
 function Leitor({ aoLer, aoFechar }: { aoLer: (t: string) => void; aoFechar: () => void }) {
   const video = useRef<HTMLVideoElement>(null);
   const [problema, setProblema] = useState<string | null>(null);
@@ -189,33 +203,60 @@ function Leitor({ aoLer, aoFechar }: { aoLer: (t: string) => void; aoFechar: () 
   useEffect(() => {
     let parar = false;
     let stream: MediaStream | null = null;
-    const Detector = (window as unknown as { BarcodeDetector?: new (o: { formats: string[] }) => { detect: (v: HTMLVideoElement) => Promise<{ rawValue: string }[]> } }).BarcodeDetector;
-    if (!Detector) {
-      setProblema('Este navegador não lê QR pela página. Abra a câmera do celular e aponte para o QR da comanda: o link abre aqui e o pedido sai com você.');
-      return;
-    }
-    const detector = new Detector({ formats: ['qr_code'] });
+    type Detector = { detect: (v: HTMLVideoElement) => Promise<{ rawValue: string }[]> };
+    const Nativo = (window as unknown as { BarcodeDetector?: new (o: { formats: string[] }) => Detector }).BarcodeDetector;
     (async () => {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setProblema('Este navegador não deixa usar a câmera. Use o app RES Motoboy ou a câmera do celular apontando para o QR.');
+        return;
+      }
+      // leitor: nativo se houver; senão jsQR (carregado só quando precisa)
+      let ler: (v: HTMLVideoElement) => Promise<string | null>;
+      if (Nativo) {
+        const d = new Nativo({ formats: ['qr_code'] });
+        ler = async (v) => (await d.detect(v))[0]?.rawValue ?? null;
+      } else {
+        const jsQR = (await import('jsqr')).default;
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+        ler = async (v) => {
+          const w = v.videoWidth;
+          const h = v.videoHeight;
+          if (!w || !h) return null;
+          // reduz para ~640 px de largura: mais rápido e lê bem o QR da comanda
+          const k = Math.min(1, 640 / w);
+          canvas.width = Math.round(w * k);
+          canvas.height = Math.round(h * k);
+          ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
+          const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          return jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' })?.data ?? null;
+        };
+      }
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
-        if (!video.current) return;
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
+        if (!video.current || parar) return;
         video.current.srcObject = stream;
         await video.current.play();
         while (!parar) {
           try {
-            const r = await detector.detect(video.current);
-            if (r[0]?.rawValue) {
+            const t = await ler(video.current);
+            if (t) {
               parar = true;
-              cb.current(r[0].rawValue);
+              try {
+                navigator.vibrate?.(60);
+              } catch {
+                /* sem vibração */
+              }
+              cb.current(t);
               break;
             }
           } catch {
             /* quadro ainda sem imagem */
           }
-          await new Promise((ok) => setTimeout(ok, 250));
+          await new Promise((ok) => setTimeout(ok, Nativo ? 250 : 180));
         }
       } catch {
-        setProblema('Não consegui abrir a câmera. Permita o acesso à câmera para este site, ou use a câmera do celular apontando para o QR.');
+        setProblema('Não consegui abrir a câmera. Toque em "Permitir" quando o celular perguntar (ou libere a câmera nas configurações do navegador/app) e abra o leitor de novo.');
       }
     })();
     return () => {
