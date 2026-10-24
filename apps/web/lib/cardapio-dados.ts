@@ -1,5 +1,5 @@
 // Tipos das linhas do cardápio e conversões puras (servem no servidor e no navegador).
-import type { Grupo, Produto } from '@res/core';
+import { promoVale, type AgendaPromo, type Grupo, type Produto } from '@res/core';
 
 export type OpcaoRow = {
   id: string;
@@ -41,6 +41,11 @@ export type ProdutoMarcaRow = {
   preco_delivery: number | null;
   preco_presencial: number | null;
   preco_promocional: number | null;
+  /** agenda da promoção (D-021): dias 0–6, horário 'HH:MM:SS', último dia 'AAAA-MM-DD' */
+  promo_dias?: number[] | null;
+  promo_inicio?: string | null;
+  promo_fim?: string | null;
+  promo_ate?: string | null;
 };
 
 export type ProdutoRow = {
@@ -78,8 +83,16 @@ export interface Cardapio {
 
 export const nomeOpcao = (o: OpcaoRow) => o.nome ?? o.complementos?.nome ?? o.produtos?.nome ?? '';
 
-/** Converte as linhas do banco nos tipos do núcleo de regras (para simular preço na tela). */
-export function paraProdutoCore(p: ProdutoRow): Produto {
+export const agendaDe = (m: ProdutoMarcaRow): AgendaPromo => ({ dias: m.promo_dias ?? null, inicio: m.promo_inicio ?? null, fim: m.promo_fim ?? null, ate: m.promo_ate ?? null });
+
+/** Situação da promoção do produto numa marca agora: sem, valendo, agendada (fora do horário) ou encerrada. */
+export function situacaoPromo(m: ProdutoMarcaRow | undefined, agora = new Date()): 'sem' | 'valendo' | 'fora' {
+  if (!m || m.preco_promocional == null) return 'sem';
+  return promoVale(agendaDe(m), agora) ? 'valendo' : 'fora';
+}
+
+/** Converte as linhas do banco nos tipos do núcleo de regras (para simular preço na tela). Promoção só se vale agora. */
+export function paraProdutoCore(p: ProdutoRow, agora = new Date()): Produto {
   return {
     id: p.id,
     nome: p.nome,
@@ -92,7 +105,7 @@ export function paraProdutoCore(p: ProdutoRow): Produto {
       totem: m.totem,
       precoDelivery: c(m.preco_delivery),
       precoPresencial: c(m.preco_presencial),
-      precoPromocional: c(m.preco_promocional),
+      precoPromocional: situacaoPromo(m, agora) === 'valendo' ? c(m.preco_promocional) : null,
     })),
   };
 }

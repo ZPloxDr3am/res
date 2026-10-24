@@ -98,6 +98,32 @@ export async function criarProduto(form: FormData): Promise<Resultado & { id?: s
   return { ok: true, id: data as string };
 }
 
+const HORA = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+/** Promoção De/Por do formulário (vale para todas as marcas do produto). Lança se o preço for inválido. */
+function lerPromocao(form: FormData):
+  | { preco_promocional: number | null; promo_dias: number[] | null; promo_inicio: string | null; promo_fim: string | null; promo_ate: string | null }
+  | { erro: string } {
+  if (form.get('promo_ligada') !== 'on') return { preco_promocional: null, promo_dias: null, promo_inicio: null, promo_fim: null, promo_ate: null };
+  const preco = lerReais(form.get('promo_preco'));
+  if (preco == null) return { erro: 'Informe o preço da promoção.' };
+  const base = lerReais(form.get('preco'));
+  if (base != null && base > 0 && preco >= base) return { erro: 'O preço da promoção precisa ser menor que o preço normal.' };
+  const dias = [...new Set(form.getAll('promo_dia').map(Number).filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))].sort();
+  if (dias.length === 0) return { erro: 'Escolha pelo menos um dia para a promoção.' };
+  let inicio: string | null = null;
+  let fim: string | null = null;
+  if (form.get('promo_horario') === 'on') {
+    inicio = String(form.get('promo_inicio') ?? '');
+    fim = String(form.get('promo_fim') ?? '');
+    if (!HORA.test(inicio) || !HORA.test(fim)) return { erro: 'Horário da promoção inválido (use 18:00).' };
+    if (inicio === fim) return { erro: 'O horário da promoção começa e termina na mesma hora.' };
+  }
+  const ate = String(form.get('promo_ate') ?? '').trim();
+  if (ate && !/^\d{4}-\d{2}-\d{2}$/.test(ate)) return { erro: 'Data final da promoção inválida.' };
+  return { preco_promocional: preco, promo_dias: dias.length === 7 ? null : dias, promo_inicio: inicio, promo_fim: fim, promo_ate: ate || null };
+}
+
 const ETIQUETAS = ['novo', 'recomendado', 'mais_vendido', 'edicao_limitada', 'esgotado'];
 
 /** Salva os dados do produto e os preços por marca (delivery, presencial, promocional). */
@@ -121,13 +147,15 @@ export async function salvarProduto(form: FormData): Promise<Resultado> {
       .eq('id', id);
     if (error) return { ok: false, erro: mensagem(error) };
 
+    const promo = lerPromocao(form);
+    if ('erro' in promo) return { ok: false, erro: promo.erro };
     for (const marca of form.getAll('marca').map(String)) {
       const r = await supabase
         .from('produto_marcas')
         .update({
           preco_delivery: lerReais(form.get(`preco_delivery_${marca}`)),
           preco_presencial: lerReais(form.get(`preco_presencial_${marca}`)),
-          preco_promocional: lerReais(form.get(`preco_promocional_${marca}`)),
+          ...promo,
         })
         .eq('produto_id', id)
         .eq('marca_id', marca);

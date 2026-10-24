@@ -436,3 +436,64 @@ input[type='date'] { font: inherit; color: var(--texto); background: var(--super
 .mb-feitas li { display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.9rem; }
 .mb-acerto { margin: 0; padding: 0.6rem 0.8rem; border-radius: 12px; font-weight: 700; background: #22302b; color: #f2f5f3; text-align: center; }
 .mb-hoje-grade .mb-ganho { border-color: #e0a526; background: #2b2615; }
+
+/* ---------- Cardápio novo: cards com foto, promoção (D-021) */
+:root { --promo: #c2410c; --promo-fundo: #fff4ec; --promo-borda: #f3c9a8; }
+@media (prefers-color-scheme: dark) { :root { --promo: #fb8a4c; --promo-fundo: #2a1d15; --promo-borda: #5b3a24; } }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.texto-perigo { color: var(--erro); }
+.cdn { gap: 1rem; }
+.cdn-cats { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.cdn-cat { min-height: 40px; padding: 0 1rem; border-radius: 999px; border: 1px solid var(--borda); background: var(--superficie); font-weight: 700; color: var(--texto); }
+.cdn-cat span { font-weight: 500; opacity: 0.7; margin-left: 0.2rem; }
+.cdn-cat em { font-weight: 500; font-style: normal; opacity: 0.7; }
+.cdn-cat[aria-pressed='true'] { background: var(--primaria); border-color: var(--primaria); color: var(--primaria-texto); }
+.cdn-cat.nova { border-style: dashed; background: transparent; color: var(--texto-suave); }
+.cdn-busca { margin-left: auto; }
+.cdn-busca input { min-height: 40px; border-radius: 12px; min-width: 14rem; }
+.cdn-cat-acoes { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.cdn-cat-acoes strong { margin-right: 0.3rem; }
+.cdn-aviso { margin: 0; padding: 0.7rem 1rem; border-radius: 12px; background: color-mix(in srgb, var(--destaque) 14%, var(--superficie)); border: 1px solid color-mix(in srgb, var(--destaque) 45%, var(--borda)); }
+.cdn-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
+.cdn-card { background: var(--superficie); border: 1px solid var(--borda); border-radius: 16px; overflow: visible; display: flex; flex-direction: column; }
+.cdn-card.pausado .cdn-card-foto, .cdn-card.pausado .cdn-card-corpo { opacity: 0.5; }
+.cdn-card-foto { position: relative; }
+.cdn-selo { position: absolute; top: 10px; left: 10px; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.02em; pointer-events: none; }
+.cdn-selo.promo { background: var(--promo); color: #fff; }
+.cdn-selo.agendada { background: var(--superficie); color: var(--promo); border: 1px solid var(--promo-borda); }
+.cdn-selo.etiqueta { left: auto; right: 10px; background: var(--destaque); color: #2a1e04; }
+.cdn-card-corpo { display: grid; gap: 0.3rem; text-align: left; border: 0; background: none; padding: 0.75rem 0.9rem 0.5rem; color: var(--texto); }
+.cdn-nome { font-size: 1.02rem; }
+.cdn-desc { font-size: 0.85rem; color: var(--texto-suave); min-height: 2.4em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cdn-preco { font-variant-numeric: tabular-nums; }
+.cdn-preco b { font-size: 1.15rem; }
+.cdn-preco s { color: var(--texto-suave); font-size: 0.9rem; }
+.cdn-preco b.promo { color: var(--promo); }
+.cdn-card-rodape { display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.9rem 0.75rem; border-top: 1px solid var(--borda); margin-top: auto; position: relative; }
+.cdn-venda { display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 600; margin-right: auto; }
+.cdn-venda input { width: 20px; height: 20px; accent-color: var(--primaria); }
+.cdn-mais > summary { list-style: none; cursor: pointer; min-width: 36px; min-height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid var(--borda); font-weight: 800; }
+.cdn-mais > summary::-webkit-details-marker { display: none; }
+.cdn-mais-menu { position: absolute; right: 0.6rem; bottom: calc(100% - 0.3rem); z-index: 5; display: grid; gap: 0.4rem; padding: 0.7rem; min-width: 210px; background: var(--superficie); border: 1px solid var(--borda); border-radius: 12px; box-shadow: 0 8px 24px rgb(0 0 0 / 0.14); }
+.cdn-novo { min-height: 300px; border-radius: 16px; border: 2px dashed var(--borda); background: transparent; color: var(--texto-suave); font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; }
+.cdn-novo span { font-size: 2rem; line-height: 1; }
+.cd-foto { display: grid; gap: 0.5rem; }
+.cd-foto-area { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 160px; padding: 0; border: 0; border-radius: 16px 16px 0 0; overflow: hidden; background: color-mix(in srgb, var(--borda) 35%, var(--superficie)); color: var(--texto-suave); cursor: pointer; }
+.cd-foto-area.vazia { border-bottom: 1px dashed var(--borda); }
+.cd-foto-area.sobre { outline: 3px dashed var(--primaria); outline-offset: -6px; background: color-mix(in srgb, var(--primaria) 12%, var(--superficie)); }
+.cd-foto-area img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cd-foto-convite { display: grid; justify-items: center; gap: 0.2rem; font-size: 0.85rem; }
+.cd-foto-convite small { font-size: 0.75rem; }
+.cd-foto-enviando { position: absolute; inset: auto 8px 8px auto; padding: 0.2rem 0.6rem; border-radius: 999px; background: rgb(0 0 0 / 0.6); color: #fff; font-size: 0.8rem; }
+.cd-foto.grande .cd-foto-area { height: auto; aspect-ratio: 4 / 3; border-radius: 16px; border: 1px dashed var(--borda); }
+.cd-secao { border: 1px solid var(--borda); border-radius: 14px; padding: 0.9rem 1rem; background: var(--superficie); }
+.cd-secao h3 { margin: 0; font-size: 1rem; }
+details.cd-secao > summary { cursor: pointer; }
+.cd-promo.ligada { background: var(--promo-fundo); border-color: var(--promo-borda); }
+.cd-promo-preco { font-weight: 800; color: var(--promo); font-size: 1.1rem; }
+.cd-dia { display: inline-flex; align-items: center; justify-content: center; min-width: 48px; min-height: 40px; padding: 0 0.5rem; border-radius: 10px; border: 1px solid var(--borda); background: var(--superficie); font-weight: 700; cursor: pointer; }
+.cd-dia input { position: absolute; opacity: 0; pointer-events: none; }
+.cd-dia.on { background: var(--promo); border-color: var(--promo); color: #fff; }
+.cd-dia:focus-within { outline: 2px solid var(--primaria); outline-offset: 2px; }
+.interruptor.forte { font-weight: 700; font-size: 0.95rem; }
+@media (max-width: 640px) { .cdn-busca { margin-left: 0; width: 100%; } .cdn-busca input { width: 100%; } }

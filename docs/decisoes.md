@@ -115,3 +115,9 @@ Registro curto de cada decisão, com o motivo. Referências `R-`, `B-`, `T-` apo
 - Ao ler o QR, o pedido grava o valor do motoboy (do bairro; bairro fora da tabela = taxa do pedido) e o km do bairro. O app do motoboy mede em seguida a rota até o endereço exato e troca o km (`registrar_distancia`). Km ajustado à mão não é sobrescrito.
 - O turno vai das 05:00 às 05:00 (a madrugada conta na noite anterior). **Fechamento dos motoboys**: por motoboy, as entregas, os km, quanto ele recebe, o dinheiro em mãos, o cartão/Pix na porta e o **acerto** (dinheiro − valor das entregas). Quem é gestor ou tem caixa pode **ajustar** o valor ou o km de uma entrega; o ajuste fica no histórico do pedido.
 - Fica para depois: taxa por faixa de km para endereço fora da lista, e uma chave paga (Google) se o OpenStreetMap não achar bem as ruas da cidade.
+
+## D-021 Cardápio novo: cards com foto e promoção De/Por com agenda
+- A tela Cardápio vira uma grade de cards com foto grande: arrastar a foto em cima do card (ou clicar) já envia. O navegador diminui a foto (até 1200 px, JPEG) antes de mandar, então foto do celular funciona. "À venda / Pausado" fica no card; canais, ordem, duplicar e excluir ficam no menu "⋯". As categorias viram botões no topo.
+- A promoção De/Por usa o `preco_promocional` que já existia e ganha uma agenda: dias da semana, horário (pode passar da meia-noite; a madrugada conta no dia em que a promoção começou) e último dia. `private.promo_vigente` decide no banco (preço do item e cardápio público com o preço riscado); `promoVale` (core) faz a mesma conta na tela. Os dois usam os mesmos casos de teste.
+- A promoção vale para todas as marcas (cardápios) do produto. As cópias (duplicar, importar, compartilhar catálogo) levam a agenda junto.
+- Próximas fases: combos com escolhas e categoria de up-sell ("Peça também"); depois % por categoria, cupons (com contagem de clientes e usos) e desconto no balcão com limite.
