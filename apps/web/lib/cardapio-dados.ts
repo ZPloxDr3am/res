@@ -1,5 +1,5 @@
 // Tipos das linhas do cardápio e conversões puras (servem no servidor e no navegador).
-import { promoVale, type AgendaPromo, type Grupo, type Produto } from '@res/core';
+import { promoVale, type AgendaPromo, type Grupo, type PassoCombo, type Produto } from '@res/core';
 
 export type OpcaoRow = {
   id: string;
@@ -57,6 +57,8 @@ export type ProdutoRow = {
   etiqueta: string | null;
   imagem_url: string | null;
   ordem: number;
+  /** combo com escolhas (D-022): os passos ficam em Cardapio.passos */
+  combo?: boolean;
   produto_marcas: ProdutoMarcaRow[];
   produto_grupos: { grupo_id: string; ordem: number }[];
 };
@@ -67,9 +69,13 @@ export type SetorRow = {
   nome_publico: string | null;
   delivery: boolean;
   presencial: boolean;
+  /** categoria de up-sell: sugerida no carrinho e no balcão */
+  upsell?: boolean;
   ordem: number;
   setor_marcas: { marca_id: string }[];
 };
+
+export type PassoRow = { id: string; combo_id: string; ordem: number; titulo: string; quantidade: number; setor_id: string | null; produtos: string[] };
 
 const c = (v: number | null | undefined) => (v == null ? null : Math.round(Number(v) * 100));
 
@@ -79,6 +85,20 @@ export interface Cardapio {
   grupos: Record<string, GrupoRow>;
   /** grupoId → quantos produtos usam */
   usos: Record<string, number>;
+  /** comboId → passos do combo, em ordem */
+  passos: Record<string, PassoRow[]>;
+}
+
+/** Passos do combo no formato do núcleo (produtos que valem em cada passo, com os grupos deles). */
+export function passosCore(c: Cardapio, comboId: string, agora = new Date()): PassoCombo[] {
+  return (c.passos[comboId] ?? []).map((ps) => ({
+    id: ps.id,
+    titulo: ps.titulo,
+    quantidade: ps.quantidade,
+    opcoes: c.produtos
+      .filter((p) => !p.combo && (ps.produtos.includes(p.id) || (ps.setor_id != null && p.setor_id === ps.setor_id)))
+      .map((p) => ({ produto: paraProdutoCore(p, agora), grupos: p.produto_grupos.map((pg) => c.grupos[pg.grupo_id]).filter((g): g is GrupoRow => !!g).map(paraGrupoCore) })),
+  }));
 }
 
 export const nomeOpcao = (o: OpcaoRow) => o.nome ?? o.complementos?.nome ?? o.produtos?.nome ?? '';

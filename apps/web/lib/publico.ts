@@ -1,6 +1,6 @@
 // Tipos do cardápio público (o JSON de public.cardapio_publico) e conversões para o núcleo de regras.
 // Valores em centavos.
-import type { FormaPagamento, Grupo, Produto, StatusPedido, TipoPedido } from '@res/core';
+import type { FormaPagamento, Grupo, PassoCombo, Produto, StatusPedido, TipoPedido } from '@res/core';
 
 export type OpcaoPublica = { id: string; nome: string; preco: number; max: number };
 export type GrupoPublico = {
@@ -23,8 +23,12 @@ export type ProdutoPublico = {
   preco: number;
   preco_original: number | null;
   grupos: GrupoPublico[];
+  /** combo com escolhas (D-022) */
+  combo?: boolean;
+  passos?: PassoPublico[] | null;
 };
-export type SetorPublico = { id: string; nome: string; produtos: ProdutoPublico[] };
+export type PassoPublico = { id: string; titulo: string; quantidade: number; produtos: ProdutoPublico[] };
+export type SetorPublico = { id: string; nome: string; upsell?: boolean; produtos: ProdutoPublico[] };
 export type MarcaPublica = {
   id: string;
   nome: string;
@@ -94,6 +98,16 @@ export function grupoCore(g: GrupoPublico): Grupo {
 }
 
 export const MARCA_CORE = MARCA;
+
+/** Passos do combo no formato do núcleo. */
+export function passosPublicosCore(p: ProdutoPublico): PassoCombo[] {
+  return (p.passos ?? []).map((ps) => ({
+    id: ps.id,
+    titulo: ps.titulo,
+    quantidade: ps.quantidade,
+    opcoes: ps.produtos.map((x) => ({ produto: produtoCore(x), grupos: x.grupos.map(grupoCore) })),
+  }));
+}
 
 export const DIAS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 

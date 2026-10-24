@@ -33,7 +33,14 @@ export interface NovoPedido {
   tipo: TipoPedido;
   cliente: { nome: string; telefone?: string };
   endereco?: { logradouro: string; numero?: string; complemento?: string; bairro: string; referencia?: string };
-  itens: { produtoId: string; quantidade: number; observacao?: string; escolhas: Record<string, Record<string, number>> }[];
+  itens: {
+    produtoId: string;
+    quantidade: number;
+    observacao?: string;
+    escolhas: Record<string, Record<string, number>>;
+    /** combo: escolhas de cada passo */
+    passos?: { passoId: string; produtoId: string; escolhas: Record<string, Record<string, number>> }[];
+  }[];
   /** Valores em centavos. O banco recalcula os preços dos itens a partir do cardápio.
    *  taxaEntrega null = usar a taxa do bairro cadastrada na marca (o banco busca). */
   taxaEntrega: number | null;
@@ -56,7 +63,12 @@ export async function criarPedido(p: NovoPedido): Promise<{ ok: true; numero: nu
       tipo: p.tipo,
       cliente: { nome: p.cliente.nome.trim(), telefone: p.cliente.telefone || null },
       endereco: p.tipo === 'entrega' ? p.endereco : null,
-      itens: p.itens.map((i) => ({ produto_id: i.produtoId, quantidade: i.quantidade, observacao: i.observacao || null, escolhas: i.escolhas })),
+      itens: p.itens.map((i) => ({
+        produto_id: i.produtoId,
+        quantidade: i.quantidade,
+        observacao: i.observacao || null,
+        escolhas: i.passos ? { passos: i.passos.map((x) => ({ passo_id: x.passoId, produto_id: x.produtoId, escolhas: x.escolhas })) } : i.escolhas,
+      })),
       taxa_entrega: p.taxaEntrega == null ? null : p.taxaEntrega / 100,
       desconto: p.desconto / 100,
       pagamento: p.pagamento,

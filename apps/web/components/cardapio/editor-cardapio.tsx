@@ -21,10 +21,12 @@ import { EditorProduto, ETIQUETAS, resumoGrupo } from './editor-produto';
 import { AplicarGrupo } from './aplicar-grupo';
 import { ImportarCardapio } from './importar-cardapio';
 import { AreaFoto } from './foto-produto';
+import { EditorCombo } from './editor-combo';
 
 type Marca = { id: string; nome: string };
 type Painel =
   | { tipo: 'produto'; id: string | null }
+  | { tipo: 'combo'; id: string | null }
   | { tipo: 'setor'; id: string | null }
   | { tipo: 'grupo'; id: string | null }
   | { tipo: 'aplicar'; id: string }
@@ -80,6 +82,7 @@ export function EditorCardapio({ cardapio, marcas, lojaId, outrasLojas = [] }: {
         {outrasLojas.length > 0 && (
           <button type="button" onClick={() => setPainel({ tipo: 'importar' })}>Importar de outra loja</button>
         )}
+        {aba === 'produtos' && setores.length > 0 && <button type="button" className="cdn-combo-btn" onClick={() => setPainel({ tipo: 'combo', id: null })}>+ Novo combo</button>}
         {aba === 'produtos' && <button type="button" className="botao-primario" onClick={() => setPainel({ tipo: 'produto', id: null })}>+ Novo produto</button>}
         <div className="abas" role="tablist">
           <button role="tab" aria-selected={aba === 'produtos'} onClick={() => setAba('produtos')}>Produtos <span className="dica">{produtos.length}</span></button>
@@ -99,6 +102,7 @@ export function EditorCardapio({ cardapio, marcas, lojaId, outrasLojas = [] }: {
             {setores.map((s) => (
               <button key={s.id} type="button" className="cdn-cat" aria-pressed={setorSel === s.id && !termo} onClick={() => { setSetorSel(s.id); setBusca(''); }}>
                 {s.nome} <span>{contagem(s.id)}</span>
+                {s.upsell && <em> · up-sell</em>}
                 {!s.delivery && !s.presencial && <em> · oculta</em>}
               </button>
             ))}
@@ -159,12 +163,13 @@ export function EditorCardapio({ cardapio, marcas, lojaId, outrasLojas = [] }: {
                     <AreaFoto produtoId={p.id} lojaId={lojaId} atual={p.imagem_url} rotulo={p.nome} />
                     {promo === 'valendo' && de != null && por != null && <span className="cdn-selo promo">PROMO -{percentualDesconto(de, por)}%</span>}
                     {promo === 'fora' && <span className="cdn-selo agendada" title={pm ? resumoAgenda(agendaDe(pm)) : undefined}>Promo agendada</span>}
+                    {p.combo && promo !== 'valendo' && <span className="cdn-selo combo">COMBO</span>}
                     {p.etiqueta && <span className="cdn-selo etiqueta">{ETIQUETAS.find((e) => e.valor === p.etiqueta)?.rotulo}</span>}
                   </div>
-                  <button type="button" className="cdn-card-corpo" onClick={() => setPainel({ tipo: 'produto', id: p.id })}>
+                  <button type="button" className="cdn-card-corpo" onClick={() => setPainel({ tipo: p.combo ? 'combo' : 'produto', id: p.id })}>
                     <strong className="cdn-nome">{p.nome}</strong>
                     <span className="cdn-desc">
-                      {p.descricao || (p.produto_grupos.length ? p.produto_grupos.map((pg) => grupos[pg.grupo_id]?.nome).filter(Boolean).join(' · ') : 'Sem descrição')}
+                      {p.descricao || (p.combo ? (cardapio.passos[p.id] ?? []).map((x) => x.titulo).join(' + ') : '') || (p.produto_grupos.length ? p.produto_grupos.map((pg) => grupos[pg.grupo_id]?.nome).filter(Boolean).join(' · ') : 'Sem descrição')}
                       {termo && p.setor_id && ` — ${setores.find((s) => s.id === p.setor_id)?.nome}`}
                     </span>
                     <span className="cdn-preco">
@@ -186,7 +191,7 @@ export function EditorCardapio({ cardapio, marcas, lojaId, outrasLojas = [] }: {
                     ) : (
                       <span className="dica">Fora deste cardápio</span>
                     )}
-                    <button type="button" className="mini botao-primario" onClick={() => setPainel({ tipo: 'produto', id: p.id })}>Editar</button>
+                    <button type="button" className="mini botao-primario" onClick={() => setPainel({ tipo: p.combo ? 'combo' : 'produto', id: p.id })}>Editar</button>
                     <details className="cdn-mais">
                       <summary aria-label={`Mais ações de ${p.nome}`}>⋯</summary>
                       <div className="cdn-mais-menu">
@@ -273,12 +278,31 @@ export function EditorCardapio({ cardapio, marcas, lojaId, outrasLojas = [] }: {
           />
         </Gaveta>
       )}
+      {painel?.tipo === 'combo' && (painel.id ? produtos.some((x) => x.id === painel.id) : true) && (
+        <Gaveta titulo={painel.id ? `Combo: ${produtos.find((x) => x.id === painel.id)?.nome ?? ''}` : 'Novo combo'} aoFechar={() => setPainel(null)} largura={720}>
+          <EditorCombo
+            key={painel.id ?? 'novo'}
+            cardapio={cardapio}
+            combo={painel.id ? produtos.find((x) => x.id === painel.id) ?? null : null}
+            marcaId={marcaSel}
+            lojaId={lojaId}
+            setorInicial={setorSel !== TODOS && setorSel !== SEM ? setorSel : null}
+            aoFechar={() => setPainel(null)}
+            aoCriar={(id) => setPainel({ tipo: 'combo', id })}
+          />
+        </Gaveta>
+      )}
+      {painel?.tipo === 'combo' && painel.id && !produtos.some((x) => x.id === painel.id) && (
+        <Gaveta titulo="Abrindo…" aoFechar={() => setPainel(null)}>
+          <p className="dica">Carregando o combo…</p>
+        </Gaveta>
+      )}
       {painel?.tipo === 'setor' && (
         <Gaveta titulo={setorEditando ? `Categoria: ${setorEditando.nome}` : 'Nova categoria'} aoFechar={() => setPainel(null)} largura={460}>
           <FormSetor
             key={setorEditando?.id ?? 'nova'}
             marcas={marcas}
-            inicial={setorEditando ? { id: setorEditando.id, nome: setorEditando.nome, nomePublico: setorEditando.nome_publico, delivery: setorEditando.delivery, presencial: setorEditando.presencial, marcas: setorEditando.setor_marcas.map((m) => m.marca_id) } : undefined}
+            inicial={setorEditando ? { id: setorEditando.id, nome: setorEditando.nome, nomePublico: setorEditando.nome_publico, delivery: setorEditando.delivery, presencial: setorEditando.presencial, upsell: setorEditando.upsell, marcas: setorEditando.setor_marcas.map((m) => m.marca_id) } : undefined}
             aoTerminar={() => setPainel(null)}
           />
         </Gaveta>
