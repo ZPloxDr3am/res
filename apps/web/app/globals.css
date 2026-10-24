@@ -542,3 +542,4 @@ details.cd-secao > summary { cursor: pointer; }
 .pub-cupom { display: flex; gap: 0.5rem; align-items: flex-end; }
 .pub-cupom input { text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; }
 .np-autorizacao { padding: 0.6rem 0.75rem; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--destaque) 55%, var(--borda)); background: color-mix(in srgb, var(--destaque) 10%, var(--superficie)); }
+.cd-aviso-mini { margin-left: 0.3rem; padding: 0 0.4rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; color: var(--erro); border: 1px solid color-mix(in srgb, var(--erro) 40%, transparent); }
