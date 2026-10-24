@@ -545,3 +545,12 @@ details.cd-secao > summary { cursor: pointer; }
 .cd-aviso-mini { margin-left: 0.3rem; padding: 0 0.4rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; color: var(--erro); border: 1px solid color-mix(in srgb, var(--erro) 40%, transparent); }
 .qp-combo { margin: 0.15rem 0 0.1rem 0.9rem; padding: 0; list-style: none; display: grid; gap: 0.1rem; font-size: 0.88rem; }
 .qp-combo strong { text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.02em; }
+/* ---------- cadastro de clientes (D-025) */
+.np-cliente { position: relative; }
+.np-sugestoes-clientes { position: absolute; z-index: 20; left: 0; right: 0; top: 100%; margin: 0.2rem 0 0; padding: 0.3rem; list-style: none; background: var(--superficie); border: 1px solid var(--borda); border-radius: 12px; box-shadow: 0 10px 28px rgb(0 0 0 / 0.16); display: grid; gap: 0.15rem; max-height: 320px; overflow-y: auto; }
+.np-sugestoes-clientes button { width: 100%; display: grid; grid-template-columns: auto 1fr; gap: 0.1rem 0.6rem; text-align: left; border: 0; background: none; padding: 0.5rem 0.6rem; border-radius: 8px; }
+.np-sugestoes-clientes button:hover, .np-sugestoes-clientes button:focus { background: color-mix(in srgb, var(--primaria) 12%, transparent); }
+.np-sugestoes-clientes .dica { grid-column: 1 / -1; }
+.np-ficha { padding: 0.6rem 0.75rem; border-radius: 10px; background: color-mix(in srgb, var(--primaria) 8%, var(--superficie)); border: 1px solid color-mix(in srgb, var(--primaria) 30%, var(--borda)); }
+.cl-topo { display: grid; grid-template-columns: auto auto 1fr; gap: 0.2rem 0.8rem; align-items: baseline; text-align: left; border: 0; background: none; padding: 0; color: var(--texto); }
+.cl-obs { grid-column: 1 / -1; font-size: 0.88rem; color: var(--texto-suave); }

@@ -20,6 +20,8 @@ import {
 } from '@res/core';
 import { nomeOpcao, paraGrupoCore, paraProdutoCore, passosCore, type Cardapio, type GrupoRow, type PassoRow, type ProdutoRow, type SetorRow } from '@/lib/cardapio-dados';
 import { autorizarDesconto, criarPedido } from '@/app/(painel)/pedidos/actions';
+import { buscarClientes, salvarCliente } from '@/app/(painel)/clientes/actions';
+import { enderecoTexto, formatarTelefone, type ClienteBusca, type EnderecoCliente } from '@/lib/clientes';
 import { salvando } from '@/components/tempo-real';
 
 type ItemCarrinho = {
@@ -84,6 +86,13 @@ export function NovoPedido({
   const [montando, setMontando] = useState<ProdutoRow | null>(null);
   const [carrinho, setCarrinho] = useState<ItemCarrinho[]>([]);
   const [cliente, setCliente] = useState({ nome: '', telefone: '' });
+  // cadastro de clientes (D-025): busca por telefone ou nome e preenche sozinho
+  const [buscaEm, setBuscaEm] = useState<'telefone' | 'nome' | null>(null);
+  const [sugestoes, setSugestoes] = useState<ClienteBusca[]>([]);
+  const [clienteSel, setClienteSel] = useState<ClienteBusca | null>(null);
+  const [obsCliente, setObsCliente] = useState('');
+  const [obsMsg, setObsMsg] = useState<string | null>(null);
+  const [salvandoObs, iniciarObs] = useTransition();
   const [endereco, setEndereco] = useState({ logradouro: '', numero: '', complemento: '', bairro: '', referencia: '' });
   const [taxaTxt, setTaxaTxt] = useState(''); // vazio = taxa do bairro
   const [agendar, setAgendar] = useState(false);
@@ -145,6 +154,38 @@ export function NovoPedido({
     if (p.combo || gruposDe(p).length) return setMontando(p);
     const unitario = precoBase(paraProdutoCore(p), marcaId, canal) ?? 0;
     adicionar(p, {}, unitario, '');
+  };
+
+  useEffect(() => {
+    if (!buscaEm) return;
+    const termo = buscaEm === 'telefone' ? cliente.telefone : cliente.nome;
+    const ok = buscaEm === 'telefone' ? termo.replace(/\D/g, '').length >= 4 : termo.trim().length >= 2;
+    if (!ok) return setSugestoes([]);
+    let vivo = true;
+    const t = setTimeout(() => {
+      buscarClientes(termo).then((r) => vivo && setSugestoes(r)).catch(() => {});
+    }, 250);
+    return () => {
+      vivo = false;
+      clearTimeout(t);
+    };
+  }, [buscaEm, cliente.telefone, cliente.nome]);
+
+  const usarEndereco = (e: EnderecoCliente) =>
+    setEndereco({ logradouro: e.logradouro, numero: e.numero ?? '', complemento: e.complemento ?? '', bairro: e.bairro, referencia: e.referencia ?? '' });
+  const escolherCliente = (c: ClienteBusca) => {
+    setCliente({ nome: c.nome, telefone: formatarTelefone(c.telefone) });
+    setClienteSel(c);
+    setObsCliente(c.observacoes ?? '');
+    setObsMsg(null);
+    setSugestoes([]);
+    setBuscaEm(null);
+    if (c.enderecos[0]) usarEndereco(c.enderecos[0]);
+  };
+  const mudarCliente = (campo: 'nome' | 'telefone', valor: string) => {
+    setCliente((x) => ({ ...x, [campo]: valor }));
+    setBuscaEm(campo);
+    if (clienteSel && campo === 'telefone') setClienteSel(null);
   };
 
   const areasMarca = areas[marcaId] ?? [];
@@ -339,16 +380,81 @@ export function NovoPedido({
 
           <fieldset className="grade" style={{ gap: '0.5rem' }}>
             <legend>Cliente</legend>
-            <div className="linha">
-              <label style={{ flex: '2 1 12rem' }}>
-                Nome
-                <input type="text" value={cliente.nome} maxLength={120} onChange={(e) => setCliente({ ...cliente, nome: e.target.value })} />
-              </label>
+            <div className="linha np-cliente">
               <label style={{ flex: '1 1 9rem' }}>
                 Telefone
-                <input type="text" inputMode="tel" placeholder="(48) 99999-0000" value={cliente.telefone} onChange={(e) => setCliente({ ...cliente, telefone: e.target.value })} />
+                <input type="text" inputMode="tel" placeholder="(47) 99999-0000" value={cliente.telefone} autoComplete="off"
+                  onChange={(e) => mudarCliente('telefone', e.target.value)} onBlur={() => setTimeout(() => setBuscaEm((b) => (b === 'telefone' ? null : b)), 200)} />
               </label>
+              <label style={{ flex: '2 1 12rem' }}>
+                Nome
+                <input type="text" value={cliente.nome} maxLength={120} autoComplete="off"
+                  onChange={(e) => mudarCliente('nome', e.target.value)} onBlur={() => setTimeout(() => setBuscaEm((b) => (b === 'nome' ? null : b)), 200)} />
+              </label>
+              {buscaEm && sugestoes.length > 0 && (
+                <ul className="np-sugestoes-clientes" role="listbox" aria-label="Clientes encontrados">
+                  {sugestoes.map((c) => (
+                    <li key={c.id}>
+                      <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => escolherCliente(c)}>
+                        <strong>{c.nome}</strong> <span>{formatarTelefone(c.telefone)}</span>
+                        <span className="dica">
+                          {c.enderecos[0] ? enderecoTexto(c.enderecos[0]) : 'sem endereço salvo'} · {c.pedidos} pedido(s)
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
+            {!clienteSel && cliente.telefone.replace(/\D/g, '').length >= 10 && buscaEm === null && (
+              <span className="dica">Cliente novo: fica salvo no cadastro quando o pedido for lançado.</span>
+            )}
+            {clienteSel && (
+              <div className="np-ficha grade" style={{ gap: '0.4rem' }}>
+                <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>
+                    <strong>✓ Cliente cadastrado</strong> · {clienteSel.pedidos} pedido(s)
+                    {clienteSel.ultimo_pedido_em && ` · último em ${new Date(clienteSel.ultimo_pedido_em).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })}`}
+                    {clienteSel.total_gasto > 0 && ` · ${formatarReais(clienteSel.total_gasto)} no total`}
+                  </span>
+                  <button type="button" className="mini" onClick={() => { setClienteSel(null); setCliente({ nome: '', telefone: '' }); }}>Trocar</button>
+                </div>
+                {clienteSel.ultimo_item && <span className="dica">Último pedido: {clienteSel.ultimo_item}</span>}
+                {clienteSel.enderecos.length > 1 && tipo === 'entrega' && (
+                  <div className="linha" style={{ gap: '0.3rem' }}>
+                    <span className="dica">Endereços:</span>
+                    {clienteSel.enderecos.map((e) => (
+                      <button key={e.id} type="button" className="mini" aria-pressed={endereco.logradouro === e.logradouro && endereco.bairro === e.bairro} onClick={() => usarEndereco(e)}>
+                        {enderecoTexto(e)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <label>
+                  Observações do cliente <span className="dica">(ficam salvas para os próximos pedidos)</span>
+                  <textarea rows={2} maxLength={500} value={obsCliente} onChange={(e) => { setObsCliente(e.target.value); setObsMsg(null); }} placeholder="Ex.: não gosta de cebola; portão azul; cliente fiel" />
+                </label>
+                {obsCliente !== (clienteSel.observacoes ?? '') && (
+                  <button
+                    type="button"
+                    className="mini"
+                    style={{ justifySelf: 'start' }}
+                    disabled={salvandoObs}
+                    onClick={() =>
+                      iniciarObs(async () => {
+                        const r = await salvarCliente(clienteSel.id, clienteSel.nome, obsCliente);
+                        if (!r.ok) return setObsMsg(r.erro);
+                        setClienteSel({ ...clienteSel, observacoes: obsCliente || null });
+                        setObsMsg('Observação salva.');
+                      })
+                    }
+                  >
+                    {salvandoObs ? 'Salvando…' : 'Salvar observação'}
+                  </button>
+                )}
+                {obsMsg && <span className="dica" role="status">{obsMsg}</span>}
+              </div>
+            )}
           </fieldset>
 
           {tipo === 'entrega' && (
