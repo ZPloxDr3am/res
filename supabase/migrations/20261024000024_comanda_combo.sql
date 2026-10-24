@@ -2,10 +2,11 @@
 --
 -- * pedido_item_opcoes ganha "ordem": as linhas saem na ordem em que foram escolhidas (antes a
 --   comanda ordenava pelo id, que é aleatório — num combo isso embaralhava pizza e sabores).
+-- * dados_cupom leva a cidade da loja (endereço por extenso no bloco do motoboy, na via da cozinha).
 -- * dados_cupom marca as linhas de passo do combo ('passo': sem grupo e sem opção de origem), para a
 --   comanda imprimir em blocos: > PIZZA GIGANTE 40CM / - 1/2 Calabresa … > REFRIGERANTE 2L / - Kuat.
 
-alter table public.pedido_item_opcoes add column ordem integer not null default 0;
+alter table public.pedido_item_opcoes add column if not exists ordem integer not null default 0;
 
 -- gravação do pedido (20261021000012_agendam) + ordem das opções
 create or replace function private.inserir_pedido(p_loja uuid, p_marca uuid, p_dados jsonb, p_origem public.origem_pedido, p_user uuid)
@@ -137,7 +138,7 @@ as $$
     'loja', l.nome, 'marca', m.nome, 'marca_id', m.id, 'numero', p.numero, 'tipo_pedido', p.tipo, 'origem', p.origem,
     'criado_em', p.criado_em, 'agendado_para', p.agendado_para, 'fuso', l.fuso_horario, 'setor', p_setor,
     'cliente', jsonb_build_object('nome', p.cliente_nome, 'telefone', p.cliente_telefone),
-    'endereco', p.endereco,
+    'endereco', p.endereco, 'cidade', l.cidade,
     'observacao', p.observacao,
     'pagamento', p.pagamento, 'troco_para', round(p.troco_para * 100),
     'subtotal', round(p.subtotal * 100), 'taxa_entrega', round(p.taxa_entrega * 100), 'desconto', round(p.desconto * 100),

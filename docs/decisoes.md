@@ -138,5 +138,6 @@ Registro curto de cada decisão, com o motivo. Referências `R-`, `B-`, `T-` apo
 ## D-024 Comanda do combo em blocos
 - Na comanda (cozinha e via do pedido) e no quadro, o combo sai sempre no mesmo formato, um bloco por escolha:
   `> PIZZA GIGANTE 40CM` com os sabores embaixo, `> PIZZA BROTO 25CM` com o sabor, `> REFRIGERANTE 2L` com `- Kuat 2 litros`. Produto com sabores ou adicionais usa o nome do produto como título; produto simples usa o título da escolha.
+- Na via da cozinha de entrega, junto do QR do motoboy, sai o endereço por extenso (rua, número, complemento, bairro e cidade, referência), mais o cliente e o telefone. A via do pedido já traz o endereço no topo, então não repete.
 - `pedido_item_opcoes.ordem` guarda a ordem escolhida. Antes a comanda ordenava pelo id, que é aleatório. `dados_cupom` marca as linhas de passo (`passo`).
 - O agente de impressão monta o cupom com o core, por isso sobe para a versão **1.3.0**, que se atualiza sozinha.

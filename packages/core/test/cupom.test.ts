@@ -93,3 +93,15 @@ test('combo sai em blocos organizados na comanda', async () => {
   assert.match(texto, /> PIZZA GIGANTE 40CM\n\s+- 1\/2 Calabresa\n\s+- 1\/2 Costela\s+Supreme\n\s+> PIZZA BROTO 25CM\n\s+- Do Cheff\n\s+> REFRIGERANTE 2L\n\s+- Kuat 2 litros/);
   assert.equal(blocosCombo([{ grupo: 'Sabores', nome: 'Calabresa', quantidade: 1, fracao: null }]), null);
 });
+
+test('via da cozinha de entrega traz o endereço por extenso junto do QR', () => {
+  const t = cupomTexto(montarCupom('cozinha', { ...pedido, qr: 'abc123', cidade: 'Itapema - SC' }, 48), 48);
+  assert.match(t, /ENTREGAR EM:/);
+  assert.match(t, /Rua das Flores, 10/);
+  assert.match(t, /Bairro: Centro - Itapema - SC/);
+  assert.match(t, /Ref\.: portão azul/);
+  assert.match(t, /Cliente: Ana · 48999990000/);
+  // a via do pedido já mostra o endereço em cima: não repete
+  const v = cupomTexto(montarCupom('pedido', { ...pedido, qr: 'abc123' }, 48), 48);
+  assert.doesNotMatch(v, /ENTREGAR EM:/);
+});

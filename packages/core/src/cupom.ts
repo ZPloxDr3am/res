@@ -26,6 +26,8 @@ export interface CupomDados {
   total: Centavos;
   /** código do QR do motoboy (só pedido de entrega) */
   qr?: string | null;
+  /** cidade da loja (completa o endereço da entrega) */
+  cidade?: string | null;
   /** já pago (online ou marcado no painel): não cobrar na entrega */
   pago?: boolean;
   itens: { quantidade: number; nome: string; total: Centavos; observacao: string | null; opcoes: OpcaoCupom[] }[];
@@ -215,6 +217,15 @@ export function montarCupom(tipo: TipoCupom, dados: CupomDados | CupomTeste, col
     add('MOTOBOY: ESCANEIE PARA SAIR', { negrito: true, centro: true });
     L.push({ qr: urlQrMotoboy(d.qr) });
     add(`Pedido #${d.numero}${d.endereco?.bairro ? ` · ${d.endereco.bairro}` : ''}`, { centro: true });
+    // endereço por extenso, para quando o celular/QR não ajudar (na via que ainda não mostra o endereço)
+    if (d.endereco && !lay.mostrar_endereco) {
+      const e = d.endereco;
+      add('ENTREGAR EM:', { negrito: true });
+      add(`${e.logradouro}${e.numero ? `, ${e.numero}` : ''}${e.complemento ? ` - ${e.complemento}` : ''}`, { negrito: true, grande: tipo === 'cozinha' });
+      add(`Bairro: ${e.bairro}${d.cidade ? ` - ${d.cidade}` : ''}`, { negrito: true });
+      if (e.referencia) add(`Ref.: ${e.referencia}`);
+      if (d.cliente.nome || d.cliente.telefone) add(`Cliente: ${[d.cliente.nome, d.cliente.telefone].filter(Boolean).join(' · ')}`);
+    }
     if (d.pago || d.pagamento === 'online') add('PAGO - NAO COBRAR', { negrito: true, grande: true, centro: true });
     else add(`COBRAR ${formatarReais(d.total)}`, { negrito: true, grande: true, centro: true });
     if (!(d.pago || d.pagamento === 'online')) {
