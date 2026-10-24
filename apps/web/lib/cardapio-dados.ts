@@ -59,6 +59,8 @@ export type ProdutoRow = {
   ordem: number;
   /** combo com escolhas (D-022): os passos ficam em Cardapio.passos */
   combo?: boolean;
+  /** % da categoria valendo agora (calculado ao carregar; D-023) */
+  desconto_pct?: number | null;
   produto_marcas: ProdutoMarcaRow[];
   produto_grupos: { grupo_id: string; ordem: number }[];
 };
@@ -126,6 +128,7 @@ export function paraProdutoCore(p: ProdutoRow, agora = new Date()): Produto {
       precoDelivery: c(m.preco_delivery),
       precoPresencial: c(m.preco_presencial),
       precoPromocional: situacaoPromo(m, agora) === 'valendo' ? c(m.preco_promocional) : null,
+      descontoPct: p.desconto_pct ?? null,
     })),
   };
 }

@@ -521,3 +521,24 @@ details.cd-secao > summary { cursor: pointer; }
 .pub-sugestoes-lista span { display: grid; }
 .np-sugestoes { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; padding: 0.5rem 0.6rem; border-radius: 10px; background: color-mix(in srgb, var(--destaque) 10%, var(--superficie)); }
 .np-passo { padding: 0.6rem; border-radius: 10px; border: 1px solid var(--borda); }
+/* ---------- Promoções e descontos (D-023) */
+.pr-abas { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.6rem; }
+.pr-abas button { display: grid; gap: 0.15rem; text-align: left; min-height: 64px; padding: 0.7rem 0.9rem; border-radius: 14px; border: 1px solid var(--borda); background: var(--superficie); color: var(--texto); }
+.pr-abas button span { font-size: 0.82rem; color: var(--texto-suave); }
+.pr-abas button[aria-selected='true'] { background: var(--primaria); border-color: var(--primaria); color: var(--primaria-texto); }
+.pr-abas button[aria-selected='true'] span { color: inherit; opacity: 0.85; }
+.pr-promo { color: var(--promo); }
+.pr-selo { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: color-mix(in srgb, var(--borda) 50%, transparent); }
+.pr-selo.ok { background: color-mix(in srgb, var(--primaria) 18%, transparent); color: var(--primaria); }
+.pr-cupons { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 0.8rem; }
+.pr-cupom { display: grid; gap: 0.45rem; padding: 0.9rem 1rem; border-radius: 14px; border: 2px dashed var(--primaria); background: var(--superficie); }
+.pr-cupom.inativo { border-color: var(--borda); opacity: 0.75; }
+.pr-codigo { font-size: 1.25rem; letter-spacing: 0.06em; }
+.pr-numeros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.45rem; }
+.pr-numeros > div { display: grid; padding: 0.5rem 0.6rem; border-radius: 10px; background: color-mix(in srgb, var(--borda) 25%, var(--superficie)); }
+.pr-numeros > div.destaque { background: color-mix(in srgb, var(--primaria) 15%, var(--superficie)); }
+.pr-numeros strong { font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+.pr-numeros span { font-size: 0.75rem; color: var(--texto-suave); }
+.pub-cupom { display: flex; gap: 0.5rem; align-items: flex-end; }
+.pub-cupom input { text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; }
+.np-autorizacao { padding: 0.6rem 0.75rem; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--destaque) 55%, var(--borda)); background: color-mix(in srgb, var(--destaque) 10%, var(--superficie)); }

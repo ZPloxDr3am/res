@@ -36,3 +36,12 @@ test('resumo, encerrada e percentual', () => {
   assert.equal(percentualDesconto(8199, 6999), 15);
   assert.equal(percentualDesconto(5000, 6000), 0);
 });
+
+import { precoBase } from '../src/preco.js';
+test('% da categoria e promoção própria: fica o menor (mesmos casos do banco)', () => {
+  const p = (promo: number | null, pct: number | null) => ({ id: 'g', nome: 'Grande', preco: 8199, marcas: [{ marcaId: 'm', ativo: true, delivery: true, presencial: true, totem: false, precoPromocional: promo, descontoPct: pct }] });
+  assert.equal(precoBase(p(null, 20), 'm', 'delivery'), 6559);
+  assert.equal(precoBase(p(6999, 20), 'm', 'delivery'), 6559);
+  assert.equal(precoBase(p(6000, 20), 'm', 'delivery'), 6000);
+  assert.equal(precoBase(p(null, null), 'm', 'delivery'), 8199);
+});

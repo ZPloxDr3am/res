@@ -1,6 +1,7 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import type { FormaPagamento, StatusPedido, TipoPedido } from '@res/core';
+import { createClient } from '@supabase/supabase-js';
+import { DOMINIO_USUARIOS, normalizarUsuario, type FormaPagamento, type StatusPedido, type TipoPedido } from '@res/core';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import { contextoLoja } from '@/lib/loja';
 import { carregarDadosNovoPedido, type DadosNovoPedido } from '@/lib/novo-pedido';
@@ -50,6 +51,10 @@ export interface NovoPedido {
   observacao?: string;
   /** ISO; null = o quanto antes. */
   agendadoPara?: string | null;
+  /** desconto do balcão (D-023): motivo obrigatório; acima do limite, autorização do gerente */
+  descontoMotivo?: string;
+  autorizacao?: string | null;
+  cupom?: string | null;
 }
 
 export async function criarPedido(p: NovoPedido): Promise<{ ok: true; numero: number } | { ok: false; erro: string }> {
@@ -75,6 +80,9 @@ export async function criarPedido(p: NovoPedido): Promise<{ ok: true; numero: nu
       troco_para: p.trocoPara == null ? null : p.trocoPara / 100,
       observacao: p.observacao || null,
       agendado_para: p.agendadoPara ?? null,
+      desconto_motivo: p.descontoMotivo?.trim() || null,
+      autorizacao: p.autorizacao || null,
+      cupom: p.cupom?.trim() || null,
     },
   });
   if (error) return { ok: false, erro: mensagem(error) };
@@ -87,7 +95,7 @@ export async function criarPedido(p: NovoPedido): Promise<{ ok: true; numero: nu
 export async function dadosNovoPedido(): Promise<{ ok: true; lojaId: string; dados: DadosNovoPedido } | { ok: false; erro: string }> {
   try {
     const ctx = await contextoLoja();
-    return { ok: true, lojaId: ctx.lojaId, dados: await carregarDadosNovoPedido(ctx.lojaId, ctx.marcas) };
+    return { ok: true, lojaId: ctx.lojaId, dados: await carregarDadosNovoPedido(ctx.lojaId, ctx.marcas, ctx.papel) };
   } catch (e) {
     return { ok: false, erro: (e as Error).message };
   }
@@ -100,4 +108,26 @@ export async function marcarPago(pedidoId: string, pago: boolean): Promise<Resul
   if (error) return { ok: false, erro: mensagem(error) };
   revalidatePath('/pedidos');
   return { ok: true };
+}
+
+/**
+ * Gerente autoriza um desconto acima do limite: confere usuário e senha DELE numa sessão à parte
+ * (não troca quem está logado) e devolve uma autorização de uso único, válida por 10 minutos.
+ */
+export async function autorizarDesconto(usuario: string, senha: string): Promise<{ ok: true; id: string; nome: string } | { ok: false; erro: string }> {
+  const ctx = await contextoLoja();
+  const u = usuario.trim();
+  if (!u || !senha) return { ok: false, erro: 'Digite o usuário e a senha do gerente.' };
+  const email = u.includes('@') ? u.toLowerCase() : `${normalizarUsuario(u)}@${DOMINIO_USUARIOS}`;
+  const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { persistSession: false, autoRefreshToken: false } });
+  const login = await sb.auth.signInWithPassword({ email, password: senha });
+  if (login.error || !login.data.user) return { ok: false, erro: 'Usuário ou senha do gerente incorretos.' };
+  try {
+    const { data, error } = await sb.rpc('autorizar_desconto', { p_loja: ctx.lojaId });
+    if (error) return { ok: false, erro: error.message };
+    const { data: m } = await sb.from('membros').select('nome').eq('loja_id', ctx.lojaId).eq('user_id', login.data.user.id).maybeSingle();
+    return { ok: true, id: data as string, nome: (m?.nome as string | undefined) ?? 'gerente' };
+  } finally {
+    await sb.auth.signOut();
+  }
 }

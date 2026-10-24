@@ -175,7 +175,7 @@ insert into ids values ('ped1', public.criar_pedido(pg_temp.id('loja'), pg_temp.
      jsonb_build_object('produto_id', pg_temp.id('grande'), 'quantidade', 2,
         'escolhas', jsonb_build_object(pg_temp.id('sabores'), jsonb_build_object(pg_temp.id('calabresa'), 1, pg_temp.id('queijos'), 1))),
      jsonb_build_object('produto_id', pg_temp.id('refri'), 'quantidade', 1, 'preco', 0.01)),  -- preço enviado é ignorado
-  'taxa_entrega', 7, 'desconto', 5, 'pagamento', 'dinheiro', 'troco_para', 100)));
+  'taxa_entrega', 7, 'desconto', 5, 'desconto_motivo', 'teste', 'pagamento', 'dinheiro', 'troco_para', 100)));
 do $$
 declare p record;
 begin

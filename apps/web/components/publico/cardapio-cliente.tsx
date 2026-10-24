@@ -31,7 +31,7 @@ import {
   type GrupoPublico,
   type ProdutoPublico,
 } from '@/lib/publico';
-import { enviarPedido } from '@/app/c/[slug]/actions';
+import { conferirCupom, enviarPedido } from '@/app/c/[slug]/actions';
 
 type Item = { chave: number; produtoId: string; quantidade: number; escolhas: Escolhas; observacao: string; passos?: EscolhaPasso[] };
 type ItemCalculado = Item & { produto: ProdutoPublico; unitario: number; resumo: string };
@@ -454,6 +454,10 @@ function Checkout({
   const [observacao, setObservacao] = useState('');
   const [erro, setErro] = useState<string | null>(null);
   const [pendente, iniciar] = useTransition();
+  const [cupomTxt, setCupomTxt] = useState('');
+  const [cupom, setCupom] = useState<{ codigo: string; desconto: number; descricao: string } | null>(null);
+  const [cupomErro, setCupomErro] = useState<string | null>(null);
+  const [conferindo, iniciarCupom] = useTransition();
   const podeAgendar = agendamento.horarios.length > 0;
   // fechada agora: só agendando
   const [agendar, setAgendar] = useState(!marca.aberta && podeAgendar);
@@ -483,9 +487,30 @@ function Checkout({
   const taxa = tipo === 'entrega' ? taxaArea ?? 0 : 0;
   const trocoPara = trocoTxt.trim() ? lerCentavos(trocoTxt) : null;
 
+  const aplicarCupom = (codigo: string) =>
+    iniciarCupom(async () => {
+      const r = await conferirCupom(marca.slug, codigo, subtotal, taxa, tipo, cliente.telefone);
+      if (!r.ok) {
+        setCupom(null);
+        return setCupomErro(r.erro);
+      }
+      setCupomErro(null);
+      setCupom({ codigo: r.codigo, desconto: r.desconto, descricao: r.descricao });
+    });
+  // pedido mudou: confere o cupom de novo (o desconto depende do subtotal e da entrega)
+  const chaveCupom = `${subtotal}|${taxa}|${tipo}`;
+  const [chaveAnterior, setChaveAnterior] = useState(chaveCupom);
+  useEffect(() => {
+    if (chaveAnterior === chaveCupom) return;
+    setChaveAnterior(chaveCupom);
+    if (cupom) aplicarCupom(cupom.codigo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chaveCupom]);
+  const desconto = cupom ? Math.min(cupom.desconto, subtotal) : 0;
+
   const conta = (() => {
     try {
-      const t = totalizar(itens.map((i) => ({ unitario: i.unitario, quantidade: i.quantidade })), tipo, taxa, 0);
+      const t = totalizar(itens.map((i) => ({ unitario: i.unitario, quantidade: i.quantidade })), tipo, taxa, desconto);
       const tr = Number.isNaN(trocoPara) ? null : troco(t.total, pagamento, trocoPara);
       return { t, troco: tr };
     } catch (e) {
@@ -515,6 +540,7 @@ function Checkout({
         trocoPara: Number.isNaN(trocoPara) ? null : trocoPara,
         observacao,
         agendadoPara: agendar ? horario : null,
+        cupom: cupom?.codigo ?? null,
       });
       if (!r.ok) return setErro(r.erro);
       concluido(r.codigo);
@@ -646,10 +672,27 @@ function Checkout({
 
       <label>Observação do pedido<textarea rows={2} maxLength={500} value={observacao} onChange={(e) => setObservacao(e.target.value)} /></label>
 
+      <div className="grade" style={{ gap: '0.3rem' }}>
+        <div className="pub-cupom">
+          <label style={{ flex: 1 }}>
+            Cupom de desconto
+            <input type="text" value={cupom ? cupom.codigo : cupomTxt} disabled={!!cupom} maxLength={30} placeholder="Tem um cupom?" onChange={(e) => setCupomTxt(e.target.value.toUpperCase())} />
+          </label>
+          {cupom ? (
+            <button type="button" onClick={() => { setCupom(null); setCupomTxt(''); }}>Tirar</button>
+          ) : (
+            <button type="button" disabled={conferindo || cupomTxt.trim().length < 3} onClick={() => aplicarCupom(cupomTxt)}>{conferindo ? 'Conferindo…' : 'Aplicar'}</button>
+          )}
+        </div>
+        {cupom && <span className="dica">✓ {cupom.descricao}</span>}
+        {cupomErro && <span className="erro">{cupomErro}</span>}
+      </div>
+
       {conta.t && (
         <div className="grade" style={{ gap: '0.2rem' }}>
           <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Subtotal</span><span>{formatarReais(conta.t.subtotal)}</span></div>
           {tipo === 'entrega' && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Entrega</span><span>{area ? (taxa ? formatarReais(taxa) : 'Grátis') : '—'}</span></div>}
+          {conta.t.desconto > 0 && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Cupom {cupom?.codigo}</span><span>−{formatarReais(conta.t.desconto)}</span></div>}
           {agendar && horario && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Agendado</span><span>{rotuloHorario(new Date(horario), marca.fuso)}</span></div>}
           <div className="pub-linha" style={{ justifyContent: 'space-between' }}><strong>Total</strong><span className="total">{formatarReais(conta.t.total)}</span></div>
           {conta.troco != null && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Seu troco</span><span>{formatarReais(conta.troco)}</span></div>}

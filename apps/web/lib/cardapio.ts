@@ -1,3 +1,4 @@
+import { promoVale } from '@res/core';
 import { criarClienteServidor } from './supabase/server';
 import type { Cardapio, GrupoRow, PassoRow, ProdutoRow, SetorRow } from './cardapio-dados';
 
@@ -7,7 +8,7 @@ export * from './cardapio-dados';
 /** Cardápio inteiro da loja, já ordenado. A RLS garante que só vem o que é da loja do usuário. */
 export async function carregarCardapio(lojaId: string): Promise<Cardapio> {
   const supabase = await criarClienteServidor();
-  const [s, p, g, cp] = await Promise.all([
+  const [s, p, g, cp, pc] = await Promise.all([
     supabase.from('setores').select('id, nome, nome_publico, delivery, presencial, upsell, ordem, setor_marcas(marca_id)').eq('loja_id', lojaId).order('ordem'),
     supabase
       .from('produtos')
@@ -19,11 +20,22 @@ export async function carregarCardapio(lojaId: string): Promise<Cardapio> {
       .select('id, nome, formacao, obrigatorio, pizza, min_qtd, max_qtd, permite_repetir, ativo, delivery, presencial, opcoes(id, nome, preco, preco_delivery, preco_presencial, min_qtd, max_qtd, ativo, delivery, presencial, ordem, complementos(nome, preco), produtos(nome, preco))')
       .eq('loja_id', lojaId),
     supabase.from('combo_passos').select('id, combo_id, ordem, titulo, quantidade, setor_id, produtos').eq('loja_id', lojaId).order('ordem'),
+    supabase.from('promocoes_categoria').select('setor_id, percentual, dias, promo_inicio, promo_fim, promo_ate').eq('loja_id', lojaId).eq('ativo', true),
   ]);
-  for (const r of [s, p, g, cp]) if (r.error) throw new Error(r.error.message);
+  for (const r of [s, p, g, cp, pc]) if (r.error) throw new Error(r.error.message);
 
   const produtos = (p.data ?? []) as unknown as ProdutoRow[];
-  for (const prod of produtos) prod.produto_grupos.sort((a, b) => a.ordem - b.ordem);
+  // % da categoria valendo agora (D-023): o maior por categoria
+  const agora = new Date();
+  const pct = new Map<string, number>();
+  for (const x of pc.data ?? []) {
+    if (!promoVale({ dias: x.dias as number[] | null, inicio: x.promo_inicio as string | null, fim: x.promo_fim as string | null, ate: x.promo_ate as string | null }, agora)) continue;
+    pct.set(x.setor_id as string, Math.max(pct.get(x.setor_id as string) ?? 0, Number(x.percentual)));
+  }
+  for (const prod of produtos) {
+    prod.produto_grupos.sort((a, b) => a.ordem - b.ordem);
+    prod.desconto_pct = prod.setor_id ? pct.get(prod.setor_id) ?? null : null;
+  }
   const grupos: Record<string, GrupoRow> = {};
   for (const grupo of (g.data ?? []) as unknown as GrupoRow[]) {
     grupo.opcoes.sort((a, b) => a.ordem - b.ordem);

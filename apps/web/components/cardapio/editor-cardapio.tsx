@@ -1,7 +1,7 @@
 'use client';
 import { useMemo, useState, useTransition } from 'react';
-import { formatarReais, paraCentavos, percentualDesconto, resumoAgenda } from '@res/core';
-import { agendaDe, nomeOpcao, situacaoPromo, type Cardapio } from '@/lib/cardapio-dados';
+import { formatarReais, paraCentavos, percentualDesconto, precoBase, resumoAgenda } from '@res/core';
+import { agendaDe, nomeOpcao, paraProdutoCore, situacaoPromo, type Cardapio } from '@/lib/cardapio-dados';
 import {
   alterarDisponibilidade,
   duplicarGrupo,
@@ -63,7 +63,7 @@ export function EditorCardapio({ cardapio, marcas, lojaId, outrasLojas = [] }: {
   );
   const setorAtual = setores.find((s) => s.id === setorSel);
   const semFoto = visiveis.filter((p) => !p.imagem_url).length;
-  const promosValendo = produtos.filter((p) => p.produto_marcas.some((m) => situacaoPromo(m) === 'valendo')).length;
+  const promosValendo = produtos.filter((p) => p.desconto_pct || p.produto_marcas.some((m) => situacaoPromo(m) === 'valendo')).length;
   const contagem = (id: string) => produtos.filter((p) => p.setor_id === id).length;
   const listaSetores = setores.map((s) => ({ id: s.id, nome: s.nome }));
 
@@ -153,9 +153,11 @@ export function EditorCardapio({ cardapio, marcas, lojaId, outrasLojas = [] }: {
               const podeMover = !termo && setorSel !== TODOS;
               const toggle = (campo: 'ativo' | 'delivery' | 'presencial', valor: boolean) => executar(() => alterarDisponibilidade(p.id, marcaSel, campo, valor));
               const precoNormal = pm?.preco_delivery ?? p.preco;
-              const promo = situacaoPromo(pm);
+              const promoPropria = situacaoPromo(pm);
               const de = precoNormal == null ? null : paraCentavos(Number(precoNormal));
-              const por = pm?.preco_promocional == null ? null : paraCentavos(Number(pm.preco_promocional));
+              const efetivo = pm ? precoBase(paraProdutoCore({ ...p, produto_marcas: [{ ...pm, ativo: true, delivery: true }] }), pm.marca_id, 'delivery') : null;
+              const por = de != null && efetivo != null && efetivo < de ? efetivo : null;
+              const promo = por != null ? 'valendo' : promoPropria === 'fora' ? 'fora' : 'sem';
               const ativo = pm?.ativo ?? false;
               return (
                 <article key={p.id} className={`cdn-card ${ativo ? '' : 'pausado'}`}>
