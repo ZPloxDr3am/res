@@ -19,6 +19,13 @@ export type Entrega = {
   /** marcado como pago no painel (ex.: Pix antecipado) */
   pago_em?: string | null;
   itens: { quantidade: number; nome: string }[];
+  /** centavos: taxa cobrada do cliente e o que o motoboy recebe por esta entrega (D-020) */
+  taxa_entrega?: number;
+  valor_motoboy?: number | null;
+  distancia_km?: number | null;
+  distancia_fonte?: 'rota' | 'reta' | 'bairro' | 'manual' | null;
+  loja_lat?: number | null;
+  loja_lng?: number | null;
   entregador: string | null;
   saiu_em: string | null;
 };
@@ -27,7 +34,9 @@ export type PainelMotoboy = {
   nome: string;
   em_rota: Entrega[];
   prontos: { numero: number; loja: string; bairro: string | null; pronto_em: string | null; status: string }[];
-  hoje: { entregas: number; cobrado_dinheiro: number; cobrado_outros: number; taxas: number };
+  hoje: { entregas: number; cobrado_dinheiro: number; cobrado_outros: number; taxas: number; a_receber?: number; km?: number };
+  /** entregas concluídas no turno (05:00 → 05:00) */
+  feitas?: { numero: number; loja: string; bairro: string | null; valor_motoboy: number; distancia_km: number | null; concluido_em: string }[];
 };
 
 /** Linha de endereço para o mapa (rua, número, bairro, cidade da loja). */

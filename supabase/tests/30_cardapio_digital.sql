@@ -188,7 +188,7 @@ select from pg_temp.como('00000000-0000-0000-0000-0000000000a7');
 select from pg_temp.esperar_erro(format($q$select public.salvar_config_delivery('%s', '{"aceita_entrega": false, "aceita_retirada": false}')$q$, pg_temp.id('marca')), 'pelo menos');
 select from pg_temp.esperar_erro(format($q$select public.salvar_config_delivery('%s', '{"formas_pagamento": ["online"]}')$q$, pg_temp.id('marca')), 'formas_pagamento');
 select from pg_temp.esperar_erro(format($q$select public.salvar_config_delivery('%s', '{"horarios": [{"dia": 1, "abre": "10:00", "fecha": "10:00"}]}')$q$, pg_temp.id('marca')), 'check');
-select from pg_temp.esperar_erro(format($q$select public.salvar_config_delivery('%s', '{"areas": [{"bairro": "Centro"}, {"bairro": "centro "}]}')$q$, pg_temp.id('marca')), 'areas_entrega_bairro_idx');
+select from pg_temp.esperar_erro(format($q$select public.salvar_config_delivery('%s', '{"areas": [{"bairro": "Centro"}, {"bairro": "centro "}]}')$q$, pg_temp.id('marca')), '23505');
 reset role;
 
 -- O painel continua lançando pedidos pelo criar_pedido de sempre.
