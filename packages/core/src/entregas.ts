@@ -16,6 +16,7 @@ export function distanciaReta(a: Ponto, b: Ponto): number {
 /** "3,2 km" (abaixo de 1 km: "850 m"). */
 export function formatarKm(km: number | null | undefined): string {
   if (km == null || !Number.isFinite(km)) return '—';
+  if (km <= 0) return '0 km';
   if (km < 1) return `${Math.round(km * 1000)} m`;
   return `${km.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km`;
 }

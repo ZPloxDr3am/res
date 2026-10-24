@@ -13,6 +13,7 @@ test('formatar km', () => {
   assert.equal(formatarKm(3.17), '3,2 km');
   assert.equal(formatarKm(0.85), '850 m');
   assert.equal(formatarKm(null), '—');
+  assert.equal(formatarKm(0), '0 km');
 });
 
 test('coordenadas coladas do Google Maps', () => {
