@@ -36,7 +36,7 @@ export type PedidoRow = {
     total: number;
     observacao: string | null;
     ordem: number;
-    pedido_item_opcoes: { grupo_nome: string; nome: string; quantidade: number; fracao: number | null }[];
+    pedido_item_opcoes: { grupo_id?: string | null; opcao_id?: string | null; grupo_nome: string; nome: string; quantidade: number; fracao: number | null; ordem?: number }[];
   }[];
 };
 
@@ -48,7 +48,7 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
     supabase
       .from('pedidos')
       .select(
-        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, agendado_para, entregador_nome, pago_em, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_nome, nome, quantidade, fracao))',
+        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, agendado_para, entregador_nome, pago_em, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_id, opcao_id, grupo_nome, nome, quantidade, fracao, ordem))',
       )
       .in('loja_id', lojaIds)
       .or(`status.not.in.(concluido,cancelado),criado_em.gte.${desde}`)
@@ -64,7 +64,10 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
   ]);
   if (pedidos.error) throw new Error(pedidos.error.message);
   const lista = (pedidos.data ?? []) as unknown as PedidoRow[];
-  for (const p of lista) p.pedido_itens.sort((a, b) => a.ordem - b.ordem);
+  for (const p of lista) {
+    p.pedido_itens.sort((a, b) => a.ordem - b.ordem);
+    for (const i of p.pedido_itens) i.pedido_item_opcoes.sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
+  }
   return {
     pedidos: lista,
     aceiteAutomatico: loja.data?.aceite_automatico ?? false,
