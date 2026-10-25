@@ -88,7 +88,7 @@ export function NovoPedido({
   const [cliente, setCliente] = useState({ nome: '', telefone: '' });
   // cadastro de clientes (D-025): busca por telefone ou nome e preenche sozinho
   const [buscaEm, setBuscaEm] = useState<'telefone' | 'nome' | null>(null);
-  const [sugestoes, setSugestoes] = useState<ClienteBusca[]>([]);
+  const [clientesAchados, setClientesAchados] = useState<ClienteBusca[]>([]);
   const [clienteSel, setClienteSel] = useState<ClienteBusca | null>(null);
   const [obsCliente, setObsCliente] = useState('');
   const [obsMsg, setObsMsg] = useState<string | null>(null);
@@ -160,10 +160,10 @@ export function NovoPedido({
     if (!buscaEm) return;
     const termo = buscaEm === 'telefone' ? cliente.telefone : cliente.nome;
     const ok = buscaEm === 'telefone' ? termo.replace(/\D/g, '').length >= 4 : termo.trim().length >= 2;
-    if (!ok) return setSugestoes([]);
+    if (!ok) return setClientesAchados([]);
     let vivo = true;
     const t = setTimeout(() => {
-      buscarClientes(termo).then((r) => vivo && setSugestoes(r)).catch(() => {});
+      buscarClientes(termo).then((r) => vivo && setClientesAchados(r)).catch(() => {});
     }, 250);
     return () => {
       vivo = false;
@@ -178,7 +178,7 @@ export function NovoPedido({
     setClienteSel(c);
     setObsCliente(c.observacoes ?? '');
     setObsMsg(null);
-    setSugestoes([]);
+    setClientesAchados([]);
     setBuscaEm(null);
     if (c.enderecos[0]) usarEndereco(c.enderecos[0]);
   };
@@ -391,9 +391,9 @@ export function NovoPedido({
                 <input type="text" value={cliente.nome} maxLength={120} autoComplete="off"
                   onChange={(e) => mudarCliente('nome', e.target.value)} onBlur={() => setTimeout(() => setBuscaEm((b) => (b === 'nome' ? null : b)), 200)} />
               </label>
-              {buscaEm && sugestoes.length > 0 && (
+              {buscaEm && clientesAchados.length > 0 && (
                 <ul className="np-sugestoes-clientes" role="listbox" aria-label="Clientes encontrados">
-                  {sugestoes.map((c) => (
+                  {clientesAchados.map((c) => (
                     <li key={c.id}>
                       <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => escolherCliente(c)}>
                         <strong>{c.nome}</strong> <span>{formatarTelefone(c.telefone)}</span>
