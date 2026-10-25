@@ -141,3 +141,10 @@ Registro curto de cada decisão, com o motivo. Referências `R-`, `B-`, `T-` apo
 - Na via da cozinha de entrega, junto do QR do motoboy, sai o endereço por extenso (rua, número, complemento, bairro e cidade, referência), mais o cliente e o telefone. A via do pedido já traz o endereço no topo, então não repete.
 - `pedido_item_opcoes.ordem` guarda a ordem escolhida. Antes a comanda ordenava pelo id, que é aleatório. `dados_cupom` marca as linhas de passo (`passo`).
 - O agente de impressão monta o cupom com o core, por isso sobe para a versão **1.3.0**, que se atualiza sozinha.
+
+## D-025 Cadastro de clientes
+- Os clientes são do **grupo** (lojas da mesma conta), um por telefone. Todo pedido com telefone, do balcão ou do cardápio digital, salva ou atualiza o cliente (fica o nome mais recente) e, se for entrega, o endereço. Um cliente pode ter vários endereços; o usado por último vem primeiro. Isso é feito pelo gatilho `pedidos_registra_cliente`.
+- Pedido sem telefone não entra no cadastro, porque não dá para saber quem é. Os pedidos antigos com telefone entraram no cadastro na migração 0025.
+- No novo pedido, ao digitar o telefone (4+ dígitos) ou o nome (2+ letras), aparecem os clientes; escolher um preenche nome, telefone e endereço e mostra histórico, outros endereços e as **observações do cliente** (editáveis ali mesmo).
+- Tela **Clientes**: busca, editar nome e observações, tirar endereços antigos.
+- O cardápio digital não busca dados por telefone, porque qualquer pessoa poderia ver o endereço dos outros. Lá o próprio aparelho lembra os dados do cliente.
