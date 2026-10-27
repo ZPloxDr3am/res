@@ -869,3 +869,11 @@ button.menu-item:hover:not(:disabled) { background: var(--superficie-2); border:
 .kpi > *, .kpi .lista > li { min-width: 0; }
 /* botão de texto centraliza; botão que é um cartão (grade própria) mantém o alinhamento dele */
 button:not([class]), .botao, .botao-primario, .botao-perigo, button.mini, button.erro, .pub-barra button, .pub-cta { justify-content: center; }
+/* linha de cliente (Clientes e Fidelidade): nome, telefone e selo numa linha; números embaixo */
+.cl-topo, button.cl-topo { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.75rem; min-height: 0; padding: 0; border: 0; background: none; width: 100%; text-align: left; font-weight: 400; }
+button.cl-topo:hover:not(:disabled) { background: none; }
+.cl-topo > strong { font-size: 1rem; font-weight: 620; }
+.cl-topo > span:nth-child(2) { color: var(--texto-suave); font-variant-numeric: tabular-nums; }
+.cl-topo > .dica, .cl-topo > .cl-obs { flex-basis: 100%; }
+article.cartao:has(> .cl-topo) { padding: 0.95rem 1.15rem; }
+article.cartao:has(> .cl-topo[aria-expanded='false']):hover { box-shadow: var(--sombra), 0 0 0 1px var(--borda-forte); }
