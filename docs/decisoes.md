@@ -178,3 +178,24 @@ Registro curto de cada decisão, com o motivo. Referências `R-`, `B-`, `T-` apo
 - **Tempos e atrasos** (aba nova em Entregas; hoje, ontem, 7 ou 30 dias; turnos 05:00→05:00; lojas do grupo que a pessoa gere ou tem permissão de relatórios):
   - média de cada etapa (aceitar, preparo, esperando motoboy, na rua), com a etapa mais longa destacada;
   - % no prazo e atrasos por dia, bairro, motoboy e loja.
+
+## D-029 · Segmentos de clientes para marketing
+
+- Cada cliente do grupo cai em um segmento por **recência** (dias desde o último pedido) e **frequência** (pedidos não cancelados nas lojas do grupo). Regra explicável para o dono, com limites fixos:
+
+  | Último pedido | 4+ pedidos | 2–3 pedidos | 1 pedido |
+  |---|---|---|---|
+  | até 30 dias | 💎 Fiéis | ⭐ Em potencial | 🌱 Promissores |
+  | 31–60 dias | ⚠️ Precisam de atenção | 💤 Quase dormentes | 💤 Quase dormentes |
+  | 61–120 dias | 🔥 Em risco | ❄️ Hibernando | ❄️ Hibernando |
+  | mais de 120 dias | 🌙 Dormindo | 🌙 Dormindo | 🌙 Dormindo |
+
+- "Em risco" (cliente bom sumindo há 2 a 4 meses) foi incluído além dos 7 pedidos pelo dono, por ser o público mais valioso para reativar.
+- A regra fica em `segmentoCliente` (core) e em `private.segmento_cliente` (banco); os testes dos dois usam os mesmos casos (`CASOS_SEGMENTO`).
+- O segmento é calculado na hora (nada guardado): muda sozinho conforme os dias passam e os pedidos chegam.
+- Tela **Clientes**: abas com contagem por segmento, explicação e ação sugerida; lista ordenada por quanto gastou.
+- **Exportar CSV** (gestor, permissão Clientes ou Marketing) com telefone no formato +55…, que serve para SMS e para públicos personalizados do Meta Ads e do Google Ads.
+- Próximos passos:
+  - consentimento de marketing (LGPD) e descadastro antes de enviar SMS;
+  - campanhas de SMS;
+  - envio direto dos públicos ao Meta/Google por OAuth, com os tokens só no servidor.

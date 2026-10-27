@@ -1,3 +1,4 @@
+import type { Segmento } from '@res/core';
 // Cadastro de clientes (D-025): tipos do JSON de public.buscar_clientes (valores em centavos).
 export type EnderecoCliente = { id: string; logradouro: string; numero: string | null; complemento: string | null; bairro: string; referencia: string | null };
 export type ClienteBusca = {
@@ -11,7 +12,13 @@ export type ClienteBusca = {
   pedidos: number;
   total_gasto: number;
   ultimo_item: string | null;
+  /** só na lista da tela Clientes (D-029) */
+  dias?: number | null;
+  segmento?: Segmento | null;
 };
+
+export type ListagemClientes = { contagens: Partial<Record<Segmento, number>>; sem_pedido: number; total: number; clientes: ClienteBusca[] };
+export type ClienteExportado = { nome: string; telefone: string; segmento: Segmento | null; pedidos: number; total_gasto: number; ultimo_pedido_em: string | null; dias: number | null; bairro: string | null };
 
 /** "47991234567" → "(47) 99123-4567" */
 export function formatarTelefone(t: string): string {

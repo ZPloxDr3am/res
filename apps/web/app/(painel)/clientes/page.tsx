@@ -1,9 +1,9 @@
-import { buscarClientes } from './actions';
+import { listarClientes } from './actions';
 import { ListaClientes } from '@/components/clientes/lista-clientes';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Clientes() {
-  const recentes = await buscarClientes('', 50);
-  return <ListaClientes inicial={recentes} />;
+  const inicial = await listarClientes(null);
+  return <ListaClientes inicial={inicial ?? { contagens: {}, sem_pedido: 0, total: 0, clientes: [] }} />;
 }
