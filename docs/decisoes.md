@@ -271,3 +271,18 @@ O estudo da tela do BeeFood está em `estudo-beefood/fidelidade.md`, no projeto.
 - O cashback liga ou desliga e vale todos os dias com um % só. A escolha de dias e o % por dia saíram da tela. O banco ainda aceita essas regras, mas ao salvar a tela grava "todos os dias" e nenhum % por dia.
 - O prazo do cashback e o dos pontos têm atalhos (30, 60, 90, 180 e 365 dias, ou "Não vence"), e o dono também pode digitar qualquer número de dias. O prazo conta do último pedido do cliente na loja.
 - Para mexer num dia fraco, usar cupom com dias da semana (Promoções).
+
+## D-034 · Visual do painel
+
+- **Paleta:** verde-manjericão (#1d6a50) para ação e item ativo, sobre fundo frio (#f3f4f1) e superfícies brancas. Tomate para urgência e atraso; mel para atenção. Modo escuro com a mesma lógica.
+- **Tipografia:** uma família só, Onest (next/font, servida pelo próprio site), com números tabulares em preços, pedidos e indicadores.
+- **Menu agrupado pelo que a pessoa vai fazer:** Operação (Resumo, Pedidos, Novo pedido, Caixa, Entregas), Vendas (Cardápio, Delivery, Promoções), Clientes (Clientes, Fidelidade) e Ajustes (Impressoras, Lojas e equipe). O item ativo tem fundo verde-claro e uma barra à esquerda.
+- **Componentes com um padrão só:**
+  - campos e botões com 2,4rem de altura;
+  - raios em hierarquia: controle 10, cartão 14, folha 18;
+  - foco sempre visível (anel verde);
+  - abas como trilho, do tamanho do conteúdo;
+  - tabelas com cabeçalho discreto;
+  - cartões com borda leve.
+- **Quadro de pedidos:** cada pedido tem uma faixa de cor por etapa, que fica mais grossa quando o prazo aperta, e as colunas mostram a quantidade num contador.
+- Tudo está numa camada única no fim do `globals.css` ("Refino visual"), que vale sobre as regras antigas de cada tela.
