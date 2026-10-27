@@ -16,6 +16,20 @@ export async function salvarConfigFidelidade(cfg: ConfigFidelidade): Promise<R> 
   return { ok: true };
 }
 
+/** Copia as regras (não recompensas nem saldos) para outras lojas do grupo; o banco confere a permissão em cada uma. */
+export async function copiarPrograma(cfg: ConfigFidelidade, lojaIds: string[]): Promise<R> {
+  const ctx = await contextoLoja();
+  const permitidas = new Set(ctx.lojas.map((l) => l.id));
+  const supabase = await criarClienteServidor();
+  for (const id of lojaIds) {
+    if (!permitidas.has(id)) return { ok: false, erro: 'Loja fora do seu acesso.' };
+    const { error } = await supabase.rpc('salvar_config_fidelidade', { p_loja: id, p_cfg: cfg });
+    if (error) return { ok: false, erro: `${ctx.lojas.find((l) => l.id === id)?.nome ?? 'Loja'}: ${error.message}` };
+  }
+  revalidatePath('/fidelidade');
+  return { ok: true };
+}
+
 export async function salvarRecompensa(id: string | null, dados: { tipo: 'desconto' | 'produto'; nome: string; pontos: number; valor?: number | null; produto_id?: string | null }): Promise<R> {
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();

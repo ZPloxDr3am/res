@@ -1,7 +1,7 @@
 'use client';
 import { useState, useTransition } from 'react';
 import { CANAIS_FIDELIDADE, CONFIG_FIDELIDADE_PADRAO, formatarReais, ganhoFidelidade, type ConfigFidelidade } from '@res/core';
-import { excluirRecompensa, salvarConfigFidelidade, salvarRecompensa } from '@/app/(painel)/fidelidade/actions';
+import { copiarPrograma, excluirRecompensa, salvarConfigFidelidade, salvarRecompensa } from '@/app/(painel)/fidelidade/actions';
 import { salvando } from '@/components/tempo-real';
 import type { PainelFidelidade } from '@/lib/fidelidade';
 
@@ -25,7 +25,7 @@ export function ProgramaFidelidade({ painel }: { painel: PainelFidelidade }) {
     iniciar(async () => {
       setMsg(null);
       const r = await salvando(salvarConfigFidelidade(c));
-      setMsg(r.ok ? { ok: true, t: 'Programa salvo. Vale para as lojas do grupo a partir dos próximos pedidos concluídos.' } : { ok: false, t: r.erro });
+      setMsg(r.ok ? { ok: true, t: `Programa salvo para ${painel.loja}. Vale a partir dos próximos pedidos concluídos nesta loja.` } : { ok: false, t: r.erro });
     });
 
   return (
@@ -33,7 +33,7 @@ export function ProgramaFidelidade({ painel }: { painel: PainelFidelidade }) {
       {!ed && <p className="aviso">Só o gestor (ou quem tem a permissão Marketing) muda o programa.</p>}
       <fieldset className="cartao grade fid-bloco" disabled={!ed}>
         <legend>Onde vale</legend>
-        <p className="dica" style={{ margin: 0 }}>O saldo é do cliente (pelo telefone) e vale nas lojas do grupo: ganhou numa, usa na outra.</p>
+        <p className="dica" style={{ margin: 0 }}>Cada loja tem o seu programa e o seu saldo: o que o cliente ganha aqui só vale em {painel.loja}.</p>
         <div className="linha" style={{ gap: '1rem' }}>
           {CANAIS_FIDELIDADE.map((k) => (
             <label key={k.id} className="check">
@@ -118,7 +118,23 @@ export function ProgramaFidelidade({ painel }: { painel: PainelFidelidade }) {
 
       {ed && (
         <div className="linha" style={{ alignItems: 'center' }}>
-          <button type="button" className="botao-primario" disabled={pendente || c.canais.length === 0} onClick={salvar}>{pendente ? 'Salvando…' : 'Salvar programa'}</button>
+          <button type="button" className="botao-primario" disabled={pendente || c.canais.length === 0} onClick={salvar}>{pendente ? 'Salvando…' : `Salvar programa de ${painel.loja}`}</button>
+          {painel.outrasLojas.length > 0 && (
+            <button
+              type="button"
+              disabled={pendente || c.canais.length === 0}
+              title="Copia as regras de cashback e pontos (não as recompensas nem os saldos)"
+              onClick={() =>
+                iniciar(async () => {
+                  setMsg(null);
+                  const r = await salvando(copiarPrograma(c, painel.outrasLojas.map((l) => l.id)));
+                  setMsg(r.ok ? { ok: true, t: `Regras copiadas para ${painel.outrasLojas.map((l) => l.nome).join(', ')}. Cada uma continua com o saldo separado.` } : { ok: false, t: r.erro });
+                })
+              }
+            >
+              Copiar estas regras para {painel.outrasLojas.map((l) => l.nome).join(' e ')}
+            </button>
+          )}
           {msg && <span className={msg.ok ? 'dica' : 'erro'} role="status">{msg.t}</span>}
         </div>
       )}
@@ -188,7 +204,7 @@ function Recompensas({ painel, pontosAtivo }: { painel: PainelFidelidade; pontos
             <label>Produto
               <select value={produto} onChange={(e) => setProduto(e.target.value)}>
                 <option value="">Escolha…</option>
-                {painel.produtos.map((p) => <option key={p.id} value={p.id}>{p.nome} · {p.loja}</option>)}
+                {painel.produtos.map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}
               </select>
             </label>
           )}

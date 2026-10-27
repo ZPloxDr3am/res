@@ -114,7 +114,7 @@ export function AcompanharPedido({ pedido: p }: { pedido: Acompanhamento }) {
           </span>
         </section>
         {p.fidelidade && (p.fidelidade.cashback_ganho > 0 || p.fidelidade.pontos_ganhos > 0) && (
-          <p className="aviso">🎉 Você ganhou <strong>{[p.fidelidade.cashback_ganho > 0 && formatarReais(p.fidelidade.cashback_ganho), p.fidelidade.pontos_ganhos > 0 && `${p.fidelidade.pontos_ganhos} pontos`].filter(Boolean).join(' e ')}</strong> para usar no próximo pedido, nas lojas do grupo.</p>
+          <p className="aviso">🎉 Você ganhou <strong>{[p.fidelidade.cashback_ganho > 0 && formatarReais(p.fidelidade.cashback_ganho), p.fidelidade.pontos_ganhos > 0 && `${p.fidelidade.pontos_ganhos} pontos`].filter(Boolean).join(' e ')}</strong> para usar no próximo pedido em {p.marca}.</p>
         )}
         {p.fidelidade && (p.fidelidade.cashback_usado > 0 || p.fidelidade.pontos_usados > 0) && (
           <p className="dica">Neste pedido você usou {[p.fidelidade.cashback_usado > 0 && `${formatarReais(p.fidelidade.cashback_usado)} de cashback`, p.fidelidade.pontos_usados > 0 && `${p.fidelidade.pontos_usados} pontos`].filter(Boolean).join(' e ')}.</p>
