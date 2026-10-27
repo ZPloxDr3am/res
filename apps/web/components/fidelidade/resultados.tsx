@@ -10,7 +10,7 @@ const PERIODOS = [
 const DIAS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 const FAIXA = { excelente: '5x+ excelente', bom: '2 a 5x bom', ok: '1 a 2x ok', atencao: 'abaixo de 1x: atenção' } as const;
 const REC = {
-  criar: { t: 'Criar ação do dia', d: 'dia fraco: cupom do dia ou cashback maior neste dia' },
+  criar: { t: 'Criar cupom do dia', d: 'dia fraco: um cupom só neste dia da semana' },
   revisar: { t: 'Revisar desconto', d: 'o desconto quase não volta em venda' },
   explorar: { t: 'Explorar', d: 'dia forte com pouca fidelidade: bom para testar cupom novo' },
   manter: { t: 'Manter', d: 'equilibrado' },
@@ -88,7 +88,7 @@ export function ResultadosFidelidade({ rel, periodo, erro }: { rel: RelatorioFid
         <h2 style={{ margin: 0 }}>Dia da semana × fidelidade</h2>
         {forte && fraco && forte.dow !== fraco.dow && (
           <p className="dica" style={{ margin: 0 }}>
-            Mais forte: <strong>{DIAS[forte.dow]}</strong> ({formatarReais(forte.faturamento)}). Mais fraco: <strong>{DIAS[fraco.dow]}</strong> ({formatarReais(fraco.faturamento)}): bom dia para cashback maior (dá para pôr % por dia em Programa).
+            Mais forte: <strong>{DIAS[forte.dow]}</strong> ({formatarReais(forte.faturamento)}). Mais fraco: <strong>{DIAS[fraco.dow]}</strong> ({formatarReais(fraco.faturamento)}): bom dia para um cupom do dia (Promoções → Cupons, escolhendo os dias).
           </p>
         )}
         <div className="tabela-rolagem">
