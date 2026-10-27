@@ -94,3 +94,22 @@ export async function medir(loja: Ponto, destino: Ponto): Promise<{ km: number; 
   if (rota != null) return { km: rota, fonte: 'rota' };
   return { km: Math.round(distanciaReta(loja, destino) * 100) / 100, fonte: 'reta' };
 }
+
+/**
+ * Tempos de moto (minutos) entre todos os pontos, pela rua (OSRM). m[i][j] = de i até j.
+ * null se o serviço de rotas não responder (aí o app estima pela distância).
+ */
+export async function matrizTempos(pontos: Ponto[]): Promise<number[][] | null> {
+  if (pontos.length < 2 || pontos.length > 25) return null;
+  const coords = pontos.map((p) => `${p.lng},${p.lat}`).join(';');
+  try {
+    const r = await fetch(`https://router.project-osrm.org/table/v1/driving/${coords}?annotations=duration`, { headers: { 'User-Agent': UA }, cache: 'no-store', signal: AbortSignal.timeout(8000) });
+    if (!r.ok) return null;
+    const j = (await r.json()) as { code: string; durations?: (number | null)[][] };
+    if (j.code !== 'Ok' || !j.durations) return null;
+    // moto anda um pouco mais rápido que o carro do OSRM na cidade; null = sem caminho → estimativa alta
+    return j.durations.map((linha) => linha.map((s) => (s == null ? 999 : (s / 60) * 0.85)));
+  } catch {
+    return null;
+  }
+}

@@ -570,3 +570,12 @@ details.cd-secao > summary { cursor: pointer; }
 .av-moto span { display: flex; width: 36px; height: 36px; border-radius: 999px; color: #fff; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; border: 3px solid #fff; box-shadow: 0 2px 6px rgb(0 0 0 / 0.35); }
 .av-destino span { display: inline-block; padding: 1px 6px; border-radius: 8px; background: #fff; color: #1d2321; border: 2px solid; font-weight: 800; font-size: 12px; white-space: nowrap; box-shadow: 0 1px 4px rgb(0 0 0 / 0.25); }
 .av-loja span { display: inline-block; padding: 1px 6px; border-radius: 6px; background: #1d2321; color: #fff; font-weight: 800; font-size: 11px; }
+/* ---------- rota com várias entregas (D-027) */
+.mb-rota { display: grid; gap: 0.6rem; padding: 0.9rem; border-radius: 16px; background: #1b2b3a; border: 1px solid #2f4f6e; color: #eaf2fb; }
+.mb-rota-topo { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.4rem; align-items: baseline; }
+.mb-rota-lista { margin: 0; padding-left: 1.4rem; display: grid; gap: 0.4rem; }
+.mb-rota-lista li { display: flex; flex-wrap: wrap; gap: 0.2rem 0.6rem; align-items: baseline; }
+.mb-rota-lista li.atrasa .mb-rota-hora { color: #ffb4a0; font-weight: 700; }
+.mb-rota-num { font-weight: 800; font-size: 1.05rem; }
+.mb-rota-hora { font-size: 0.88rem; color: #b9cde0; }
+.mb-ordem { display: inline-block; margin-right: 0.4rem; padding: 0 0.45rem; border-radius: 8px; background: #2f6fb0; color: #fff; font-size: 0.85em; }
