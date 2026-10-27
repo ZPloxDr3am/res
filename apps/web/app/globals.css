@@ -877,3 +877,6 @@ button.cl-topo:hover:not(:disabled) { background: none; }
 .cl-topo > .dica, .cl-topo > .cl-obs { flex-basis: 100%; }
 article.cartao:has(> .cl-topo) { padding: 0.95rem 1.15rem; }
 article.cartao:has(> .cl-topo[aria-expanded='false']):hover { box-shadow: var(--sombra), 0 0 0 1px var(--borda-forte); }
+.grade > .abas, .grade > .segmentos, .grade > nav.abas { justify-self: start; width: max-content; }
+.fid-bloco legend { margin-left: -0.2rem; }
+.fid-chave { font-size: 1rem; }
