@@ -80,6 +80,8 @@ export type Acompanhamento = {
   destino: { lat: number; lng: number } | null;
   /** só quando este pedido é a próxima parada do motoboy */
   motoboy: { lat: number; lng: number; em: string } | null;
+  /** fidelidade (D-031), centavos/pontos */
+  fidelidade?: { cashback_usado: number; pontos_usados: number; cashback_ganho: number; pontos_ganhos: number };
   itens: { nome: string; quantidade: number; total: number; opcoes: { nome: string; quantidade: number; fracao: number | null }[] }[];
 };
 

@@ -20,6 +20,8 @@ import {
   type FormaPagamento,
   normalizarTelefone,
 } from '@res/core';
+import { FidelidadeCliente, lembrarPedidoFidelidade, provaFidelidade } from '@/components/fidelidade/cliente';
+import type { UsoFidelidade } from '@/components/fidelidade/balcao';
 import {
   DIAS,
   diaNoFuso,
@@ -459,6 +461,7 @@ function Checkout({
   const [cupom, setCupom] = useState<{ codigo: string; desconto: number; descricao: string } | null>(null);
   const [cupomErro, setCupomErro] = useState<string | null>(null);
   const [conferindo, iniciarCupom] = useTransition();
+  const [usoFid, setUsoFid] = useState<UsoFidelidade>({ cashback: 0, recompensa: null });
   const podeAgendar = agendamento.horarios.length > 0;
   // fechada agora: só agendando
   const [agendar, setAgendar] = useState(!marca.aberta && podeAgendar);
@@ -542,8 +545,11 @@ function Checkout({
         observacao,
         agendadoPara: agendar ? horario : null,
         cupom: cupom?.codigo ?? null,
+        fidelidade: usoFid,
+        fidelidadeProva: provaFidelidade(cliente.telefone),
       });
       if (!r.ok) return setErro(r.erro);
+      lembrarPedidoFidelidade(cliente.telefone, r.codigo);
       concluido(r.codigo);
     });
 
@@ -689,13 +695,16 @@ function Checkout({
         {cupomErro && <span className="erro">{cupomErro}</span>}
       </div>
 
+      <FidelidadeCliente slug={marca.slug} telefone={cliente.telefone} aPagar={conta.t?.total ?? 0} uso={usoFid} aoMudar={setUsoFid} />
       {conta.t && (
         <div className="grade" style={{ gap: '0.2rem' }}>
           <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Subtotal</span><span>{formatarReais(conta.t.subtotal)}</span></div>
           {tipo === 'entrega' && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Entrega</span><span>{area ? (taxa ? formatarReais(taxa) : 'Grátis') : '—'}</span></div>}
           {conta.t.desconto > 0 && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Cupom {cupom?.codigo}</span><span>−{formatarReais(conta.t.desconto)}</span></div>}
           {agendar && horario && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Agendado</span><span>{rotuloHorario(new Date(horario), marca.fuso)}</span></div>}
-          <div className="pub-linha" style={{ justifyContent: 'space-between' }}><strong>Total</strong><span className="total">{formatarReais(conta.t.total)}</span></div>
+          {usoFid.cashback > 0 && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Cashback</span><span>−{formatarReais(Math.min(usoFid.cashback, conta.t.total))}</span></div>}
+          {usoFid.recompensa && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Troca de pontos</span><span className="dica">desconto entra ao enviar</span></div>}
+          <div className="pub-linha" style={{ justifyContent: 'space-between' }}><strong>Total</strong><span className="total">{formatarReais(Math.max(0, conta.t.total - Math.min(usoFid.cashback, conta.t.total)))}</span></div>
           {conta.troco != null && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Seu troco</span><span>{formatarReais(conta.troco)}</span></div>}
         </div>
       )}

@@ -18,6 +18,7 @@ const LINKS = [
   { href: '/impressoras', rotulo: 'Impressoras', icone: 'M7 8V3h10v5M7 17H4v-7h16v7h-3M7 14h10v7H7z' },
   { href: '/cardapio', rotulo: 'Cardápio', icone: 'M6 3h12v18l-6-4-6 4zM9 8h6M9 12h6' },
   { href: '/clientes', rotulo: 'Clientes', icone: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' },
+  { href: '/fidelidade', rotulo: 'Fidelidade', icone: 'M12 21l-8-8a5 5 0 0 1 7-7l1 1 1-1a5 5 0 0 1 7 7z' },
   { href: '/promocoes', rotulo: 'Promoções', icone: 'M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01' },
   { href: '/delivery', rotulo: 'Delivery', icone: 'M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z' },
   { href: '/entregas', rotulo: 'Entregas', icone: 'M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z' },
