@@ -207,3 +207,48 @@ Registro curto de cada decisão, com o motivo. Referências `R-`, `B-`, `T-` apo
 - Fixo (número começando com 2 a 5) fica como está e sai no CSV como "não (fixo)", porque não recebe SMS.
 - A regra está em `normalizarTelefone` (core, usada no balcão e no cardápio digital) e em `private.normalizar_telefone` (banco, num gatilho em todo pedido novo). Os testes dos dois usam os mesmos casos.
 - A migração 0031 corrige os telefones já gravados. Quando o mesmo cliente estava salvo duas vezes (com e sem o 9), os cadastros viram um só: pedidos, endereços e observações ficam no que já estava certo.
+
+## D-031 · Programa de fidelidade: cashback e pontos nas lojas do grupo
+
+O estudo da tela do BeeFood está em `estudo-beefood/fidelidade.md`, no projeto.
+
+**Configuração**
+- Uma configuração por grupo, na tela **Fidelidade → Programa**. Cashback e pontos ligam e desligam cada um por conta.
+- Canais: cardápio digital, delivery lançado no balcão e balcão/retirada.
+- **Cashback**:
+  - % padrão, com % diferente por dia da semana quando preciso;
+  - dias em que vale: nos dias desligados o cliente não ganha nem usa;
+  - validade em dias sem pedir;
+  - saldo mínimo para usar e teto em % do pedido;
+  - a taxa de entrega não gera cashback.
+- **Pontos**:
+  - pontos por R$ 1 em produtos e por R$ 1 de taxa;
+  - bônus no 1º pedido;
+  - validade em dias sem pedir.
+- **Recompensas**: N pontos dão R$ X de desconto ou um produto grátis. Para o produto grátis, o produto precisa estar no pedido; o desconto é o preço de 1 unidade e vale também para produto de mesmo nome em outra loja do grupo.
+
+**Saldo e extrato**
+- O saldo é do cliente (pelo telefone) e vale em todas as lojas do grupo.
+- O extrato fica em `fidelidade_movimentos` (ganho, uso, vencido, ajuste, estorno) e o saldo é a soma.
+- **Ganho na hora em que o pedido é concluído**, sem esperar processamento de madrugada como no BeeFood. Se o pedido for cancelado depois, o que foi usado volta e o que foi ganho sai.
+- **Validade conta do último pedido do cliente**, para cashback e para pontos. Quem continua pedindo não perde o saldo. Ao voltar depois de vencer, o saldo antigo sai do extrato como "vencido".
+
+**Uso no pedido**
+- O uso vira desconto do pedido (`pedidos.desconto`), detalhado em `fid_cashback`, `fid_desconto` e `fid_pontos`.
+- `pedidos.cupom_desconto` passa a guardar o desconto do cupom, para o painel de resultados.
+- No balcão, o atendente vê o saldo do cliente escolhido e marca "usar cashback" e/ou a troca de pontos. A conta na tela é uma prévia; o banco confere tudo.
+- No **cardápio digital**, o saldo só aparece e só pode ser usado no aparelho do último pedido. O código secreto daquele pedido fica guardado no aparelho e é enviado como prova. Sem essa prova, saber o telefone de alguém não basta para gastar o saldo dele; em outro aparelho, o cliente pede pela loja.
+- A página do pedido mostra o que o cliente ganhou e o que usou.
+
+**Saldos e ajuste manual** (Fidelidade → Saldos dos clientes)
+- Mostra o saldo de cada cliente com a data de vencimento e o extrato.
+- O ajuste manual pede motivo e nunca deixa o saldo negativo.
+- Mudar o programa e ajustar saldo: gestor ou permissão Marketing.
+
+**Resultados** (Fidelidade → Resultados, períodos de 7, 31 ou 90 dias)
+- Vendas e % do faturamento com fidelidade, desconto dado e **ROI** por mecânica (cupom, cashback, recompensa).
+- Faixas de ROI: 5x+, 2–5x, 1–2x, abaixo de 1x.
+- Ticket médio com e sem fidelidade; cashback gerado e vencido; pontos gerados e trocados.
+- **Dia da semana**: dia forte e dia fraco, com sugestão por dia (`recomendacaoDia` no core: dia fraco pede ação do dia, ROI baixo pede revisão, dia forte com pouca fidelidade pede teste).
+- Novos × recorrentes calculado na hora; resultado por origem.
+- As regras de ganho e uso estão no core e no banco, com os mesmos casos de teste (`CASOS_GANHO`).

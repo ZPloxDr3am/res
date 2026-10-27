@@ -630,3 +630,28 @@ details.cd-secao > summary { cursor: pointer; }
   .seg-chip { color: color-mix(in srgb, var(--c) 45%, #fff); }
   .seg-n { background: rgba(255,255,255,.12); color: inherit; }
 }
+/* ---------- fidelidade (D-031) */
+.fid-bloco { border: 1px solid var(--borda); }
+.fid-bloco[data-ativo] { border-color: #0f7a55; }
+.fid-bloco legend { padding: 0 0.4rem; font-weight: 700; }
+.fid-chave { font-size: 1.05rem; font-weight: 700; }
+.fid-dias { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.fid-dia { display: grid; gap: 0.25rem; padding: 0.4rem 0.5rem; border: 1px solid var(--borda); border-radius: 10px; opacity: 0.6; }
+.fid-dia[data-on] { opacity: 1; }
+.fid-dia input[type='number'] { width: 4.2rem; }
+.fid-exemplo { margin: 0; padding: 0.6rem 0.8rem; border-radius: 10px; background: color-mix(in srgb, #0f7a55 10%, transparent); }
+.fid-recompensas { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.fid-recompensas li { display: flex; flex-wrap: wrap; gap: 0.3rem 0.8rem; align-items: baseline; padding: 0.4rem 0; border-bottom: 1px solid var(--borda); }
+.fid-saldo { font-weight: 700; color: #0f7a55; }
+.fid-roi { font-variant-numeric: tabular-nums; }
+.fid-roi.excelente { color: #0f7a55; }
+.fid-roi.bom { color: #2f6fb0; }
+.fid-roi.ok { color: #a15c00; }
+.fid-roi.atencao { color: #b3261e; }
+@media (prefers-color-scheme: dark) {
+  .fid-saldo, .fid-roi.excelente { color: #5fd3a4; }
+  .fid-roi.bom { color: #8ab8ea; }
+  .fid-roi.ok { color: #ffc46b; }
+  .fid-roi.atencao { color: #ffb4a8; }
+}
+.fid-balcao { display: grid; gap: 0.35rem; padding: 0.6rem 0.8rem; border-radius: 10px; border: 1px dashed #0f7a55; background: color-mix(in srgb, #0f7a55 8%, transparent); }

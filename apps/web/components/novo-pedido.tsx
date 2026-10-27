@@ -21,6 +21,7 @@ import {
 } from '@res/core';
 import { nomeOpcao, paraGrupoCore, paraProdutoCore, passosCore, type Cardapio, type GrupoRow, type PassoRow, type ProdutoRow, type SetorRow } from '@/lib/cardapio-dados';
 import { autorizarDesconto, criarPedido } from '@/app/(painel)/pedidos/actions';
+import { FidelidadeBalcao, type UsoFidelidade } from '@/components/fidelidade/balcao';
 import { buscarClientes, salvarCliente } from '@/app/(painel)/clientes/actions';
 import { enderecoTexto, formatarTelefone, type ClienteBusca, type EnderecoCliente } from '@/lib/clientes';
 import { salvando } from '@/components/tempo-real';
@@ -91,6 +92,7 @@ export function NovoPedido({
   const [buscaEm, setBuscaEm] = useState<'telefone' | 'nome' | null>(null);
   const [clientesAchados, setClientesAchados] = useState<ClienteBusca[]>([]);
   const [clienteSel, setClienteSel] = useState<ClienteBusca | null>(null);
+  const [usoFid, setUsoFid] = useState<UsoFidelidade>({ cashback: 0, recompensa: null });
   const [obsCliente, setObsCliente] = useState('');
   const [obsMsg, setObsMsg] = useState<string | null>(null);
   const [salvandoObs, iniciarObs] = useTransition();
@@ -245,6 +247,7 @@ export function NovoPedido({
           descontoMotivo: motivo,
           autorizacao: acimaDoLimite ? autorizacao?.id ?? null : null,
           cupom: cupomTxt,
+          fidelidade: clienteSel ? usoFid : null,
           pagamento,
           trocoPara: pagamento === 'dinheiro' ? trocoPara : null,
           observacao,
@@ -421,6 +424,7 @@ export function NovoPedido({
                   <button type="button" className="mini" onClick={() => { setClienteSel(null); setCliente({ nome: '', telefone: '' }); }}>Trocar</button>
                 </div>
                 {clienteSel.ultimo_item && <span className="dica">Último pedido: {clienteSel.ultimo_item}</span>}
+                <FidelidadeBalcao clienteId={clienteSel.id} aPagar={resumo.totais?.total ?? 0} entrega={tipo === 'entrega'} uso={usoFid} aoMudar={setUsoFid} />
                 {clienteSel.enderecos.length > 1 && tipo === 'entrega' && (
                   <div className="linha" style={{ gap: '0.3rem' }}>
                     <span className="dica">Endereços:</span>
@@ -612,7 +616,9 @@ export function NovoPedido({
               <div className="linha" style={{ justifyContent: 'space-between' }}><span className="dica">Subtotal</span><span>{formatarReais(resumo.totais.subtotal)}</span></div>
               {resumo.totais.taxaEntrega > 0 && <div className="linha" style={{ justifyContent: 'space-between' }}><span className="dica">Taxa de entrega</span><span>{formatarReais(resumo.totais.taxaEntrega)}</span></div>}
               {resumo.totais.desconto > 0 && <div className="linha" style={{ justifyContent: 'space-between' }}><span className="dica">Desconto</span><span>−{formatarReais(resumo.totais.desconto)}</span></div>}
-              <div className="linha" style={{ justifyContent: 'space-between' }}><strong>Total</strong><span className="total">{formatarReais(resumo.totais.total)}</span></div>
+              {clienteSel && usoFid.cashback > 0 && <div className="linha" style={{ justifyContent: 'space-between' }}><span className="dica">Cashback</span><span>−{formatarReais(Math.min(usoFid.cashback, resumo.totais.total))}</span></div>}
+              {clienteSel && usoFid.recompensa && <div className="linha" style={{ justifyContent: 'space-between' }}><span className="dica">Troca de pontos</span><span className="dica">desconto entra ao lançar</span></div>}
+              <div className="linha" style={{ justifyContent: 'space-between' }}><strong>Total</strong><span className="total">{formatarReais(Math.max(0, resumo.totais.total - (clienteSel ? Math.min(usoFid.cashback, resumo.totais.total) : 0)))}</span></div>
               {resumo.troco != null && <div className="linha" style={{ justifyContent: 'space-between' }}><span className="dica">Levar de troco</span><span>{formatarReais(resumo.troco)}</span></div>}
             </div>
           )}

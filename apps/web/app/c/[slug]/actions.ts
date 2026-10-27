@@ -1,5 +1,6 @@
 'use server';
 import type { FormaPagamento } from '@res/core';
+import { lerConfig, type ProgramaPublico } from '@/lib/fidelidade';
 import { criarClienteServidor } from '@/lib/supabase/server';
 
 export interface PedidoCliente {
@@ -22,6 +23,9 @@ export interface PedidoCliente {
   agendadoPara: string | null;
   /** código do cupom (o banco confere e calcula o desconto) */
   cupom?: string | null;
+  /** cashback (centavos) e/ou recompensa (D-031); prova = código de um pedido anterior guardado no aparelho */
+  fidelidade?: { cashback: number; recompensa: string | null } | null;
+  fidelidadeProva?: string | null;
 }
 
 /** Envia o pedido do cliente. O banco confere tudo de novo (aberto, bairro, taxa, preço, mínimo). */
@@ -44,6 +48,8 @@ export async function enviarPedido(slug: string, p: PedidoCliente): Promise<{ ok
       observacao: p.observacao || null,
       agendado_para: p.agendadoPara,
       cupom: p.cupom || null,
+      fidelidade: p.fidelidade && (p.fidelidade.cashback > 0 || p.fidelidade.recompensa) ? p.fidelidade : null,
+      fidelidade_prova: p.fidelidadeProva ?? null,
     },
   });
   if (error) return { ok: false, erro: error.message };
@@ -65,4 +71,21 @@ export async function conferirCupom(
   if (error) return { ok: false, erro: error.message };
   const r = data as { codigo: string; desconto: number; descricao: string };
   return { ok: true, codigo: r.codigo, desconto: Number(r.desconto), descricao: r.descricao };
+}
+
+/** O programa de fidelidade da loja (para mostrar quanto o cliente ganha). null = desligado. */
+export async function programaFidelidade(slug: string): Promise<ProgramaPublico | null> {
+  const supabase = await criarClienteServidor();
+  const { data } = await supabase.rpc('fidelidade_publica', { p_slug: slug });
+  if (!data) return null;
+  const d = data as ProgramaPublico & { config: Record<string, unknown> };
+  return { ...d, config: lerConfig(d.config)! };
+}
+
+/** Saldo do cliente, só com a prova (código de um pedido anterior dele guardado neste aparelho). */
+export async function saldoFidelidade(slug: string, telefone: string, prova: string): Promise<{ cashback: number; pontos: number } | null> {
+  if (!/^[0-9a-f-]{36}$/i.test(prova)) return null;
+  const supabase = await criarClienteServidor();
+  const { data } = await supabase.rpc('saldo_fidelidade_publico', { p_slug: slug, p_telefone: telefone, p_prova: prova });
+  return (data as { cashback: number; pontos: number } | null) ?? null;
 }

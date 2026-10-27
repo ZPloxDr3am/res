@@ -55,6 +55,8 @@ export interface NovoPedido {
   descontoMotivo?: string;
   autorizacao?: string | null;
   cupom?: string | null;
+  /** cashback (centavos) e/ou recompensa de pontos (D-031) */
+  fidelidade?: { cashback: number; recompensa: string | null } | null;
 }
 
 export async function criarPedido(p: NovoPedido): Promise<{ ok: true; numero: number } | { ok: false; erro: string }> {
@@ -83,6 +85,7 @@ export async function criarPedido(p: NovoPedido): Promise<{ ok: true; numero: nu
       desconto_motivo: p.descontoMotivo?.trim() || null,
       autorizacao: p.autorizacao || null,
       cupom: p.cupom?.trim() || null,
+      fidelidade: p.fidelidade && (p.fidelidade.cashback > 0 || p.fidelidade.recompensa) ? p.fidelidade : null,
     },
   });
   if (error) return { ok: false, erro: mensagem(error) };
