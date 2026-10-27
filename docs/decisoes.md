@@ -148,3 +148,11 @@ Registro curto de cada decisão, com o motivo. Referências `R-`, `B-`, `T-` apo
 - No novo pedido, ao digitar o telefone (4+ dígitos) ou o nome (2+ letras), aparecem os clientes; escolher um preenche nome, telefone e endereço e mostra histórico, outros endereços e as **observações do cliente** (editáveis ali mesmo).
 - Tela **Clientes**: busca, editar nome e observações, tirar endereços antigos.
 - O cardápio digital não busca dados por telefone, porque qualquer pessoa poderia ver o endereço dos outros. Lá o próprio aparelho lembra os dados do cliente.
+
+## D-026 Rastreio dos motoboys em tempo real
+- O celular só manda a posição **enquanto o motoboy tem entrega em rota**. `registrar_posicao` responde `{ativo:false}` quando não há entrega, e o app para. Quando a última entrega é concluída ou cancelada, o motoboy sai do mapa na hora (gatilho no pedido). Fora do serviço não há rastreio.
+- `motoboy_local` guarda a última posição (tempo real por grupo) e `motoboy_posicoes` guarda o caminho, um ponto a cada ~8 s, por 30 dias. A leitura é só para membros das lojas do grupo.
+- **App Android**: plugin `@capacitor-community/background-geolocation`. O GPS continua com a tela desligada, com o aviso fixo "Compartilhando sua rota…", e o envio é nativo (`CapacitorHttp` direto no Supabase, com o token do motoboy), porque o Android segura as requisições da WebView em segundo plano. Precisa de um APK novo; sem a chave fixa de assinatura, é preciso desinstalar o antigo antes.
+- **Navegador (iPhone/Chrome)**: só envia com a tela do app aberta.
+- O painel tem **Entregas → Ao vivo**: mapa (Leaflet + OpenStreetMap) com cada motoboy, o caminho desde que saiu, as entregas (#número no endereço do cliente, quando o app conseguiu localizar) e a loja; a lista mostra o sinal (cinza depois de 2 min sem posição) e a velocidade.
+- Os mapas do OpenStreetMap são gratuitos e têm limite de uso; com muitas lojas, trocar por um provedor de mapas pago (só muda o endereço das imagens do mapa).

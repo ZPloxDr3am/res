@@ -40,6 +40,8 @@ export async function medirEntrega(pedidoId: string): Promise<{ km: number; font
   const loja = { lat: e.loja_lat, lng: e.loja_lng };
   const achado = await localizarEntrega(e.endereco, e.cidade, loja);
   if (!achado) return null;
+  // ponto do cliente no mapa ao vivo do painel (D-026)
+  if (achado.precisao === 'endereco') await supabase.rpc('registrar_destino', { p_pedido: pedidoId, p_lat: achado.ponto.lat, p_lng: achado.ponto.lng });
   // só achou o bairro e o bairro já tem km cadastrado: fica o do cadastro
   if (achado.precisao === 'bairro' && e.distancia_fonte === 'bairro') return null;
   const m = await medir(loja, achado.ponto);

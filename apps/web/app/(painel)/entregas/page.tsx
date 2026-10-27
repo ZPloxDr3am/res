@@ -6,6 +6,8 @@ import { criarClienteServidor } from '@/lib/supabase/server';
 import { TempoReal } from '@/components/tempo-real';
 import { BairrosEntregas, type LojaBairros } from '@/components/entregas/bairros';
 import { FechamentoMotoboys } from '@/components/entregas/fechamento';
+import { MapaAoVivo } from '@/components/entregas/ao-vivo';
+import { rastreioAoVivo } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,7 +18,7 @@ function diaDoTurno(): string {
 
 export default async function Entregas({ searchParams }: { searchParams: Promise<{ aba?: string; dia?: string }> }) {
   const sp = await searchParams;
-  const aba = sp.aba === 'fechamento' ? 'fechamento' : 'bairros';
+  const aba = sp.aba === 'fechamento' ? 'fechamento' : sp.aba === 'bairros' ? 'bairros' : 'aovivo';
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
 
@@ -26,7 +28,10 @@ export default async function Entregas({ searchParams }: { searchParams: Promise
   const ids = grupo.map((l) => l.id);
 
   let conteudo: ReactNode;
-  if (aba === 'bairros') {
+  if (aba === 'aovivo') {
+    const vivo = await rastreioAoVivo();
+    conteudo = vivo ? <MapaAoVivo inicial={vivo} /> : <p className="cartao dica">Seu acesso não inclui as entregas desta loja.</p>;
+  } else if (aba === 'bairros') {
     const [lojas, marcas, areas] = await Promise.all([
       supabase.from('lojas').select('id, nome, cidade, endereco, lat, lng').in('id', ids),
       supabase.from('marcas').select('id, nome, loja_id').in('loja_id', ids).order('ordem').order('nome'),
@@ -77,7 +82,8 @@ export default async function Entregas({ searchParams }: { searchParams: Promise
     <div className="grade">
       <h1>Entregas</h1>
       <nav className="abas nao-imprimir" aria-label="Entregas">
-        <Link href="/entregas" role="tab" aria-selected={aba === 'bairros'} className="aba-link">Bairros e preços</Link>
+        <Link href="/entregas" role="tab" aria-selected={aba === 'aovivo'} className="aba-link">Ao vivo</Link>
+        <Link href="/entregas?aba=bairros" role="tab" aria-selected={aba === 'bairros'} className="aba-link">Bairros e preços</Link>
         <Link href="/entregas?aba=fechamento" role="tab" aria-selected={aba === 'fechamento'} className="aba-link">Fechamento dos motoboys</Link>
       </nav>
       {conteudo}

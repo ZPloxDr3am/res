@@ -1,4 +1,4 @@
-// Ajusta o projeto Android gerado pelo Capacitor: câmera, versão, assinatura e ícones.
+// Ajusta o projeto Android gerado pelo Capacitor: câmera, GPS da entrega, versão, assinatura e ícones.
 import { readFileSync, writeFileSync, copyFileSync, rmSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -11,7 +11,29 @@ let m = readFileSync(man, 'utf8');
 if (!m.includes('android.permission.CAMERA')) {
   m = m.replace('<application', '<uses-permission android:name="android.permission.CAMERA" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />\n\n    <application');
 }
+// GPS da entrega em segundo plano (D-026): localização, serviço em primeiro plano e o aviso fixo
+const permissoes = [
+  'android.permission.ACCESS_COARSE_LOCATION',
+  'android.permission.ACCESS_FINE_LOCATION',
+  'android.permission.FOREGROUND_SERVICE',
+  'android.permission.FOREGROUND_SERVICE_LOCATION',
+  'android.permission.POST_NOTIFICATIONS',
+];
+for (const p of permissoes) {
+  if (!m.includes(p)) m = m.replace('<application', `<uses-permission android:name="${p}" />\n    <application`);
+}
+if (!m.includes('android.hardware.location.gps')) {
+  m = m.replace('<application', '<uses-feature android:name="android.hardware.location.gps" android:required="false" />\n\n    <application');
+}
 writeFileSync(man, m);
+
+// nome do canal do aviso fixo ("RES Motoboy · compartilhando sua rota")
+const strings = join(app, 'src', 'main', 'res', 'values', 'strings.xml');
+let st = readFileSync(strings, 'utf8');
+if (!st.includes('capacitor_background_geolocation_notification_channel_name')) {
+  st = st.replace('</resources>', '    <string name="capacitor_background_geolocation_notification_channel_name">Rota da entrega</string>\n</resources>');
+  writeFileSync(strings, st);
+}
 
 // versão (sobe a cada build) e assinatura fixa (mesma chave → atualiza por cima sem desinstalar)
 const gradle = join(app, 'build.gradle');

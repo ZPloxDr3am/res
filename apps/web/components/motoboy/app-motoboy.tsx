@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { formatarKm, formatarReais, tempoDecorrido } from '@res/core';
 import { despachar, entregar, medirEntrega } from '@/app/m/actions';
+import { FaixaRastreio } from './rastreador';
 import { cobranca, LINK_APP_ANDROID, linkLigar, linkMaps, linkWaze, linkWhats, type Entrega, type PainelMotoboy } from '@/lib/motoboy';
 
 type Aviso = { ok: boolean; texto: string } | null;
@@ -53,6 +54,8 @@ export function AppMotoboy({ painel }: { painel: PainelMotoboy }) {
       )}
       {lendo && <Leitor aoLer={lido} aoFechar={() => setLendo(false)} />}
       {aviso && <p className={`mb-aviso ${aviso.ok ? 'ok' : 'erro'}`} role="status">{aviso.ok ? '✓ ' : '✕ '}{aviso.texto}</p>}
+
+      <FaixaRastreio ativo={painel.em_rota.length > 0} />
 
       <section className="grade" style={{ gap: '0.75rem' }}>
         <h2 className="mb-titulo">Com você agora <span>{painel.em_rota.length}</span></h2>
