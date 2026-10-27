@@ -157,7 +157,7 @@ export function FormDelivery({
           {(c.areas ?? []).filter((a) => a.ativo).length} bairro(s) ativo(s)
           {(c.areas ?? []).length > 0 && `: ${(c.areas ?? []).filter((a) => a.ativo).slice(0, 6).map((a) => `${a.bairro} ${formatarReais(a.taxa)}`).join(' · ')}${(c.areas ?? []).filter((a) => a.ativo).length > 6 ? ' …' : ''}`}
         </p>
-        <a href="/entregas" style={{ justifySelf: 'start' }}>Editar bairros, preços e valor do motoboy em Entregas →</a>
+        <a href="/entregas?aba=bairros" style={{ justifySelf: 'start' }}>Editar bairros, preços e valor do motoboy em Entregas →</a>
         {c.aceitaEntrega && (c.areas ?? []).filter((a) => a.ativo).length === 0 && <p className="aviso">Sem bairros ativos, o cliente só consegue pedir para retirar.</p>}
       </fieldset>
 

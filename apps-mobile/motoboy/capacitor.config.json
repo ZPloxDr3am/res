@@ -5,10 +5,13 @@
   "server": {
     "url": "https://res-iqzs.vercel.app/m",
     "cleartext": false,
-    "allowNavigation": ["res-iqzs.vercel.app"]
+    "allowNavigation": [
+      "res-iqzs.vercel.app"
+    ]
   },
   "android": {
     "appendUserAgent": "RESMotoboyApp",
-    "backgroundColor": "#1f6f5c"
+    "backgroundColor": "#1f6f5c",
+    "useLegacyBridge": true
   }
 }

@@ -554,3 +554,19 @@ details.cd-secao > summary { cursor: pointer; }
 .np-ficha { padding: 0.6rem 0.75rem; border-radius: 10px; background: color-mix(in srgb, var(--primaria) 8%, var(--superficie)); border: 1px solid color-mix(in srgb, var(--primaria) 30%, var(--borda)); }
 .cl-topo { display: grid; grid-template-columns: auto auto 1fr; gap: 0.2rem 0.8rem; align-items: baseline; text-align: left; border: 0; background: none; padding: 0; color: var(--texto); }
 .cl-obs { grid-column: 1 / -1; font-size: 0.88rem; color: var(--texto-suave); }
+/* ---------- rastreio do motoboy (D-026) */
+.mb-rastreio { display: grid; gap: 0.35rem; margin: 0; padding: 0.6rem 0.8rem; border-radius: 12px; background: #17312a; border: 1px solid #2f5a4c; color: #e6f2ec; font-size: 0.92rem; }
+.mb-rastreio.negado, .mb-rastreio.sem-gps { background: #3a1f1a; border-color: #7a3a2c; color: #ffe1d6; }
+.mb-rastreio .mb-btn { justify-self: start; }
+/* ---------- entregas ao vivo (D-026) */
+.av { display: flex; flex-wrap: wrap; gap: 1rem; align-items: stretch; }
+.av-lista { flex: 1 1 280px; max-width: 360px; display: grid; gap: 0.5rem; align-content: start; }
+.av-mapa-caixa { flex: 999 1 420px; min-width: 0; }
+.av-mapa { height: min(72vh, 680px); min-height: 380px; border-radius: 14px; border: 1px solid var(--borda); overflow: hidden; }
+.av-card { display: grid; grid-template-columns: auto 1fr; gap: 0.6rem; align-items: start; text-align: left; padding: 0.6rem 0.7rem; border-radius: 12px; border: 1px solid var(--borda); background: var(--superficie); color: var(--texto); }
+.av-card.on { border-color: var(--primaria); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primaria) 30%, transparent); }
+.av-bola { width: 34px; height: 34px; border-radius: 999px; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; }
+.av-entrega { font-size: 0.85rem; }
+.av-moto span { display: flex; width: 36px; height: 36px; border-radius: 999px; color: #fff; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; border: 3px solid #fff; box-shadow: 0 2px 6px rgb(0 0 0 / 0.35); }
+.av-destino span { display: inline-block; padding: 1px 6px; border-radius: 8px; background: #fff; color: #1d2321; border: 2px solid; font-weight: 800; font-size: 12px; white-space: nowrap; box-shadow: 0 1px 4px rgb(0 0 0 / 0.25); }
+.av-loja span { display: inline-block; padding: 1px 6px; border-radius: 6px; background: #1d2321; color: #fff; font-weight: 800; font-size: 11px; }

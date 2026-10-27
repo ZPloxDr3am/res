@@ -2,7 +2,7 @@
   "name": "res-motoboy-app",
   "version": "1.0.0",
   "private": true,
-  "description": "RES Motoboy: app Android (Capacitor) que abre o app do motoboy do RES com câmera liberada e login guardado.",
+  "description": "RES Motoboy: app Android (Capacitor) que abre o app do motoboy do RES com câmera liberada, login guardado e GPS da entrega em segundo plano.",
   "scripts": {
     "android": "cap add android && cap sync android && node scripts/ajustar-android.mjs"
   },
@@ -10,6 +10,7 @@
     "@capacitor/android": "6.2.0",
     "@capacitor/app": "6.0.2",
     "@capacitor/cli": "6.2.0",
-    "@capacitor/core": "6.2.0"
+    "@capacitor/core": "6.2.0",
+    "@capacitor-community/background-geolocation": "1.2.26"
   }
 }

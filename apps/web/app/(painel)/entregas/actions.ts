@@ -1,6 +1,7 @@
 'use server';
 import { revalidatePath } from 'next/cache';
 import { criarClienteServidor } from '@/lib/supabase/server';
+import { contextoLoja } from '@/lib/loja';
 import { localizar, localizarBairro, medir } from '@/lib/geo';
 
 type R<T = object> = ({ ok: true } & T) | { ok: false; erro: string };
@@ -67,4 +68,26 @@ export async function ajustarEntrega(pedidoId: string, valorMotoboy: number | nu
   if (error) return { ok: false, erro: error.message };
   revalidatePath('/entregas');
   return { ok: true };
+}
+
+export type MotoboyAoVivo = {
+  id: string;
+  nome: string | null;
+  lat: number;
+  lng: number;
+  precisao: number | null;
+  velocidade: number | null;
+  rumo: number | null;
+  em: string;
+  entregas: { id: string; numero: number; loja: string; cliente: string; bairro: string | null; endereco: string; saiu_em: string; distancia_km: number | null; destino_lat: number | null; destino_lng: number | null }[];
+  rota: [number, number][];
+};
+export type AoVivo = { grupo: string; lojas: { nome: string; lat: number; lng: number }[]; motoboys: MotoboyAoVivo[] };
+
+/** Motoboys em rota agora (lojas do grupo), com o caminho desde a saída. */
+export async function rastreioAoVivo(): Promise<AoVivo | null> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('rastreio_ao_vivo', { p_loja: ctx.lojaId });
+  return error ? null : (data as AoVivo);
 }
