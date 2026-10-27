@@ -165,3 +165,16 @@ Registro curto de cada decisão, com o motivo. Referências `R-`, `B-`, `T-` apo
 - **Tempos pela rua**: matriz do OSRM. Sem resposta, usa linha reta × 1,4 a 25 km/h ("estimado"). Cada endereço é procurado no mapa uma vez (Nominatim, 1 por segundo) e guardado em `pedidos.destino_lat/lng`.
 - **Partida**: a posição atual do celular; senão, a loja. "Recalcular daqui" refaz a conta do ponto onde o motoboy está. Ler uma nova comanda ou entregar uma recalcula sozinho.
 - A ordem fica gravada em `pedidos.rota_ordem` (só o próprio motoboy, só com entrega em rota): as comandas aparecem nessa ordem no app e no painel ao vivo.
+
+## D-028 · Cliente acompanha a entrega, prazo por loja, alerta e lotes na expedição, tempos e atrasos
+
+- **Prazo por loja** (Entregas → Bairros e preços → ⏱ Prazo de entrega, de 10 a 240 min; padrão 35). Vale para entrega sem horário agendado; agendado usa o horário marcado. Funções `prazoEntrega` e `situacaoPrazo` no core.
+- **Alerta no quadro**: cartão de entrega mostra "Entregar até HH:MM"; laranja quando faltam 10 min ou menos, vermelho quando estoura ("Atrasado X min"). Em rota, mostra também a chegada prevista pela rota do motoboy.
+- **Sugestão de saída** (acima das colunas, quando há 2+ entregas prontas na mesma loja): `agruparEntregas` começa pelo pedido mais urgente e junta os que ficam no caminho, até 3 por lote. Um pedido só entra no lote se somar no máximo 8 min à rota e não fizer ninguém atrasar mais do que já atrasaria. Sem endereço achado no mapa, junta só pelo mesmo bairro. Os endereços são procurados no mapa na hora (no máximo 6 por vez) e guardados no pedido.
+- **Cliente** (página de acompanhamento do cardápio digital):
+  - antes de sair, vê "Previsão de entrega: até HH:MM";
+  - depois que o pedido sai, vê o nome do motoboy, "chega por volta das HH:MM" (hora gravada pela rota do motoboy, refeita a cada 4 min do ponto onde ele está) e quantas entregas ele faz antes;
+  - **o mapa com o motoboy só aparece quando o pedido do cliente é a próxima parada**, com posição dos últimos 3 min, para não expor as outras entregas.
+- **Tempos e atrasos** (aba nova em Entregas; hoje, ontem, 7 ou 30 dias; turnos 05:00→05:00; lojas do grupo que a pessoa gere ou tem permissão de relatórios):
+  - média de cada etapa (aceitar, preparo, esperando motoboy, na rua), com a etapa mais longa destacada;
+  - % no prazo e atrasos por dia, bairro, motoboy e loja.

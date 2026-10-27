@@ -3,27 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { formatarKm } from '@res/core';
 import { rastreioAoVivo, type AoVivo, type MotoboyAoVivo } from '@/app/(painel)/entregas/actions';
 import { clienteNavegador } from '@/lib/supabase/client';
-
-// Leaflet vem do cdnjs só nesta tela (mapa do OpenStreetMap, sem chave).
-/* eslint-disable @typescript-eslint/no-explicit-any */
-type L = any;
-let carregando: Promise<L> | null = null;
-function carregarLeaflet(): Promise<L> {
-  const w = window as unknown as { L?: L };
-  if (w.L) return Promise.resolve(w.L);
-  carregando ??= new Promise((ok, falha) => {
-    const css = document.createElement('link');
-    css.rel = 'stylesheet';
-    css.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
-    document.head.appendChild(css);
-    const js = document.createElement('script');
-    js.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
-    js.onload = () => ok((window as unknown as { L: L }).L);
-    js.onerror = () => falha(new Error('Não consegui carregar o mapa.'));
-    document.head.appendChild(js);
-  });
-  return carregando;
-}
+import { carregarLeaflet, type L } from '@/lib/leaflet';
 
 const CORES = ['#2a78d6', '#eb6834', '#1baf7a', '#c98500', '#d55181', '#6250d6', '#008300', '#e34948'];
 const iniciais = (n: string | null) => (n ?? 'M').split(/\s+/).filter(Boolean).slice(0, 2).map((x) => x[0]!.toUpperCase()).join('');

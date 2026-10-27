@@ -71,6 +71,15 @@ export type Acompanhamento = {
   pagamento: FormaPagamento;
   troco_para: number | null;
   tempo_preparo_min: number;
+  /** prazo prometido (agendado ou pedido + prazo da loja) */
+  prazo: string;
+  /** só em entrega: hora prevista pela rota do motoboy */
+  previsao_chegada: string | null;
+  motoboy_nome: string | null;
+  paradas_antes: number | null;
+  destino: { lat: number; lng: number } | null;
+  /** só quando este pedido é a próxima parada do motoboy */
+  motoboy: { lat: number; lng: number; em: string } | null;
   itens: { nome: string; quantidade: number; total: number; opcoes: { nome: string; quantidade: number; fracao: number | null }[] }[];
 };
 

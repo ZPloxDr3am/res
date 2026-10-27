@@ -26,6 +26,15 @@ export async function salvarLocalLoja(lojaId: string, endereco: string, lat: num
   return { ok: true };
 }
 
+export async function salvarPrazoEntrega(lojaId: string, minutos: number): Promise<R> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('salvar_prazo_entrega', { p_loja: lojaId, p_minutos: minutos });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/entregas');
+  revalidatePath('/pedidos');
+  return { ok: true };
+}
+
 /** Km da loja até o centro do bairro (pela rua; senão em linha reta). */
 export async function calcularKmBairro(lojaId: string, bairro: string): Promise<R<{ km: number; fonte: 'rota' | 'reta' }>> {
   const supabase = await criarClienteServidor();
