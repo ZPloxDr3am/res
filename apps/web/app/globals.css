@@ -866,3 +866,4 @@ button.menu-item:hover:not(:disabled) { background: var(--superficie-2); border:
 .kpi .lista li > span:first-child { min-width: 0; flex: 1 1 auto; }
 .kpi .lista li > span:last-child { flex: none; }
 .kpi .lista li { display: flex; }
+.kpi > *, .kpi .lista > li { min-width: 0; }
