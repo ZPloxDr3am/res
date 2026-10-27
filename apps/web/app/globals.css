@@ -857,3 +857,9 @@ button.menu-item:hover:not(:disabled) { background: var(--superficie-2); border:
 .menu-item[data-pendente] { color: var(--primaria-forte); background: var(--primaria-fundo); font-weight: 600; }
 @media (max-width: 1000px) and (min-width: 701px) { .menu-item, button.menu-item { justify-content: center; padding: 0.6rem; } }
 @media (max-width: 700px) { .menu-item, button.menu-item { justify-content: center; flex-direction: column; padding: 0.4rem 0.2rem; } }
+/* resumo: cartões de número encolhem sem vazar */
+.kpis { gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.kpis > * { min-width: 0; }
+.kpi .lista li { align-items: center; }
+.kpi-titulo strong { font-weight: 600; color: var(--texto); }
+.kpi-ajuda { border-top-style: solid; }
