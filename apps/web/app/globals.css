@@ -863,3 +863,6 @@ button.menu-item:hover:not(:disabled) { background: var(--superficie-2); border:
 .kpi .lista li { align-items: center; }
 .kpi-titulo strong { font-weight: 600; color: var(--texto); }
 .kpi-ajuda { border-top-style: solid; }
+.kpi .lista li > span:first-child { min-width: 0; flex: 1 1 auto; }
+.kpi .lista li > span:last-child { flex: none; }
+.kpi .lista li { display: flex; }
