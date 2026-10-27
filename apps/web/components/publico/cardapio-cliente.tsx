@@ -18,6 +18,7 @@ import {
   type EscolhaPasso,
   type Escolhas,
   type FormaPagamento,
+  normalizarTelefone,
 } from '@res/core';
 import {
   DIAS,
@@ -489,7 +490,7 @@ function Checkout({
 
   const aplicarCupom = (codigo: string) =>
     iniciarCupom(async () => {
-      const r = await conferirCupom(marca.slug, codigo, subtotal, taxa, tipo, cliente.telefone);
+      const r = await conferirCupom(marca.slug, codigo, subtotal, taxa, tipo, normalizarTelefone(cliente.telefone));
       if (!r.ok) {
         setCupom(null);
         return setCupomErro(r.erro);
@@ -533,7 +534,7 @@ function Checkout({
       gravar('res_cliente', { cliente, endereco });
       const r = await enviarPedido(marca.slug, {
         tipo,
-        cliente,
+        cliente: { ...cliente, telefone: normalizarTelefone(cliente.telefone) },
         endereco: tipo === 'entrega' ? endereco : undefined,
         itens: itens.map((i) => ({ produtoId: i.produtoId, quantidade: i.quantidade, observacao: i.observacao, escolhas: i.escolhas, ...(i.passos ? { passos: i.passos } : {}) })),
         pagamento,

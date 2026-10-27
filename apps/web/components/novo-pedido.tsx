@@ -17,6 +17,7 @@ import {
   type Escolhas,
   type FormaPagamento,
   type TipoPedido,
+  normalizarTelefone,
 } from '@res/core';
 import { nomeOpcao, paraGrupoCore, paraProdutoCore, passosCore, type Cardapio, type GrupoRow, type PassoRow, type ProdutoRow, type SetorRow } from '@/lib/cardapio-dados';
 import { autorizarDesconto, criarPedido } from '@/app/(painel)/pedidos/actions';
@@ -235,7 +236,7 @@ export function NovoPedido({
         criarPedido({
           marcaId,
           tipo,
-          cliente: { nome: cliente.nome, telefone: cliente.telefone },
+          cliente: { nome: cliente.nome, telefone: normalizarTelefone(cliente.telefone) },
           endereco: tipo === 'entrega' ? endereco : undefined,
           itens: carrinho.map((i) => ({ produtoId: i.produto.id, quantidade: i.quantidade, observacao: i.observacao, escolhas: i.escolhas, ...(i.passos ? { passos: i.passos } : {}) })),
           taxaEntrega: tipo === 'entrega' && !taxaManual ? null : taxa ?? 0,

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { formatarReais, SEGMENTOS, telefoneInternacional, type Segmento } from '@res/core';
+import { eCelular, formatarReais, SEGMENTOS, telefoneInternacional, type Segmento } from '@res/core';
 import { exportarClientes, listarClientes, salvarCliente } from '@/app/(painel)/clientes/actions';
 import { enderecoTexto, formatarTelefone, type ClienteBusca, type ClienteExportado, type ListagemClientes } from '@/lib/clientes';
 
@@ -13,11 +13,12 @@ function baixarCsv(lista: ClienteExportado[], nome: string) {
     return /[";\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
   };
   const linhas = [
-    ['nome', 'telefone', 'telefone_internacional', 'segmento', 'pedidos', 'total_gasto', 'ultimo_pedido', 'dias_sem_pedir', 'bairro'],
+    ['nome', 'telefone', 'telefone_internacional', 'celular', 'segmento', 'pedidos', 'total_gasto', 'ultimo_pedido', 'dias_sem_pedir', 'bairro'],
     ...lista.map((c) => [
       c.nome,
       formatarTelefone(c.telefone),
       telefoneInternacional(c.telefone),
+      eCelular(c.telefone) ? 'sim' : 'não (fixo)',
       c.segmento ? SEG.get(c.segmento)?.rotulo ?? c.segmento : '',
       c.pedidos,
       (c.total_gasto / 100).toFixed(2).replace('.', ','),
