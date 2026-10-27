@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { formatarKm, formatarReais, tempoDecorrido } from '@res/core';
 import { despachar, entregar, medirEntrega } from '@/app/m/actions';
 import { FaixaRastreio } from './rastreador';
+import { PlanoRotaMotoboy } from './plano-rota';
 import { cobranca, LINK_APP_ANDROID, linkLigar, linkMaps, linkWaze, linkWhats, type Entrega, type PainelMotoboy } from '@/lib/motoboy';
 
 type Aviso = { ok: boolean; texto: string } | null;
@@ -60,8 +61,9 @@ export function AppMotoboy({ painel }: { painel: PainelMotoboy }) {
       <section className="grade" style={{ gap: '0.75rem' }}>
         <h2 className="mb-titulo">Com você agora <span>{painel.em_rota.length}</span></h2>
         {painel.em_rota.length === 0 && <p className="mb-dica">Nenhuma entrega com você. Leia o QR da comanda para sair com um pedido.</p>}
+        <PlanoRotaMotoboy entregas={painel.em_rota} />
         {painel.em_rota.map((e) => (
-          <CartaoEntrega key={e.id} e={e} aoEntregar={(n) => { setAviso({ ok: true, texto: `Pedido #${n} entregue.` }); router.refresh(); }} />
+          <CartaoEntrega key={e.id} e={e} emLote={painel.em_rota.length >= 2} aoEntregar={(n) => { setAviso({ ok: true, texto: `Pedido #${n} entregue.` }); router.refresh(); }} />
         ))}
       </section>
 
@@ -140,7 +142,7 @@ function vibrar(p: number[]) {
   }
 }
 
-function CartaoEntrega({ e, aoEntregar }: { e: Entrega; aoEntregar: (numero: number) => void }) {
+function CartaoEntrega({ e, aoEntregar, emLote = false }: { e: Entrega; aoEntregar: (numero: number) => void; emLote?: boolean }) {
   const [confirmar, setConfirmar] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [pendente, iniciar] = useTransition();
@@ -152,6 +154,8 @@ function CartaoEntrega({ e, aoEntregar }: { e: Entrega; aoEntregar: (numero: num
   // mede a rota real até o endereço (uma vez); até lá vale o km do bairro
   useEffect(() => {
     if (km.fonte === 'rota' || km.fonte === 'manual' || e.loja_lat == null || !a) return;
+    // várias entregas: quem acha o endereço no mapa é a rota sugerida (evita procurar duas vezes)
+    if (emLote && e.destino_lat == null) return;
     let vivo = true;
     setMedindo(true);
     medirEntrega(e.id)
@@ -164,12 +168,12 @@ function CartaoEntrega({ e, aoEntregar }: { e: Entrega; aoEntregar: (numero: num
       vivo = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [e.id]);
+  }, [e.id, e.destino_lat]);
 
   return (
     <article className="mb-entrega">
       <div className="mb-entrega-topo">
-        <span className="mb-numero">#{e.numero}</span>
+        <span className="mb-numero">{e.rota_ordem && e.rota_ordem > 0 ? <span className="mb-ordem">{e.rota_ordem}º</span> : null}#{e.numero}</span>
         <span className="mb-dica">{e.marca}{e.saiu_em ? ` · saiu ${tempoDecorrido(new Date(e.saiu_em))}` : ''}</span>
       </div>
 

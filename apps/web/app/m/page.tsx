@@ -2,6 +2,7 @@ import { painelMotoboy } from './actions';
 import { AppMotoboy } from '@/components/motoboy/app-motoboy';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // rota com várias entregas procura endereços no mapa (~1 s cada)
 
 export default async function Motoboy() {
   const painel = await painelMotoboy();

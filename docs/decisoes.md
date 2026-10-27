@@ -156,3 +156,12 @@ Registro curto de cada decisão, com o motivo. Referências `R-`, `B-`, `T-` apo
 - **Navegador (iPhone/Chrome)**: só envia com a tela do app aberta.
 - O painel tem **Entregas → Ao vivo**: mapa (Leaflet + OpenStreetMap) com cada motoboy, o caminho desde que saiu, as entregas (#número no endereço do cliente, quando o app conseguiu localizar) e a loja; a lista mostra o sinal (cinza depois de 2 min sem posição) e a velocidade.
 - Os mapas do OpenStreetMap são gratuitos e têm limite de uso; com muitas lojas, trocar por um provedor de mapas pago (só muda o endereço das imagens do mapa).
+
+## D-027 · Rota sugerida quando o motoboy sai com várias entregas
+
+- O motoboy lê o QR de todas as comandas. Com 2 ou mais entregas, o app mostra a **Rota sugerida**: a ordem de entrega, a hora prevista em cada cliente e quem vai chegar atrasado. Um botão abre a rota completa no Google Maps, com todas as paradas (até 10).
+- **Prazo de cada pedido**: o horário agendado; senão, o horário em que o pedido foi feito + `lojas.prazo_entrega_min` (padrão 50 min).
+- **Ordem**: `otimizarRota` (packages/core) testa todas as ordens até 8 entregas (acima disso, escolhe a mais próxima/urgente a cada passo) e escolhe a de menor custo: minutos rodando + 3 × minutos de atraso. Assim o pedido mais atrasado vai na frente quando isso evita atraso, sem mandar o motoboy cruzar a cidade à toa.
+- **Tempos pela rua**: matriz do OSRM. Sem resposta, usa linha reta × 1,4 a 25 km/h ("estimado"). Cada endereço é procurado no mapa uma vez (Nominatim, 1 por segundo) e guardado em `pedidos.destino_lat/lng`.
+- **Partida**: a posição atual do celular; senão, a loja. "Recalcular daqui" refaz a conta do ponto onde o motoboy está. Ler uma nova comanda ou entregar uma recalcula sozinho.
+- A ordem fica gravada em `pedidos.rota_ordem` (só o próprio motoboy, só com entrega em rota): as comandas aparecem nessa ordem no app e no painel ao vivo.

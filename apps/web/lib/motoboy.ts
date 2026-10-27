@@ -26,6 +26,11 @@ export type Entrega = {
   distancia_fonte?: 'rota' | 'reta' | 'bairro' | 'manual' | null;
   loja_lat?: number | null;
   loja_lng?: number | null;
+  /** ponto do cliente (quando o mapa achou o endereço), prazo prometido e ordem na rota (D-027) */
+  destino_lat?: number | null;
+  destino_lng?: number | null;
+  prazo?: string | null;
+  rota_ordem?: number | null;
   entregador: string | null;
   saiu_em: string | null;
 };
@@ -69,4 +74,13 @@ export function cobranca(e: Entrega): { cobrar: boolean; titulo: string; detalhe
   }
   const como = e.pagamento === 'pix' ? 'Pix na entrega' : e.pagamento.startsWith('cartao') ? `${PAGAMENTO_ROTULO[e.pagamento]} · levar a maquininha` : PAGAMENTO_ROTULO[e.pagamento];
   return { cobrar: true, titulo: `COBRAR ${valor}`, detalhe: como };
+}
+
+/** Rota completa no Google Maps: da posição atual, passando pelas entregas na ordem (até 9 paradas no caminho). */
+export function linkRotaMaps(entregas: Entrega[]): string {
+  const alvo = (e: Entrega) => (e.destino_lat != null && e.destino_lng != null ? `${e.destino_lat},${e.destino_lng}` : enderecoMapa(e));
+  const lista = entregas.map(alvo).filter(Boolean);
+  const destino = lista[lista.length - 1] ?? '';
+  const meio = lista.slice(0, -1).slice(0, 9);
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}${meio.length ? `&waypoints=${encodeURIComponent(meio.join('|'))}` : ''}&travelmode=driving`;
 }
