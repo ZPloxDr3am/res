@@ -761,7 +761,7 @@ input[type='checkbox'], input[type='radio'] { accent-color: var(--primaria); wid
 label { color: var(--texto-suave); font-size: 0.86rem; gap: 0.3rem; }
 .check { font-size: 0.93rem; }
 
-button, .botao { min-height: var(--controle-altura); border-radius: var(--raio-controle); border-color: var(--borda-forte); padding: 0.45rem 1rem; font-weight: 550; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; transition: background-color 0.12s, border-color 0.12s, box-shadow 0.12s, color 0.12s; }
+button, .botao { min-height: var(--controle-altura); border-radius: var(--raio-controle); border-color: var(--borda-forte); padding: 0.45rem 1rem; font-weight: 550; display: inline-flex; align-items: center; gap: 0.4rem; transition: background-color 0.12s, border-color 0.12s, box-shadow 0.12s, color 0.12s; }
 button:hover:not(:disabled), .botao:hover { background: var(--superficie-2); border-color: color-mix(in srgb, var(--texto) 25%, var(--borda-forte)); }
 button:focus-visible, .botao:focus-visible, a:focus-visible { outline: none; box-shadow: var(--foco); }
 .botao-primario, button.botao-primario { background: var(--primaria); border-color: var(--primaria); color: var(--primaria-texto); font-weight: 600; }
@@ -867,3 +867,5 @@ button.menu-item:hover:not(:disabled) { background: var(--superficie-2); border:
 .kpi .lista li > span:last-child { flex: none; }
 .kpi .lista li { display: flex; }
 .kpi > *, .kpi .lista > li { min-width: 0; }
+/* botão de texto centraliza; botão que é um cartão (grade própria) mantém o alinhamento dele */
+button:not([class]), .botao, .botao-primario, .botao-perigo, button.mini, button.erro, .pub-barra button, .pub-cta { justify-content: center; }
