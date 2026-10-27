@@ -1,12 +1,12 @@
 -- RES · 0027 · Rota otimizada com várias entregas (D-027).
 --
--- * lojas.prazo_entrega_min: em quanto tempo a loja promete entregar (padrão 50 min). O prazo de cada
+-- * lojas.prazo_entrega_min: em quanto tempo a loja promete entregar (padrão 35 min). O prazo de cada
 --   pedido = agendado_para ou criado_em + prazo. O app do motoboy usa o prazo para priorizar o
 --   pedido mais atrasado na ordem das entregas.
 -- * pedidos.rota_ordem: a ordem sugerida (o app do motoboy grava; o painel ao vivo desenha a rota).
 -- * entrega_json leva destino, prazo e ordem; motoboy_painel e rastreio_ao_vivo listam na ordem da rota.
 
-alter table public.lojas add column prazo_entrega_min smallint not null default 50 check (prazo_entrega_min between 10 and 240);
+alter table public.lojas add column prazo_entrega_min smallint not null default 35 check (prazo_entrega_min between 10 and 240);
 alter table public.pedidos add column rota_ordem smallint;
 
 -- O app grava a ordem sugerida das entregas que estão com o motoboy (só as dele, em rota).
