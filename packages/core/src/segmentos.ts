@@ -48,8 +48,35 @@ export const CASOS_SEGMENTO: [number | null, number, Segmento | null][] = [
   [400, 1, 'dormindo'],
 ];
 
+/**
+ * Telefone só com dígitos, DDD + número, no padrão atual (D-030): tira +55 e zeros da frente e
+ * põe o 9 no celular que veio com 8 dígitos ("47 96731809" → "47996731809"). Fixo (número
+ * começando com 2 a 5) fica como está. O banco faz o mesmo em private.normalizar_telefone.
+ */
+export function normalizarTelefone(t: string): string {
+  let d = t.replace(/\D/g, '').replace(/^0+/, '');
+  if ((d.length === 12 || d.length === 13) && d.startsWith('55')) d = d.slice(2);
+  if (d.length === 10 && /[6-9]/.test(d[2]!)) d = `${d.slice(0, 2)}9${d.slice(2)}`;
+  return d;
+}
+
+/** Celular válido para SMS: DDD + 9 + 8 dígitos. */
+export const eCelular = (t: string) => /^[1-9][0-9]9[0-9]{8}$/.test(normalizarTelefone(t));
+
 /** Telefone no formato internacional (+55…) que Meta Ads, Google Ads e SMS aceitam. */
 export function telefoneInternacional(t: string): string {
-  const d = t.replace(/\D/g, '');
-  return d.length >= 12 && d.startsWith('55') ? `+${d}` : `+55${d}`;
+  return `+55${normalizarTelefone(t)}`;
 }
+
+/** Casos usados também no teste do banco (paridade). [entrada, esperado] */
+export const CASOS_TELEFONE: [string, string][] = [
+  ['4796731809', '47996731809'],
+  ['+55 47 96731809', '47996731809'],
+  ['554796731809', '47996731809'],
+  ['047 9673-1809', '47996731809'],
+  ['(47) 99673-1809', '47996731809'],
+  ['5547996731809', '47996731809'],
+  ['4733334444', '4733334444'],
+  ['4788887777', '47988887777'],
+  ['11912345678', '11912345678'],
+];

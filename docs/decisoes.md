@@ -199,3 +199,11 @@ Registro curto de cada decisão, com o motivo. Referências `R-`, `B-`, `T-` apo
   - consentimento de marketing (LGPD) e descadastro antes de enviar SMS;
   - campanhas de SMS;
   - envio direto dos públicos ao Meta/Google por OAuth, com os tokens só no servidor.
+
+## D-030 · Telefone sempre com o 9 do celular
+
+- Todo telefone é gravado só com dígitos, DDD + número, sem +55 nem zeros na frente.
+- Celular que vier com 8 dígitos ganha o 9: "+55 47 96731809" vira "47996731809", que é o formato que SMS e anúncios aceitam.
+- Fixo (número começando com 2 a 5) fica como está e sai no CSV como "não (fixo)", porque não recebe SMS.
+- A regra está em `normalizarTelefone` (core, usada no balcão e no cardápio digital) e em `private.normalizar_telefone` (banco, num gatilho em todo pedido novo). Os testes dos dois usam os mesmos casos.
+- A migração 0031 corrige os telefones já gravados. Quando o mesmo cliente estava salvo duas vezes (com e sem o 9), os cadastros viram um só: pedidos, endereços e observações ficam no que já estava certo.
