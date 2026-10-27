@@ -39,6 +39,7 @@ begin
   return new;
 end;
 $$;
+drop trigger if exists pedidos_a_normaliza_telefone on public.pedidos;  -- pode rodar de novo
 create trigger pedidos_a_normaliza_telefone before insert or update of cliente_telefone on public.pedidos
   for each row execute function private.pedido_normaliza_telefone();
 
