@@ -10,8 +10,9 @@
 --   (guardado no aparelho dele), para ninguém gastar o saldo de outro só sabendo o telefone.
 -- * Validade: o saldo vence N dias depois do último pedido do cliente (0 = não vence).
 -- * Mesmas contas de ganhoFidelidade/cashbackUsavel (packages/core); testes com os mesmos casos.
+-- * Pode rodar de novo sem erro (if not exists / or replace).
 
-create table public.fidelidade_config (
+create table if not exists public.fidelidade_config (
   grupo                  uuid primary key,
   canais                 text[] not null default '{cardapio_digital,balcao_entrega,balcao}'
                          check (canais <@ array['cardapio_digital', 'balcao_entrega', 'balcao']),
@@ -31,7 +32,7 @@ create table public.fidelidade_config (
   atualizado_por         uuid
 );
 
-create table public.fidelidade_recompensas (
+create table if not exists public.fidelidade_recompensas (
   id          uuid primary key default gen_random_uuid(),
   grupo       uuid not null,
   tipo        text not null check (tipo in ('desconto', 'produto')),
@@ -43,9 +44,9 @@ create table public.fidelidade_recompensas (
   criado_em   timestamptz not null default now(),
   check ((tipo = 'desconto' and valor is not null) or (tipo = 'produto' and produto_id is not null))
 );
-create index fidelidade_recompensas_grupo_idx on public.fidelidade_recompensas (grupo);
+create index if not exists fidelidade_recompensas_grupo_idx on public.fidelidade_recompensas (grupo);
 
-create table public.fidelidade_movimentos (
+create table if not exists public.fidelidade_movimentos (
   id            bigint generated always as identity primary key,
   grupo         uuid not null,
   cliente_id    uuid not null references public.clientes (id) on delete cascade,
@@ -58,9 +59,9 @@ create table public.fidelidade_movimentos (
   criado_por    uuid,
   criado_em     timestamptz not null default now()
 );
-create index fidelidade_mov_cliente_idx on public.fidelidade_movimentos (cliente_id, tipo);
-create index fidelidade_mov_pedido_idx on public.fidelidade_movimentos (pedido_id) where pedido_id is not null;
-create index fidelidade_mov_grupo_idx on public.fidelidade_movimentos (grupo, criado_em);
+create index if not exists fidelidade_mov_cliente_idx on public.fidelidade_movimentos (cliente_id, tipo);
+create index if not exists fidelidade_mov_pedido_idx on public.fidelidade_movimentos (pedido_id) where pedido_id is not null;
+create index if not exists fidelidade_mov_grupo_idx on public.fidelidade_movimentos (grupo, criado_em);
 
 -- tudo passa pelas funções abaixo
 alter table public.fidelidade_config enable row level security;
@@ -68,13 +69,13 @@ alter table public.fidelidade_recompensas enable row level security;
 alter table public.fidelidade_movimentos enable row level security;
 
 alter table public.pedidos
-  add column fid_cashback      numeric(12, 2) not null default 0 check (fid_cashback >= 0),
-  add column fid_desconto      numeric(12, 2) not null default 0 check (fid_desconto >= 0),
-  add column fid_pontos        integer not null default 0 check (fid_pontos >= 0),
-  add column fid_recompensa_id uuid,
-  add column cupom_desconto    numeric(12, 2) not null default 0 check (cupom_desconto >= 0);
+  add column if not exists fid_cashback      numeric(12, 2) not null default 0 check (fid_cashback >= 0),
+  add column if not exists fid_desconto      numeric(12, 2) not null default 0 check (fid_desconto >= 0),
+  add column if not exists fid_pontos        integer not null default 0 check (fid_pontos >= 0),
+  add column if not exists fid_recompensa_id uuid,
+  add column if not exists cupom_desconto    numeric(12, 2) not null default 0 check (cupom_desconto >= 0);
 -- pedidos antigos com cupom e sem desconto de balcão: o desconto todo foi do cupom
-update public.pedidos set cupom_desconto = desconto where cupom_id is not null and desconto_motivo is null and desconto > 0;
+update public.pedidos set cupom_desconto = desconto where cupom_id is not null and desconto_motivo is null and desconto > 0 and cupom_desconto = 0;
 
 -- ---------------------------------------------------------------------------- regras
 create or replace function private.canal_fidelidade(p_origem public.origem_pedido, p_tipo public.tipo_pedido)
@@ -319,6 +320,7 @@ begin
   return null;
 end;
 $$;
+drop trigger if exists pedidos_fidelidade on public.pedidos;
 create trigger pedidos_fidelidade after update of status on public.pedidos for each row execute function private.fidelidade_status();
 
 -- ---------------------------------------------------------------------------- cupom (0023) + desconto do cupom guardado
