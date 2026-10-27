@@ -880,3 +880,7 @@ article.cartao:has(> .cl-topo[aria-expanded='false']):hover { box-shadow: var(--
 .grade > .abas, .grade > .segmentos, .grade > nav.abas { justify-self: start; width: max-content; }
 .fid-bloco legend { margin-left: -0.2rem; }
 .fid-chave { font-size: 1rem; }
+/* selos nunca esticam dentro de grades */
+.selo, .selo-agendado, .selo-motoboy, .selo-prazo { justify-self: start; width: fit-content; max-width: 100%; }
+/* coluna vazia do quadro: discreta */
+.coluna > p.dica { padding: 0.9rem 0.25rem; text-align: center; color: var(--texto-fraco); border: 1px dashed var(--borda-forte); border-radius: 10px; }
