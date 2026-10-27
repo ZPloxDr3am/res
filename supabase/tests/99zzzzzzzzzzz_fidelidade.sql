@@ -1,4 +1,4 @@
--- Testes de 0032: fidelidade (ganho igual ao core, uso, estorno, validade, prova no cardápio digital, permissões, relatório).
+-- Testes de 0032/0033: fidelidade por loja (ganho igual ao core, uso, estorno, validade, prova no cardápio digital, lojas separadas, permissões, relatório).
 \set ON_ERROR_STOP on
 \o /dev/null
 
@@ -141,11 +141,37 @@ do $$ begin
   if (pg_temp.v('pub_ped') ->> 'total')::int <> 4900 then raise exception 'uso no cardápio: %', pg_temp.v('pub_ped'); end if;
 end $$;
 
+-- outra loja do mesmo grupo: programa, saldo e extrato separados
+update public.contas set limite_lojas = 5, limite_cardapios = 5 where id = (select conta_id from public.lojas where id = pg_temp.id('loja'));
+select from pg_temp.como('00000000-0000-0000-0000-0000000001e1');
+insert into ids values ('loja2', public.criar_loja_na_conta((select conta_id from public.lojas where id = pg_temp.id('loja')), 'Loja F2', 'Burger F2', 'burger-fid2'));
+insert into ids select 'marca2', id from public.marcas where slug = 'burger-fid2';
+insert into ids values ('setor2', public.salvar_setor(pg_temp.id('loja2'), null, 'Lanches'));
+insert into ids values ('xb', public.criar_produto(pg_temp.id('loja2'), 'X-Burger', pg_temp.id('setor2'), 40));
+insert into saida values ('l2_antes', coalesce(public.saldo_cliente_fidelidade(pg_temp.id('loja2'), pg_temp.id('cli')), 'null'));
+select from pg_temp.esperar_erro(format($q$select public.criar_pedido('%s', '%s', jsonb_build_object('tipo', 'balcao', 'cliente', jsonb_build_object('nome', 'Fiel', 'telefone', '47911112222'),
+  'pagamento', 'pix', 'itens', jsonb_build_array(jsonb_build_object('produto_id', '%s', 'quantidade', 1)), 'fidelidade', jsonb_build_object('cashback', 100)))$q$,
+  pg_temp.id('loja2'), pg_temp.id('marca2'), pg_temp.id('xb')), 'não vale');
+select public.salvar_config_fidelidade(pg_temp.id('loja2'), '{"canais": ["balcao"], "cashbackAtivo": true, "cashbackPct": 3, "cashbackValidadeDias": 0}');
+insert into saida values ('l2_depois', public.saldo_cliente_fidelidade(pg_temp.id('loja2'), pg_temp.id('cli')));
+insert into saida values ('l1', public.saldo_cliente_fidelidade(pg_temp.id('loja'), pg_temp.id('cli')));
+insert into saida values ('l2_painel', public.painel_fidelidade(pg_temp.id('loja2')));
+insert into saida values ('l2_extrato', public.extrato_fidelidade(pg_temp.id('loja2'), pg_temp.id('cli')));
+reset role;
+do $$ begin
+  if pg_temp.v('l2_antes') <> 'null'::jsonb then raise exception 'loja 2 sem programa: %', pg_temp.v('l2_antes'); end if;
+  if (pg_temp.v('l2_depois') ->> 'cashback')::int <> 0 then raise exception 'saldo da loja 1 não vale na loja 2: %', pg_temp.v('l2_depois'); end if;
+  if (pg_temp.v('l1') ->> 'cashback')::int <> 650 then raise exception 'saldo da loja 1: %', pg_temp.v('l1'); end if;
+  if (pg_temp.v('l2_painel') #>> '{config,cashbackPct}')::numeric <> 3 or jsonb_array_length(pg_temp.v('l2_painel') -> 'recompensas') <> 0 then raise exception 'painel loja 2: %', pg_temp.v('l2_painel'); end if;
+  if jsonb_array_length(pg_temp.v('l2_extrato')) <> 0 then raise exception 'extrato loja 2: %', pg_temp.v('l2_extrato'); end if;
+  if (select (cashback_pct) from public.fidelidade_config where loja_id = pg_temp.id('loja')) <> 10 then raise exception 'config da loja 1 mudou'; end if;
+end $$;
+
 -- validade: sem pedido há mais de 30 dias, o cashback vence
 update public.pedidos set criado_em = now() - interval '40 days' where cliente_id = pg_temp.id('cli');
 do $$ begin
-  if private.saldo_fidelidade(pg_temp.id('cli'), 'cashback') <> 0 then raise exception 'deveria vencer'; end if;
-  if private.saldo_fidelidade(pg_temp.id('cli'), 'pontos') <> 100 then raise exception 'pontos sem validade não vencem'; end if;
+  if private.saldo_fidelidade(pg_temp.id('cli'), pg_temp.id('loja'), 'cashback') <> 0 then raise exception 'deveria vencer'; end if;
+  if private.saldo_fidelidade(pg_temp.id('cli'), pg_temp.id('loja'), 'pontos') <> 100 then raise exception 'pontos sem validade não vencem'; end if;
 end $$;
 
 -- permissões

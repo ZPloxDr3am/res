@@ -7,6 +7,9 @@ export type PainelFidelidade = {
   pode_editar: boolean;
   recompensas: Recompensa[];
   produtos: { id: string; nome: string; loja: string }[];
+  /** preenchidos pela página: a loja atual e as outras do grupo (D-032) */
+  loja: string;
+  outrasLojas: { id: string; nome: string }[];
 };
 export type SaldoLinha = {
   id: string;

@@ -21,7 +21,9 @@ export default async function Fidelidade({ searchParams }: { searchParams: Promi
   const { data, error } = await supabase.rpc('painel_fidelidade', { p_loja: ctx.lojaId });
   if (error || !data) return <p className="cartao dica">{error?.message ?? 'Sem acesso à fidelidade.'}</p>;
   const painel = data as PainelFidelidade & { config: Record<string, unknown> | null };
-  const p: PainelFidelidade = { ...painel, config: lerConfig(painel.config) };
+  const conta = ctx.lojas.find((l) => l.id === ctx.lojaId)?.contaId ?? null;
+  const outrasLojas = ctx.lojas.filter((l) => l.id !== ctx.lojaId && conta && l.contaId === conta).map((l) => ({ id: l.id, nome: l.nome }));
+  const p: PainelFidelidade = { ...painel, config: lerConfig(painel.config), loja: ctx.lojaNome, outrasLojas };
 
   let conteudo: ReactNode;
   if (aba === 'programa') {
@@ -40,9 +42,9 @@ export default async function Fidelidade({ searchParams }: { searchParams: Promi
   return (
     <div className="grade">
       <div>
-        <h1 style={{ marginBottom: 0 }}>Fidelidade</h1>
+        <h1 style={{ marginBottom: 0 }}>Fidelidade · {ctx.lojaNome}</h1>
         <p className="dica" style={{ margin: 0 }}>
-          {ligado ? `Ligado: ${ligado}. ` : 'Programa desligado. '}O cliente ganha quando o pedido é concluído e usa nas lojas do grupo, no balcão ou no cardápio digital.
+          {ligado ? `Ligado: ${ligado}. ` : 'Programa desligado nesta loja. '}Cada loja tem o seu programa, saldo e resultados — troque de loja no menu para ver as outras. O cliente ganha quando o pedido é concluído e usa nesta loja, no balcão ou no cardápio digital.
         </p>
       </div>
       <nav className="abas nao-imprimir" aria-label="Fidelidade">

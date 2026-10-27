@@ -252,3 +252,22 @@ O estudo da tela do BeeFood está em `estudo-beefood/fidelidade.md`, no projeto.
 - **Dia da semana**: dia forte e dia fraco, com sugestão por dia (`recomendacaoDia` no core: dia fraco pede ação do dia, ROI baixo pede revisão, dia forte com pouca fidelidade pede teste).
 - Novos × recorrentes calculado na hora; resultado por origem.
 - As regras de ganho e uso estão no core e no banco, com os mesmos casos de teste (`CASOS_GANHO`).
+
+## D-032 · Fidelidade separada por loja (substitui a regra de grupo da D-031)
+
+- Pedido do dono: tudo separado por loja. Cada loja tem:
+  - o próprio programa (cashback, pontos, canais);
+  - as próprias recompensas (produtos daquela loja);
+  - o próprio saldo de cada cliente e o próprio extrato;
+  - os próprios resultados.
+- O cashback ganho na LA PIZZA só vale na LA PIZZA.
+- O cadastro de clientes (telefone, nome, endereços, segmentos) continua um só para o grupo.
+- A validade conta do último pedido do cliente **naquela loja**. O bônus de boas-vindas é no 1º pedido naquela loja.
+- A tela **Fidelidade** mostra a loja escolhida no menu. O botão "Copiar estas regras para…" leva as regras de cashback e pontos para as outras lojas; as recompensas e os saldos não são copiados.
+- A migração 0033 converte o que estava por grupo: a configuração vira uma cópia por loja; a recompensa de produto fica na loja do produto e a de desconto é copiada para cada loja; no extrato, cada lançamento fica na loja do pedido.
+
+## D-033 · Fidelidade mais simples de configurar
+
+- O cashback liga ou desliga e vale todos os dias com um % só. A escolha de dias e o % por dia saíram da tela. O banco ainda aceita essas regras, mas ao salvar a tela grava "todos os dias" e nenhum % por dia.
+- O prazo do cashback e o dos pontos têm atalhos (30, 60, 90, 180 e 365 dias, ou "Não vence"), e o dono também pode digitar qualquer número de dias. O prazo conta do último pedido do cliente na loja.
+- Para mexer num dia fraco, usar cupom com dias da semana (Promoções).
