@@ -13,3 +13,4 @@ export * from './entregas.js';
 export * from './promocao.js';
 export * from './combo.js';
 export * from './rota.js';
+export * from './prazo.js';

@@ -29,6 +29,7 @@ export type PedidoRow = {
   saiu_em: string | null;
   concluido_em: string | null;
   cancelado_em: string | null;
+  previsao_chegada: string | null;
   pedido_itens: {
     id: string;
     nome: string;
@@ -44,11 +45,11 @@ export type PedidoRow = {
 export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
   const supabase = await criarClienteServidor();
   const desde = new Date(Date.now() - 12 * 3600 * 1000).toISOString();
-  const [pedidos, loja, fila] = await Promise.all([
+  const [pedidos, loja, fila, prazos] = await Promise.all([
     supabase
       .from('pedidos')
       .select(
-        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, agendado_para, entregador_nome, pago_em, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_id, opcao_id, grupo_nome, nome, quantidade, fracao, ordem))',
+        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, agendado_para, entregador_nome, pago_em, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, previsao_chegada, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_id, opcao_id, grupo_nome, nome, quantidade, fracao, ordem))',
       )
       .in('loja_id', lojaIds)
       .or(`status.not.in.(concluido,cancelado),criado_em.gte.${desde}`)
@@ -61,6 +62,7 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
       .eq('loja_id', lojaPrincipal)
       .in('status', ['pendente', 'erro'])
       .gte('criado_em', new Date(Date.now() - 24 * 3600 * 1000).toISOString()),
+    supabase.from('lojas').select('id, prazo_entrega_min').in('id', lojaIds),
   ]);
   if (pedidos.error) throw new Error(pedidos.error.message);
   const lista = (pedidos.data ?? []) as unknown as PedidoRow[];
@@ -74,5 +76,7 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
     tempoPreparo: loja.data?.tempo_preparo_min ?? 30,
     fuso: (loja.data?.fuso_horario as string | undefined) ?? 'America/Sao_Paulo',
     filaImpressao: fila.count ?? 0,
+    /** prazo de entrega (min) de cada loja (D-028) */
+    prazoEntrega: Object.fromEntries((prazos.data ?? []).map((l) => [l.id as string, (l.prazo_entrega_min as number | null) ?? 35])) as Record<string, number>,
   };
 }

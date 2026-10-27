@@ -9,6 +9,8 @@ import {
   formatarReais,
   paraCentavos,
   PAGAMENTO_ROTULO,
+  prazoEntrega as calcularPrazo,
+  situacaoPrazo,
   rotuloHorario,
   STATUS_ROTULO,
   tempoDecorrido,
@@ -21,6 +23,7 @@ import { salvando } from '@/components/tempo-real';
 import { BotaoNovoPedido } from '@/components/pedido-flutuante';
 import { useImprimir } from '@/components/impressao/usar-impressao';
 import { cuponsPendentes, imprimirPedido } from '@/app/(painel)/impressoras/actions';
+import { SugestaoLotes } from '@/components/pedidos/sugestao-lotes';
 
 const COLUNAS: StatusPedido[] = ['novo', 'em_preparo', 'pronto', 'em_entrega'];
 const r$ = (v: number) => formatarReais(paraCentavos(Number(v)));
@@ -59,6 +62,7 @@ export function QuadroPedidos({
   tempoPreparo,
   fuso,
   filaImpressao = 0,
+  prazoEntrega = {},
   marcas,
   lojas,
   lojaAtual,
@@ -69,6 +73,7 @@ export function QuadroPedidos({
   tempoPreparo: number;
   fuso: string;
   filaImpressao?: number;
+  prazoEntrega?: Record<string, number>;
   marcas: { id: string; nome: string }[];
   lojas: { id: string; nome: string }[];
   lojaAtual: string;
@@ -181,11 +186,13 @@ export function QuadroPedidos({
           </summary>
           <div className="quadro" style={{ paddingTop: '0.5rem' }}>
             {agendados.map((p) => (
-              <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} fuso={fuso} marca={etiqueta(p)} />
+              <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} fuso={fuso} marca={etiqueta(p)} prazoMin={prazoEntrega[p.loja_id] ?? 35} />
             ))}
           </div>
         </details>
       )}
+
+      <SugestaoLotes prontos={abertos.filter((p) => p.status === 'pronto' && p.tipo === 'entrega').map((p) => ({ id: p.id, loja_id: p.loja_id }))} />
 
       <div className="quadro">
         {COLUNAS.map((status) => {
@@ -196,7 +203,7 @@ export function QuadroPedidos({
                 {STATUS_ROTULO[status]} <span className="dica">{lista.length}</span>
               </h2>
               {lista.map((p) => (
-                <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} fuso={fuso} marca={etiqueta(p)} />
+                <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} fuso={fuso} marca={etiqueta(p)} prazoMin={prazoEntrega[p.loja_id] ?? 35} />
               ))}
               {lista.length === 0 && <p className="dica" style={{ margin: 0 }}>Nenhum.</p>}
             </section>
@@ -208,7 +215,7 @@ export function QuadroPedidos({
         <summary className="dica">Concluídos e cancelados nas últimas 12 horas ({encerrados.length})</summary>
         <div className="quadro" style={{ paddingTop: '0.5rem' }}>
           {encerrados.map((p) => (
-            <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} fuso={fuso} marca={etiqueta(p)} />
+            <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} fuso={fuso} marca={etiqueta(p)} prazoMin={prazoEntrega[p.loja_id] ?? 35} />
           ))}
         </div>
       </details>
@@ -236,7 +243,7 @@ function FilaImpressao({ n }: { n: number }) {
   );
 }
 
-function CartaoPedido({ pedido: p, tempoPreparo, fuso, marca }: { pedido: PedidoRow; tempoPreparo: number; fuso: string; marca: string | null | undefined }) {
+function CartaoPedido({ pedido: p, tempoPreparo, fuso, marca, prazoMin = 35 }: { pedido: PedidoRow; tempoPreparo: number; fuso: string; marca: string | null | undefined; prazoMin?: number }) {
   const [cancelando, setCancelando] = useState(false);
   const [motivo, setMotivo] = useState('');
   const [erro, setErro] = useState<string | null>(null);
@@ -249,6 +256,11 @@ function CartaoPedido({ pedido: p, tempoPreparo, fuso, marca }: { pedido: Pedido
   const atrasado = (p.status === 'em_preparo' || p.status === 'novo') &&
     (agendado ? Date.now() > agendado.getTime() : (Date.now() - new Date(p.aceito_em ?? p.criado_em).getTime()) / 60000 > tempoPreparo);
 
+  // prazo prometido ao cliente (D-028): laranja faltando 10 min, vermelho quando estoura
+  const prazo = p.tipo === 'entrega' && aberto ? calcularPrazo(Date.parse(p.criado_em), agendado ? agendado.getTime() : null, prazoMin) : null;
+  const sit = prazo != null ? situacaoPrazo(prazo, Date.now()) : null;
+  const horaCurta = (t: number | string) => new Date(t).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: fuso });
+
   const mudar = (status: StatusPedido, m?: string) =>
     iniciar(async () => {
       const r = await salvando(mudarStatus(p.id, status, m));
@@ -257,7 +269,7 @@ function CartaoPedido({ pedido: p, tempoPreparo, fuso, marca }: { pedido: Pedido
     });
 
   return (
-    <article className="pedido" data-status={p.status}>
+    <article className="pedido" data-status={p.status} data-prazo={sit && sit.estado !== 'ok' ? sit.estado : undefined}>
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center', gap: '0.4rem' }}>
         <span className="pedido-numero">#{p.numero}</span>
         <span className={`selo ${p.tipo === 'entrega' ? 'selo-delivery' : 'selo-presencial'}`}>{TIPO_ROTULO[p.tipo]}</span>
@@ -266,6 +278,12 @@ function CartaoPedido({ pedido: p, tempoPreparo, fuso, marca }: { pedido: Pedido
           {aberto ? tempoDecorrido(new Date(p.criado_em)) : STATUS_ROTULO[p.status]}
         </span>
       </div>
+      {sit && prazo != null && (
+        <div className={`selo-prazo ${sit.estado}`} title={`Prometido para ${horaCurta(prazo)}${agendado ? ' (agendado)' : ` (pedido + ${prazoMin} min)`}`}>
+          {sit.estado === 'atrasado' ? `⚠ Atrasado ${sit.minutos} min` : sit.estado === 'perto' ? `⏱ Faltam ${sit.minutos} min` : `⏱ Entregar até ${horaCurta(prazo)}`}
+          {p.status === 'em_entrega' && p.previsao_chegada ? ` · chega ~${horaCurta(p.previsao_chegada)}` : ''}
+        </div>
+      )}
       {agendado && (
         <div className="selo-agendado" title={`Pedido feito ${tempoDecorrido(new Date(p.criado_em))}`}>
           ⏰ {p.tipo === 'entrega' ? 'Entregar' : 'Para'} {rotuloHorario(agendado, fuso)}

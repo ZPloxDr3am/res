@@ -107,7 +107,7 @@ export async function planejarRota(origem: Ponto | null): Promise<{ ok: true; pl
     if (km != null) {
       const minutos = (km * 60) / 25;
       const r0 = otimizarRota([{ id: comLocal[0]!.id, ponto: todos[1]!, prazo: comLocal[0]!.prazo ? Date.parse(comLocal[0]!.prazo) : Date.now() + 3_600_000 }], () => minutos, Date.now());
-      if (em.length > 1) await supabase.rpc('registrar_rota', { p_pedidos: [...r0.ordem, ...semLocal.map((e) => e.id)] });
+      await supabase.rpc('registrar_rota', { p_pedidos: [...r0.ordem, ...semLocal.map((e) => e.id)], p_chegadas: chegadas(r0, semLocal.length) });
       return { ok: true, plano: montar(r0, comLocal, semLocal, pontos, 'rota') };
     }
   }
@@ -117,9 +117,12 @@ export async function planejarRota(origem: Ponto | null): Promise<{ ok: true; pl
     tempo,
     agora,
   );
-  await supabase.rpc('registrar_rota', { p_pedidos: [...r.ordem, ...semLocal.map((e) => e.id)] });
+  await supabase.rpc('registrar_rota', { p_pedidos: [...r.ordem, ...semLocal.map((e) => e.id)], p_chegadas: chegadas(r, semLocal.length) });
   return { ok: true, plano: montar(r, comLocal, semLocal, pontos, matriz ? 'rota' : 'estimada') };
 }
+
+/** Hora prevista de cada parada (vai para a página do cliente); sem local, sem previsão. */
+const chegadas = (r: ReturnType<typeof otimizarRota>, semLocal: number) => [...r.paradas.map((x) => new Date(x.chegada).toISOString()), ...Array<null>(semLocal).fill(null)];
 
 function montar(
   r: ReturnType<typeof otimizarRota>,

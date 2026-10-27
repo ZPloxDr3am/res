@@ -1,7 +1,7 @@
 'use client';
 import { useState, useTransition } from 'react';
 import { formatarKm, formatarReais, lerCoordenadas } from '@res/core';
-import { calcularKmBairro, localizarLoja, salvarAreas, salvarLocalLoja, type AreaForm } from '@/app/(painel)/entregas/actions';
+import { calcularKmBairro, localizarLoja, salvarAreas, salvarLocalLoja, type AreaForm, salvarPrazoEntrega } from '@/app/(painel)/entregas/actions';
 import { salvando } from '@/components/tempo-real';
 
 export type LojaBairros = {
@@ -11,6 +11,7 @@ export type LojaBairros = {
   endereco: string | null;
   lat: number | null;
   lng: number | null;
+  prazoEntregaMin: number;
   marcas: { id: string; nome: string; areas: AreaForm[] }[];
 };
 
@@ -122,7 +123,46 @@ function LocalLoja({ loja }: { loja: LojaBairros }) {
         Dica: no Google Maps, clique com o botão direito (ou toque e segure) em cima da loja — os números que aparecem são as coordenadas; cole aqui.
       </p>
       {msg && <p className={msg.tipo === 'ok' ? 'dica' : 'erro'} role="status" style={{ margin: 0 }}>{msg.texto}</p>}
+      <PrazoEntrega loja={loja} />
     </section>
+  );
+}
+
+/** Em quanto tempo a loja promete entregar (D-028): usado no alerta do quadro, na rota do motoboy e na página do cliente. */
+function PrazoEntrega({ loja }: { loja: LojaBairros }) {
+  const [min, setMin] = useState(String(loja.prazoEntregaMin));
+  const [msg, setMsg] = useState<Msg>(null);
+  const [pendente, iniciar] = useTransition();
+  const n = Number(min);
+  const valido = Number.isInteger(n) && n >= 10 && n <= 240;
+  return (
+    <div className="grade" style={{ gap: '0.3rem', borderTop: '1px solid var(--borda, #e3e3e3)', paddingTop: '0.7rem' }}>
+      <strong>⏱ Prazo de entrega</strong>
+      <div className="linha" style={{ gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+        <label className="linha" style={{ gap: '0.4rem', alignItems: 'center' }}>
+          <input value={min} onChange={(e) => setMin(e.target.value.replace(/\D/g, ''))} inputMode="numeric" style={{ width: '5rem' }} aria-label="Prazo de entrega em minutos" />
+          <span>minutos depois do pedido</span>
+        </label>
+        <button
+          type="button"
+          className="botao-primario"
+          disabled={pendente || !valido || n === loja.prazoEntregaMin}
+          onClick={() =>
+            iniciar(async () => {
+              const r = await salvando(salvarPrazoEntrega(loja.id, n));
+              setMsg(r.ok ? { tipo: 'ok', texto: 'Prazo salvo.' } : { tipo: 'erro', texto: r.erro });
+            })
+          }
+        >
+          Salvar prazo
+        </button>
+      </div>
+      {!valido && <p className="erro" style={{ margin: 0 }}>Use de 10 a 240 minutos.</p>}
+      <p className="dica" style={{ margin: 0 }}>
+        Vale para pedidos de entrega sem horário agendado. O quadro de pedidos fica laranja quando faltam 10 min e vermelho quando estoura; o app do motoboy prioriza quem está mais perto de estourar; o cliente vê &quot;previsão de entrega: até…&quot;.
+      </p>
+      {msg && <p className={msg.tipo === 'ok' ? 'dica' : 'erro'} role="status" style={{ margin: 0 }}>{msg.texto}</p>}
+    </div>
   );
 }
 

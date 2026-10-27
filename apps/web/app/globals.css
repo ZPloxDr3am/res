@@ -579,3 +579,34 @@ details.cd-secao > summary { cursor: pointer; }
 .mb-rota-num { font-weight: 800; font-size: 1.05rem; }
 .mb-rota-hora { font-size: 0.88rem; color: #b9cde0; }
 .mb-ordem { display: inline-block; margin-right: 0.4rem; padding: 0 0.45rem; border-radius: 8px; background: #2f6fb0; color: #fff; font-size: 0.85em; }
+/* ---------- cliente acompanha a entrega (D-028) */
+.pub-a-caminho { gap: 0.4rem; border-color: #2f6fb0; }
+.mc-mapa { height: 260px; border-radius: 12px; overflow: hidden; border: 1px solid var(--borda, #ddd); }
+.mc-moto span, .mc-casa span { display: grid; place-items: center; width: 100%; height: 100%; font-size: 26px; filter: drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
+.mc-moto span { background: #fff; border-radius: 50%; border: 3px solid #2f6fb0; font-size: 20px; }
+/* ---------- prazo e lotes no quadro (D-028) */
+.selo-prazo { font-size: 0.85rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 8px; justify-self: start; background: #eef3f8; color: #2f4f6e; }
+.selo-prazo.perto { background: #fff1dc; color: #9a5300; }
+.selo-prazo.atrasado { background: #fde3e0; color: #b3261e; }
+.pedido[data-prazo='perto'] { border-left: 5px solid #e08a00; }
+.pedido[data-prazo='atrasado'] { border-left: 5px solid #d93025; }
+.lotes { display: grid; gap: 0.4rem; padding: 0.75rem 0.9rem; border-radius: 12px; border: 1px dashed #2f6fb0; background: #f2f7fd; }
+.lote { display: flex; flex-wrap: wrap; gap: 0.2rem 0.7rem; align-items: baseline; }
+.lote-num { font-weight: 700; color: #2f6fb0; }
+@media (prefers-color-scheme: dark) {
+  .selo-prazo { background: #22313f; color: #c8dbef; }
+  .selo-prazo.perto { background: #3d2c10; color: #ffc46b; }
+  .selo-prazo.atrasado { background: #44201d; color: #ffb4a8; }
+  .lotes { background: #172433; }
+}
+/* ---------- tempos e atrasos (D-028) */
+.tp-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 0.8rem; }
+.tp-kpis > div { display: grid; gap: 0.1rem; }
+.tp-kpis strong { font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+.tp-barra { display: grid; grid-template-columns: minmax(7rem, 11rem) 1fr auto; gap: 0.6rem; align-items: center; font-variant-numeric: tabular-nums; }
+.tp-trilho { display: flex; height: 0.9rem; border-radius: 6px; background: var(--borda, #e6e6e6); overflow: hidden; }
+.tp-trilho > span { display: block; height: 100%; background: #2f6fb0; }
+.tp-trilho > span[data-gargalo] { background: #e08a00; }
+.tp-trilho > span.atr { background: #d93025; }
+.tp-duas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1rem; }
+.tp-duas .tabela { display: block; overflow-x: auto; }

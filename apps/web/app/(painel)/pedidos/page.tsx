@@ -9,7 +9,7 @@ export default async function Pedidos({ searchParams }: { searchParams: Promise<
   const ctx = await contextoLoja();
   const todas = ctx.lojas.length > 1 && (await searchParams).todas === '1';
   const ids = todas ? ctx.lojas.map((l) => l.id) : [ctx.lojaId];
-  const { pedidos, aceiteAutomatico, tempoPreparo, fuso, filaImpressao } = await carregarQuadro(ids, ctx.lojaId);
+  const { pedidos, aceiteAutomatico, tempoPreparo, fuso, filaImpressao, prazoEntrega } = await carregarQuadro(ids, ctx.lojaId);
   return (
     <>
       <TempoReal lojaId={ctx.lojaId} tabelas={['pedidos', 'impressoes']} reservaMs={20000} todasAsLojas={todas} />
@@ -19,6 +19,7 @@ export default async function Pedidos({ searchParams }: { searchParams: Promise<
         tempoPreparo={tempoPreparo}
         fuso={fuso}
         filaImpressao={filaImpressao}
+        prazoEntrega={prazoEntrega}
         marcas={ctx.marcas}
         lojas={ctx.lojas}
         lojaAtual={ctx.lojaNome}

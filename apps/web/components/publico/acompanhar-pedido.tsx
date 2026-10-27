@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { formatarReais, PAGAMENTO_ROTULO, rotuloHorario, type StatusPedido } from '@res/core';
 import type { Acompanhamento } from '@/lib/publico';
+import { MapaCliente } from './mapa-cliente';
 
 const hora = (iso: string | null) => (iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : null);
 
@@ -14,9 +15,10 @@ export function AcompanharPedido({ pedido: p }: { pedido: Acompanhamento }) {
   // atualiza sozinho a cada 15 s enquanto o pedido está andando
   useEffect(() => {
     if (final) return;
-    const t = setInterval(() => router.refresh(), 15000);
+    // motoboy a caminho no mapa: a cada 10 s
+    const t = setInterval(() => router.refresh(), p.motoboy ? 10000 : 15000);
     return () => clearInterval(t);
-  }, [final, router]);
+  }, [final, router, p.motoboy]);
 
   const etapas: { status: StatusPedido; rotulo: string; quando: string | null }[] = [
     { status: 'novo', rotulo: 'Pedido enviado', quando: p.criado_em },
@@ -28,7 +30,7 @@ export function AcompanharPedido({ pedido: p }: { pedido: Acompanhamento }) {
   const atual = etapas.findIndex((e) => e.status === p.status);
 
   const previsao = (() => {
-    if (final || !p.aceito_em) return null;
+    if (final || !p.aceito_em || p.tipo === 'entrega') return null;
     const fim = new Date(new Date(p.aceito_em).getTime() + p.tempo_preparo_min * 60000);
     return fim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   })();
@@ -66,6 +68,30 @@ export function AcompanharPedido({ pedido: p }: { pedido: Acompanhamento }) {
           </p>
         )}
         {previsao && !p.agendado_para && <p>Previsão de ficar pronto: <strong>{previsao}</strong></p>}
+        {p.tipo === 'entrega' && !final && p.status !== 'em_entrega' && !p.agendado_para && (
+          <p>Previsão de entrega: até <strong>{hora(p.prazo)}</strong></p>
+        )}
+        {p.tipo === 'entrega' && p.status === 'em_entrega' && (
+          <section className="cartao grade pub-a-caminho" aria-live="polite">
+            <strong>🛵 {p.motoboy_nome || 'O motoboy'} saiu com o seu pedido</strong>
+            <span>
+              {p.previsao_chegada && new Date(p.previsao_chegada).getTime() > Date.now() - 5 * 60_000 ? (
+                <>Chega por volta das <strong>{hora(p.previsao_chegada)}</strong></>
+              ) : (
+                <>Previsão de entrega: até <strong>{hora(p.prazo)}</strong></>
+              )}
+            </span>
+            {p.paradas_antes != null && p.paradas_antes > 0 && (
+              <span className="dica">Ele tem {p.paradas_antes === 1 ? '1 entrega' : `${p.paradas_antes} entregas`} antes da sua. O mapa aparece quando ele estiver vindo até você.</span>
+            )}
+            {p.motoboy && (
+              <>
+                <span className="dica">Ele está vindo até você — o mapa atualiza sozinho.</span>
+                <MapaCliente motoboy={p.motoboy} destino={p.destino} />
+              </>
+            )}
+          </section>
+        )}
 
         <section className="cartao grade" style={{ gap: '0.35rem' }}>
           <h2>Itens</h2>

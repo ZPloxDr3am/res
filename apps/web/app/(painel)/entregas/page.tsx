@@ -7,6 +7,7 @@ import { TempoReal } from '@/components/tempo-real';
 import { BairrosEntregas, type LojaBairros } from '@/components/entregas/bairros';
 import { FechamentoMotoboys } from '@/components/entregas/fechamento';
 import { MapaAoVivo } from '@/components/entregas/ao-vivo';
+import { TemposEntregas, type Relatorio } from '@/components/entregas/tempos';
 import { rastreioAoVivo } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -16,9 +17,9 @@ function diaDoTurno(): string {
   return new Date(Date.now() - 5 * 3600_000).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
 }
 
-export default async function Entregas({ searchParams }: { searchParams: Promise<{ aba?: string; dia?: string }> }) {
+export default async function Entregas({ searchParams }: { searchParams: Promise<{ aba?: string; dia?: string; periodo?: string }> }) {
   const sp = await searchParams;
-  const aba = sp.aba === 'fechamento' ? 'fechamento' : sp.aba === 'bairros' ? 'bairros' : 'aovivo';
+  const aba = sp.aba === 'fechamento' ? 'fechamento' : sp.aba === 'bairros' ? 'bairros' : sp.aba === 'tempos' ? 'tempos' : 'aovivo';
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
 
@@ -31,9 +32,21 @@ export default async function Entregas({ searchParams }: { searchParams: Promise
   if (aba === 'aovivo') {
     const vivo = await rastreioAoVivo();
     conteudo = vivo ? <MapaAoVivo inicial={vivo} /> : <p className="cartao dica">Seu acesso não inclui as entregas desta loja.</p>;
+  } else if (aba === 'tempos') {
+    const periodo = ['hoje', 'ontem', '7', '30'].includes(sp.periodo ?? '') ? sp.periodo! : '7';
+    const hoje = diaDoTurno();
+    const menos = (d: string, n: number) => new Date(Date.parse(`${d}T12:00:00Z`) - n * 86400_000).toISOString().slice(0, 10);
+    const [de, ate] = periodo === 'hoje' ? [hoje, hoje] : periodo === 'ontem' ? [menos(hoje, 1), menos(hoje, 1)] : [menos(hoje, Number(periodo) - 1), hoje];
+    const [rel, lojas] = await Promise.all([
+      supabase.rpc('relatorio_entregas', { p_loja: ctx.lojaId, p_de: de, p_ate: ate }),
+      supabase.from('lojas').select('nome, prazo_entrega_min').in('id', ids),
+    ]);
+    const prazos = [...new Set((lojas.data ?? []).map((l) => l.prazo_entrega_min as number))];
+    const textoPrazo = prazos.length === 1 ? `${prazos[0]} min depois do pedido` : (lojas.data ?? []).map((l) => `${l.nome} ${l.prazo_entrega_min} min`).join(', ');
+    conteudo = <TemposEntregas rel={(rel.data as Relatorio | null) ?? null} periodo={periodo} prazos={textoPrazo} erro={rel.error ? rel.error.message : null} />;
   } else if (aba === 'bairros') {
     const [lojas, marcas, areas] = await Promise.all([
-      supabase.from('lojas').select('id, nome, cidade, endereco, lat, lng').in('id', ids),
+      supabase.from('lojas').select('id, nome, cidade, endereco, lat, lng, prazo_entrega_min').in('id', ids),
       supabase.from('marcas').select('id, nome, loja_id').in('loja_id', ids).order('ordem').order('nome'),
       supabase.from('areas_entrega').select('marca_id, bairro, taxa, valor_motoboy, km, ativo').in('loja_id', ids),
     ]);
@@ -47,6 +60,7 @@ export default async function Entregas({ searchParams }: { searchParams: Promise
         endereco: (l?.endereco as string | null) ?? null,
         lat: (l?.lat as number | null) ?? null,
         lng: (l?.lng as number | null) ?? null,
+        prazoEntregaMin: (l?.prazo_entrega_min as number | undefined) ?? 35,
         marcas: (marcas.data ?? [])
           .filter((m) => m.loja_id === g.id)
           .map((m) => ({
@@ -84,6 +98,7 @@ export default async function Entregas({ searchParams }: { searchParams: Promise
       <nav className="abas nao-imprimir" aria-label="Entregas">
         <Link href="/entregas" role="tab" aria-selected={aba === 'aovivo'} className="aba-link">Ao vivo</Link>
         <Link href="/entregas?aba=bairros" role="tab" aria-selected={aba === 'bairros'} className="aba-link">Bairros e preços</Link>
+        <Link href="/entregas?aba=tempos" role="tab" aria-selected={aba === 'tempos'} className="aba-link">Tempos e atrasos</Link>
         <Link href="/entregas?aba=fechamento" role="tab" aria-selected={aba === 'fechamento'} className="aba-link">Fechamento dos motoboys</Link>
       </nav>
       {conteudo}

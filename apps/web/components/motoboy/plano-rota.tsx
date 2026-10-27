@@ -35,10 +35,23 @@ export function PlanoRotaMotoboy({ entregas }: { entregas: Entrega[] }) {
       router.refresh(); // as comandas abaixo ficam na ordem da rota
     });
 
-  // nova comanda lida (ou entregue): calcula de novo
+  // nova comanda lida (ou entregue): calcula de novo. Com uma só, calcula também (sem mostrar):
+  // a hora prevista vai para a página de acompanhamento do cliente.
   useEffect(() => {
     if (entregas.length >= 2) calcular();
     else setPlano(null);
+    if (entregas.length !== 1) return;
+    // uma entrega: o cartão procura o endereço primeiro (o mapa gratuito pede 1 busca por segundo)
+    const t = setTimeout(calcular, 2500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chave]);
+
+  // a cada 4 min refaz do ponto onde ele está: a previsão do cliente fica em dia
+  useEffect(() => {
+    if (entregas.length === 0) return;
+    const t = setInterval(() => document.visibilityState === 'visible' && calcular(), 4 * 60_000);
+    return () => clearInterval(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chave]);
 
