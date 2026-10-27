@@ -851,3 +851,9 @@ nav.linha .aba-link.botao-primario, nav.linha .aba-link[aria-current='page'] { b
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; }
 }
+/* menu: botões do menu (Novo pedido, Sair) alinhados como os links */
+.menu-item, button.menu-item { justify-content: flex-start; min-height: 0; border: 0; background: none; font-weight: 500; padding: 0.48rem 0.7rem; }
+button.menu-item:hover:not(:disabled) { background: var(--superficie-2); border: 0; }
+.menu-item[data-pendente] { color: var(--primaria-forte); background: var(--primaria-fundo); font-weight: 600; }
+@media (max-width: 1000px) and (min-width: 701px) { .menu-item, button.menu-item { justify-content: center; padding: 0.6rem; } }
+@media (max-width: 700px) { .menu-item, button.menu-item { justify-content: center; flex-direction: column; padding: 0.4rem 0.2rem; } }
