@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793221351.9228435,
-    "seen": 1793221354.784179,
-    "ast_hash": "43ab3e54ad4d031035921f41429a73ba",
+    "mtime": 1793222130.3405142,
+    "seen": 1793222132.7756233,
+    "ast_hash": "786f33ab73707240b5fb14cfcc4a9b1f",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1761,6 +1761,42 @@
     "mtime": 1793209047.4873822,
     "seen": 1793209052.4741764,
     "ast_hash": "77a940902dff77c2af0254afc2e8af2d",
+    "semantic_hash": ""
+  },
+  "scripts/beefood_para_res.py": {
+    "mtime": 1793222130.3405142,
+    "seen": 1793222132.7755182,
+    "ast_hash": "7a6a3890a13d02e358edd3ad2784b633",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261028000047_taxa_km.sql": {
+    "mtime": 1793221351.9308436,
+    "seen": 1793222132.7755792,
+    "ast_hash": "906c50334fa66702b515068581f54e62",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261028000048_importar_cardapio.sql": {
+    "mtime": 1793221976.1041985,
+    "seen": 1793222132.7755804,
+    "ast_hash": "1847e1e12e4d3b3494cbfa82200159a9",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261028000049_la_pizza_cardapio.sql": {
+    "mtime": 1793222012.4529006,
+    "seen": 1793222132.7755816,
+    "ast_hash": "498d61db6cbd2e366e14990e1117add6",
+    "semantic_hash": ""
+  },
+  "supabase/tests/99zzzzzzzzzzzzzzzzz_taxa_km.sql": {
+    "mtime": 1793221351.9308436,
+    "seen": 1793222132.7756162,
+    "ast_hash": "0482782f4e3ce6b809903f497cd66ca9",
+    "semantic_hash": ""
+  },
+  "supabase/tests/99zzzzzzzzzzzzzzzzzz_importar.sql": {
+    "mtime": 1793222074.7892678,
+    "seen": 1793222132.7756174,
+    "ast_hash": "31a0c833a61388cac907921a0ae46cb2",
     "semantic_hash": ""
   }
 }
