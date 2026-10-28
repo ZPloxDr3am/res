@@ -26,11 +26,13 @@ export default async function PaginaCardapio({ params }: { params: Promise<{ slu
   const cardapio = await carregar(slug);
   if (!cardapio) notFound();
   const supabase = await criarClienteServidor();
-  const [{ data }, rastreio] = await Promise.all([
+  const [{ data }, rastreio, vit] = await Promise.all([
     supabase.rpc('horarios_agendamento', { p_slug: slug }),
     supabase.rpc('rastreamento_publico', { p_slug: slug }),
+    supabase.rpc('vitrine_publica', { p_slug: slug }),
   ]);
   const agendamento = (data as AgendamentoPublico | null) ?? { dias: 0, horarios: [] };
+  const vitrine = (vit.data as VitrinePublica | null) ?? null;
   return (
     <>
       <CardapioCliente cardapio={cardapio} agendamento={agendamento} vitrine={vitrine} />
