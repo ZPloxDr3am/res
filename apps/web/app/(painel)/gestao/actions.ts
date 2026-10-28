@@ -15,8 +15,11 @@ async function lojaGestor() {
 }
 
 /** Grava a planilha inteira de uma vez (linhas novas, alteradas e removidas). */
-export async function salvarCustos(linhas: Custo[], removidos: string[], faturamentoBase: number | null): Promise<R> {
+export type EscopoCustos = { tipo: 'loja' } | { tipo: 'grupo'; contaId: string };
+
+export async function salvarCustos(linhas: Custo[], removidos: string[], faturamentoBase: number | null, escopo: EscopoCustos = { tipo: 'loja' }): Promise<R> {
   const loja = await lojaGestor();
+  const dono = escopo.tipo === 'grupo' ? { conta_id: escopo.contaId } : { loja_id: loja };
   for (const l of linhas) {
     if (!l.nome.trim()) return { ok: false, erro: 'Há um custo sem nome.' };
     if (!Number.isFinite(l.valor) || l.valor < 0) return { ok: false, erro: `Valor inválido em "${l.nome}".` };
@@ -24,12 +27,13 @@ export async function salvarCustos(linhas: Custo[], removidos: string[], faturam
   }
   const supabase = await criarClienteServidor();
   if (removidos.length) {
-    const { error } = await supabase.from('custos').delete().eq('loja_id', loja).in('id', removidos);
+    const del = supabase.from('custos').delete().in('id', removidos);
+    const { error } = await (escopo.tipo === 'grupo' ? del.eq('conta_id', escopo.contaId) : del.eq('loja_id', loja));
     if (error) return { ok: false, erro: error.message };
   }
   const dados = linhas.map((l, i) => ({
     ...(l.id ? { id: l.id } : {}),
-    loja_id: loja,
+    ...dono,
     tipo: l.tipo,
     nome: l.nome.trim().slice(0, 80),
     forma: l.forma,
@@ -47,8 +51,24 @@ export async function salvarCustos(linhas: Custo[], removidos: string[], faturam
     const { error } = await supabase.from('custos').insert(novos);
     if (error) return { ok: false, erro: error.message };
   }
-  const { error } = await supabase.from('gestao_empresa').update({ faturamento_base: faturamentoBase, atualizado_em: new Date().toISOString() }).eq('loja_id', loja);
+  const { error } =
+    escopo.tipo === 'grupo'
+      ? await supabase.from('gestao_conta').update({ faturamento_base: faturamentoBase, atualizado_em: new Date().toISOString() }).eq('conta_id', escopo.contaId)
+      : await supabase.from('gestao_empresa').update({ faturamento_base: faturamentoBase, atualizado_em: new Date().toISOString() }).eq('loja_id', loja);
   if (error) return { ok: false, erro: error.message };
+  revalidatePath('/gestao');
+  return { ok: true };
+}
+
+/** Custos do grupo todo junto ou de cada loja separada (D-053). Só o titular da conta escolhe. */
+export async function salvarModoGrupo(contaId: string, modo: 'separado' | 'grupo'): Promise<R> {
+  await lojaGestor();
+  const supabase = await criarClienteServidor();
+  const prep = await supabase.rpc('preparar_gestao_grupo', { p_conta: contaId });
+  if (prep.error) return { ok: false, erro: prep.error.message };
+  const { data, error } = await supabase.from('gestao_conta').update({ modo, atualizado_em: new Date().toISOString() }).eq('conta_id', contaId).select('conta_id');
+  if (error) return { ok: false, erro: error.message };
+  if (!data?.length) return { ok: false, erro: 'Só o titular da conta escolhe como controlar os custos.' };
   revalidatePath('/gestao');
   return { ok: true };
 }

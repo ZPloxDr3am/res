@@ -162,14 +162,14 @@
     "semantic_hash": "37a083e8e04f109eef39ff287cee7496"
   },
   "apps/web/app/(painel)/lojas/actions.ts": {
-    "mtime": 1793226953.1974826,
-    "seen": 1793227037.26001,
+    "mtime": 1793227748.7561707,
+    "seen": 1793228088.2830079,
     "ast_hash": "7027763379e6cdfe0c3103d624436314",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/lojas/page.tsx": {
-    "mtime": 1793226992.325947,
-    "seen": 1793227037.2600124,
+    "mtime": 1793227748.7561707,
+    "seen": 1793228088.2830093,
     "ast_hash": "126e860a8432eab7a03998091c3f5cf6",
     "semantic_hash": ""
   },
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793227033.0047772,
-    "seen": 1793227037.2605896,
-    "ast_hash": "c8cbcb040aed2f5d18c364aec8d46357",
+    "mtime": 1793228084.188928,
+    "seen": 1793228088.2835553,
+    "ast_hash": "d004575345c568426be3c2fd6cfaab7c",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1818,9 +1818,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/gestao/actions.ts": {
-    "mtime": 1793226953.1980727,
-    "seen": 1793227037.259989,
-    "ast_hash": "b8f4d351d46cc5d59a77db87bab5b833",
+    "mtime": 1793228021.2015026,
+    "seen": 1793228088.2829943,
+    "ast_hash": "531524bd70e53c25b2b0cc10f5caa80c",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/gestao/documento/[id]/page.tsx": {
@@ -1830,15 +1830,15 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/gestao/page.tsx": {
-    "mtime": 1793227020.2483287,
-    "seen": 1793227037.2599964,
-    "ast_hash": "6661ab157364af86799c87e6e5fc51a1",
+    "mtime": 1793228084.188928,
+    "seen": 1793228088.2829998,
+    "ast_hash": "f9203ae32833d38f83b548bc5d3e87ea",
     "semantic_hash": ""
   },
   "apps/web/components/gestao/custos.tsx": {
-    "mtime": 1793225870.6324213,
-    "seen": 1793226421.4528642,
-    "ast_hash": "c2848b338afeae90b09f4fba7d47e19d",
+    "mtime": 1793228021.2020664,
+    "seen": 1793228088.2831652,
+    "ast_hash": "acc71311b15bdf88b273e6db4e0de27f",
     "semantic_hash": ""
   },
   "apps/web/components/gestao/empresa.tsx": {
@@ -1848,8 +1848,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/gestao/funcionarios.tsx": {
-    "mtime": 1793227020.2492115,
-    "seen": 1793227037.2601817,
+    "mtime": 1793227748.7601707,
+    "seen": 1793228088.283169,
     "ast_hash": "621333cdf26233620d509631c170e8f1",
     "semantic_hash": ""
   },
@@ -1866,8 +1866,8 @@
     "semantic_hash": ""
   },
   "apps/web/lib/gestao.ts": {
-    "mtime": 1793227020.2488003,
-    "seen": 1793227037.260253,
+    "mtime": 1793227748.7601707,
+    "seen": 1793228088.2832944,
     "ast_hash": "4e1021e9864ccdc0b0ee0c06f187d999",
     "semantic_hash": ""
   },
@@ -1878,14 +1878,14 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzz_gestao.sql": {
-    "mtime": 1793225870.6442194,
-    "seen": 1793226421.4531665,
-    "ast_hash": "968e19b56c0f598bcf51f552dd9017e8",
+    "mtime": 1793227958.7201657,
+    "seen": 1793228088.2835462,
+    "ast_hash": "26a1b0185665a6a00a80f4029d5b8ad1",
     "semantic_hash": ""
   },
   "apps/web/components/equipe/equipe.tsx": {
-    "mtime": 1793227000.3614523,
-    "seen": 1793227037.260135,
+    "mtime": 1793227748.7601707,
+    "seen": 1793228088.2831323,
     "ast_hash": "c9c1165db9f81163b99759d6072a762e",
     "semantic_hash": ""
   },
@@ -1908,15 +1908,27 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzz_equipe.sql": {
-    "mtime": 1793226817.157932,
-    "seen": 1793226825.8323486,
+    "mtime": 1793227748.7721705,
+    "seen": 1793228088.2835476,
     "ast_hash": "1f2668d55f7458cc6f3e85a0e226e2b0",
     "semantic_hash": ""
   },
   "supabase/migrations/20261028000054_ficha_acesso.sql": {
-    "mtime": 1793226817.1670325,
-    "seen": 1793227037.2605107,
+    "mtime": 1793227748.7721705,
+    "seen": 1793228088.2834976,
     "ast_hash": "fbbc2ea9d13b56d8ca39cae486ec306d",
+    "semantic_hash": ""
+  },
+  "apps/web/components/gestao/grupo.tsx": {
+    "mtime": 1793228043.7401638,
+    "seen": 1793228088.2831717,
+    "ast_hash": "e7444991d158dc3eedf54a8c2e14c719",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261028000055_gestao_grupo.sql": {
+    "mtime": 1793227970.4482563,
+    "seen": 1793228088.2834992,
+    "ast_hash": "c7df4db8e5a9350d8666d3fa07e05cb0",
     "semantic_hash": ""
   }
 }

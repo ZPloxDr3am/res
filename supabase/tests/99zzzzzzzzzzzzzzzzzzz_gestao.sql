@@ -73,3 +73,21 @@ select case when pg_temp.v('adv') = '[1, 3]'::jsonb then 'ok advertências numer
 select case when (pg_temp.v('func_ve'))::int = 0 and (pg_temp.v('fora_ve'))::int = 0 then 'ok só dono/gerente vê' else 'FALHOU privacidade' end;
 select case when not exists (select 1 from public.auditoria where tabela in ('funcionarios', 'funcionario_registros')) then 'ok CPF fora do histórico' else 'FALHOU auditoria' end;
 select case when (select cnpj is null and loja_id is not null from public.gestao_empresa where loja_id = pg_temp.id('loja')) then 'ok dados da empresa criados' else 'FALHOU empresa' end;
+
+-- 0055: planilha do grupo (só o titular)
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000003a1');
+insert into ids select 'conta', conta_id from public.lojas where id = pg_temp.id('loja');
+select from public.preparar_gestao_grupo(pg_temp.id('conta'));
+select from public.preparar_gestao_grupo(pg_temp.id('conta'));
+update public.gestao_conta set modo = 'grupo', faturamento_base = 90000 where conta_id = pg_temp.id('conta');
+insert into public.custos (conta_id, tipo, nome, valor) values (pg_temp.id('conta'), 'fixo', 'Escritório central', 1200);
+select from pg_temp.esperar_erro(format($q$insert into public.custos (loja_id, conta_id, tipo, nome) values ('%s', '%s', 'fixo', 'X')$q$, pg_temp.id('loja'), pg_temp.id('conta')), 'custos_dono');
+insert into saida select 'grupo', to_jsonb(count(*)) from public.custos where conta_id = pg_temp.id('conta');
+select from pg_temp.como('00000000-0000-0000-0000-0000000003a2');
+insert into saida select 'grupo_func', to_jsonb((select count(*) from public.custos where conta_id = pg_temp.id('conta')) + (select count(*) from public.gestao_conta));
+select from pg_temp.esperar_erro(format($q$select public.preparar_gestao_grupo('%s')$q$, pg_temp.id('conta')), 'Só o titular');
+reset role;
+\o
+select case when (pg_temp.v('grupo'))::int = 26 and (pg_temp.v('grupo_func'))::int = 0 then 'ok planilha do grupo (modelo + 1), só o titular' else 'FALHOU grupo ' || pg_temp.v('grupo')::text || '/' || pg_temp.v('grupo_func')::text end;
+select case when (select modo = 'grupo' from public.gestao_conta where conta_id = pg_temp.id('conta')) then 'ok modo do grupo salvo' else 'FALHOU modo' end;

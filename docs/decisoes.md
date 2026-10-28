@@ -536,3 +536,10 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - `funcionarios.membro_id` (0054): a ficha da Gestão Empresarial aponta para o acesso da pessoa em Lojas e equipe (um para um, mesma loja, garantido no banco).
 - **Adicionar pessoa** (Equipe), com usuário e senha: passo "Ficha do funcionário" — ligar a uma ficha que já existe, **criar a ficha agora** (nome, CPF, cargo, admissão, sem digitar de novo) ou "agora não". Em cada pessoa da equipe aparece a ficha (cargo e CPF) para o dono/gerente.
 - **Gestão → Funcionários**: coluna "Acesso ao RES" com o usuário, botão **+ Criar acesso** (abre o passo a passo já com a ficha escolhida) e campo para ligar a um acesso existente (ex.: quem entrou por convite). Ao marcar a pessoa como desligada, a tela oferece **tirar o acesso ao RES junto**.
+
+## D-053 — Custos do grupo ou de cada loja (28/10/2026)
+
+- Quem tem **mais de uma loja na conta** vê, no topo de Custos fixos e variáveis, a escolha: **cada loja separada** ou **o grupo todo junto**. Só o titular da conta muda (`gestao_conta.modo`, 0055); pode trocar quando quiser, nada é apagado.
+- **Separado**: uma planilha por loja (como antes) e a aba **Soma do grupo**, com faturamento, custos, sobra, margem e ponto de equilíbrio de cada loja e do total.
+- **Grupo**: uma planilha só (`custos.conta_id`), com o modelo pronto e o faturamento das lojas somado (pedidos concluídos dos últimos 30 dias de todas) ou informado.
+- Funcionários, faltas, advertências e dados da empresa continuam **por loja** (cada loja pode ter CNPJ e equipe próprios).

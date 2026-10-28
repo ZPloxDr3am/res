@@ -1,6 +1,6 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { salvarCustos } from '@/app/(painel)/gestao/actions';
+import { salvarCustos, type EscopoCustos } from '@/app/(painel)/gestao/actions';
 import { salvando } from '@/components/tempo-real';
 import { resumirCustos, type Custo } from '@/lib/gestao';
 
@@ -19,7 +19,19 @@ const texto = (n: number) => (n ? n.toLocaleString('pt-BR', { minimumFractionDig
 let seq = 0;
 
 /** Planilha de custos (D-050): modelo pronto, o dono preenche e acrescenta linhas. */
-export function PlanilhaCustos({ inicial, faturamentoBase, faturamento30 }: { inicial: Custo[]; faturamentoBase: number | null; faturamento30: number }) {
+export function PlanilhaCustos({
+  inicial,
+  faturamentoBase,
+  faturamento30,
+  escopo = { tipo: 'loja' },
+  rotulo30 = 'Usar últimos 30 dias no RES',
+}: {
+  inicial: Custo[];
+  faturamentoBase: number | null;
+  faturamento30: number;
+  escopo?: EscopoCustos;
+  rotulo30?: string;
+}) {
   const [linhas, setLinhas] = useState<Linha[]>(() => inicial.map((c) => ({ ...c, chave: c.id ?? `n${seq++}`, texto: texto(c.valor) })));
   const [removidos, setRemovidos] = useState<string[]>([]);
   const [fatTxt, setFatTxt] = useState(texto(faturamentoBase ?? faturamento30));
@@ -56,6 +68,7 @@ export function PlanilhaCustos({ inicial, faturamentoBase, faturamento30 }: { in
           ordenadas.map(({ id, tipo, nome, forma, valor, observacao, ordem }) => ({ id, tipo, nome, forma, valor, observacao, ordem })),
           removidos,
           faturamento || null,
+          escopo,
         ),
       );
       if (res.ok) {
@@ -148,7 +161,7 @@ export function PlanilhaCustos({ inicial, faturamentoBase, faturamento30 }: { in
           </label>
           {faturamento30 > 0 && (
             <button type="button" className="nao-imprimir" onClick={() => { setFatTxt(texto(faturamento30)); setAlterado(true); }}>
-              Usar últimos 30 dias no RES: {brl(faturamento30)}
+              {rotulo30}: {brl(faturamento30)}
             </button>
           )}
         </div>
