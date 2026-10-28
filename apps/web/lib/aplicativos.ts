@@ -94,6 +94,7 @@ export type StatusMp = {
   email: string | null;
   final: string | null;
   conectado_em: string | null;
+  aceitar_ao_pagar?: boolean;
   pix_pela_loja: boolean;
   recebidos_30d: { quantidade: number; valor: number };
 };

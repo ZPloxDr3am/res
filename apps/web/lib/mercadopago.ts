@@ -32,8 +32,14 @@ export async function usaPixMp(codigo: string): Promise<boolean> {
   return !!x?.conta && x.p.pagamento === 'pix';
 }
 
-async function marcarPago(db: NonNullable<ReturnType<typeof clienteAdmin>>, pedidoId: string) {
-  await db.from('pedidos').update({ pago_em: new Date().toISOString() }).eq('id', pedidoId).is('pago_em', null);
+/** Marca pago e, se a loja quiser, aceita o pedido (vai para "Em preparo" e imprime, como o aceite do quadro). */
+async function marcarPago(db: NonNullable<ReturnType<typeof clienteAdmin>>, pedidoId: string, lojaId: string) {
+  const agora = new Date().toISOString();
+  await db.from('pedidos').update({ pago_em: agora }).eq('id', pedidoId).is('pago_em', null);
+  const { data: c } = await db.from('mp_contas').select('aceitar_ao_pagar').eq('loja_id', lojaId).maybeSingle();
+  if (c?.aceitar_ao_pagar === false) return;
+  // só pedido novo e para agora (agendado entra no quadro na hora de preparar)
+  await db.from('pedidos').update({ status: 'em_preparo', aceito_em: agora }).eq('id', pedidoId).eq('status', 'novo').is('agendado_para', null);
 }
 
 /** Busca o pagamento no Mercado Pago e atualiza (vale para o webhook e para a conferência da página). */
@@ -51,7 +57,7 @@ export async function atualizarPagamento(lojaId: string, pagamentoId: number): P
   await db.from('mp_pagamentos').update({ status: pg.status, atualizado_em: new Date().toISOString() }).eq('id', pg.id);
   if (pg.status === 'approved') {
     const { data: p } = await db.from('pedidos').select('total').eq('id', reg.pedido_id).single();
-    if (p && pg.transaction_amount + 0.009 >= Number(p.total)) await marcarPago(db, reg.pedido_id);
+    if (p && pg.transaction_amount + 0.009 >= Number(p.total)) await marcarPago(db, reg.pedido_id, lojaId);
   }
   return pg.status;
 }

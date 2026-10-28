@@ -447,5 +447,6 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
   - Nos dois casos o servidor **busca o pagamento na API do Mercado Pago**: o corpo do aviso não é confiável.
   - Só marca pago (`pedidos.pago_em`) se o pagamento foi criado pelo RES para aquele pedido daquela loja e o valor cobre o total.
 - **O fluxo do pedido não muda:** o pedido entra no quadro como hoje (Pix) e vira "Pago" sozinho. O motoboy vê "PAGO — NÃO COBRAR".
+- **Aceite ao pagar (0042, ligado por padrão):** quando o Pix é confirmado, o pedido "Novo" vai para "Em preparo" e imprime, pelos mesmos gatilhos do aceite do quadro. Pedido agendado não: entra na hora de preparar. Desliga em Aplicativos → Mercado Pago.
 - Sem Mercado Pago, continua o Pix estático da D-042, confirmado à mão.
 - **Cartão online:** fica para uma próxima etapa. Exige pedido que só entra no quadro depois de pago.

@@ -3,7 +3,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { formatarReais } from '@res/core';
-import { conectarMercadoPago, desconectarMercadoPago } from '@/app/(painel)/aplicativos/actions';
+import { conectarMercadoPago, desconectarMercadoPago, mpAceitarAoPagar } from '@/app/(painel)/aplicativos/actions';
 import { salvando } from '@/components/tempo-real';
 import type { StatusMp } from '@/lib/aplicativos';
 
@@ -18,7 +18,7 @@ export function PainelMercadoPago({ mp }: { mp: StatusMp | null }) {
   return (
     <div className="grade">
       <p style={{ margin: 0 }}>
-        O cliente que escolher <strong>Pix</strong> no cardápio digital recebe um QR com o valor exato. Quando ele paga, o pedido fica <strong>Pago</strong> sozinho no quadro, sem conferir extrato.
+        O cliente que escolher <strong>Pix</strong> no cardápio digital recebe um QR com o valor exato. Quando ele paga, o pedido fica <strong>Pago</strong> sozinho e pode já ser <strong>aceito</strong>, sem conferir extrato.
         O dinheiro cai direto na sua conta Mercado Pago, com a taxa do Mercado Pago para Pix. O RES não cobra nada a mais.
       </p>
       {mp.conectado ? (
@@ -26,6 +26,18 @@ export function PainelMercadoPago({ mp }: { mp: StatusMp | null }) {
           <strong>✅ Conectado{mp.apelido ? ` a ${mp.apelido}` : ''}</strong>
           <span className="dica">{mp.email ?? ''} · token …{mp.final}{mp.conectado_em ? ` · desde ${new Date(mp.conectado_em).toLocaleDateString('pt-BR')}` : ''}</span>
           <span className="dica">Últimos 30 dias: {mp.recebidos_30d.quantidade} Pix recebidos · {formatarReais(Math.round(Number(mp.recebidos_30d.valor) * 100))}</span>
+          <label className="check">
+            <input
+              type="checkbox"
+              checked={mp.aceitar_ao_pagar !== false}
+              disabled={pendente}
+              onChange={(e) => {
+                const v = e.target.checked;
+                iniciar(async () => { await salvando(mpAceitarAoPagar(v)); router.refresh(); });
+              }}
+            />
+            <span><strong>Aceitar o pedido sozinho quando o Pix for confirmado</strong> <span className="dica">vai para "Em preparo" e imprime na cozinha, como no aceite do quadro. Pedido agendado espera a hora de preparar.</span></span>
+          </label>
           {!mp.pix_pela_loja && (
             <p className="cmv-aviso" data-tom="alerta">O Pix não está nas formas de pagamento do cardápio. Ligue em <Link href="/delivery">Delivery</Link>.</p>
           )}

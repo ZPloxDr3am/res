@@ -102,3 +102,12 @@ export async function desconectarMercadoPago(): Promise<R> {
   revalidatePath('/aplicativos');
   return { ok: true };
 }
+
+export async function mpAceitarAoPagar(ligado: boolean): Promise<R> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('mp_aceitar_ao_pagar', { p_loja: ctx.lojaId, p_ligado: ligado });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/aplicativos');
+  return { ok: true };
+}

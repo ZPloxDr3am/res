@@ -32,6 +32,7 @@ select from pg_temp.como('00000000-0000-0000-0000-0000000002c1');
 insert into ids values ('loja', public.criar_loja('Loja MP', 'Pizza MP', 'pizza-mp', 'Ana'));
 select from pg_temp.esperar_erro(format($q$select public.salvar_mp('%s', 'TEST-123', null, null, null)$q$, pg_temp.id('loja')), 'APP_USR');
 select public.salvar_mp(pg_temp.id('loja'), 'APP_USR-1234567890abcdefghij-XYZ9', 'loja@exemplo.com', 123, 'LOJA MP');
+select public.mp_aceitar_ao_pagar(pg_temp.id('loja'), false);
 insert into saida values ('st', public.mp_status(pg_temp.id('loja')));
 -- o token não é lido por ninguém logado
 select from pg_temp.esperar_erro($q$select access_token from public.mp_contas$q$, 'permission denied');
@@ -42,7 +43,8 @@ set role anon;
 select from pg_temp.esperar_erro($q$select * from public.mp_pagamentos$q$, 'permission denied');
 reset role;
 do $$ begin
-  if not (pg_temp.v('st') ->> 'conectado')::boolean or pg_temp.v('st') ->> 'final' <> 'XYZ9' or pg_temp.v('st') ? 'access_token' then
+  if not (pg_temp.v('st') ->> 'conectado')::boolean or pg_temp.v('st') ->> 'final' <> 'XYZ9' or pg_temp.v('st') ? 'access_token'
+     or (pg_temp.v('st') ->> 'aceitar_ao_pagar')::boolean then
     raise exception 'mp_status: %', pg_temp.v('st');
   end if;
 end $$;
