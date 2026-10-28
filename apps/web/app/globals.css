@@ -1044,3 +1044,20 @@ tr[aria-current='true'] > td { background: var(--primaria-fundo); }
 .pub-avaliar { display: grid; gap: 0.15rem; text-decoration: none; color: var(--texto); border: 1px solid #f2d27a; background: #fff8e3; }
 .pub-grupo-item { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; text-decoration: none; color: var(--texto); }
 .pub-grupo-aberta { color: var(--primaria); font-weight: 650; font-size: 0.85rem; }
+/* ---- aplicativos: API, webhooks e MCP (D-043) */
+.api-segredo { display: grid; gap: 0.45rem; padding: 0.8rem 0.9rem; border-radius: var(--raio-controle); background: #fff8e6; border: 1px solid #f1d38a; }
+.api-segredo code { display: block; padding: 0.5rem 0.6rem; border-radius: 8px; background: var(--superficie); font-size: 0.82rem; word-break: break-all; user-select: all; }
+.api-escopos { border: 0; padding: 0; margin: 0; display: grid; gap: 0.35rem; }
+.api-escopos legend { font-weight: 600; margin-bottom: 0.3rem; }
+.api-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.api-lista li { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.6rem 0.75rem; border: 1px solid var(--borda); border-radius: var(--raio-controle); background: var(--superficie); }
+.api-docs summary { cursor: pointer; color: var(--primaria); font-weight: 600; }
+.api-endpoints { list-style: none; margin: 0.4rem 0; padding: 0; display: grid; gap: 0.35rem; }
+.api-endpoints li { display: grid; gap: 0.05rem; }
+.api-endpoints code, .api-docs code { font-size: 0.8rem; word-break: break-all; }
+.api-exemplo { margin: 0; padding: 0.6rem 0.7rem; border-radius: 8px; background: #1b211e; color: #e8efe9; font-size: 0.78rem; overflow-x: auto; }
+.api-url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.api-envios { list-style: none; margin: 0.4rem 0 0; padding: 0; display: grid; gap: 0.2rem; font-size: 0.82rem; }
+.api-envios li { display: grid; grid-template-columns: 7.5rem 9rem 1fr; gap: 0.5rem; color: var(--texto-suave); }
+.api-envios li[data-st='ok'] span:last-child { color: var(--primaria); }
+.api-envios li[data-st='erro'] span:last-child, .api-envios li[data-st='desistiu'] span:last-child { color: var(--erro); }
