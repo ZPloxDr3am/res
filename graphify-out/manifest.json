@@ -288,10 +288,10 @@
     "semantic_hash": "6653f6d2413afaa67f5e5af557e30816"
   },
   "apps/web/app/c/[slug]/actions.ts": {
-    "mtime": 1793202552.2381096,
-    "seen": 1793205238.7560492,
-    "ast_hash": "9cfdbe529af9fee7f7020c8585cd58c0",
-    "semantic_hash": "9cfdbe529af9fee7f7020c8585cd58c0"
+    "mtime": 1793208793.2223103,
+    "seen": 1793208922.4903097,
+    "ast_hash": "0f5577ec4b46a094ebb60bbe7fcf060f",
+    "semantic_hash": ""
   },
   "apps/web/app/c/[slug]/page.tsx": {
     "mtime": 1793207864.367312,
@@ -678,9 +678,9 @@
     "semantic_hash": "d472090f7948a1f67e4266a37eecb2ad"
   },
   "apps/web/components/publico/cardapio-cliente.tsx": {
-    "mtime": 1793208750.8593645,
-    "seen": 1793208755.2299714,
-    "ast_hash": "a8f410c339289e35df379a75213f053b",
+    "mtime": 1793208900.3219569,
+    "seen": 1793208922.490393,
+    "ast_hash": "e7f16e5d0e5166cfeeef46ecff3b6021",
     "semantic_hash": ""
   },
   "apps/web/components/publico/mapa-cliente.tsx": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793208750.8593645,
-    "seen": 1793208755.230173,
-    "ast_hash": "f4fd265338fbd49bd0fb84bddce71db3",
+    "mtime": 1793208919.6793745,
+    "seen": 1793208922.4906096,
+    "ast_hash": "a8ff1dcf7af15f8d8b262dcde0ba4e4b",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1755,6 +1755,12 @@
     "mtime": 1793208750.8633645,
     "seen": 1793208759.9921887,
     "ast_hash": "221d192bb5b64f11df45d67e0b2463ec",
+    "semantic_hash": ""
+  },
+  "apps/web/components/publico/conta-cliente.tsx": {
+    "mtime": 1793208793.223367,
+    "seen": 1793208922.4903944,
+    "ast_hash": "77a940902dff77c2af0254afc2e8af2d",
     "semantic_hash": ""
   }
 }
