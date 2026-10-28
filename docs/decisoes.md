@@ -492,3 +492,9 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **Selos:** "🔥 Mais pedido" é automático (D-045). "⭐ Recomendado" e "✨ Novo" e os **ingredientes** se cadastram em Cardápio → grupo → "+ Detalhes" em cada opção.
 - **Sacola:** foto, ✏️ **Editar** (reabre a montagem com as escolhas e salva por cima) e 🗑 no lugar do − quando a quantidade é 1.
 - **LA PIZZA (0046, a pedido do dono):** cada tamanho exige **exatamente** o número de sabores dele (Broto 1, Média 2, Grande 3, Gigante 4), como no BeeFood. Para meio a meio, repete um sabor: 2× Calabresa + 1× Bacon numa Grande = ⅔ e ⅓, e o estoque e o preço seguem a fração.
+
+## D-047 — Cardápio público: WhatsApp primeiro, "Pedidos" e "Perfil" do aparelho (28/10/2026)
+
+- No checkout, o **WhatsApp vem antes do nome**, com o aviso "para avisarmos o andamento do seu pedido" (igual ao BeeFood).
+- Barra de baixo **Cardápio · Pedidos · Perfil**. *Pedidos* lista os pedidos feitos **neste aparelho** (`localStorage res_meus_pedidos`, até 30) e busca a situação ao vivo pelo código (`acompanhar_pedido`, até 15 por vez). *Perfil* edita os dados guardados (`res_cliente`) e tem "Esquecer meus dados".
+- **Por que só o aparelho, e não "digite o telefone e veja seus pedidos":** buscar por telefone numa página pública expõe nome, endereço e histórico de qualquer pessoa para quem souber o número. Login por código no WhatsApp fica para depois.

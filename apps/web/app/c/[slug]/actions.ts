@@ -101,3 +101,16 @@ export async function conferirPixMercadoPago(codigo: string) {
   const { conferirPix } = await import('@/lib/mercadopago');
   return conferirPix(codigo);
 }
+
+// ---- "Meus pedidos" do aparelho (D-047): situação dos últimos pedidos guardados neste celular
+export async function situacaoPedidos(codigos: string[]): Promise<Record<string, { numero: number; status: string; total: number; criado_em: string; marca: string }>> {
+  const supabase = await criarClienteServidor();
+  const lista = codigos.filter((c) => /^[0-9a-f-]{36}$/i.test(c)).slice(0, 15);
+  const r = await Promise.all(lista.map(async (c) => [c, (await supabase.rpc('acompanhar_pedido', { p_codigo: c })).data] as const));
+  return Object.fromEntries(
+    r.filter(([, d]) => d).map(([c, d]) => {
+      const x = d as { numero: number; status: string; total: number; criado_em: string; marca: string };
+      return [c, { numero: x.numero, status: x.status, total: x.total, criado_em: x.criado_em, marca: x.marca }];
+    }),
+  );
+}
