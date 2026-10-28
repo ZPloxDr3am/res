@@ -35,6 +35,7 @@ import {
   type ProdutoPublico,
 } from '@/lib/publico';
 import { conferirCupom, enviarPedido } from '@/app/c/[slug]/actions';
+import { rastrear } from '@/lib/rastreio';
 
 type Item = { chave: number; produtoId: string; quantidade: number; escolhas: Escolhas; observacao: string; passos?: EscolhaPasso[] };
 type ItemCalculado = Item & { produto: ProdutoPublico; unitario: number; resumo: string };
@@ -133,6 +134,7 @@ export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioP
 
   const adicionar = (p: ProdutoPublico, escolhas: Escolhas, observacao: string, passos?: EscolhaPasso[]) => {
     setItens((x) => [...x, { chave: Date.now(), produtoId: p.id, quantidade: 1, escolhas, observacao, ...(passos ? { passos } : {}) }]);
+    rastrear({ tipo: 'add_to_cart', id: p.id, nome: p.nome });
     setAbrindo(null);
   };
   const abrir = (p: ProdutoPublico) => (p.combo || p.grupos.length ? setAbrindo(p) : adicionar(p, {}, ''));
@@ -250,7 +252,7 @@ export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioP
 
       {etapa === 'cardapio' && quantidade > 0 && (
         <div className="pub-barra">
-          <button type="button" className="botao-primario" onClick={() => setEtapa('carrinho')}>
+          <button type="button" className="botao-primario" onClick={() => { rastrear({ tipo: 'begin_checkout', valor: subtotal }); setEtapa('carrinho'); }}>
             Ver pedido · {quantidade} {quantidade === 1 ? 'item' : 'itens'} · {formatarReais(subtotal)}
           </button>
         </div>

@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import type { AgendamentoPublico, CardapioPublico } from '@/lib/publico';
 import { CardapioCliente } from '@/components/publico/cardapio-cliente';
+import { Rastreamento } from '@/components/publico/rastreamento';
+import type { ConfigRastreio } from '@/lib/rastreio';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +26,15 @@ export default async function PaginaCardapio({ params }: { params: Promise<{ slu
   const cardapio = await carregar(slug);
   if (!cardapio) notFound();
   const supabase = await criarClienteServidor();
-  const { data } = await supabase.rpc('horarios_agendamento', { p_slug: slug });
+  const [{ data }, rastreio] = await Promise.all([
+    supabase.rpc('horarios_agendamento', { p_slug: slug }),
+    supabase.rpc('rastreamento_publico', { p_slug: slug }),
+  ]);
   const agendamento = (data as AgendamentoPublico | null) ?? { dias: 0, horarios: [] };
-  return <CardapioCliente cardapio={cardapio} agendamento={agendamento} />;
+  return (
+    <>
+      <CardapioCliente cardapio={cardapio} agendamento={agendamento} />
+      <Rastreamento config={(rastreio.data as ConfigRastreio | null) ?? {}} />
+    </>
+  );
 }
