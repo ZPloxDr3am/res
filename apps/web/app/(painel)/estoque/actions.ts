@@ -105,3 +105,22 @@ export async function salvarContagem(itens: { insumo_id: string; quantidade: num
   revalidatePath('/estoque');
   return { ok: true, ...(data as { mudaram: number; diferenca: number }) };
 }
+
+/** Tamanho de cada pizza para os sabores: {produto_id: fator} (1 = 100%) (D-040). */
+export async function salvarFatoresSabor(fatores: Record<string, number>): Promise<R> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('salvar_fatores_sabor', { p_loja: ctx.lojaId, p_fatores: fatores });
+  return error ? { ok: false, erro: error.message } : feito();
+}
+
+/** Grava a mesma ficha em todas as opções do sabor (uma por grupo de tamanho, quando há). */
+export async function salvarFichaSabor(opcaoIds: string[], itens: { insumo_id: string; quantidade: number }[]): Promise<R> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  for (const id of opcaoIds) {
+    const { error } = await supabase.rpc('salvar_ficha', { p_loja: ctx.lojaId, p_produto: null, p_opcao: id, p_itens: itens });
+    if (error) return { ok: false, erro: error.message };
+  }
+  return feito();
+}

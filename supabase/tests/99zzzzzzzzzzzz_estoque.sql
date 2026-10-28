@@ -168,6 +168,25 @@ select from pg_temp.como('00000000-0000-0000-0000-0000000001f3');
 select from pg_temp.esperar_erro(format($q$select public.fechamento_estoque('%s', null)$q$, pg_temp.id('loja')), 'acesso');
 reset role;
 
+-- sabor × tamanho (D-040): pizza com fator 50% baixa metade da ficha do sabor; a ficha do produto não muda
+select from pg_temp.como('00000000-0000-0000-0000-0000000001f1');
+select from pg_temp.esperar_erro(format($q$select public.salvar_fatores_sabor('%s', '{"%s": 0}')$q$, pg_temp.id('loja'), pg_temp.id('pz')), 'tamanho');
+select public.salvar_fatores_sabor(pg_temp.id('loja'), jsonb_build_object(pg_temp.id('pz'), 0.5));
+insert into ids values ('ped2', public.criar_pedido(pg_temp.id('loja'), pg_temp.id('marca'), jsonb_build_object('tipo', 'balcao',
+  'cliente', jsonb_build_object('nome', 'Bia'), 'pagamento', 'pix',
+  'itens', jsonb_build_array(jsonb_build_object('produto_id', pg_temp.id('pz'), 'quantidade', 1,
+    'escolhas', jsonb_build_object(pg_temp.id('sabores'), jsonb_build_object(pg_temp.id('o_cal'), 1)))))));
+reset role;
+create temp table s3 as select id, saldo from public.insumos where id in (pg_temp.id('mus'), pg_temp.id('cal'));
+update public.pedidos set status = 'concluido', concluido_em = now() where id = pg_temp.id('ped2');
+do $$ begin
+  -- calabresa: 0,4 × 1 × 50% = 0,2; mussarela (ficha do produto): 0,3
+  if (select saldo from s3 where id = pg_temp.id('cal')) - (select saldo from public.insumos where id = pg_temp.id('cal')) <> 0.2
+     or (select saldo from s3 where id = pg_temp.id('mus')) - (select saldo from public.insumos where id = pg_temp.id('mus')) <> 0.3 then
+    raise exception 'fator do sabor: cal % mus %', (select saldo from public.insumos where id = pg_temp.id('cal')), (select saldo from public.insumos where id = pg_temp.id('mus'));
+  end if;
+end $$;
+
 -- plano de várias lojas: pode agrupar, mas só antes de ter insumos
 update public.contas set plano = 'multilojas', limite_lojas = 3, limite_cardapios = 3 where id = (select conta_id from public.lojas where id = pg_temp.id('loja'));
 select from pg_temp.como('00000000-0000-0000-0000-0000000001f1');

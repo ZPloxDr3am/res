@@ -13,6 +13,7 @@ import { Movimentacoes } from '@/components/estoque/movimentos';
 import { MeuEstoqueProdutos } from '@/components/estoque/meu-estoque';
 import { Contagem } from '@/components/estoque/contagem';
 import { Fechamento } from '@/components/estoque/fechamento';
+import { SaboresPizza } from '@/components/estoque/sabores-pizza';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,9 +35,28 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
     let corpo: ReactNode;
     let outras = 0;
     if (sabores) {
-      const [cardapio, fichas, meu] = await Promise.all([carregarCardapio(ctx.lojaId), supabase.rpc('fichas_loja', { p_loja: ctx.lojaId }), supabase.rpc('meu_estoque', { p_loja: ctx.lojaId, p_todas: false })]);
-      outras = (meu.data as MeuEstoque | null)?.outras_lojas ?? 0;
-      corpo = <Fichas soOpcoes produtos={cardapio.produtos} grupos={Object.values(cardapio.grupos)} insumos={p.insumos} fichas={(fichas.data as ItemFicha[] | null) ?? []} />;
+      const [cardapio, fichas, fatores] = await Promise.all([
+        carregarCardapio(ctx.lojaId),
+        supabase.rpc('fichas_loja', { p_loja: ctx.lojaId }),
+        supabase.from('produtos').select('id, nome, fator_sabor').eq('loja_id', ctx.lojaId).eq('combo', false),
+      ]);
+      const grupos = Object.values(cardapio.grupos);
+      const gruposPizza = new Set(grupos.filter((g) => g.pizza).map((g) => g.id));
+      const comPizza = new Set(cardapio.produtos.filter((x) => x.produto_grupos.some((pg) => gruposPizza.has(pg.grupo_id))).map((x) => x.id));
+      const pizzas = ((fatores.data ?? []) as { id: string; nome: string; fator_sabor: number }[]).filter((x) => comPizza.has(x.id));
+      const fs = (fichas.data as ItemFicha[] | null) ?? [];
+      const outrosGrupos = grupos.filter((g) => !g.pizza);
+      corpo = (
+        <div className="grade">
+          <SaboresPizza pizzas={pizzas} grupos={grupos} insumos={p.insumos} fichas={fs} />
+          {outrosGrupos.some((g) => g.ativo && g.opcoes.some((o) => o.ativo)) && (
+            <>
+              <h2 style={{ margin: '0.6rem 0 0' }}>Bordas e adicionais</h2>
+              <Fichas soOpcoes produtos={cardapio.produtos} grupos={outrosGrupos} insumos={p.insumos} fichas={fs} />
+            </>
+          )}
+        </div>
+      );
     } else {
       const meu = await supabase.rpc('meu_estoque', { p_loja: ctx.lojaId, p_todas: todas });
       const dados = meu.data as MeuEstoque | null;
@@ -48,7 +68,7 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
         <div className="linha" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <div className="segmentos" role="group" aria-label="O que ver">
             <Link href={base} aria-current={!sabores ? 'true' : undefined}>Produtos</Link>
-            <Link href={`${base}&ver=sabores`} aria-current={sabores ? 'true' : undefined}>Sabores e adicionais</Link>
+            <Link href={`${base}&ver=sabores`} aria-current={sabores ? 'true' : undefined}>Sabores, bordas e adicionais</Link>
           </div>
           {outras > 0 && !sabores && (
             <div className="segmentos" role="group" aria-label="Lojas">

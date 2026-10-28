@@ -369,3 +369,13 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Com estoque agrupado, o fechamento é do grupo (todas as lojas do estoque).
 - Aviso quando o mês fechado não tem contagem entre o último dia e o dia 1: sem contagem, o real fica igual ao das fichas.
 - A tela mostra os últimos 6 meses, a quebra por insumo (quantidade e R$), e permite imprimir e exportar para Excel.
+
+## D-040 · Ficha técnica por sabor de pizza
+
+- A ficha do sabor é escrita **uma vez**, para a pizza de 100% (a maior). Ex.: Calabresa → calabresa 100 g, cebola 40 g.
+- Cada pizza tem um **tamanho** (`produtos.fator_sabor`), sugerido pela área do diâmetro no nome: 25 cm = 39%, 30 cm = 56%, 35 cm = 77%, 40 cm = 100%. É editável.
+- **Baixa de cada sabor** = ficha do sabor × tamanho da pizza × fração (meio a meio = ½; 3 sabores = ⅓) × quantidade. No combo, vale o tamanho da pizza escolhida no passo.
+- A ficha do **produto** (massa, molho, mussarela base, caixa) não usa o fator: já é daquele tamanho.
+- Quando o cardápio tem um grupo de sabores por tamanho (LA PIZZA), o mesmo sabor aparece em vários grupos e a ficha é gravada em todos de uma vez.
+- Na tela: quantidades em g/ml (o estoque guarda em kg/l), ingrediente novo cadastrado ali mesmo, "copiar de outro sabor" e uma prévia de quanto baixa em cada tamanho.
+- Bordas e adicionais continuam com ficha própria, sem fator.
