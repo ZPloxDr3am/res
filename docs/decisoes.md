@@ -295,3 +295,42 @@ O estudo da tela do BeeFood está em `estudo-beefood/fidelidade.md`, no projeto.
   - opção nova ganha foto depois que o grupo é salvo;
   - opção que é um produto usa a foto do produto quando não tem a própria.
 - As fotos das opções aparecem no balcão, na montagem do combo e no cardápio digital do cliente.
+
+## D-036 · Estoque: entrada por NF-e e baixa pela ficha técnica
+
+O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
+
+**Onde fica o estoque**
+- O estoque é **da loja** ou **do grupo**, conforme `contas.estoque_compartilhado`.
+- A escolha só aparece para quem tem o plano de várias lojas, para o dono ou gerente, e só antes de cadastrar o primeiro insumo.
+- `private.estoque_da_loja(loja)` devolve o dono do estoque: a própria loja ou a conta do grupo.
+
+**Insumos**
+- Unidades: un, kg, g, l, ml.
+- Cada insumo tem saldo, **custo médio ponderado** (atualizado a cada entrada com custo), mínimo para o alerta, opção de controlar ou não, e categoria.
+
+**Entrada por NF-e (XML)**
+- O navegador lê o XML com `lerNFe` (core): chave, número, emitente, destinatário e itens.
+- O custo de cada item é: produtos − desconto + frete + seguro + outros + IPI + ICMS-ST.
+- Na tela, cada item vai para:
+  - um insumo cadastrado (a tela sugere pelo nome);
+  - um insumo novo;
+  - ou "não entra no estoque".
+- O **fator** diz quantas unidades do insumo vêm em cada unidade da nota (ex.: caixa de 6 kg → 6). Unidades como CX, FD e PCT pedem confirmação do fator.
+- **Vínculo lembrado:** fornecedor (CNPJ) + código do produto na nota → insumo + fator. A próxima nota do mesmo fornecedor já vem ligada.
+- A chave da nota é única por estoque: a mesma nota não entra duas vezes.
+
+**Ficha técnica**
+- Diz quanto um produto ou uma opção gasta de cada insumo.
+- **Sabor de pizza:** quantidade numa pizza inteira daquele sabor, multiplicada pela fração (no meio a meio baixa a metade).
+- Adicional ou borda: quantidade × a quantidade escolhida.
+- Combo: o produto escolhido em cada passo baixa pela ficha dele (achado pelo nome na loja).
+- A tela mostra o custo da ficha e a % do preço.
+
+**Baixa e ajustes**
+- A baixa é **na hora** em que o pedido é concluído. Se o pedido concluído for cancelado, o estoque volta.
+- O estoque pode ficar negativo; a venda nunca é bloqueada.
+- Ajustes manuais: **contagem** (o saldo passa a ser o contado), **entrada** com custo e **perda** com motivo obrigatório.
+- Tudo fica em `estoque_movimentos`.
+
+**Busca automática de notas na SEFAZ:** fica para depois. Exige o certificado A1 da loja e um provedor fiscal.
