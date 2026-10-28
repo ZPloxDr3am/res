@@ -63,3 +63,47 @@ export type MeuEstoque = {
   insumos: Record<string, Insumo[]>;
 };
 export type ContagemPainel = { de_nfe: string[]; ultima: Record<string, string> };
+
+export type ResumoCmv = {
+  estoque_inicial: number;
+  compras: number;
+  estoque_final: number;
+  cmv_real: number;
+  cmv_teorico: number;
+  perdas: number;
+  contagens: number;
+  faturamento: number;
+  pedidos: number;
+};
+export type FechamentoEstoque = {
+  mes: string;
+  inicio: string;
+  fim: string;
+  em_andamento: boolean;
+  lojas: string[];
+  resumo: ResumoCmv;
+  historico: (ResumoCmv & { mes: string })[];
+  contagem_fim: string | null;
+  ultima_contagem: string | null;
+  por_insumo: {
+    insumo: string;
+    unidade: string;
+    q_inicial: number;
+    inicial: number;
+    q_compras: number;
+    compras: number;
+    q_final: number;
+    final: number;
+    q_real: number;
+    real: number;
+    q_teorico: number;
+    teorico: number;
+    perdas: number;
+  }[];
+};
+export const pctDe = (a: number, b: number) => (b > 0 ? Math.round((a / b) * 1000) / 10 : null);
+export const nomeMes = (ym: string) => {
+  const [a, m] = ym.split('-').map(Number);
+  const t = new Date(Date.UTC(a, m - 1, 15)).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+  return t.charAt(0).toUpperCase() + t.slice(1);
+};

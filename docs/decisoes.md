@@ -358,3 +358,14 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - "+ Item à mão" cadastra um item sem NF-e, já com a quantidade e o custo.
 - Salva tudo de uma vez (`salvar_contagem`), só mexe nos itens com diferença, e registra nas Movimentações.
 - O que foi digitado fica guardado no navegador até salvar. A folha pode ser impressa para contar no papel.
+
+## D-039 · Fechamento do mês e CMV
+
+- Aba **Fechamento / CMV** do Estoque, mês a mês: o mês vai do dia 1 às 05:00 até o dia 1 seguinte às 05:00.
+- **CMV real** = estoque inicial + compras − estoque final, em R$ a custo médio. Os estoques inicial e final saem do último movimento antes de cada data: cada movimento guarda o saldo e o custo médio depois dele (`custo_medio_apos`).
+- **CMV pelas fichas** (teórico) = o que as vendas baixaram pela ficha técnica.
+- **Diferença** = real − fichas, explicada por perdas registradas, falta ou sobra nas contagens e "outros" (mudança de custo no mês).
+- **Faturamento** = pedidos concluídos no mês, sem a taxa de entrega. CMV % = CMV ÷ faturamento.
+- Com estoque agrupado, o fechamento é do grupo (todas as lojas do estoque).
+- Aviso quando o mês fechado não tem contagem entre o último dia e o dia 1: sem contagem, o real fica igual ao das fichas.
+- A tela mostra os últimos 6 meses, a quebra por insumo (quantidade e R$), e permite imprimir e exportar para Excel.
