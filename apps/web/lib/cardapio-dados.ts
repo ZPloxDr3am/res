@@ -15,6 +15,9 @@ export type OpcaoRow = {
   ordem: number;
   /** foto da opção (D-035) */
   imagem_url?: string | null;
+  /** ingredientes e selo (D-046) */
+  descricao?: string | null;
+  selo?: 'recomendado' | 'novo' | null;
   complementos: { nome: string; preco: number } | null;
   produtos: { nome: string; preco: number | null; imagem_url?: string | null } | null;
 };

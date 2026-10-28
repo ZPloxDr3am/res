@@ -16,8 +16,9 @@ import {
 import { salvarGrupo, type DadosGrupo } from '@/app/(painel)/cardapio/actions';
 import { salvando } from '@/components/tempo-real';
 import { FotoOpcao } from '@/components/cardapio/foto-produto';
+import { DetalheOpcao } from '@/components/cardapio/detalhe-opcao';
 
-type OpcaoForm = { id?: string; nome: string; preco: string; imagem_url?: string | null };
+type OpcaoForm = { id?: string; nome: string; preco: string; imagem_url?: string | null; descricao?: string | null; selo?: string | null };
 
 export interface GrupoInicial {
   id: string;
@@ -28,7 +29,7 @@ export interface GrupoInicial {
   maxQtd: number;
   pizza: boolean;
   permiteRepetir: boolean;
-  opcoes: { id: string; nome: string; preco: number | null; imagem_url?: string | null }[];
+  opcoes: { id: string; nome: string; preco: number | null; imagem_url?: string | null; descricao?: string | null; selo?: string | null }[];
 }
 
 const FORMACOES: { valor: FormacaoPreco; rotulo: string; dica: string }[] = [
@@ -71,7 +72,7 @@ export function FormGrupo({
 }) {
   const [g, setG] = useState(() => (inicial ? { ...inicial } : { ...vazio }));
   const [opcoes, setOpcoes] = useState<OpcaoForm[]>(() =>
-    inicial ? inicial.opcoes.map((o) => ({ id: o.id, nome: o.nome, preco: mostrarPreco(o.preco), imagem_url: o.imagem_url ?? null })) : [{ nome: '', preco: '' }],
+    inicial ? inicial.opcoes.map((o) => ({ id: o.id, nome: o.nome, preco: mostrarPreco(o.preco), imagem_url: o.imagem_url ?? null, descricao: o.descricao ?? null, selo: o.selo ?? null })) : [{ nome: '', preco: '' }],
   );
   const [simulacao, setSimulacao] = useState<Record<number, number>>({});
   const [erro, setErro] = useState<string | null>(null);
@@ -188,6 +189,7 @@ export function FormGrupo({
             {lojaId && o.id ? <FotoOpcao opcaoId={o.id} lojaId={lojaId} atual={o.imagem_url ?? null} rotulo={o.nome || 'opção'} /> : lojaId ? <span className="fo fo-depois" title="Salve o grupo para pôr a foto">📷</span> : null}
             <input type="text" aria-label="Nome da opção" placeholder="Ex.: Calabresa" value={o.nome} onChange={(e) => setOpcoes(opcoes.map((x, j) => (j === i ? { ...x, nome: e.target.value } : x)))} />
             <input type="text" aria-label="Preço da opção" inputMode="decimal" placeholder="0,00" value={o.preco} style={{ width: '6rem' }} onChange={(e) => setOpcoes(opcoes.map((x, j) => (j === i ? { ...x, preco: e.target.value } : x)))} />
+            {o.id && <DetalheOpcao opcaoId={o.id} descricao={o.descricao ?? null} selo={o.selo ?? null} />}
             <label className="check dica" title="Quantidade no simulador">
               Simular
               <input type="number" min={0} value={simulacao[i] ?? 0} style={{ width: '4rem' }} onChange={(e) => setSimulacao({ ...simulacao, [i]: Math.max(0, Math.trunc(Number(e.target.value))) })} />

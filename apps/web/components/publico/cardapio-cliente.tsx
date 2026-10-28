@@ -38,6 +38,7 @@ import {
 } from '@/lib/publico';
 import { conferirCupom, enviarPedido } from '@/app/c/[slug]/actions';
 import { rastrear } from '@/lib/rastreio';
+import { GruposMontagem, Montador } from '@/components/publico/montagem';
 
 type Item = { chave: number; produtoId: string; quantidade: number; escolhas: Escolhas; observacao: string; passos?: EscolhaPasso[] };
 type ItemCalculado = Item & { produto: ProdutoPublico; unitario: number; resumo: string };
@@ -136,8 +137,15 @@ export function CardapioCliente({ cardapio, agendamento, vitrine }: { cardapio: 
   const quantidade = calculados.reduce((s, i) => s + i.quantidade, 0);
   const subtotal = calculados.reduce((s, i) => s + i.unitario * i.quantidade, 0);
 
-  const adicionar = (p: ProdutoPublico, escolhas: Escolhas, observacao: string, passos?: EscolhaPasso[]) => {
-    setItens((x) => [...x, { chave: Date.now(), produtoId: p.id, quantidade: 1, escolhas, observacao, ...(passos ? { passos } : {}) }]);
+  const [editando, setEditando] = useState<Item | null>(null);
+  const adicionar = (p: ProdutoPublico, escolhas: Escolhas, observacao: string, passos?: EscolhaPasso[], quantidade = 1) => {
+    if (editando) {
+      setItens((x) => x.map((i) => (i.chave === editando.chave ? { ...i, escolhas, observacao, quantidade, ...(passos ? { passos } : {}) } : i)));
+      setEditando(null);
+      setAbrindo(null);
+      return;
+    }
+    setItens((x) => [...x, { chave: Date.now(), produtoId: p.id, quantidade, escolhas, observacao, ...(passos ? { passos } : {}) }]);
     rastrear({ tipo: 'add_to_cart', id: p.id, nome: p.nome });
     setAbrindo(null);
   };
@@ -269,6 +277,7 @@ export function CardapioCliente({ cardapio, agendamento, vitrine }: { cardapio: 
             setItens((x) => x.flatMap((i) => (i.chave !== chave ? [i] : i.quantidade + delta <= 0 ? [] : [{ ...i, quantidade: Math.min(99, i.quantidade + delta) }])))
           }
           voltar={() => setEtapa('cardapio')}
+          editar={(i) => { const p = produtos.get(i.produtoId); if (p && !p.combo) { setEditando(i); setAbrindo(p); } }}
           concluido={(codigo) => {
             setItens([]);
             gravar(chaveCarrinho, []);
@@ -293,61 +302,22 @@ export function CardapioCliente({ cardapio, agendamento, vitrine }: { cardapio: 
         </footer>
       )}
       {info && <MaisInformacoes aba={info} setAba={setInfo} cardapio={cardapio} vitrine={vitrine ?? null} />}
-      {abrindo && !abrindo.combo && <Montador produto={abrindo} aoAdicionar={adicionar} aoFechar={() => setAbrindo(null)} />}
-      {abrindo?.combo && <MontadorCombo combo={abrindo} aoAdicionar={(passos, obs) => adicionar(abrindo, {}, obs, passos)} aoFechar={() => setAbrindo(null)} />}
+      {abrindo && !abrindo.combo && (
+        <Montador
+          key={editando?.chave ?? abrindo.id}
+          produto={abrindo}
+          extras={vitrine?.opcoes}
+          inicial={editando ? { escolhas: editando.escolhas, observacao: editando.observacao, quantidade: editando.quantidade } : undefined}
+          aoAdicionar={(p, e, obs, q) => adicionar(p, e, obs, undefined, q)}
+          aoFechar={() => { setAbrindo(null); setEditando(null); }}
+        />
+      )}
+      {abrindo?.combo && <MontadorCombo combo={abrindo} extras={vitrine?.opcoes} aoAdicionar={(passos, obs) => adicionar(abrindo, {}, obs, passos)} aoFechar={() => { setAbrindo(null); setEditando(null); }} />}
     </div>
   );
 }
 
 /** Escolha das opções dos grupos de um produto (sabores, borda…). */
-function EscolhaGrupos({ produto, escolhas, setEscolhas }: { produto: ProdutoPublico; escolhas: Escolhas; setEscolhas: (f: (e: Escolhas) => Escolhas) => void }) {
-  const qtd = (g: string, o: string) => escolhas[g]?.[o] ?? 0;
-  const tot = (g: string) => Object.values(escolhas[g] ?? {}).reduce((s, q) => s + q, 0);
-  const alterar = (g: GrupoPublico, o: string, delta: number) =>
-    setEscolhas((e) => {
-      const atual = { ...(e[g.id] ?? {}) };
-      const total = Object.values(atual).reduce((s, q) => s + q, 0);
-      const ja = atual[o] ?? 0;
-      if (delta > 0) {
-        if (g.max === 1) return { ...e, [g.id]: { [o]: 1 } };
-        const lim = g.opcoes.find((x) => x.id === o)?.max ?? 1;
-        if (total >= g.max || ja >= lim || (!g.permite_repetir && ja >= 1)) return e;
-      }
-      const novo = Math.max(0, ja + delta);
-      if (novo === 0) delete atual[o];
-      else atual[o] = novo;
-      return { ...e, [g.id]: atual };
-    });
-  return (
-    <>
-      {produto.grupos.map((g) => (
-        <fieldset key={g.id} className="grade" style={{ gap: '0.35rem' }}>
-          <legend>
-            <strong>{g.nome}</strong>{' '}
-            <span className="dica">
-              {g.obrigatorio ? 'Obrigatório' : 'Opcional'} · {g.min === g.max ? `escolha ${g.max}` : `até ${g.max}`}
-              {g.pizza && g.max > 1 ? ' (sabores dividem a pizza)' : ''} · {tot(g.id)}/{g.max}
-            </span>
-          </legend>
-          {g.opcoes.map((o) => (
-            <div key={o.id} className="pub-linha np-opcao" style={{ justifyContent: 'space-between' }}>
-              <span className="np-opcao-nome">
-                {o.imagem_url && <img className="np-foto-opcao" src={o.imagem_url} alt="" loading="lazy" />}
-                <span>{o.nome} {o.preco > 0 && <span className="dica">{formatarReais(o.preco)}</span>}</span>
-              </span>
-              <span className="passo">
-                <button type="button" aria-label={`Menos ${o.nome}`} disabled={qtd(g.id, o.id) === 0} onClick={() => alterar(g, o.id, -1)}>−</button>
-                <span aria-live="polite">{qtd(g.id, o.id)}</span>
-                <button type="button" aria-label={`Mais ${o.nome}`} onClick={() => alterar(g, o.id, 1)}>+</button>
-              </span>
-            </div>
-          ))}
-        </fieldset>
-      ))}
-    </>
-  );
-}
-
 function useEsc(aoFechar: () => void) {
   useEffect(() => {
     const f = (ev: KeyboardEvent) => ev.key === 'Escape' && aoFechar();
@@ -356,51 +326,8 @@ function useEsc(aoFechar: () => void) {
   }, [aoFechar]);
 }
 
-function Montador({
-  produto,
-  aoAdicionar,
-  aoFechar,
-}: {
-  produto: ProdutoPublico;
-  aoAdicionar: (p: ProdutoPublico, e: Escolhas, obs: string) => void;
-  aoFechar: () => void;
-}) {
-  const [escolhas, setEscolhas] = useState<Escolhas>({});
-  const [obs, setObs] = useState('');
-  useEsc(aoFechar);
-
-  const calc = (() => {
-    try {
-      return { r: calcularItem(produtoCore(produto), produto.grupos.map(grupoCore), escolhas, MARCA_CORE, 'delivery') };
-    } catch (e) {
-      return { aviso: e instanceof ErroEscolha ? e.message : 'Escolha incompleta.' };
-    }
-  })();
-
-  return (
-    <div className="pub-folha-fundo" onClick={aoFechar}>
-      <div className="pub-folha" role="dialog" aria-modal="true" aria-label={produto.nome} onClick={(e) => e.stopPropagation()}>
-        <div className="pub-linha" style={{ justifyContent: 'space-between' }}>
-          <h2>{produto.nome}</h2>
-          <button type="button" onClick={aoFechar} aria-label="Fechar">✕</button>
-        </div>
-        {produto.imagem_url && <img src={produto.imagem_url} alt="" className="pub-foto" />}
-        {produto.descricao && <p className="dica">{produto.descricao}</p>}
-        <EscolhaGrupos produto={produto} escolhas={escolhas} setEscolhas={setEscolhas} />
-        <label>
-          Alguma observação?
-          <input type="text" maxLength={300} value={obs} onChange={(e) => setObs(e.target.value)} placeholder="Ex.: sem cebola" />
-        </label>
-        <button type="button" className="botao-primario pub-cta" disabled={!calc.r} onClick={() => calc.r && aoAdicionar(produto, escolhas, obs)}>
-          {calc.r ? `Adicionar · ${formatarReais(calc.r.unitario)}` : calc.aviso}
-        </button>
-      </div>
-    </div>
-  );
-}
-
 /** Combo: em cada passo o cliente escolhe o produto e monta (sabores, borda…). */
-function MontadorCombo({ combo, aoAdicionar, aoFechar }: { combo: ProdutoPublico; aoAdicionar: (passos: EscolhaPasso[], obs: string) => void; aoFechar: () => void }) {
+function MontadorCombo({ combo, extras, aoAdicionar, aoFechar }: { combo: ProdutoPublico; extras?: VitrinePublica['opcoes']; aoAdicionar: (passos: EscolhaPasso[], obs: string) => void; aoFechar: () => void }) {
   // uma vaga por unidade de cada passo
   const vagas = useMemo(() => (combo.passos ?? []).flatMap((p) => Array.from({ length: p.quantidade }, (_, i) => ({ passo: p, n: i + 1 }))), [combo]);
   const [escolhidos, setEscolhidos] = useState<{ produtoId: string | null; escolhas: Escolhas }[]>(() => vagas.map((v) => ({ produtoId: v.passo.produtos.length === 1 ? v.passo.produtos[0]!.id : null, escolhas: {} })));
@@ -447,7 +374,7 @@ function MontadorCombo({ combo, aoAdicionar, aoFechar }: { combo: ProdutoPublico
               )}
               {v.passo.produtos.length === 0 && <span className="dica">Nenhum produto disponível agora.</span>}
               {filho && filho.grupos.length > 0 && (
-                <EscolhaGrupos produto={filho} escolhas={atual!.escolhas} setEscolhas={(f) => setEscolhidos((es) => es.map((e, j) => (j === i ? { ...e, escolhas: f(e.escolhas) } : e)))} />
+                <GruposMontagem produto={filho} extras={extras} escolhas={atual!.escolhas} setEscolhas={(f) => setEscolhidos((es) => es.map((e, j) => (j === i ? { ...e, escolhas: f(e.escolhas) } : e)))} />
               )}
             </section>
           );
@@ -473,6 +400,7 @@ function Checkout({
   aoSugerir,
   alterar,
   voltar,
+  editar,
   concluido,
 }: {
   cardapio: CardapioPublico;
@@ -483,6 +411,7 @@ function Checkout({
   aoSugerir: (p: ProdutoPublico) => void;
   alterar: (chave: number, delta: number) => void;
   voltar: () => void;
+  editar: (i: ItemCalculado) => void;
   concluido: (codigo: string) => void;
 }) {
   const { marca } = cardapio;
@@ -597,18 +526,26 @@ function Checkout({
       <h2>Seu pedido</h2>
       <ul className="lista carrinho">
         {itens.map((i) => (
-          <li key={i.chave}>
-            <div className="pub-linha" style={{ justifyContent: 'space-between' }}>
-              <strong>{i.produto.nome}</strong>
-              <span>{formatarReais(i.unitario * i.quantidade)}</span>
+          <li key={i.chave} className="sc-item">
+            {i.produto.imagem_url && <img className="sc-foto" src={i.produto.imagem_url} alt="" />}
+            <div className="grade" style={{ gap: '0.2rem', minWidth: 0 }}>
+              <div className="pub-linha" style={{ justifyContent: 'space-between' }}>
+                <strong>{i.produto.nome}</strong>
+                <span>{formatarReais(i.unitario * i.quantidade)}</span>
+              </div>
+              {i.resumo && <span className="dica">{i.resumo}</span>}
+              {i.observacao && <span className="dica">Obs.: {i.observacao}</span>}
+              <div className="pub-linha" style={{ justifyContent: 'space-between' }}>
+                {!i.produto.combo && i.produto.grupos.length > 0 ? (
+                  <button type="button" className="mini" onClick={() => editar(i)}>✏️ Editar</button>
+                ) : <span />}
+                <span className="passo">
+                  <button type="button" aria-label={i.quantidade === 1 ? 'Tirar do pedido' : 'Menos um'} onClick={() => alterar(i.chave, -1)}>{i.quantidade === 1 ? '🗑' : '−'}</button>
+                  {i.quantidade}
+                  <button type="button" aria-label="Mais um" onClick={() => alterar(i.chave, 1)}>+</button>
+                </span>
+              </div>
             </div>
-            {i.resumo && <span className="dica">{i.resumo}</span>}
-            {i.observacao && <span className="dica">Obs.: {i.observacao}</span>}
-            <span className="passo">
-              <button type="button" aria-label="Menos um" onClick={() => alterar(i.chave, -1)}>−</button>
-              {i.quantidade}
-              <button type="button" aria-label="Mais um" onClick={() => alterar(i.chave, 1)}>+</button>
-            </span>
           </li>
         ))}
         {itens.length === 0 && <li className="dica">Seu pedido está vazio.</li>}

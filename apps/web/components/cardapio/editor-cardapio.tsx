@@ -318,7 +318,7 @@ export function EditorCardapio({ cardapio, marcas, lojaId, outrasLojas = [] }: {
             inicial={grupoEditando ? {
               id: grupoEditando.id, nome: grupoEditando.nome, formacao: grupoEditando.formacao, obrigatorio: grupoEditando.obrigatorio,
               minQtd: grupoEditando.min_qtd, maxQtd: grupoEditando.max_qtd, pizza: grupoEditando.pizza, permiteRepetir: grupoEditando.permite_repetir,
-              opcoes: grupoEditando.opcoes.map((o) => ({ id: o.id, nome: nomeOpcao(o), preco: o.preco == null ? null : Number(o.preco), imagem_url: o.imagem_url ?? null })),
+              opcoes: grupoEditando.opcoes.map((o) => ({ id: o.id, nome: nomeOpcao(o), preco: o.preco == null ? null : Number(o.preco), imagem_url: o.imagem_url ?? null, descricao: o.descricao ?? null, selo: o.selo ?? null })),
             } : undefined}
             aoTerminar={(id) => (grupoEditando || !id ? setPainel(null) : setPainel({ tipo: 'aplicar', id }))}
             aoCancelar={() => setPainel(null)}
