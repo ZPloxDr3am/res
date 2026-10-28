@@ -294,9 +294,9 @@
     "semantic_hash": "9cfdbe529af9fee7f7020c8585cd58c0"
   },
   "apps/web/app/c/[slug]/page.tsx": {
-    "mtime": 1793207319.2480192,
-    "seen": 1793207405.2402341,
-    "ast_hash": "41f0f230feb30110726e941c7cf80ad1",
+    "mtime": 1793207511.3850365,
+    "seen": 1793207513.7095108,
+    "ast_hash": "1a72c7931f4ae3b43f4ec4fd09f3f94b",
     "semantic_hash": ""
   },
   "apps/web/app/c/[slug]/pedido/[codigo]/page.tsx": {

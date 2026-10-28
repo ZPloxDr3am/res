@@ -1,7 +1,7 @@
 # Graph Report - res  (2026-10-28)
 
 ## Corpus Check
-- 278 files · ~230,260 words
+- 278 files · ~230,276 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 5 file(s) not represented in the graph (top: (none) 2, .example 1, .css 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `25c37ee2`
+- Built from commit: `4130b49d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -541,24 +541,24 @@ Cohesion: 0.60
 Nodes (4): ids, pg_temp.como(), pg_temp.id(), pg_temp.vale()
 
 ## Knowledge Gaps
-- **9 isolated node(s):** `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `pedidos.qr_token (/m/d/<código>)`, `GitHub Actions CI (rules, db, build)`, `Roadmap stages 3c-7 and integrations`, `supabase/migrations (Postgres RLS, audit, atomic ops)` (+4 more)
+- **9 isolated node(s):** `pedidos.qr_token (/m/d/<código>)`, `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `GitHub Actions CI (rules, db, build)`, `Roadmap stages 3c-7 and integrations`, `supabase/migrations (Postgres RLS, audit, atomic ops)` (+4 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 595 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **17 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `next` connect `criarClienteServidor` to `Telas de estoque`, `Login, caixa e ações do painel`, `Telas de fidelidade`, `API aberta e MCP (rotas)`, `Tela de impressoras`, `Resumo de vendas`, `Dependências do painel`, `App do motoboy`, `Tela Aplicativos`, `Ações do cardápio`, `cardapio-cliente.tsx`, `entregas/page.tsx`, `Promoções e cupons (tela)`, `Quadro de pedidos`, `novo-pedido.tsx`, `form-delivery.tsx`, `Bairros e entregas ao vivo`, `Pix pelo Mercado Pago`, `lista-clientes.tsx`, `publico.ts`, `salvando`, `resultados.tsx`, `Grupo 60: page.tsx`?**
-  _High betweenness centrality (0.081) - this node is a cross-community bridge._
-- **What connects `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `pedidos.qr_token (/m/d/<código>)`, `GitHub Actions CI (rules, db, build)` to the rest of the system?**
+- **Why does `formatarReais()` connect `Telas de estoque` to `Login, caixa e ações do painel`, `Telas de fidelidade`, `Resumo de vendas`, `App do motoboy`, `Tela Aplicativos`, `Grupos de opções (tela)`, `Promoções e cupons (tela)`, `Quadro de pedidos`, `novo-pedido.tsx`, `form-delivery.tsx`, `editor-cardapio.tsx`, `Bairros e entregas ao vivo`, `Montagem do cupom impresso`, `Pix pelo Mercado Pago`, `lista-clientes.tsx`, `preco.ts`, `entregas/fechamento.tsx`, `resultados.tsx`, `Grupo 60: page.tsx`, `editor-combo.tsx`, `cliente.tsx`?**
+  _High betweenness centrality (0.054) - this node is a cross-community bridge._
+- **What connects `pedidos.qr_token (/m/d/<código>)`, `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `GitHub Actions CI (rules, db, build)` to the rest of the system?**
   _9 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Telas de estoque` be split into smaller, more focused modules?**
   _Cohesion score 0.051874062968515745 - nodes in this community are weakly interconnected._
-- **Why does `react` connect `salvando` to `Telas de estoque`, `Login, caixa e ações do painel`, `Telas de fidelidade`, `Tela de impressoras`, `Resumo de vendas`, `Dependências do painel`, `App do motoboy`, `Tela Aplicativos`, `Prazo e sugestão de lotes`, `Ações do cardápio`, `cardapio-cliente.tsx`, `Grupos de opções (tela)`, `entregas/page.tsx`, `Promoções e cupons (tela)`, `Quadro de pedidos`, `novo-pedido.tsx`, `form-delivery.tsx`, `editor-cardapio.tsx`, `Bairros e entregas ao vivo`, `Pix pelo Mercado Pago`, `lista-clientes.tsx`, `entregas/fechamento.tsx`, `form-setor.tsx`, `Grupo 60: page.tsx`, `editor-combo.tsx`, `cliente.tsx`?**
-  _High betweenness centrality (0.048) - this node is a cross-community bridge._
+- **Why does `next` connect `criarClienteServidor` to `Telas de estoque`, `Login, caixa e ações do painel`, `Telas de fidelidade`, `API aberta e MCP (rotas)`, `Tela de impressoras`, `Resumo de vendas`, `Dependências do painel`, `App do motoboy`, `Tela Aplicativos`, `Ações do cardápio`, `cardapio-cliente.tsx`, `entregas/page.tsx`, `Promoções e cupons (tela)`, `Quadro de pedidos`, `novo-pedido.tsx`, `form-delivery.tsx`, `Bairros e entregas ao vivo`, `Pix pelo Mercado Pago`, `lista-clientes.tsx`, `publico.ts`, `salvando`, `resultados.tsx`, `Grupo 60: page.tsx`?**
+  _High betweenness centrality (0.053) - this node is a cross-community bridge._
 - **Should `Login, caixa e ações do painel` be split into smaller, more focused modules?**
   _Cohesion score 0.051526251526251524 - nodes in this community are weakly interconnected._
-- **Why does `formatarReais()` connect `Telas de estoque` to `Login, caixa e ações do painel`, `Telas de fidelidade`, `Resumo de vendas`, `App do motoboy`, `Tela Aplicativos`, `Grupos de opções (tela)`, `Promoções e cupons (tela)`, `Quadro de pedidos`, `novo-pedido.tsx`, `form-delivery.tsx`, `editor-cardapio.tsx`, `Bairros e entregas ao vivo`, `Montagem do cupom impresso`, `Pix pelo Mercado Pago`, `lista-clientes.tsx`, `preco.ts`, `entregas/fechamento.tsx`, `resultados.tsx`, `Grupo 60: page.tsx`, `editor-combo.tsx`, `cliente.tsx`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
+- **Why does `public.marcas` connect `public.pedidos` to `Banco: impressão`, `Banco: fidelidade`, `Banco: estoque`, `Banco: multilojas e contas`, `Banco: grupos de opções`, `Banco: cardápio`, `Banco: clientes`, `20261020000001_base.sql`, `Banco: cupons e descontos`, `Banco: Mercado Pago`, `Grupo 48: diversos`, `public.marcas`, `Grupo 59: diversos`, `Grupo 63: 99zzzzzzzzzzz_fidelidade.sql`, `Grupo 74: 99_motoboy.sql`, `Grupo 76: 99zzzzzzzzzzzz_estoque.sql`, `Grupo 79: 99zzzzzzzzz_segmentos.sql`, `Grupo 82: 99zzzzzz_rastreio.sql`, `Grupo 83: 99zzzzzzz_rota.sql`, `Grupo 84: 99zzzzzzzz_entregas_cliente.sql`, `99zzzzzzzzzzzzzzzz_vitrine.sql`, `Grupo 91: 99zzz_combos.sql`, `Grupo 92: 99zzzzz_clientes.sql`, `Grupo 97: 99zzzz_descontos.sql`, `Grupo 102: 20_cardapio_pedidos.sql`, `Grupo 103: 40_cardapio_biblioteca.sql`, `Grupo 104: 99zz_promocao.sql`?**
+  _High betweenness centrality (0.031) - this node is a cross-community bridge._
 - **Should `public.pedidos` be split into smaller, more focused modules?**
   _Cohesion score 0.06628621597892889 - nodes in this community are weakly interconnected._
