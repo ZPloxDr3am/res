@@ -293,9 +293,10 @@ function EscolhaGrupos({ produto, escolhas, setEscolhas }: { produto: ProdutoPub
             </span>
           </legend>
           {g.opcoes.map((o) => (
-            <div key={o.id} className="pub-linha" style={{ justifyContent: 'space-between' }}>
-              <span>
-                {o.nome} {o.preco > 0 && <span className="dica">{formatarReais(o.preco)}</span>}
+            <div key={o.id} className="pub-linha np-opcao" style={{ justifyContent: 'space-between' }}>
+              <span className="np-opcao-nome">
+                {o.imagem_url && <img className="np-foto-opcao" src={o.imagem_url} alt="" loading="lazy" />}
+                <span>{o.nome} {o.preco > 0 && <span className="dica">{formatarReais(o.preco)}</span>}</span>
               </span>
               <span className="passo">
                 <button type="button" aria-label={`Menos ${o.nome}`} disabled={qtd(g.id, o.id) === 0} onClick={() => alterar(g, o.id, -1)}>−</button>

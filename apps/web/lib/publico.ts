@@ -2,7 +2,7 @@
 // Valores em centavos.
 import type { FormaPagamento, Grupo, PassoCombo, Produto, StatusPedido, TipoPedido } from '@res/core';
 
-export type OpcaoPublica = { id: string; nome: string; preco: number; max: number };
+export type OpcaoPublica = { id: string; nome: string; preco: number; max: number; imagem_url?: string | null };
 export type GrupoPublico = {
   id: string;
   nome: string;
