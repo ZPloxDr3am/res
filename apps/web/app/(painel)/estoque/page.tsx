@@ -43,7 +43,9 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
       const grupos = Object.values(cardapio.grupos);
       const gruposPizza = new Set(grupos.filter((g) => g.pizza).map((g) => g.id));
       const comPizza = new Set(cardapio.produtos.filter((x) => x.produto_grupos.some((pg) => gruposPizza.has(pg.grupo_id))).map((x) => x.id));
-      const pizzas = ((fatores.data ?? []) as { id: string; nome: string; fator_sabor: number }[]).filter((x) => comPizza.has(x.id));
+      const maxSabores = (id: string) =>
+        Math.max(1, ...(cardapio.produtos.find((x) => x.id === id)?.produto_grupos ?? []).filter((pg) => gruposPizza.has(pg.grupo_id)).map((pg) => cardapio.grupos[pg.grupo_id]?.max_qtd ?? 1));
+      const pizzas = ((fatores.data ?? []) as { id: string; nome: string; fator_sabor: number }[]).filter((x) => comPizza.has(x.id)).map((x) => ({ ...x, sabores: maxSabores(x.id) }));
       const fs = (fichas.data as ItemFicha[] | null) ?? [];
       const outrosGrupos = grupos.filter((g) => !g.pizza);
       corpo = (

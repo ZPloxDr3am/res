@@ -7,7 +7,7 @@ import { salvando } from '@/components/tempo-real';
 import { fotoOpcao, nomeOpcao, type GrupoRow } from '@/lib/cardapio-dados';
 import { n, type Insumo, type ItemFicha } from '@/lib/estoque';
 
-type Pizza = { id: string; nome: string; fator_sabor: number };
+type Pizza = { id: string; nome: string; fator_sabor: number; sabores: number };
 type Sabor = { chave: string; nome: string; foto: string | null; opcoes: string[] };
 type Linha = { insumo: string; qtd: string };
 
@@ -26,7 +26,7 @@ export function SaboresPizza({ pizzas, grupos, insumos: insumosIniciais, fichas 
   const [insumos, setInsumos] = useState(insumosIniciais);
   const [aberto, setAberto] = useState<string | null>(null);
   const [busca, setBusca] = useState('');
-  const ref = pizzas.find((p) => Math.abs(n(p.fator_sabor) - 1) < 0.001 && pizzas.some((q) => n(q.fator_sabor) < 0.999)) ?? null;
+  const ref = pizzas.find((p) => Math.abs(n(p.fator_sabor) - 1) < 0.001 && pizzas.some((q) => Math.abs(n(q.fator_sabor) - 1) >= 0.001)) ?? null;
 
   const sabores = useMemo(() => {
     const m = new Map<string, Sabor>();
@@ -70,7 +70,7 @@ export function SaboresPizza({ pizzas, grupos, insumos: insumosIniciais, fichas 
         <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
           <div className="grade" style={{ gap: '0.1rem' }}>
             <h2 style={{ margin: 0 }}>Sabores</h2>
-            <span className="dica">{comFicha} de {sabores.length} com ficha · quantidades para a pizza de 100%{ref ? ` (${ref.nome})` : ''}</span>
+            <span className="dica">{comFicha} de {sabores.length} com ficha · quantidades para {ref ? `a ${ref.nome} (100%)` : 'a pizza de 100%'}</span>
           </div>
           <input type="search" value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar sabor…" aria-label="Buscar sabor" />
         </div>
@@ -118,11 +118,17 @@ function Como() {
     <details className="cartao sb-como">
       <summary><strong>Como montar a ficha de uma pizzaria</strong> <span className="dica">em 3 passos</span></summary>
       <ol>
-        <li><strong>Tamanhos</strong> (uma vez): diga quanto cada pizza é da maior. Pelo diâmetro, a Broto 25 cm leva 39% de recheio da Gigante 40 cm, a Média 30 cm 56% e a Grande 35 cm 77%. O botão calcula sozinho.</li>
-        <li><strong>Sabor</strong>: o recheio daquele sabor numa pizza de 100%. Ex.: Calabresa → calabresa 100 g, cebola 40 g, azeitona 15 g. Os outros tamanhos saem da conta.</li>
-        <li><strong>Produto</strong> (em Produtos): o que vai em toda pizza daquele tamanho, qualquer sabor. Ex.: Pizza Gigante 40 cm → massa 1 un, molho 120 g, mussarela 350 g, caixa 40 cm 1 un.</li>
+        <li>
+          <strong>Tamanhos</strong> (uma vez): quanto de recheio cada pizza leva, comparada com a de 100%. Do jeito mais comum, <strong>pela quantidade de sabores</strong>: cada sabor
+          leva a mesma porção. Broto (1 sabor) = 100%, Média (2) = 200%, Grande (3) = 300%, Gigante (4) = 400%. Ou pelo diâmetro, se a sua cozinha mede assim.
+        </li>
+        <li><strong>Sabor</strong>: a porção de 1 sabor na pizza de 100%. Ex.: Calabresa → calabresa 100 g. Os outros tamanhos saem da conta.</li>
+        <li><strong>Produto</strong> (em Produtos): o que vai em toda pizza daquele tamanho, qualquer sabor. Ex.: Pizza Gigante 40 cm → massa 1 un, molho 120 g, mussarela base 350 g, caixa 40 cm 1 un.</li>
       </ol>
-      <p className="dica" style={{ margin: 0 }}>Na venda: Gigante meio Calabresa, meio Portuguesa baixa a ficha da Gigante + metade da Calabresa + metade da Portuguesa. Uma Broto Calabresa baixa a ficha da Broto + 39% da Calabresa.</p>
+      <p className="dica" style={{ margin: 0 }}>
+        Na venda, com os tamanhos pela quantidade de sabores: Broto Calabresa baixa 100 g. Gigante com 4 sabores, todos Calabresa, baixa 400 g. Gigante meio Calabresa,
+        meio Portuguesa baixa 200 g de calabresa (metade de 400%) + metade da Portuguesa.
+      </p>
     </details>
   );
 }
@@ -132,12 +138,18 @@ function Tamanhos({ pizzas }: { pizzas: Pizza[] }) {
   const comDiam = pizzas.map((p) => ({ ...p, d: diametro(p.nome) }));
   const maior = Math.max(0, ...comDiam.map((p) => p.d ?? 0));
   const pelaArea = (d: number | null) => (d && maior ? Math.round((d / maior) ** 2 * 100) : 100);
+  const menorSabores = Math.min(...pizzas.map((p) => p.sabores || 1));
+  const variaSabores = pizzas.some((p) => (p.sabores || 1) !== menorSabores);
+  const pelosSabores = (q: number) => Math.round(((q || 1) / menorSabores) * 100);
   const todosUm = pizzas.every((p) => Math.abs(n(p.fator_sabor) - 1) < 0.001);
-  const sugerir = todosUm && pizzas.length > 1 && maior > 0;
+  const modo = todosUm && pizzas.length > 1 ? (variaSabores ? 'sabores' : maior > 0 ? 'area' : null) : null;
+  const sugerir = modo != null;
   const [valores, setValores] = useState<Record<string, string>>(() =>
-    Object.fromEntries(comDiam.map((p) => [p.id, String(sugerir ? pelaArea(p.d) : Math.round(n(p.fator_sabor) * 100))])),
+    Object.fromEntries(comDiam.map((p) => [p.id, String(modo === 'sabores' ? pelosSabores(p.sabores) : modo === 'area' ? pelaArea(p.d) : Math.round(n(p.fator_sabor) * 100))])),
   );
-  const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(sugerir ? { ok: true, t: 'Sugestão pelo diâmetro: confira e salve.' } : null);
+  const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(
+    modo === 'sabores' ? { ok: true, t: 'Sugestão pela quantidade de sabores (cada sabor leva a mesma porção): confira e salve.' } : modo === 'area' ? { ok: true, t: 'Sugestão pelo diâmetro: confira e salve.' } : null,
+  );
   const [pendente, iniciar] = useTransition();
   const mudou = sugerir || comDiam.some((p) => num(valores[p.id] ?? '') !== Math.round(n(p.fator_sabor) * 100));
   const validos = comDiam.every((p) => num(valores[p.id] ?? '') > 0 && num(valores[p.id] ?? '') <= 1000);
@@ -147,15 +159,15 @@ function Tamanhos({ pizzas }: { pizzas: Pizza[] }) {
     <section className="cartao grade">
       <div className="grade" style={{ gap: '0.1rem' }}>
         <h2 style={{ margin: 0 }}>Tamanhos</h2>
-        <span className="dica">Quanto de recheio cada pizza leva, comparada com a de 100%. Vale para todos os sabores.</span>
+        <span className="dica">Quanto de recheio de cada sabor a pizza leva, comparada com a de 100%. Vale para todos os sabores.</span>
       </div>
       <div className="sb-tamanhos">
         {comDiam
           .slice()
-          .sort((a, b) => (a.d ?? 0) - (b.d ?? 0))
+          .sort((a, b) => (a.d ?? 0) - (b.d ?? 0) || a.sabores - b.sabores)
           .map((p) => (
             <label key={p.id}>
-              <span>{p.nome}</span>
+              <span>{p.nome}{p.sabores > 1 ? <span className="dica"> · até {p.sabores} sabores</span> : null}</span>
               <span className="sb-pct">
                 <input inputMode="numeric" value={valores[p.id] ?? ''} onChange={(e) => setValores({ ...valores, [p.id]: e.target.value })} aria-label={`Tamanho de ${p.nome} em %`} />%
               </span>
@@ -177,9 +189,14 @@ function Tamanhos({ pizzas }: { pizzas: Pizza[] }) {
         >
           {pendente ? 'Salvando…' : 'Salvar tamanhos'}
         </button>
+        {variaSabores && (
+          <button type="button" onClick={() => setValores(Object.fromEntries(comDiam.map((p) => [p.id, String(pelosSabores(p.sabores))])))}>
+            Pela quantidade de sabores
+          </button>
+        )}
         {maior > 0 && (
           <button type="button" onClick={() => setValores(Object.fromEntries(comDiam.map((p) => [p.id, String(pelaArea(p.d))])))}>
-            Calcular pelo diâmetro
+            Pelo diâmetro
           </button>
         )}
         {msg && <span className={msg.ok ? 'dica' : 'erro'} role="status">{msg.t}</span>}
@@ -230,12 +247,13 @@ function EditorSabor({
   const invalida = linhas.some((l) => (l.insumo || l.qtd) && !(l.insumo && num(l.qtd) > 0));
   const muda = (k: number, p: Partial<Linha>) => setLinhas(linhas.map((x, j) => (j === k ? { ...x, ...p } : x)));
   const tamanhos = pizzas.slice().sort((a, b) => n(a.fator_sabor) - n(b.fator_sabor));
+  const refNome = pizzas.find((p) => Math.abs(n(p.fator_sabor) - 1) < 0.001 && pizzas.some((q) => Math.abs(n(q.fator_sabor) - 1) >= 0.001))?.nome ?? null;
 
   return (
     <div className="sb-editor grade">
       {diferentes && <p className="cmv-aviso" data-tom="alerta">Os tamanhos deste sabor estavam com fichas diferentes. Ao salvar, todos ficam com esta (ajustada pelo tamanho na venda).</p>}
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <strong>Recheio de {sabor.nome} numa pizza de 100%</strong>
+        <strong>Porção de {sabor.nome} na {refNome ?? 'pizza de 100%'} inteira</strong>
         <select value="" onChange={(e) => { const s = sabores.find((x) => x.chave === e.target.value); if (s) setLinhas(paraLinhas(fichaDe(s).map((f) => ({ insumo_id: f.insumo_id, quantidade: n(f.quantidade) })))); }} aria-label="Copiar de outro sabor">
           <option value="">Copiar de outro sabor…</option>
           {sabores.filter((s) => s.chave !== sabor.chave && fichaDe(s).length).map((s) => <option key={s.chave} value={s.chave}>{s.nome}</option>)}
@@ -314,7 +332,7 @@ function EditorSabor({
               })}
             </tbody>
           </table>
-          <span className="dica">Pizza inteira deste sabor. No meio a meio, metade; com 3 sabores, um terço.</span>
+          <span className="dica">Pizza inteira só deste sabor. Dividida, cada sabor baixa a sua parte: meio a meio, metade; 4 sabores, um quarto.</span>
         </div>
       )}
 

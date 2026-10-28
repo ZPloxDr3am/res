@@ -379,3 +379,4 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Quando o cardápio tem um grupo de sabores por tamanho (LA PIZZA), o mesmo sabor aparece em vários grupos e a ficha é gravada em todos de uma vez.
 - Na tela: quantidades em g/ml (o estoque guarda em kg/l), ingrediente novo cadastrado ali mesmo, "copiar de outro sabor" e uma prévia de quanto baixa em cada tamanho.
 - Bordas e adicionais continuam com ficha própria, sem fator.
+- **Atualização (28/10, pedido do dono):** o padrão passa a ser o tamanho **pela quantidade de sabores**: cada sabor tem a mesma porção. Broto (1 sabor) = 100%, Média (2) = 200%, Grande (3) = 300%, Gigante (4) = 400%, tirado do máximo de sabores do grupo de cada pizza. Ex.: Calabresa 100 g → Broto Calabresa baixa 100 g, Gigante 4× Calabresa 400 g, Gigante meio a meio 200 g. O tamanho pelo diâmetro continua como opção.
