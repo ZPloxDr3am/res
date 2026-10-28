@@ -505,3 +505,11 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Faixas por cardápio em **Entregas → Bairros e preços**: até X km, taxa e **tempo adicional**. Acima da última faixa, não entrega.
 - Distância em **linha reta** da loja até o endereço (o "raio" do BeeFood). O servidor acha o endereço no mapa (Nominatim, perto da loja) e o **banco refaz a conta** com as coordenadas ao gravar o pedido; o ponto fica no pedido (`destino_lat/lng`, `distancia_reta_km`) e já serve à rota do motoboy.
 - Risco aceito: quem forja coordenadas paga a faixa errada, mas o pedido mostra o endereço por extenso e a rota vai para o ponto informado. O tempo adicional aparece no checkout; somar ao prazo do quadro fica para depois.
+
+## D-049 — Importar cardápio do BeeFood (28/10/2026)
+
+- O cardápio é lido **só do cardápio público** do BeeFood (sem login, sem salvar nada lá) e convertido por `scripts/beefood_para_res.py`.
+- `private.importar_cardapio(slug, dados)` (0048) grava numa marca: **o que existia fica pausado** (fora do cardápio, pedidos antigos intactos), o importado é lembrado em `private.importacoes` (rodar de novo atualiza sem duplicar) e **fichas técnicas** de sabores/produtos antigos com o mesmo nome são copiadas.
+- Igual ao BeeFood: cada grupo do BeeFood vira um grupo no RES (mesmo nome, mínimo, máximo, obrigatório, ordem); cada escolha **soma o valor cheio** (conferido no BeeFood: Grande 35CM 78,99 + Borda 14 + Atum 6 = 98,99); sabor só repete quando o BeeFood deixa; fotos apontam para as imagens do BeeFood.
+- Grupos de sabor de pizza/sobremesa ficam marcados como pizza (fração na comanda e baixa do estoque); fator da ficha por diâmetro (25=1, 30=2, 35=3, 40=4) só nos produtos com um grupo de sabor.
+- LA PIZZA importada em 0049 (37 produtos, 5 categorias, 17 grupos, 584 opções); dados guardados em `private.cardapios_importados`.
