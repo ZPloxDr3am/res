@@ -997,3 +997,20 @@ button[aria-pressed='true'].mini { background: var(--primaria-fundo); color: var
 .cmv-aviso[data-tom='ok'] { background: var(--primaria-fundo); color: var(--primaria-forte); }
 .cmv-mes strong { min-width: 9rem; text-align: center; }
 tr[aria-current='true'] > td { background: var(--primaria-fundo); }
+/* ---- estoque: sabores de pizza (D-040) */
+.sb-como summary { cursor: pointer; }
+.sb-como ol { margin: 0.6rem 0; padding-left: 1.2rem; display: grid; gap: 0.35rem; }
+.sb-tamanhos { display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: 0.6rem; }
+.sb-tamanhos label { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.55rem 0.75rem; border: 1px solid var(--borda); border-radius: var(--raio-controle); background: var(--superficie); }
+.sb-pct { display: inline-flex; align-items: center; gap: 0.25rem; font-weight: 600; }
+.sb-pct input { width: 4rem; text-align: right; }
+.sb-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.sb-lista > li { border: 1px solid var(--borda); border-radius: var(--raio-controle); background: var(--superficie); overflow: hidden; }
+.sb-item, button.sb-item { display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.55rem 0.75rem; border: 0; border-radius: 0; background: none; text-align: left; justify-content: flex-start; min-height: 0; }
+.sb-item:hover { background: var(--superficie-2) !important; }
+.sb-item img, .sb-item .me-sem-foto { width: 2.4rem; height: 2.4rem; border-radius: 9px; object-fit: cover; flex: none; }
+.sb-nome { display: grid; gap: 0.05rem; flex: 1; min-width: 0; }
+.sb-nome .dica { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sb-editor { padding: 0.9rem 1rem 1rem; background: var(--superficie-2); border-top: 1px solid var(--borda); gap: 0.6rem; }
+.sb-novo { padding: 0.5rem; border-radius: var(--raio-controle); background: var(--superficie); border: 1px dashed var(--borda-forte); }
+.sb-previa td, .sb-previa th { white-space: nowrap; }
