@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useState, useTransition, type CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   calcularCombo,
@@ -33,6 +33,8 @@ import {
   type CardapioPublico,
   type GrupoPublico,
   type ProdutoPublico,
+  situacaoHorario,
+  type VitrinePublica,
 } from '@/lib/publico';
 import { conferirCupom, enviarPedido } from '@/app/c/[slug]/actions';
 import { rastrear } from '@/lib/rastreio';
@@ -89,7 +91,7 @@ function resumoCombo(p: ProdutoPublico, passos: EscolhaPasso[]): string {
     .join(' + ');
 }
 
-export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioPublico; agendamento: AgendamentoPublico }) {
+export function CardapioCliente({ cardapio, agendamento, vitrine }: { cardapio: CardapioPublico; agendamento: AgendamentoPublico; vitrine?: VitrinePublica | null }) {
   const { marca, setores } = cardapio;
   const router = useRouter();
   const chaveCarrinho = `res_carrinho_${marca.slug}`;
@@ -100,6 +102,8 @@ export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioP
   const [abrindo, setAbrindo] = useState<ProdutoPublico | null>(null);
   const [etapa, setEtapa] = useState<'cardapio' | 'carrinho'>('cardapio');
   const [setorVisivel, setSetorVisivel] = useState<string | null>(setores[0]?.id ?? null);
+  const [busca, setBusca] = useState('');
+  const [info, setInfo] = useState<string | null>(null);
 
   // carrinho salvo neste aparelho
   useEffect(() => {
@@ -138,6 +142,24 @@ export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioP
     setAbrindo(null);
   };
   const abrir = (p: ProdutoPublico) => (p.combo || p.grupos.length ? setAbrindo(p) : adicionar(p, {}, ''));
+  // link de um produto (D-045): /c/<endereço>?produto=<id> abre direto a montagem
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('produto');
+    const p = id ? produtos.get(id) : null;
+    if (p && p.etiqueta !== 'esgotado' && (p.combo || p.grupos.length)) setAbrindo(p);
+  }, [produtos]);
+  useEffect(() => {
+    try {
+      const u = new URL(window.location.href);
+      if (abrindo) u.searchParams.set('produto', abrindo.id);
+      else u.searchParams.delete('produto');
+      window.history.replaceState(null, '', u.toString());
+    } catch {}
+  }, [abrindo]);
+  const termo = busca.trim().toLowerCase();
+  const setoresVisiveis = termo
+    ? setores.map((s) => ({ ...s, produtos: s.produtos.filter((p) => `${p.nome} ${p.descricao ?? ''}`.toLowerCase().includes(termo)) })).filter((s) => s.produtos.length)
+    : setores;
   // "Peça também": produtos das categorias de up-sell que ainda não estão no pedido
   const sugestoes = useMemo(() => {
     const no = new Set(itens.map((i) => i.produtoId));
@@ -149,56 +171,59 @@ export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioP
   const podeAgendar = agendamento.horarios.length > 0;
 
   return (
-    <div className="pub">
-      <header className="pub-topo">
-        <h1>{marca.nome}</h1>
-        <div className="pub-linha">
-          <span className={`pub-status ${marca.aberta ? 'aberto' : 'fechado'}`}>{marca.aberta ? 'Aberto agora' : 'Fechado'}</span>
-          {!marca.aberta && podeAgendar && (
-            <span className="dica">Agende para {rotuloHorario(new Date(agendamento.horarios[0]!), marca.fuso)} ou depois</span>
-          )}
-          {horarioHoje && <span className="dica">Hoje: {horarioHoje}</span>}
-          <span className="dica">Preparo ~{marca.tempo_preparo_min} min</span>
+    <div className="pub" style={vitrine?.cor ? ({ ['--primaria' as string]: vitrine.cor, ['--primaria-forte' as string]: `color-mix(in srgb, ${vitrine.cor} 80%, black)`, ['--primaria-fundo' as string]: `color-mix(in srgb, ${vitrine.cor} 12%, white)`, ['--primaria-texto' as string]: '#fff' } as CSSProperties) : undefined}>
+      <header className="pv-topo">
+        <div className="pv-capa" style={vitrine?.capa_url ? { backgroundImage: `url(${vitrine.capa_url})` } : undefined} />
+        <div className="pv-id">
+          {vitrine?.logo_url ? <img className="pv-logo" src={vitrine.logo_url} alt={`Logo ${marca.nome}`} /> : <span className="pv-logo pv-logo-letra" aria-hidden>{marca.nome.slice(0, 1)}</span>}
+          <div className="grade" style={{ gap: '0.25rem', minWidth: 0 }}>
+            <h1>{marca.nome}</h1>
+            <div className="pub-linha">
+              <span className={`pub-status ${marca.aberta ? 'aberto' : 'fechado'}`}>{situacaoHorario(marca.horarios, marca.aberta, marca.fuso)}</span>
+              {vitrine?.loja.cidade && <span className="dica">📍 {vitrine.loja.cidade}</span>}
+              <button type="button" className="pv-link" onClick={() => setInfo('sobre')}>Mais informações</button>
+            </div>
+          </div>
+        </div>
+        <div className="pub-linha pv-resumo">
+          {marca.aceita_entrega && <span className="dica">🛵 Entrega {vitrine ? `${vitrine.loja.prazo_entrega_min - 5}–${vitrine.loja.prazo_entrega_min + 5} min` : ''}</span>}
+          {marca.aceita_retirada && <span className="dica">🏪 Retirada ~{marca.tempo_preparo_min} min</span>}
           {marca.pedido_minimo > 0 && <span className="dica">Pedido mínimo {formatarReais(marca.pedido_minimo)}</span>}
+          {!marca.aberta && podeAgendar && <span className="dica">Agende para {rotuloHorario(new Date(agendamento.horarios[0]!), marca.fuso)} ou depois</span>}
         </div>
         {marca.mensagem && <p className="pub-mensagem">{marca.mensagem}</p>}
-        {!marca.aberta && (
-          <details className="dica">
-            <summary>Ver horários</summary>
-            <ul className="pub-horarios">
-              {DIAS.map((d, i) => {
-                const hs = marca.horarios.filter((h) => h.dia === i);
-                return (
-                  <li key={d} className={i === hoje ? 'hoje' : undefined}>
-                    <span>{d}</span>
-                    <span>{hs.length ? hs.map((h) => `${h.abre}–${h.fecha}`).join(', ') : 'Fechado'}</span>
-                  </li>
-                );
-              })}
-            </ul>
-          </details>
-        )}
       </header>
 
       {etapa === 'cardapio' && (
         <>
+          <div className="pv-barra">
+            <select
+              aria-label="Categoria"
+              value={setorVisivel ?? ''}
+              onChange={(e) => {
+                setSetorVisivel(e.target.value);
+                setBusca('');
+                requestAnimationFrame(() => document.getElementById(`s-${e.target.value}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+              }}
+            >
+              {setores.map((s) => <option key={s.id} value={s.id}>{s.nome}</option>)}
+            </select>
+            <input type="search" value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="🔍 Busque por um produto" aria-label="Buscar produto" />
+          </div>
           <nav className="pub-setores" aria-label="Categorias">
             {setores.map((s) => (
-              <a
-                key={s.id}
-                href={`#s-${s.id}`}
-                aria-current={setorVisivel === s.id ? 'true' : undefined}
-                onClick={() => setSetorVisivel(s.id)}
-              >
+              <a key={s.id} href={`#s-${s.id}`} aria-current={setorVisivel === s.id ? 'true' : undefined} onClick={() => { setSetorVisivel(s.id); setBusca(''); }}>
                 {s.nome}
               </a>
             ))}
           </nav>
           <main className="pub-lista">
             {setores.length === 0 && <p className="dica">O cardápio ainda está sendo montado.</p>}
-            {setores.map((s) => (
+            {termo && setoresVisiveis.length === 0 && <p className="dica">Nada encontrado para "{busca}".</p>}
+            {setoresVisiveis.map((s) => (
               <section key={s.id} id={`s-${s.id}`} aria-label={s.nome}>
                 <h2>{s.nome}</h2>
+                <div className="pv-grade">
                 {s.produtos.map((p) => {
                   const esgotado = p.etiqueta === 'esgotado';
                   return (
@@ -215,6 +240,7 @@ export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioP
                         {p.preco_original != null && p.preco_original > p.preco && <span className="selo selo-promo">-{Math.round(((p.preco_original - p.preco) / p.preco_original) * 100)}%</span>}
                         {p.etiqueta && <span className="selo">{ETIQUETA[p.etiqueta]}</span>}
                         {p.descricao && <span className="dica">{p.descricao}</span>}
+                        <Extras extra={vitrine?.produtos[p.id]} />
                         <span>
                           {!p.combo && p.grupos.length > 0 && p.preco === 0 ? 'Monte o seu' : (!p.combo && p.grupos.length > 0 ? 'A partir de ' : '') + formatarReais(p.preco)}
                           {p.preco_original != null && <s className="dica"> {formatarReais(p.preco_original)}</s>}
@@ -224,6 +250,7 @@ export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioP
                     </button>
                   );
                 })}
+                </div>
               </section>
             ))}
           </main>
@@ -258,6 +285,14 @@ export function CardapioCliente({ cardapio, agendamento }: { cardapio: CardapioP
         </div>
       )}
 
+      {etapa === 'cardapio' && (
+        <footer className="pv-rodape">
+          <strong>{vitrine?.loja.nome ?? marca.nome}</strong>
+          {vitrine?.loja.cnpj && <span>CNPJ {vitrine.loja.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5')}</span>}
+          {vitrine?.loja.endereco && <span>{vitrine.loja.endereco}{vitrine.loja.cidade ? ` · ${vitrine.loja.cidade}` : ''}</span>}
+        </footer>
+      )}
+      {info && <MaisInformacoes aba={info} setAba={setInfo} cardapio={cardapio} vitrine={vitrine ?? null} />}
       {abrindo && !abrindo.combo && <Montador produto={abrindo} aoAdicionar={adicionar} aoFechar={() => setAbrindo(null)} />}
       {abrindo?.combo && <MontadorCombo combo={abrindo} aoAdicionar={(passos, obs) => adicionar(abrindo, {}, obs, passos)} aoFechar={() => setAbrindo(null)} />}
     </div>
@@ -718,5 +753,90 @@ function Checkout({
         {pendente ? 'Enviando…' : agendar ? 'Agendar pedido' : 'Enviar pedido'}
       </button>
     </main>
+  );
+}
+
+const RESTRICAO: Record<string, string> = { gelado: '❄ Bebida gelada', vegetariano: '🌱 Vegetariano', vegano: '🌿 Vegano', sem_gluten: 'Sem glúten', zero_lactose: 'Zero lactose', sem_acucar: 'Sem açúcar', organico: 'Orgânico', natural: 'Natural' };
+
+function Extras({ extra }: { extra?: { serve: number | null; restricoes: string[] } }) {
+  if (!extra || (!extra.serve && !extra.restricoes.length)) return null;
+  return (
+    <span className="pv-extras">
+      {extra.serve ? <span>Serve {extra.serve} {extra.serve === 1 ? 'pessoa' : 'pessoas'}</span> : null}
+      {extra.restricoes.map((r) => <span key={r} className="pv-selo">{RESTRICAO[r] ?? r}</span>)}
+    </span>
+  );
+}
+
+/** "Mais informações" (D-045): sobre, horário, pagamento e entrega. */
+function MaisInformacoes({ aba, setAba, cardapio, vitrine }: { aba: string; setAba: (a: string | null) => void; cardapio: CardapioPublico; vitrine: VitrinePublica | null }) {
+  const { marca } = cardapio;
+  useEsc(() => setAba(null));
+  const hoje = diaNoFuso(marca.fuso);
+  const presencial = marca.formas_pagamento.filter((f) => f !== 'online');
+  const ABAS = [['sobre', 'Sobre'], ['horario', 'Horário'], ['pagamento', 'Pagamento'], ['entrega', 'Entrega']] as const;
+  return (
+    <div className="pub-folha-fundo" onClick={(e) => e.target === e.currentTarget && setAba(null)}>
+      <div className="pub-folha pv-info" role="dialog" aria-label="Mais informações">
+        <div className="pub-linha" style={{ justifyContent: 'space-between' }}>
+          <h2>{marca.nome}</h2>
+          <button type="button" className="mini" onClick={() => setAba(null)} aria-label="Fechar">✕</button>
+        </div>
+        <div className="abas" role="tablist">
+          {ABAS.map(([v, r]) => <button key={v} type="button" role="tab" aria-selected={aba === v} onClick={() => setAba(v)}>{r}</button>)}
+        </div>
+        {aba === 'sobre' && (
+          <div className="grade" style={{ gap: '0.6rem' }}>
+            {vitrine?.descricao && <p style={{ margin: 0 }}>{vitrine.descricao}</p>}
+            <div className="pub-linha">
+              {vitrine?.whatsapp && <a className="botao" href={`https://wa.me/55${vitrine.whatsapp.replace(/^55(?=\d{10,11}$)/, '')}`} target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>}
+              {vitrine?.instagram && <a className="botao" href={`https://instagram.com/${vitrine.instagram}`} target="_blank" rel="noopener noreferrer">📷 @{vitrine.instagram}</a>}
+            </div>
+            {vitrine?.loja.endereco && <div><strong>Endereço</strong><div className="dica">{vitrine.loja.endereco}{vitrine.loja.cidade ? ` · ${vitrine.loja.cidade}` : ''}</div></div>}
+            <div className="pv-tempos">
+              {marca.aceita_entrega && <div><strong>🛵 Entrega</strong><span className="dica">{vitrine ? `${vitrine.loja.prazo_entrega_min - 5}–${vitrine.loja.prazo_entrega_min + 5} min` : '—'}</span></div>}
+              {marca.aceita_retirada && <div><strong>🏪 Retirada</strong><span className="dica">~{marca.tempo_preparo_min} min</span></div>}
+            </div>
+          </div>
+        )}
+        {aba === 'horario' && (
+          <ul className="pub-horarios pv-horarios">
+            {DIAS.map((d, i) => {
+              const hs = marca.horarios.filter((h) => h.dia === i);
+              return (
+                <li key={d} className={i === hoje ? 'hoje' : undefined}>
+                  <span>{d}</span>
+                  <span>{hs.length ? hs.map((h) => `${h.abre} às ${h.fecha}`).join(' · ') : 'Fechado'}</span>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        {aba === 'pagamento' && (
+          <div className="grade" style={{ gap: '0.5rem' }}>
+            {presencial.includes('pix') && <><strong>Online</strong><div className="pub-linha"><span className="pv-forma">💠 Pix</span></div></>}
+            <strong>Na entrega ou na retirada</strong>
+            <div className="pub-linha">{presencial.filter((f) => f !== 'pix').map((f) => <span key={f} className="pv-forma">{PAGAMENTO_ROTULO[f]}</span>)}</div>
+          </div>
+        )}
+        {aba === 'entrega' && (
+          <div className="grade" style={{ gap: '0.5rem' }}>
+            {marca.aceita_retirada && vitrine?.loja.endereco && <div><strong>Endereço de retirada</strong><div className="dica">{vitrine.loja.endereco}{vitrine.loja.cidade ? ` · ${vitrine.loja.cidade}` : ''}</div></div>}
+            {marca.aceita_entrega && (
+              <>
+                <strong>Bairros onde entregamos</strong>
+                {marca.areas.length === 0 ? (
+                  <span className="dica">Consulte a loja.</span>
+                ) : (
+                  <ul className="pv-bairros">
+                    {marca.areas.map((a) => <li key={a.bairro}><span>{a.bairro}</span><span>{a.taxa ? formatarReais(a.taxa) : 'Grátis'}</span></li>)}
+                  </ul>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

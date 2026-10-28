@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { criarClienteServidor } from '@/lib/supabase/server';
-import type { AgendamentoPublico, CardapioPublico } from '@/lib/publico';
+import type { AgendamentoPublico, CardapioPublico, VitrinePublica } from '@/lib/publico';
 import { CardapioCliente } from '@/components/publico/cardapio-cliente';
 import { Rastreamento } from '@/components/publico/rastreamento';
 import type { ConfigRastreio } from '@/lib/rastreio';
@@ -33,7 +33,7 @@ export default async function PaginaCardapio({ params }: { params: Promise<{ slu
   const agendamento = (data as AgendamentoPublico | null) ?? { dias: 0, horarios: [] };
   return (
     <>
-      <CardapioCliente cardapio={cardapio} agendamento={agendamento} />
+      <CardapioCliente cardapio={cardapio} agendamento={agendamento} vitrine={vitrine} />
       <Rastreamento config={(rastreio.data as ConfigRastreio | null) ?? {}} />
     </>
   );

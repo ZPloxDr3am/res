@@ -1643,18 +1643,6 @@
     "ast_hash": "77b3780dc7681ac19075be1758d54759",
     "semantic_hash": "77b3780dc7681ac19075be1758d54759"
   },
-  ".claude/settings.json": {
-    "mtime": 1793206182.6859467,
-    "seen": 1793206194.5556998,
-    "ast_hash": "198f05dcc8ba555600a825882bb62184",
-    "semantic_hash": ""
-  },
-  "CLAUDE.md": {
-    "mtime": 1793206182.68841,
-    "seen": 1793206194.5560567,
-    "ast_hash": "67491aa85644af0835a0b04ea190e25a",
-    "semantic_hash": ""
-  },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
     "mtime": 1792807243.0870144,
     "seen": 1793206194.5560644,
@@ -1719,6 +1707,18 @@
     "mtime": 1792807243.0871086,
     "seen": 1793206194.5560756,
     "ast_hash": "3acb5b06cbbd1a046fafd46f19e75a3d",
+    "semantic_hash": ""
+  },
+  ".claude/settings.json": {
+    "mtime": 1793206383.016422,
+    "seen": 1793206390.632885,
+    "ast_hash": "198f05dcc8ba555600a825882bb62184",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1793206383.016422,
+    "seen": 1793206390.6333227,
+    "ast_hash": "67491aa85644af0835a0b04ea190e25a",
     "semantic_hash": ""
   }
 }

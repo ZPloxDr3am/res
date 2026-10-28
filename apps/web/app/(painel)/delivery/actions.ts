@@ -61,3 +61,14 @@ export async function replicarHorarios(marcaId: string, horarios: ConfigDelivery
   revalidatePath('/delivery');
   return { ok: true, n: data as number };
 }
+
+export type Vitrine = { logo_url: string | null; capa_url: string | null; cor: string | null; descricao: string | null; instagram: string | null; whatsapp: string | null };
+/** Capa, logo, cor e redes do cardápio (D-045). */
+export async function salvarVitrine(marcaId: string, v: Vitrine): Promise<{ ok: true } | { ok: false; erro: string }> {
+  if (v.cor && !/^#[0-9a-fA-F]{6}$/.test(v.cor)) return { ok: false, erro: 'Cor inválida.' };
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('salvar_vitrine', { p_marca: marcaId, p_dados: v });
+  if (error) return { ok: false, erro: error.message.includes('marcas_vitrine') ? 'Confira o Instagram (só o @usuário) e o WhatsApp (com DDD).' : error.message };
+  revalidatePath('/delivery');
+  return { ok: true };
+}
