@@ -167,7 +167,7 @@ export default async function Gestao({ searchParams }: { searchParams: Promise<{
           faturamento30={faturamento30}
         />
       )}
-      {aba === 'funcionarios' && <Funcionarios inicial={funcionarios} acessos={acessos} />}
+      {aba === 'funcionarios' && <Funcionarios inicial={funcionarios} acessos={acessos} lojaId={ctx.lojaId} lojaNome={ctx.lojaNome} meuPapel={ctx.papel} />}
       {(aba === 'faltas' || aba === 'advertencias') && (
         <Registros tipo={aba === 'faltas' ? 'falta' : 'advertencia'} funcionarios={funcionarios} registros={(regs.data ?? []) as Registro[]} empresaOk={!!(empresa?.razao_social && empresa?.cnpj)} />
       )}
