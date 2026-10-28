@@ -90,16 +90,16 @@
     "semantic_hash": "e4e858c9fc5938864c379263bdb7338d"
   },
   "apps/web/app/(painel)/delivery/actions.ts": {
-    "mtime": 1792808568.8473952,
-    "seen": 1793205238.7560062,
-    "ast_hash": "39486a045b58db6eac6e6d618b88b6db",
-    "semantic_hash": "39486a045b58db6eac6e6d618b88b6db"
+    "mtime": 1793207288.1592777,
+    "seen": 1793207405.240171,
+    "ast_hash": "04b986d8f47d8129f4dee3893d1d30be",
+    "semantic_hash": ""
   },
   "apps/web/app/(painel)/delivery/page.tsx": {
-    "mtime": 1792786116.8300571,
-    "seen": 1793205238.756008,
-    "ast_hash": "17b8d607c960242d6518cd54d840a151",
-    "semantic_hash": "17b8d607c960242d6518cd54d840a151"
+    "mtime": 1793207288.179917,
+    "seen": 1793207405.2401738,
+    "ast_hash": "6617c5dd69c2a2071d76473c839198e4",
+    "semantic_hash": ""
   },
   "apps/web/app/(painel)/entregas/actions.ts": {
     "mtime": 1793122772.047603,
@@ -294,10 +294,10 @@
     "semantic_hash": "9cfdbe529af9fee7f7020c8585cd58c0"
   },
   "apps/web/app/c/[slug]/page.tsx": {
-    "mtime": 1793201813.3281994,
-    "seen": 1793205238.75605,
-    "ast_hash": "47e0ad668a3ef6293a679d9d8a1afee6",
-    "semantic_hash": "47e0ad668a3ef6293a679d9d8a1afee6"
+    "mtime": 1793207511.3850365,
+    "seen": 1793207513.7095108,
+    "ast_hash": "1a72c7931f4ae3b43f4ec4fd09f3f94b",
+    "semantic_hash": ""
   },
   "apps/web/app/c/[slug]/pedido/[codigo]/page.tsx": {
     "mtime": 1793202552.2381096,
@@ -678,10 +678,10 @@
     "semantic_hash": "d472090f7948a1f67e4266a37eecb2ad"
   },
   "apps/web/components/publico/cardapio-cliente.tsx": {
-    "mtime": 1793201813.3284147,
-    "seen": 1793205238.7561126,
-    "ast_hash": "f60f54da799e0fbbf50bb3bebe94085b",
-    "semantic_hash": "f60f54da799e0fbbf50bb3bebe94085b"
+    "mtime": 1793207386.3312402,
+    "seen": 1793207405.2403302,
+    "ast_hash": "6730b03a5c1dbaac1bbdc587d3278026",
+    "semantic_hash": ""
   },
   "apps/web/components/publico/mapa-cliente.tsx": {
     "mtime": 1793122772.0516028,
@@ -840,10 +840,10 @@
     "semantic_hash": "662714211bcb04baf9992156992c9a6b"
   },
   "apps/web/lib/publico.ts": {
-    "mtime": 1793158733.667385,
-    "seen": 1793205238.7561355,
-    "ast_hash": "76f4add5b4a6e94eb77dace29dc95a98",
-    "semantic_hash": "76f4add5b4a6e94eb77dace29dc95a98"
+    "mtime": 1793207319.2272794,
+    "seen": 1793207405.2403662,
+    "ast_hash": "e08d112793b87f3c8bd3ba3c83d4c9fb",
+    "semantic_hash": ""
   },
   "apps/web/lib/rastreio.ts": {
     "mtime": 1793201813.3284147,
@@ -1638,21 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793204642.6518884,
-    "seen": 1793205238.7562785,
-    "ast_hash": "77b3780dc7681ac19075be1758d54759",
-    "semantic_hash": "77b3780dc7681ac19075be1758d54759"
-  },
-  ".claude/settings.json": {
-    "mtime": 1793206182.6859467,
-    "seen": 1793206194.5556998,
-    "ast_hash": "198f05dcc8ba555600a825882bb62184",
-    "semantic_hash": ""
-  },
-  "CLAUDE.md": {
-    "mtime": 1793206182.68841,
-    "seen": 1793206194.5560567,
-    "ast_hash": "67491aa85644af0835a0b04ea190e25a",
+    "mtime": 1793207402.1432843,
+    "seen": 1793207405.2406104,
+    "ast_hash": "5a3b46eae39a7e6b7d62e600c9a1355a",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1719,6 +1707,36 @@
     "mtime": 1792807243.0871086,
     "seen": 1793206194.5560756,
     "ast_hash": "3acb5b06cbbd1a046fafd46f19e75a3d",
+    "semantic_hash": ""
+  },
+  ".claude/settings.json": {
+    "mtime": 1793206383.016422,
+    "seen": 1793206390.632885,
+    "ast_hash": "198f05dcc8ba555600a825882bb62184",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1793206383.016422,
+    "seen": 1793206390.6333227,
+    "ast_hash": "67491aa85644af0835a0b04ea190e25a",
+    "semantic_hash": ""
+  },
+  "apps/web/components/delivery/vitrine.tsx": {
+    "mtime": 1793207288.1632776,
+    "seen": 1793207405.2402823,
+    "ast_hash": "d1869c8c011143695a2820b39164868d",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261028000045_vitrine.sql": {
+    "mtime": 1793207231.0667067,
+    "seen": 1793207405.2405376,
+    "ast_hash": "dccf82dd07d63ec5139e53915a064236",
+    "semantic_hash": ""
+  },
+  "supabase/tests/99zzzzzzzzzzzzzzzz_vitrine.sql": {
+    "mtime": 1793207246.831766,
+    "seen": 1793207405.2405775,
+    "ast_hash": "89102c21cc6c36a6f5a37a607455caab",
     "semantic_hash": ""
   }
 }

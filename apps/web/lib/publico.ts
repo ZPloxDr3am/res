@@ -127,3 +127,38 @@ export function diaNoFuso(fuso: string, agora = new Date()): number {
   const nome = new Intl.DateTimeFormat('en-US', { timeZone: fuso, weekday: 'short' }).format(agora);
   return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(nome);
 }
+
+/** public.vitrine_publica (D-045): capa, logo, cor, redes, ingredientes e selos. */
+export type VitrinePublica = {
+  logo_url: string | null;
+  capa_url: string | null;
+  cor: string | null;
+  descricao: string | null;
+  instagram: string | null;
+  whatsapp: string | null;
+  loja: { nome: string; cnpj: string | null; endereco: string | null; cidade: string | null; prazo_entrega_min: number; tempo_preparo_min: number };
+  produtos: Record<string, { serve: number | null; restricoes: string[] }>;
+  opcoes: Record<string, { descricao: string | null; selo: 'mais_pedido' | 'recomendado' | 'novo' | null }>;
+};
+
+/** "Aberto até 01:30" / "Fechado · abre às 18:00" a partir dos horários da marca (no fuso da loja). */
+export function situacaoHorario(horarios: { dia: number; abre: string; fecha: string }[], aberta: boolean, fuso: string, agora = new Date()): string {
+  const partes = new Intl.DateTimeFormat('en-GB', { timeZone: fuso, weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(agora);
+  const dias = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dia = dias.indexOf(partes.find((p) => p.type === 'weekday')?.value ?? 'Sun');
+  const min = Number(partes.find((p) => p.type === 'hour')?.value ?? 0) % 24 * 60 + Number(partes.find((p) => p.type === 'minute')?.value ?? 0);
+  const m = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
+  if (aberta) {
+    for (const h of horarios.filter((x) => x.dia === dia)) {
+      const a = m(h.abre), f = m(h.fecha);
+      if ((f > a && min >= a && min < f) || (f <= a && min >= a)) return `Aberto até ${h.fecha}`;
+    }
+    for (const h of horarios.filter((x) => x.dia === (dia + 6) % 7)) {
+      const a = m(h.abre), f = m(h.fecha);
+      if (f <= a && min < f) return `Aberto até ${h.fecha}`;
+    }
+    return 'Aberto agora';
+  }
+  const prox = horarios.filter((x) => x.dia === dia && m(x.abre) > min).sort((a, b) => m(a.abre) - m(b.abre))[0];
+  return prox ? `Fechado · abre às ${prox.abre}` : 'Fechado agora';
+}

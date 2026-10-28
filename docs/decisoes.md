@@ -458,3 +458,20 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **Pedidos do painel também (0044):** o 2º teste no ar foi um pedido lançado em "+ Novo pedido" (telefone), que não tinha a regra.
   - Agora o pedido com Pix do painel também espera o pagamento.
   - No cartão do quadro: **Mostrar QR** (abre a página do pedido com o Pix), **Copiar link** e **Enviar no WhatsApp** (mensagem pronta com o link para o telefone do cliente).
+
+## D-045 · Vitrine do cardápio digital (entrega 1 de 3 do novo cardápio)
+
+- Feita a partir do estudo do cardápio do BeeFood da LA PIZZA, salvo em `estudo-beefood/cardapio-digital.md`. O visual usa a marca da loja, nunca a do BeeFood.
+- Cada **cardápio (marca)** tem o próprio endereço `/c/<endereço>` e a própria vitrine, que se configura em Delivery. Quantos cardápios dá para criar depende do plano (`limite_cardapios`, D-017).
+- **Topo:** capa, logo, nome e situação do horário, por exemplo "Aberto até 01:30" ou "Fechado · abre às 18:00", com virada da meia-noite. Também mostra a cidade, "Mais informações", os tempos de entrega e de retirada e o pedido mínimo.
+- **Mais informações**, em abas:
+  - Sobre: texto, WhatsApp, Instagram, endereço e tempos;
+  - Horário: a semana inteira, com o dia de hoje destacado;
+  - Pagamento: online (Pix) e na entrega;
+  - Entrega: endereço de retirada e bairros com a taxa.
+- **Navegação:** seletor de categoria e busca fixos no topo, mais os botões de categoria. Grade de 2 colunas a partir de 860 px.
+- **Cartões dos produtos:** "Serve N pessoas" e selos como "❄ Bebida gelada" e "Vegetariano", vindos de `produtos.serve_pessoas` e `restricoes`.
+- **Rodapé:** nome da loja, CNPJ e endereço.
+- **Cor da marca:** substitui a cor principal em todo o cardápio, inclusive nos botões.
+- **Link de produto:** `?produto=<id>` abre a montagem direto e a URL acompanha o produto aberto, para compartilhar.
+- **Preparado para a entrega 2:** cada opção pode ter `descricao` (ingredientes) e `selo` ("recomendado" ou "novo"). O selo **"Mais pedido"** é calculado: as 3 opções mais escolhidas de cada grupo nos últimos 60 dias, com pelo menos 3 pedidos.
