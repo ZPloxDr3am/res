@@ -12,7 +12,7 @@ import type { LojaInfo } from '@/components/gestao-lojas';
 type Res = { ok: boolean; erro?: string; texto?: string } | null;
 export type Ficha = { id: string; nome: string; cpf: string | null; cargo: string | null; membroId: string | null; ativo: boolean };
 export type LojaEquipe = LojaInfo & { meuPapel: string | null; permissoesCaixa: string[]; fichas: Ficha[] };
-type Cartao = { loja: string; nome: string; papel: Papel; usuario: string; senha: string | null; aviso?: string };
+export type Cartao = { loja: string; nome: string; papel: Papel; usuario: string; senha: string | null; aviso?: string };
 
 const APK = 'https://github.com/ZPloxDr3am/res/releases/download/motoboy-latest/RES-Motoboy.apk';
 
@@ -485,7 +485,7 @@ function Assistente({ loja, fechar, criado, fichaInicial }: { loja: LojaEquipe; 
 
 /* ---------------------------------------------------------------- cartão de acesso */
 
-function CartaoAcesso({ c, fechar }: { c: Cartao; fechar: () => void }) {
+export function CartaoAcesso({ c, fechar }: { c: Cartao; fechar: () => void }) {
   const [qr, setQr] = useState('');
   const [copiado, setCopiado] = useState(false);
   const url = typeof window !== 'undefined' ? `${window.location.origin}/login` : '/login';

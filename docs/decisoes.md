@@ -543,3 +543,9 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **Separado**: uma planilha por loja (como antes) e a aba **Soma do grupo**, com faturamento, custos, sobra, margem e ponto de equilíbrio de cada loja e do total.
 - **Grupo**: uma planilha só (`custos.conta_id`), com o modelo pronto e o faturamento das lojas somado (pedidos concluídos dos últimos 30 dias de todas) ou informado.
 - Funcionários, faltas, advertências e dados da empresa continuam **por loja** (cada loja pode ter CNPJ e equipe próprios).
+
+## D-054 — Novo funcionário já cria o acesso (28/10/2026)
+
+- Em **Gestão → Funcionários**, a ficha tem o bloco **Acesso ao RES**: **criar o acesso agora** (função no RES, usuário sugerido pelo nome e senha gerada; recomendado para quem vai usar o sistema), **já tem acesso** (ligar a um existente, ex.: convite) ou **sem acesso** (quem não usa o sistema).
+- "Salvar e criar acesso" grava a ficha, cria o usuário e liga os dois; sai o mesmo **cartão de acesso** da Equipe (imprimir, WhatsApp, copiar). Se o usuário já existir, a ficha fica salva e a tela pede outro usuário.
+- O botão "+ Criar acesso" da lista abre a própria ficha com esse bloco (não precisa ir para Lojas e equipe). Gerente só aparece para o dono.
