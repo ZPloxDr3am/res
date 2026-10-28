@@ -77,6 +77,9 @@ select public.ajustar_estoque(pg_temp.id('loja'), pg_temp.id('cal'), 'contagem',
 insert into saida values ('painel', public.estoque_painel(pg_temp.id('loja')));
 insert into saida values ('mov', public.movimentos_estoque(pg_temp.id('loja')));
 insert into saida values ('notas', public.notas_importadas(pg_temp.id('loja')));
+insert into saida values ('f_forn', public.movimentos_estoque_filtro(pg_temp.id('loja'), '{"fornecedor": "12.345.678/0001-99"}'));
+insert into saida values ('f_venda', public.movimentos_estoque_filtro(pg_temp.id('loja'), jsonb_build_object('tipos', jsonb_build_array('venda', 'estorno_venda'), 'produto', pg_temp.id('pz'))));
+insert into saida values ('f_perda', public.movimentos_estoque_filtro(pg_temp.id('loja'), jsonb_build_object('tipos', jsonb_build_array('perda'), 'insumo', pg_temp.id('mus'))));
 select from pg_temp.esperar_erro(format($q$select public.definir_modo_estoque('%s', true)$q$, pg_temp.id('loja')), 'plano');
 reset role;
 select from pg_temp.como('00000000-0000-0000-0000-0000000001f3');
@@ -102,11 +105,43 @@ begin
     raise exception 'ajustes';
   end if;
   if jsonb_array_length(p -> 'insumos') <> 2 or (p ->> 'pode_escolher')::boolean or (p ->> 'notas')::int <> 2 then raise exception 'painel: %', p; end if;
+  if (pg_temp.v('f_forn') ->> 'total')::int <> 3 or (pg_temp.v('f_forn') #>> '{resumo,entradas}')::int <> 97600 or (pg_temp.v('f_forn') #>> '{resumo,notas}')::int <> 2
+     or jsonb_array_length(pg_temp.v('f_forn') -> 'fornecedores') <> 1 then raise exception 'filtro fornecedor: %', pg_temp.v('f_forn') - 'movimentos'; end if;
+  if (pg_temp.v('f_venda') ->> 'total')::int <> 4 or (pg_temp.v('f_venda') #>> '{resumo,vendas}')::int <> 0 then raise exception 'filtro venda: %', pg_temp.v('f_venda') - 'movimentos'; end if;
+  if (pg_temp.v('f_perda') ->> 'total')::int <> 1 or (pg_temp.v('f_perda') #>> '{resumo,perdas}')::int <> 3300 then raise exception 'filtro perda: %', pg_temp.v('f_perda') - 'movimentos'; end if;
   if jsonb_array_length(pg_temp.v('mov')) <> 9 then raise exception 'movimentos: %', jsonb_array_length(pg_temp.v('mov')); end if;
 end $$;
 
+-- contagem em lote e Meu estoque (D-038)
+select from pg_temp.como('00000000-0000-0000-0000-0000000001f1');
+insert into saida values ('cont', public.salvar_contagem(pg_temp.id('loja'), jsonb_build_array(
+  jsonb_build_object('insumo_id', pg_temp.id('mus'), 'quantidade', 18), jsonb_build_object('insumo_id', pg_temp.id('cal'), 'quantidade', 11.5)), 'inventário do mês'));
+select from pg_temp.esperar_erro(format($q$select public.salvar_contagem('%s', '[]', null)$q$, pg_temp.id('loja')), 'Nenhum item');
+insert into saida values ('cpainel', public.contagem_painel(pg_temp.id('loja')));
+insert into saida values ('meu', public.meu_estoque(pg_temp.id('loja'), true));
+select from pg_temp.como('00000000-0000-0000-0000-0000000001f3');
+select from pg_temp.esperar_erro(format($q$select public.meu_estoque('%s', false)$q$, pg_temp.id('loja')), 'acesso');
+select from pg_temp.esperar_erro(format($q$select public.salvar_contagem('%s', '[{}]', null)$q$, pg_temp.id('loja')), 'acesso');
+reset role;
+do $$
+declare c jsonb := pg_temp.v('cont'); m jsonb := pg_temp.v('meu'); pz jsonb;
+begin
+  -- só a mussarela mudou: 19 → 18, custo 33 → −R$ 33,00
+  if (c ->> 'mudaram')::int <> 1 or (c ->> 'diferenca')::int <> -3300 then raise exception 'contagem: %', c; end if;
+  if (select saldo from public.insumos where id = pg_temp.id('mus')) <> 18 then raise exception 'saldo após contagem'; end if;
+  if not (pg_temp.v('cpainel') -> 'de_nfe') @> to_jsonb(pg_temp.id('cal')::text) or pg_temp.v('cpainel') #> array['ultima', pg_temp.id('mus')::text] is null then
+    raise exception 'contagem_painel: %', pg_temp.v('cpainel');
+  end if;
+  pz := m #> '{lojas,0,produtos,0}';
+  if jsonb_array_length(m -> 'lojas') <> 1 or (m ->> 'outras_lojas')::int <> 0 or pz ->> 'nome' <> 'Pizza' or (pz ->> 'preco')::int <> 5000
+     or jsonb_array_length(pz -> 'ficha') <> 1 or (pz ->> 'custo')::numeric <> 990 or (pz ->> 'grupos')::int <> 1
+     or jsonb_array_length(m #> array['insumos', pg_temp.id('loja')::text]) <> 2 then
+    raise exception 'meu_estoque: %', m;
+  end if;
+end $$;
+
 -- plano de várias lojas: pode agrupar, mas só antes de ter insumos
-update public.contas set plano = 'multilojas', limite_lojas = 3 where id = (select conta_id from public.lojas where id = pg_temp.id('loja'));
+update public.contas set plano = 'multilojas', limite_lojas = 3, limite_cardapios = 3 where id = (select conta_id from public.lojas where id = pg_temp.id('loja'));
 select from pg_temp.como('00000000-0000-0000-0000-0000000001f1');
 select from pg_temp.esperar_erro(format($q$select public.definir_modo_estoque('%s', true)$q$, pg_temp.id('loja')), 'primeiro cadastro');
 insert into saida values ('painel2', public.estoque_painel(pg_temp.id('loja')));
@@ -123,6 +158,25 @@ reset role;
 do $$ begin
   if (select estoque from public.insumos where id = pg_temp.id('g1')) <> (select conta_id from public.lojas where id = pg_temp.id('loja')) then
     raise exception 'estoque do grupo deveria ser da conta';
+  end if;
+end $$;
+
+-- copiar a ficha para o produto de mesmo nome na outra loja do grupo (estoque agrupado: mesmos insumos)
+select from pg_temp.como('00000000-0000-0000-0000-0000000001f1');
+insert into ids values ('loja2', public.criar_loja_na_conta((select conta_id from public.lojas where id = pg_temp.id('loja')), 'Loja E2', 'Pizza E2', 'pizza-est2'));
+insert into ids values ('pz2', public.criar_produto(pg_temp.id('loja2'), 'pizza ', null, 55));
+insert into ids values ('pz1', public.criar_produto(pg_temp.id('loja'), 'Pizza', null, 50));
+select public.salvar_ficha(pg_temp.id('loja'), pg_temp.id('pz1'), null, jsonb_build_array(jsonb_build_object('insumo_id', pg_temp.id('g1'), 'quantidade', 0.25)));
+insert into saida values ('copia', public.copiar_ficha(pg_temp.id('loja'), pg_temp.id('pz1')));
+insert into saida values ('meu2', public.meu_estoque(pg_temp.id('loja'), true));
+insert into saida values ('meu3', public.meu_estoque(pg_temp.id('loja'), false));
+reset role;
+do $$ begin
+  if pg_temp.v('copia') -> 'copiadas' <> '["Loja E2"]'::jsonb then raise exception 'copiar_ficha: %', pg_temp.v('copia'); end if;
+  if (select quantidade from public.fichas_tecnicas where produto_id = pg_temp.id('pz2')) <> 0.25 then raise exception 'ficha copiada'; end if;
+  if jsonb_array_length(pg_temp.v('meu2') -> 'lojas') <> 2 or pg_temp.v('meu2') #>> '{lojas,1,nome}' <> 'Loja E2' or (pg_temp.v('meu2') ->> 'outras_lojas')::int <> 1
+     or jsonb_array_length(pg_temp.v('meu3') -> 'lojas') <> 1 then
+    raise exception 'meu_estoque todas: %', pg_temp.v('meu2') -> 'outras_lojas';
   end if;
 end $$;
 

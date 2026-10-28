@@ -334,3 +334,27 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Tudo fica em `estoque_movimentos`.
 
 **Busca automática de notas na SEFAZ:** fica para depois. Exige o certificado A1 da loja e um provedor fiscal.
+
+## D-037 · Movimentações do estoque com filtros
+
+- Filtros: período (atalhos hoje / 7 / 30 / 90 dias, turno de 05:00 a 05:00), tipo, fornecedor (CNPJ da nota), insumo, produto vendido (pedidos que tinham o produto) e busca (nº da nota, nº do pedido, observação). Período de até 370 dias.
+- Resumo do período: entradas (R$, lançamentos e notas), custo do que saiu nas vendas, perdas e diferença das contagens (falta − / sobra +).
+- "Por insumo": quanto entrou e saiu de cada um. Clicar num insumo, nota ou pedido filtra por ele.
+- Lista até 500 movimentos, com valor (quantidade × custo da hora). Exporta para Excel (CSV com `;`).
+- Em Insumos, "Histórico" abre as movimentações já filtradas pelo insumo.
+
+## D-038 · Meu estoque e Contagem
+
+**Meu estoque** (primeira aba do Estoque)
+- Lista todos os produtos do cardápio com foto, preço, custo da ficha técnica e custo/preço (vermelho acima de 35%).
+- Filtro com ficha / sem ficha. A ficha é montada ali mesmo; quando o pedido é concluído, a venda baixa os insumos.
+- "Esta loja / Todas as lojas": aparece se a pessoa cuida do estoque de mais de uma loja do grupo. Cada loja usa os insumos do seu estoque (o mesmo, se agrupado).
+- "Levar para as outras lojas": copia a ficha para o produto de mesmo nome nas outras lojas. Insumos são achados pelo nome; se faltar algum, aquela loja fica de fora e o aviso diz o que cadastrar.
+- Sabores, bordas e adicionais ficam em "Sabores e adicionais" (a antiga aba Ficha técnica).
+
+**Contagem**
+- Folha com todos os itens: saldo no sistema, contado, diferença (quantidade e R$) e data da última contagem.
+- Filtros: importados de NF-e / cadastrados à mão, categoria e busca. Enter pula para o próximo item.
+- "+ Item à mão" cadastra um item sem NF-e, já com a quantidade e o custo.
+- Salva tudo de uma vez (`salvar_contagem`), só mexe nos itens com diferença, e registra nas Movimentações.
+- O que foi digitado fica guardado no navegador até salvar. A folha pode ser impressa para contar no papel.

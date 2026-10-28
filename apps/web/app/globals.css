@@ -958,3 +958,30 @@ button .np-foto-opcao { width: 26px; height: 26px; border-radius: 6px; }
 .fichas-total { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; align-items: baseline; padding: 0.7rem 0.9rem; border-radius: 10px; background: var(--superficie-2); }
 @media (max-width: 900px) { .fichas { grid-template-columns: 1fr; } .fichas-lista { position: static; max-height: 18rem; } }
 .est-modo-opcoes button { justify-content: start; align-content: start; }
+
+/* ---- estoque: movimentações, Meu estoque e contagem (D-037/D-038) */
+.mv-resumo { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 0.75rem; }
+.mv-resumo > div { display: grid; gap: 0.15rem; padding: 0.9rem 1rem; border-radius: var(--raio); background: var(--superficie); border: 1px solid var(--borda); min-width: 0; }
+.mv-resumo strong { font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+.mv-resumo[aria-busy='true'] { opacity: 0.6; }
+.mv-filtros label { flex: 0 1 auto; }
+.mv-filtros select { max-width: 16rem; }
+button[aria-pressed='true'].mini { background: var(--primaria-fundo); color: var(--primaria-forte); border-color: var(--primaria); }
+.mv-link, button.mv-link { display: inline; padding: 0; min-height: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+.mv-link:hover { color: var(--primaria); background: none !important; }
+.mv-origem button + button { margin-left: 0.4rem; }
+.me-produto { display: flex; align-items: center; gap: 0.7rem; min-width: 12rem; }
+.me-produto > div { display: grid; gap: 0.05rem; min-width: 0; }
+.me-produto img, .me-sem-foto { width: 2.6rem; height: 2.6rem; border-radius: 10px; object-fit: cover; flex: none; background: var(--superficie-2); }
+.me-sem-foto { display: grid; place-items: center; color: var(--texto-suave); font-weight: 650; }
+.me-tabela td { vertical-align: middle; }
+.ct-campo { display: inline-flex; align-items: center; gap: 0.35rem; }
+.ct-campo input { width: 6.5rem; text-align: right; font-variant-numeric: tabular-nums; }
+.ct-feito > td:first-child { box-shadow: inset 3px 0 0 var(--primaria); }
+.ct-sobra { color: var(--primaria); }
+.ct-barra { position: sticky; bottom: 0.75rem; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; box-shadow: 0 8px 24px rgb(24 33 29 / 0.14); }
+@media print {
+  .ct-pagina .seg-chips, .ct-pagina .linha:has(> .nao-imprimir) { display: none !important; }
+  .ct-campo input { border: 0; border-bottom: 1px solid #999; border-radius: 0; background: none; }
+  .ct-folha { overflow: visible !important; }
+}

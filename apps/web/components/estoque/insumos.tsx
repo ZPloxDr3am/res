@@ -67,7 +67,10 @@ function LinhaInsumo({ i, sit, aberto, alternar }: { i: Insumo; sit: SituacaoEst
         <td>{formatarReais(Math.round(n(i.custo_medio)))} <span className="dica">/{i.unidade.toLowerCase()}</span></td>
         <td>{formatarReais(Math.round(Math.max(0, n(i.saldo)) * n(i.custo_medio)))}</td>
         <td><span className="est-sit" data-est={sit}>{SIT[sit]}</span></td>
-        <td><button type="button" className="mini" aria-expanded={aberto} onClick={alternar}>{aberto ? 'Fechar' : 'Ajustar'}</button></td>
+        <td className="linha" style={{ gap: '0.3rem', flexWrap: 'nowrap' }}>
+          <button type="button" className="mini" aria-expanded={aberto} onClick={alternar}>{aberto ? 'Fechar' : 'Ajustar'}</button>
+          <a className="botao mini" href={`/estoque?aba=movimentos&insumo=${i.id}`}>Histórico</a>
+        </td>
       </tr>
       {aberto && (
         <tr className="est-detalhe">
