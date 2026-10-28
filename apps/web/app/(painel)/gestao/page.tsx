@@ -3,7 +3,7 @@ import { contextoLoja } from '@/lib/loja';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import type { Custo, Empresa, Funcionario, Registro } from '@/lib/gestao';
 import { PlanilhaCustos } from '@/components/gestao/custos';
-import { Funcionarios } from '@/components/gestao/funcionarios';
+import { Funcionarios, type Acesso } from '@/components/gestao/funcionarios';
 import { Registros } from '@/components/gestao/registros';
 import { DadosEmpresa } from '@/components/gestao/empresa';
 
@@ -36,7 +36,7 @@ export default async function Gestao({ searchParams }: { searchParams: Promise<{
   const [emp, custos, funcs, regs, fat] = await Promise.all([
     supabase.from('gestao_empresa').select('razao_social, cnpj, endereco, cidade, uf, cep, responsavel, cargo_responsavel, faturamento_base').eq('loja_id', ctx.lojaId).maybeSingle(),
     supabase.from('custos').select('id, tipo, nome, forma, valor, observacao, ordem').eq('loja_id', ctx.lojaId).order('tipo').order('ordem'),
-    supabase.from('funcionarios').select('id, nome, cpf, rg, ctps, pis, cargo, admissao, nascimento, telefone, endereco, ativo').eq('loja_id', ctx.lojaId).order('ativo', { ascending: false }).order('nome'),
+    supabase.from('funcionarios').select('id, nome, cpf, rg, ctps, pis, cargo, admissao, nascimento, telefone, endereco, ativo, membro_id').eq('loja_id', ctx.lojaId).order('ativo', { ascending: false }).order('nome'),
     aba === 'faltas' || aba === 'advertencias'
       ? supabase
           .from('funcionario_registros')
@@ -60,6 +60,13 @@ export default async function Gestao({ searchParams }: { searchParams: Promise<{
   const empresa = (emp.data as Empresa | null) ?? null;
   const faturamento30 = Math.round((fat.data ?? []).reduce((s, p) => s + Number(p.total), 0) * 100) / 100;
   const funcionarios = (funcs.data ?? []) as Funcionario[];
+  // acessos ao RES desta loja, para ligar à ficha (D-052)
+  let acessos: Acesso[] = [];
+  if (aba === 'funcionarios') {
+    const { data: ms } = await supabase.from('membros').select('id, user_id, nome, papel, ativo').eq('loja_id', ctx.lojaId).order('nome');
+    const { data: us } = await supabase.from('usuarios_login').select('user_id, usuario').in('user_id', (ms ?? []).map((m) => m.user_id));
+    acessos = (ms ?? []).map((m) => ({ id: m.id as string, nome: m.nome as string, papel: m.papel as string, ativo: m.ativo as boolean, usuario: ((us ?? []).find((u) => u.user_id === m.user_id)?.usuario as string | undefined) ?? null }));
+  }
 
   return (
     <div className="grade">
@@ -79,7 +86,7 @@ export default async function Gestao({ searchParams }: { searchParams: Promise<{
           faturamento30={faturamento30}
         />
       )}
-      {aba === 'funcionarios' && <Funcionarios inicial={funcionarios} />}
+      {aba === 'funcionarios' && <Funcionarios inicial={funcionarios} acessos={acessos} />}
       {(aba === 'faltas' || aba === 'advertencias') && (
         <Registros tipo={aba === 'faltas' ? 'falta' : 'advertencia'} funcionarios={funcionarios} registros={(regs.data ?? []) as Registro[]} empresaOk={!!(empresa?.razao_social && empresa?.cnpj)} />
       )}

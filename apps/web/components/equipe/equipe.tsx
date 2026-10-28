@@ -3,21 +3,24 @@ import { useEffect, useState, useTransition } from 'react';
 import Link from 'next/link';
 import QRCode from 'qrcode';
 import { alterarFuncao, cancelarConvite, convidar, criarUsuarioCaixa, definirAtivo, trocarSenhaUsuario } from '@/app/(painel)/lojas/actions';
+import { ligarFicha } from '@/app/(painel)/gestao/actions';
+import { cpfValido, formatarCpf, soDigitos } from '@/lib/gestao';
 import { salvando } from '@/components/tempo-real';
 import { FUNCOES, gerarSenha, iniciais, ORDEM_FUNCOES, PERMISSOES_EQUIPE, sugerirUsuario, type Papel } from '@/lib/equipe';
 import type { LojaInfo } from '@/components/gestao-lojas';
 
 type Res = { ok: boolean; erro?: string; texto?: string } | null;
-export type LojaEquipe = LojaInfo & { meuPapel: string | null; permissoesCaixa: string[] };
-type Cartao = { loja: string; nome: string; papel: Papel; usuario: string; senha: string | null };
+export type Ficha = { id: string; nome: string; cpf: string | null; cargo: string | null; membroId: string | null; ativo: boolean };
+export type LojaEquipe = LojaInfo & { meuPapel: string | null; permissoesCaixa: string[]; fichas: Ficha[] };
+type Cartao = { loja: string; nome: string; papel: Papel; usuario: string; senha: string | null; aviso?: string };
 
 const APK = 'https://github.com/ZPloxDr3am/res/releases/download/motoboy-latest/RES-Motoboy.apk';
 
 /** Aba Equipe (D-051): quem está na equipe, por função, e o passo a passo para adicionar alguém. */
-export function Equipe({ lojas, inicial }: { lojas: LojaEquipe[]; inicial: string }) {
+export function Equipe({ lojas, inicial, fichaInicial }: { lojas: LojaEquipe[]; inicial: string; fichaInicial?: string }) {
   const [lojaId, setLojaId] = useState(lojas.some((l) => l.id === inicial) ? inicial : lojas[0]?.id);
   const loja = lojas.find((l) => l.id === lojaId);
-  const [assistente, setAssistente] = useState(false);
+  const [assistente, setAssistente] = useState(!!fichaInicial);
   const [cartao, setCartao] = useState<Cartao | null>(null);
   if (!loja) return <p className="cartao dica">Nenhuma loja.</p>;
   const gestor = loja.meuPapel === 'dono' || loja.meuPapel === 'gerente';
@@ -50,6 +53,7 @@ export function Equipe({ lojas, inicial }: { lojas: LojaEquipe[]; inicial: strin
       {assistente && (
         <Assistente
           loja={loja}
+          fichaInicial={fichaInicial}
           fechar={() => setAssistente(false)}
           criado={(c) => {
             setAssistente(false);
@@ -115,6 +119,7 @@ function Lista({ loja, gestor, verCartao }: { loja: LojaEquipe; gestor: boolean;
                         {m.usuario ? <>Entra com o usuário <b>{m.usuario}</b></> : 'Entra com e-mail e senha próprios'}
                         {!m.ativo && ' · sem acesso'}
                       </span>
+                      {gestor && m.papel !== 'dono' && <SeloFicha ficha={loja.fichas.find((f) => f.membroId === m.id)} />}
                     </span>
                     <span className="eq-acoes">
                       {m.usuario && m.ativo && (
@@ -218,12 +223,19 @@ function Lista({ loja, gestor, verCartao }: { loja: LojaEquipe; gestor: boolean;
 
 /* ---------------------------------------------------------------- assistente */
 
-function Assistente({ loja, fechar, criado }: { loja: LojaEquipe; fechar: () => void; criado: (c: Cartao) => void }) {
+function Assistente({ loja, fechar, criado, fichaInicial }: { loja: LojaEquipe; fechar: () => void; criado: (c: Cartao) => void; fichaInicial?: string }) {
   const souDono = loja.meuPapel === 'dono';
   const [passo, setPasso] = useState<1 | 2 | 3>(1);
   const [papel, setPapel] = useState<Papel | null>(null);
   const [modo, setModo] = useState<'usuario' | 'email'>('usuario');
-  const [nome, setNome] = useState('');
+  const livres = loja.fichas.filter((f) => !f.membroId && f.ativo);
+  const fichaPre = livres.find((f) => f.id === fichaInicial);
+  const [nome, setNome] = useState(fichaPre?.nome ?? '');
+  const [fichaModo, setFichaModo] = useState<'existente' | 'nova' | 'nenhuma'>(fichaPre ? 'existente' : 'nova');
+  const [fichaId, setFichaId] = useState(fichaPre?.id ?? '');
+  const [cpf, setCpf] = useState('');
+  const [cargo, setCargo] = useState('');
+  const [admissao, setAdmissao] = useState('');
   const [usuario, setUsuario] = useState('');
   const [usuarioMexido, setUsuarioMexido] = useState(false);
   const [senha, setSenha] = useState('');
@@ -245,11 +257,20 @@ function Assistente({ loja, fechar, criado }: { loja: LojaEquipe; fechar: () => 
     fd.set('papel', papel);
     iniciar(async () => {
       if (modo === 'usuario') {
+        if (fichaModo === 'existente' && !fichaId) return setR({ ok: false, erro: 'Escolha a ficha do funcionário (ou marque outra opção).' });
+        if (fichaModo === 'nova' && soDigitos(cpf) && !cpfValido(cpf)) return setR({ ok: false, erro: 'Confira o CPF.' });
         fd.set('usuario', usuario.trim().toLowerCase());
         fd.set('senha', senha);
         const res = await salvando(criarUsuarioCaixa(loja.id, fd));
         if (!res.ok) return setR(res);
-        criado({ loja: loja.nome, nome: nome.trim(), papel, usuario: usuario.trim().toLowerCase(), senha });
+        let aviso: string | undefined;
+        if (res.membroId && fichaModo !== 'nenhuma') {
+          const l = await salvando(
+            ligarFicha(res.membroId, fichaModo === 'existente' ? { funcionarioId: fichaId } : { novo: { nome: nome.trim(), cpf, cargo: cargo || FUNCOES[papel].nome, admissao } }),
+          );
+          aviso = l.ok ? (fichaModo === 'existente' ? 'Ligado à ficha do funcionário na Gestão Empresarial.' : 'Ficha criada em Gestão Empresarial → Funcionários.') : `O acesso foi criado, mas a ficha não: ${l.erro}`;
+        }
+        criado({ loja: loja.nome, nome: nome.trim(), papel, usuario: usuario.trim().toLowerCase(), senha, aviso });
       } else {
         fd.set('email', email.trim());
         const res = await salvando(convidar(loja.id, fd));
@@ -385,6 +406,55 @@ function Assistente({ loja, fechar, criado }: { loja: LojaEquipe; fechar: () => 
             </label>
           )}
 
+          {modo === 'usuario' && (
+            <fieldset className="eq-modos">
+              <legend>Ficha do funcionário (Gestão Empresarial)</legend>
+              <p className="dica" style={{ margin: 0 }}>Para os documentos de falta e advertência. Preenchendo aqui, não precisa digitar de novo.</p>
+              {livres.length > 0 && (
+                <label className="eq-modo" data-escolhido={fichaModo === 'existente' || undefined}>
+                  <input type="radio" name="ficha" checked={fichaModo === 'existente'} onChange={() => setFichaModo('existente')} />
+                  <span>
+                    <b>Já tem ficha</b>
+                    <select
+                      value={fichaId}
+                      onChange={(e) => {
+                        setFichaId(e.target.value);
+                        setFichaModo('existente');
+                        const f2 = livres.find((x) => x.id === e.target.value);
+                        if (f2 && !nome.trim()) {
+                          setNome(f2.nome);
+                          if (!usuarioMexido && papel) setUsuario(sugerirUsuario(f2.nome, papel));
+                        }
+                      }}
+                    >
+                      <option value="">Escolha…</option>
+                      {livres.map((f2) => <option key={f2.id} value={f2.id}>{f2.nome}{f2.cargo ? ` · ${f2.cargo}` : ''}</option>)}
+                    </select>
+                  </span>
+                </label>
+              )}
+              <div className="eq-modo" data-escolhido={fichaModo === 'nova' || undefined}>
+                <input type="radio" id="ficha-nova" name="ficha" checked={fichaModo === 'nova'} onChange={() => setFichaModo('nova')} />
+                <span>
+                  <label htmlFor="ficha-nova"><b>Criar a ficha agora</b></label>
+                  {fichaModo === 'nova' && (
+                    <span className="gc-campos" style={{ marginTop: '0.35rem' }}>
+                      <label>CPF<input inputMode="numeric" value={cpf} placeholder="000.000.000-00" onChange={(e) => setCpf(e.target.value)} onBlur={(e) => setCpf(formatarCpf(e.target.value))} aria-invalid={(soDigitos(cpf).length > 0 && !cpfValido(cpf)) || undefined} /></label>
+                      <label>Cargo<input value={cargo} maxLength={60} placeholder={papel ? FUNCOES[papel].nome : ''} onChange={(e) => setCargo(e.target.value)} /></label>
+                      <label>Admissão<input type="date" value={admissao} onChange={(e) => setAdmissao(e.target.value)} /></label>
+                    </span>
+                  )}
+                  <span className="dica">RG, CTPS e endereço você completa depois em Gestão Empresarial → Funcionários.</span>
+                </span>
+              </div>
+              <label className="eq-modo" data-escolhido={fichaModo === 'nenhuma' || undefined}>
+                <input type="radio" name="ficha" checked={fichaModo === 'nenhuma'} onChange={() => setFichaModo('nenhuma')} />
+                <span><b>Agora não</b><span className="dica">Ex.: sócio, freelancer ou motoboy terceirizado.</span></span>
+              </label>
+            </fieldset>
+          )}
+          {modo === 'email' && <p className="dica" style={{ margin: 0 }}>Depois que a pessoa aceitar o convite, ligue o acesso à ficha dela em Gestão Empresarial → Funcionários.</p>}
+
           {papel === 'entregador' && (
             <p className="dica eq-aviso" style={{ margin: 0 }}>
               🛵 O motoboy entra pelo celular e cai direto no app de entregas. No Android, o melhor é instalar o <a href={APK}>app RES Motoboy</a>. Antes, confira a <b>cidade</b> da loja em Lojas e cardápios (completa o endereço no Maps).
@@ -441,6 +511,7 @@ function CartaoAcesso({ c, fechar }: { c: Cartao; fechar: () => void }) {
 
   return (
     <section className="grade eq-cartao-area" aria-label="Cartão de acesso">
+      {c.aviso && <p className={c.aviso.startsWith('O acesso foi criado') ? 'erro nao-imprimir' : 'dica nao-imprimir'} style={{ margin: 0 }}>📋 {c.aviso}</p>}
       {c.senha && <p className="dica nao-imprimir" role="status" style={{ margin: 0 }}>✅ Acesso de {c.nome} pronto. <b>Anote ou imprima agora:</b> a senha não aparece de novo (se perder, é só trocar).</p>}
       <div className="eq-cartao-acesso">
         <div className="eq-cartao-topo">
@@ -483,5 +554,14 @@ function CartaoAcesso({ c, fechar }: { c: Cartao; fechar: () => void }) {
         <button type="button" onClick={fechar}>Fechar</button>
       </div>
     </section>
+  );
+}
+
+function SeloFicha({ ficha }: { ficha?: Ficha }) {
+  if (!ficha) return <Link href="/gestao?aba=funcionarios" className="eq-ficha dica">📋 Sem ficha na Gestão Empresarial</Link>;
+  return (
+    <Link href="/gestao?aba=funcionarios" className="eq-ficha dica">
+      📋 Ficha: {ficha.cargo ?? 'sem cargo'}{ficha.cpf ? ` · CPF ${formatarCpf(ficha.cpf)}` : ' · sem CPF'}
+    </Link>
   );
 }

@@ -55,10 +55,20 @@ select from pg_temp.esperar_erro(format($q$select public.salvar_permissoes_equip
 -- dono: promove o motoboy a gerente e ajusta o Caixa / Atendente
 select from pg_temp.como('00000000-0000-0000-0000-0000000003b1');
 select from public.alterar_funcao_membro(pg_temp.id('moto'), 'gerente');
+-- ficha ligada ao acesso (0054): mesma loja e uma ficha por acesso
+insert into public.funcionarios (loja_id, nome, cpf, cargo, membro_id) values (pg_temp.id('loja'), 'Caio Lima', '12345678909', 'Caixa', pg_temp.id('caixa'));
+select from pg_temp.esperar_erro(format($q$insert into public.funcionarios (loja_id, nome, membro_id) values ('%s', 'Outro', '%s')$q$, pg_temp.id('loja'), pg_temp.id('caixa')), 'duplicate');
 insert into saida values ('perm', to_jsonb(public.salvar_permissoes_equipe(pg_temp.id('loja'), array['pedidos_delivery', 'caixa'])));
 reset role;
 
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000003b3');
+insert into ids values ('loja2', public.criar_loja('Loja Outra', 'Pizza O', 'pizza-outra', 'Rui'));
+reset role;
+select from pg_temp.esperar_erro(format($q$insert into public.funcionarios (loja_id, nome, membro_id) values ('%s', 'X', '%s')$q$, pg_temp.id('loja2'), pg_temp.id('caixa')), 'outra loja');
+
 \o
+select case when (select membro_id = pg_temp.id('caixa') from public.funcionarios where nome = 'Caio Lima') then 'ok ficha ligada ao acesso' else 'FALHOU ficha' end;
 select case when (select papel = 'funcionario' and grupo_acesso_id is not null from public.membros where id = pg_temp.id('caixa')) then 'ok gerente muda caixa ↔ motoboy (volta ao grupo)' else 'FALHOU troca' end;
 select case when (select papel = 'gerente' from public.membros where id = pg_temp.id('moto')) then 'ok só o dono promove a gerente' else 'FALHOU promoção' end;
 select case when pg_temp.v('perm') = '["caixa", "mesas", "pdv", "pedidos_delivery"]'::jsonb then 'ok permissões do Caixa / Atendente (mantém as que a tela não mostra)' else 'FALHOU perm ' || pg_temp.v('perm')::text end;

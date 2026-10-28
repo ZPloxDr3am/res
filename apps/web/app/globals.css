@@ -1275,3 +1275,5 @@ li[data-on] .mg-radio { border: 6px solid var(--primaria); }
   body.imprimindo-cartao .eq-cartao-acesso, body.imprimindo-cartao .eq-cartao-acesso * { visibility: visible; }
   body.imprimindo-cartao .eq-cartao-acesso { position: absolute; left: 1cm; top: 1cm; width: 9.5cm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+.eq-ficha { font-size: 0.8rem; text-decoration: none; }
+.eq-ficha:hover { text-decoration: underline; }

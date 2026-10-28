@@ -530,3 +530,9 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **Adicionar pessoa** em passos: 1) função, em cartões com o que pode e o que não pode; 2) como entra (usuário e senha criados na hora, recomendado, ou convite por e-mail) com usuário sugerido pelo nome e senha fácil de ditar; 3) **cartão de acesso** para imprimir, copiar ou mandar no WhatsApp (endereço, QR, usuário, senha uma única vez, passo a passo; motoboy com o link do app).
 - **Funções e permissões**: quadro do que cada função faz e o ajuste do que o **Caixa / Atendente** pode (pedidos, caixa, cardápio, pausar itens, clientes, estoque, impressoras, delivery, promoções, relatórios, cadastro de caixas).
 - Regras no banco (0053): só dono/gerente mudam função e permissões; **só o dono** cria ou tira gerente; ninguém muda a função do dono nem a própria; o Caixa / Atendente nunca recebe equipe, plano, dados da empresa nem histórico. Garçom aparece como "em breve" (chega com Mesas e comandas).
+
+## D-052 — Ficha do funcionário ligada ao acesso (28/10/2026)
+
+- `funcionarios.membro_id` (0054): a ficha da Gestão Empresarial aponta para o acesso da pessoa em Lojas e equipe (um para um, mesma loja, garantido no banco).
+- **Adicionar pessoa** (Equipe), com usuário e senha: passo "Ficha do funcionário" — ligar a uma ficha que já existe, **criar a ficha agora** (nome, CPF, cargo, admissão, sem digitar de novo) ou "agora não". Em cada pessoa da equipe aparece a ficha (cargo e CPF) para o dono/gerente.
+- **Gestão → Funcionários**: coluna "Acesso ao RES" com o usuário, botão **+ Criar acesso** (abre o passo a passo já com a ficha escolhida) e campo para ligar a um acesso existente (ex.: quem entrou por convite). Ao marcar a pessoa como desligada, a tela oferece **tirar o acesso ao RES junto**.

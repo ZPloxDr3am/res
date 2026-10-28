@@ -88,7 +88,7 @@ export async function definirAtivo(membroId: string, ativo: boolean): Promise<R>
  * Cria um usuário de caixa (login por usuário e senha, sem e-mail). O Auth recebe um e-mail interno
  * (<usuario>@equipe.res.invalid) já confirmado; o banco confere a permissão "equipe" e registra a pessoa.
  */
-export async function criarUsuarioCaixa(lojaId: string, form: FormData): Promise<R> {
+export async function criarUsuarioCaixa(lojaId: string, form: FormData): Promise<{ ok: true; membroId?: string } | { ok: false; erro: string }> {
   const usuario = normalizarUsuario(String(form.get('usuario') ?? ''));
   const senha = String(form.get('senha') ?? '');
   const nome = String(form.get('nome') ?? '').trim();
@@ -115,7 +115,7 @@ export async function criarUsuarioCaixa(lojaId: string, form: FormData): Promise
     const m = criado.error?.message ?? '';
     return { ok: false, erro: /already|registered|exists/i.test(m) ? 'Esse usuário já existe. Escolha outro.' : `Não foi possível criar o usuário: ${m}` };
   }
-  const { error } = await supabase.rpc('registrar_usuario_caixa', {
+  const { data: membroId, error } = await supabase.rpc('registrar_usuario_caixa', {
     p_loja: lojaId, p_user: criado.data.user.id, p_usuario: usuario, p_nome: nome, p_papel: papel,
   });
   if (error) {
@@ -124,7 +124,7 @@ export async function criarUsuarioCaixa(lojaId: string, form: FormData): Promise
   }
   revalidatePath('/lojas');
   revalidatePath('/caixa');
-  return { ok: true };
+  return { ok: true, membroId: (membroId as string | null) ?? undefined };
 }
 
 /** Troca a senha de um usuário de caixa desta loja (quem cuida da equipe). */

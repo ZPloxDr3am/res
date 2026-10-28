@@ -14,7 +14,7 @@ const ABAS = [
   ['funcoes', 'Funções e permissões'],
 ] as const;
 
-export default async function Lojas({ searchParams }: { searchParams: Promise<{ aba?: string; loja?: string }> }) {
+export default async function Lojas({ searchParams }: { searchParams: Promise<{ aba?: string; loja?: string; funcionario?: string }> }) {
   const sp = await searchParams;
   const aba = ABAS.find(([k]) => k === sp.aba)?.[0] ?? 'lojas';
   const ctx = await contextoLoja();
@@ -27,6 +27,8 @@ export default async function Lojas({ searchParams }: { searchParams: Promise<{ 
     supabase.from('convites').select('id, loja_id, email, nome, papel, criado_em').in('loja_id', ids).is('aceito_em', null).order('criado_em'),
     supabase.auth.getUser(),
   ]);
+  // fichas da Gestão Empresarial (só dono/gerente enxergam, pela RLS) para ligar ao acesso (D-052)
+  const { data: fichas } = await supabase.from('funcionarios').select('id, loja_id, nome, cpf, cargo, membro_id, ativo').in('loja_id', ids).order('nome');
   const { data: grupos } = await supabase.from('grupos_acesso').select('loja_id, permissoes').in('loja_id', ids).eq('nome', 'Funcionário');
   const { data: logins } = await supabase.from('usuarios_login').select('user_id, usuario').in('user_id', (membros.data ?? []).map((m) => m.user_id));
   const usuarioDe = new Map((logins ?? []).map((u) => [u.user_id as string, u.usuario as string]));
@@ -59,8 +61,12 @@ export default async function Lojas({ searchParams }: { searchParams: Promise<{ 
     ...l,
     meuPapel: l.equipe.find((m) => m.eu)?.papel ?? null,
     permissoesCaixa: ((grupos ?? []).find((g) => g.loja_id === l.id)?.permissoes as string[] | undefined) ?? [],
+    fichas: (fichas ?? [])
+      .filter((f) => f.loja_id === l.id)
+      .map((f) => ({ id: f.id as string, nome: f.nome as string, cpf: (f.cpf as string | null) ?? null, cargo: (f.cargo as string | null) ?? null, membroId: (f.membro_id as string | null) ?? null, ativo: f.ativo as boolean })),
   }));
-  const inicial = sp.loja && lojas.some((l) => l.id === sp.loja) ? sp.loja : ctx.lojaId;
+  const fichaInicial = sp.funcionario && (fichas ?? []).some((f) => f.id === sp.funcionario && !f.membro_id) ? sp.funcionario : undefined;
+  const inicial = sp.loja && lojas.some((l) => l.id === sp.loja) ? sp.loja : fichaInicial ? ((fichas ?? []).find((f) => f.id === fichaInicial)!.loja_id as string) : ctx.lojaId;
 
   return (
     <div className="grade">
@@ -73,7 +79,7 @@ export default async function Lojas({ searchParams }: { searchParams: Promise<{ 
         ))}
       </nav>
       {aba === 'lojas' && <GestaoLojas contas={listaContas} lojas={lojas} />}
-      {aba === 'equipe' && <Equipe key={inicial} lojas={comEquipe} inicial={inicial} />}
+      {aba === 'equipe' && <Equipe key={`${inicial}-${fichaInicial ?? ''}`} lojas={comEquipe} inicial={inicial} fichaInicial={fichaInicial} />}
       {aba === 'funcoes' && <Funcoes lojas={comEquipe} inicial={inicial} />}
     </div>
   );
