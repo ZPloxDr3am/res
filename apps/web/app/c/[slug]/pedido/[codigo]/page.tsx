@@ -4,6 +4,7 @@ import type { Acompanhamento } from '@/lib/publico';
 import type { ConfigRastreio } from '@/lib/rastreio';
 import { AcompanharPedido, type ExtrasPedido } from '@/components/publico/acompanhar-pedido';
 import { Rastreamento } from '@/components/publico/rastreamento';
+import { usaPixMp } from '@/lib/mercadopago';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Seu pedido', robots: { index: false } };
@@ -15,13 +16,15 @@ export default async function PaginaAcompanhar({ params }: { params: Promise<{ s
   const { data, error } = await supabase.rpc('acompanhar_pedido', { p_codigo: codigo });
   if (error || !data) notFound();
   const p = data as Acompanhamento;
-  const [extras, rastreio] = await Promise.all([
+  const [extras, rastreio, mp] = await Promise.all([
     supabase.rpc('extras_pedido_publico', { p_codigo: codigo }),
     supabase.rpc('rastreamento_publico', { p_slug: p.slug }),
+    p.pagamento === 'pix' && p.status !== 'cancelado' ? usaPixMp(codigo) : Promise.resolve(false),
   ]);
+  const ex = (extras.data as ExtrasPedido | null) ?? { pix: null, avaliacao: null };
   return (
     <>
-      <AcompanharPedido pedido={p} extras={(extras.data as ExtrasPedido | null) ?? { pix: null, avaliacao: null }} />
+      <AcompanharPedido pedido={p} extras={ex} pixMp={mp ? { codigo, pago: !!ex.pix?.pago } : null} />
       <Rastreamento config={(rastreio.data as ConfigRastreio | null) ?? {}} compra={p.status === 'cancelado' ? undefined : { codigo, numero: p.numero, valor: p.total }} />
     </>
   );

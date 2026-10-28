@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PUBLICAS = ['/api/v1/', '/api/mcp', '/login', '/auth', '/c/', '/g/', '/api/agente/', '/m/manifest.webmanifest']; // /api/agente: pareamento do agente de impressão // /c/: cardápio digital do cliente (sem login)
+const PUBLICAS = ['/api/v1/', '/api/mcp', '/api/mercadopago/', '/login', '/auth', '/c/', '/g/', '/api/agente/', '/m/manifest.webmanifest']; // /api/agente: pareamento do agente de impressão // /c/: cardápio digital do cliente (sem login)
 
 export async function middleware(request: NextRequest) {
   let resposta = NextResponse.next({ request });

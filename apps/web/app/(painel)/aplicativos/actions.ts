@@ -78,3 +78,27 @@ export async function testarWebhook(id: string): Promise<R> {
   revalidatePath('/aplicativos');
   return { ok: true };
 }
+
+// ---- Mercado Pago (D-044)
+export async function conectarMercadoPago(token: string): Promise<R<{ apelido: string | null }>> {
+  const t = token.trim();
+  if (!/^APP_USR-[A-Za-z0-9_-]{20,}$/.test(t)) return { ok: false, erro: 'Use o Access Token de produção: começa com APP_USR-.' };
+  const { contaDoToken } = await import('@/lib/mercadopago');
+  const conta = await contaDoToken(t);
+  if (!conta) return { ok: false, erro: 'O Mercado Pago não aceitou esse token. Confira se copiou o Access Token de produção inteiro.' };
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('salvar_mp', { p_loja: ctx.lojaId, p_token: t, p_email: conta.email, p_user_id: conta.id, p_apelido: conta.apelido });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/aplicativos');
+  return { ok: true, apelido: conta.apelido };
+}
+
+export async function desconectarMercadoPago(): Promise<R> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('desconectar_mp', { p_loja: ctx.lojaId });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/aplicativos');
+  return { ok: true };
+}

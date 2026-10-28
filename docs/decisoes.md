@@ -432,3 +432,20 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Servidor MCP em HTTP (JSON-RPC 2.0) com ferramentas só de leitura: resumo_vendas, listar_pedidos, ver_pedido, ver_cardapio, clientes, estoque.
 - A IA só vê as ferramentas das áreas da chave.
 - O link com a chave é o jeito que ChatGPT e Claude aceitam sem login. Tratado como segredo: aparece uma vez, é revogável e a chave padrão não inclui clientes.
+
+## D-044 · Mercado Pago: Pix com confirmação automática
+
+- **Conta da loja:** cada loja conecta a **própria** conta, colando o Access Token de produção em Aplicativos.
+  - O servidor confere o token no Mercado Pago (`users/me`) antes de guardar.
+  - O token fica em `mp_contas`, que só o service_role lê. Nunca volta para o navegador; a tela mostra só os 4 últimos caracteres.
+  - O dinheiro vai direto para a loja; o RES não intermedeia nem cobra taxa.
+  - Escolhemos o token colado em vez de OAuth porque não depende de uma aplicação do RES aprovada no Mercado Pago. OAuth pode vir depois sem mudar o resto.
+- **Pedido no cardápio digital com Pix:** a página do pedido gera um **Pix dinâmico** (`/v1/payments`, `payment_method_id = pix`).
+  - O Pix vale 30 min, tem o valor exato e leva `external_reference` = id do pedido.
+  - Se o cliente abrir a página de novo, o QR ainda válido é reaproveitado.
+- **Confirmação:** por aviso do Mercado Pago (`/api/mercadopago/notificacao?l=<loja>`) e por conferência a cada 5 s enquanto a página está aberta.
+  - Nos dois casos o servidor **busca o pagamento na API do Mercado Pago**: o corpo do aviso não é confiável.
+  - Só marca pago (`pedidos.pago_em`) se o pagamento foi criado pelo RES para aquele pedido daquela loja e o valor cobre o total.
+- **O fluxo do pedido não muda:** o pedido entra no quadro como hoje (Pix) e vira "Pago" sozinho. O motoboy vê "PAGO — NÃO COBRAR".
+- Sem Mercado Pago, continua o Pix estático da D-042, confirmado à mão.
+- **Cartão online:** fica para uma próxima etapa. Exige pedido que só entra no quadro depois de pago.

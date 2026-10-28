@@ -10,14 +10,14 @@ export type PainelAplicativos = {
 };
 
 /** nativo: já faz parte do RES (abre a tela); config: liga aqui; link: link do grupo; breve: em breve; depois: combinado para mais tarde */
-export type App = { id: string; nome: string; desc: string; icone: string; tipo: 'nativo' | 'config' | 'link' | 'breve' | 'depois' | 'api' | 'mcp'; href?: string; nota?: string };
+export type App = { id: string; nome: string; desc: string; icone: string; tipo: 'nativo' | 'config' | 'link' | 'breve' | 'depois' | 'api' | 'mcp' | 'mp'; href?: string; nota?: string };
 
 export const CATALOGO: { titulo: string; apps: App[] }[] = [
   {
     titulo: 'Pagamentos',
     apps: [
       { id: 'pix', nome: 'Pix no cardápio', desc: 'QR Code e copia e cola com o valor exato do pedido', icone: '💠', tipo: 'config' },
-      { id: 'mercadopago', nome: 'Mercado Pago', desc: 'Pix e cartão online com confirmação automática', icone: '💳', tipo: 'breve', nota: 'Precisa de uma conta de desenvolvedor no Mercado Pago (cada loja liga a própria conta).' },
+      { id: 'mercadopago', nome: 'Mercado Pago', desc: 'Pix com confirmação automática no cardápio digital', icone: '💳', tipo: 'mp' },
       { id: 'tef', nome: 'Maquininha integrada (TEF)', desc: 'Stone e PayGo: o valor vai direto para a maquininha', icone: '🧾', tipo: 'breve' },
     ],
   },
@@ -86,3 +86,14 @@ export type ChaveApi = { id: string; nome: string; prefixo: string; escopos: str
 export type EnvioWebhook = { id: number; evento: string; status: 'pendente' | 'enviando' | 'ok' | 'erro' | 'desistiu'; resposta: number | null; erro: string | null; tentativas: number; em: string; numero: string | null };
 export type Webhook = { id: string; url: string; eventos: string[]; ativo: boolean; segredo_fim: string; envios: EnvioWebhook[] };
 export type PainelApi = { envio_automatico: boolean; chaves: ChaveApi[]; webhooks: Webhook[] };
+
+// ---- Mercado Pago (D-044)
+export type StatusMp = {
+  conectado: boolean;
+  apelido: string | null;
+  email: string | null;
+  final: string | null;
+  conectado_em: string | null;
+  pix_pela_loja: boolean;
+  recebidos_30d: { quantidade: number; valor: number };
+};

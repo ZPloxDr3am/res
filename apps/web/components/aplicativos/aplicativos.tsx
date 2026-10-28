@@ -5,23 +5,24 @@ import QRCode from 'qrcode';
 import { normalizarChavePix, pixCopiaECola, type TipoChavePix } from '@res/core';
 import { removerIntegracao, salvarIntegracao, salvarLinkGrupo } from '@/app/(painel)/aplicativos/actions';
 import { salvando } from '@/components/tempo-real';
-import { CATALOGO, type App, type PainelAplicativos, type PainelApi, type TipoIntegracao } from '@/lib/aplicativos';
+import { CATALOGO, type App, type PainelAplicativos, type PainelApi, type StatusMp, type TipoIntegracao } from '@/lib/aplicativos';
+import { PainelMercadoPago } from '@/components/aplicativos/mercadopago';
 import { PainelApiAberta, PainelMcp } from '@/components/aplicativos/api';
 
 type Filtro = 'todos' | 'ligados' | 'disponiveis' | 'breve';
 
 /** Tela Aplicativos (D-042): o que já vem no RES, o que liga aqui e o que vem por aí. */
-export function Aplicativos({ dados, origem, api }: { dados: PainelAplicativos; origem: string; api: PainelApi | null }) {
+export function Aplicativos({ dados, origem, api, mp }: { dados: PainelAplicativos; origem: string; api: PainelApi | null; mp: StatusMp | null }) {
   const [filtro, setFiltro] = useState<Filtro>('todos');
   const [aberto, setAberto] = useState<App | null>(null);
   const ligado = (a: App) =>
     a.tipo === 'nativo' || (a.tipo === 'config' && !!dados.integracoes[a.id as TipoIntegracao]?.ativo) || (a.tipo === 'link' && !!dados.link) ||
-    (a.tipo === 'api' && !!api && (api.chaves.length > 0 || api.webhooks.length > 0)) || (a.tipo === 'mcp' && !!api && api.chaves.length > 0);
+    (a.tipo === 'api' && !!api && (api.chaves.length > 0 || api.webhooks.length > 0)) || (a.tipo === 'mcp' && !!api && api.chaves.length > 0) || (a.tipo === 'mp' && !!mp?.conectado);
   const situacao = (a: App): { rotulo: string; tom: string } =>
     a.tipo === 'nativo' ? { rotulo: 'Incluso', tom: 'ok' } : ligado(a) ? { rotulo: 'Ligado', tom: 'ok' } : a.tipo === 'breve' ? { rotulo: 'Em breve', tom: 'breve' } : a.tipo === 'depois' ? { rotulo: 'Mais tarde', tom: 'breve' } : dados.integracoes[a.id as TipoIntegracao] ? { rotulo: 'Desligado', tom: 'off' } : { rotulo: 'Disponível', tom: 'livre' };
   const todos = CATALOGO.flatMap((c) => c.apps);
   const casa = (a: App, f: Filtro) =>
-    f === 'todos' || (f === 'ligados' && ligado(a)) || (f === 'disponiveis' && (a.tipo === 'config' || a.tipo === 'link' || a.tipo === 'api' || a.tipo === 'mcp') && !ligado(a)) || (f === 'breve' && (a.tipo === 'breve' || a.tipo === 'depois'));
+    f === 'todos' || (f === 'ligados' && ligado(a)) || (f === 'disponiveis' && (a.tipo === 'config' || a.tipo === 'link' || a.tipo === 'api' || a.tipo === 'mcp' || a.tipo === 'mp') && !ligado(a)) || (f === 'breve' && (a.tipo === 'breve' || a.tipo === 'depois'));
   const conta = (f: Filtro) => todos.filter((a) => casa(a, f)).length;
 
   useEffect(() => {
@@ -85,6 +86,7 @@ export function Aplicativos({ dados, origem, api }: { dados: PainelAplicativos; 
             <div className="ap-folha-corpo">
               {aberto.tipo === 'config' && <Config app={aberto} dados={dados} aoFechar={() => setAberto(null)} />}
               {aberto.tipo === 'link' && <LinkGrupo dados={dados} origem={origem} />}
+              {aberto.tipo === 'mp' && <PainelMercadoPago mp={mp} />}
               {(aberto.tipo === 'api' || aberto.tipo === 'mcp') &&
                 (api ? (aberto.tipo === 'api' ? <PainelApiAberta api={api} origem={origem} /> : <PainelMcp api={api} origem={origem} />) : <p className="dica">Só gestores da loja mexem nas chaves de API.</p>)}
               {(aberto.tipo === 'breve' || aberto.tipo === 'depois') && (

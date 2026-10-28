@@ -89,3 +89,15 @@ export async function saldoFidelidade(slug: string, telefone: string, prova: str
   const { data } = await supabase.rpc('saldo_fidelidade_publico', { p_slug: slug, p_telefone: telefone, p_prova: prova });
   return (data as { cashback: number; pontos: number } | null) ?? null;
 }
+
+// ---- Pix automático pelo Mercado Pago (D-044)
+export async function pixMercadoPago(codigo: string) {
+  if (!/^[0-9a-f-]{36}$/i.test(codigo)) return null;
+  const { pixDoPedido } = await import('@/lib/mercadopago');
+  return pixDoPedido(codigo);
+}
+export async function conferirPixMercadoPago(codigo: string) {
+  if (!/^[0-9a-f-]{36}$/i.test(codigo)) return null;
+  const { conferirPix } = await import('@/lib/mercadopago');
+  return conferirPix(codigo);
+}
