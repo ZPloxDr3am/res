@@ -387,3 +387,25 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Sem grupo de pizza (hamburgueria, açaí…), aparece "Adicionais e opções", só com a ficha de cada opção, sem falar em pizza.
 - A baixa já era assim no banco: o fator de tamanho só vale para opções de grupos de pizza.
 - Para liberar ou bloquear recursos por contrato, usa-se o plano (como o estoque agrupado). Um campo "segmento" da conta fica como ideia para modelos e exemplos, não para bloquear.
+
+## D-042 · Aplicativos
+
+**Tela Aplicativos** (menu Ajustes), por categoria, com filtro Ligados / Disponíveis / Em breve:
+- **Incluso**: o que já é do RES (cardápio digital, segmentação, fidelidade, cupons, motoboy, impressão, estoque). O cartão abre a tela.
+- **Disponível**: liga ali mesmo, por loja, com "usar também nas outras lojas do grupo".
+- **Em breve**: Mercado Pago, TEF, SMS, WhatsApp, outros marketplaces, entregador sob demanda, KDS, API/webhooks, IA (MCP).
+- **iFood**: "Mais tarde", a pedido do dono (28/10). Lembrar quando o projeto estiver avançado.
+
+**Pix no cardápio**
+- QR Code + copia e cola (BR Code estático do Banco Central, com CRC16) com o valor exato e o número do pedido. Aparece na página do pedido.
+- O dinheiro vai direto para a conta da loja; a loja confirma com "Marcar como pago" e o cliente vê "Pagamento confirmado".
+- Botão para testar com R$ 0,01 no próprio banco. Sem custo e sem intermediário. O Mercado Pago (confirmação automática) vem depois.
+
+**Pixels**
+- Pixel do Meta, Google Analytics 4, Google Ads (conversão com rótulo) e Google Tag Manager no cardápio digital.
+- Eventos: visita, item no carrinho, início do pedido e compra com valor. A compra é contada uma vez por pedido, na página do pedido.
+- Só carregam depois que o cliente aceita os cookies (LGPD). Os IDs são públicos por natureza; nada secreto é guardado.
+
+**Avaliações no Google**: o link de avaliação aparece para o cliente depois que o pedido é concluído.
+
+**Link único do grupo** (`/g/<link>`): todos os cardápios das lojas da conta, com aberto/fechado. Só o titular da conta escolhe o link.

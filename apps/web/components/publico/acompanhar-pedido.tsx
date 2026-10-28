@@ -5,10 +5,13 @@ import { useRouter } from 'next/navigation';
 import { formatarReais, PAGAMENTO_ROTULO, rotuloHorario, type StatusPedido } from '@res/core';
 import type { Acompanhamento } from '@/lib/publico';
 import { MapaCliente } from './mapa-cliente';
+import { PagarPix } from './pagar-pix';
+
+export type ExtrasPedido = { pix: { chave: string; nome: string; cidade: string; valor: number; numero: number; pago: boolean } | null; avaliacao: string | null };
 
 const hora = (iso: string | null) => (iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : null);
 
-export function AcompanharPedido({ pedido: p }: { pedido: Acompanhamento }) {
+export function AcompanharPedido({ pedido: p, extras }: { pedido: Acompanhamento; extras: ExtrasPedido }) {
   const router = useRouter();
   const final = p.status === 'concluido' || p.status === 'cancelado';
 
@@ -55,6 +58,13 @@ export function AcompanharPedido({ pedido: p }: { pedido: Acompanhamento }) {
               </li>
             ))}
           </ol>
+        )}
+        {extras.pix && p.status !== 'cancelado' && <PagarPix pix={extras.pix} />}
+        {extras.avaliacao && p.status === 'concluido' && (
+          <a className="cartao pub-avaliar" href={extras.avaliacao} target="_blank" rel="noopener noreferrer">
+            <strong>Gostou? Avalie a {p.marca} no Google ⭐</strong>
+            <span className="dica">Leva 10 segundos e ajuda muito a loja.</span>
+          </a>
         )}
         {p.agendado_para && p.status !== 'cancelado' && (
           <p className="aviso">
