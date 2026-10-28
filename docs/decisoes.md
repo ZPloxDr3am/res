@@ -514,3 +514,4 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Grupos de sabor de pizza/sobremesa ficam marcados como pizza (fração na comanda e baixa do estoque); fator da ficha por diâmetro (25=1, 30=2, 35=3, 40=4) só nos produtos com um grupo de sabor.
 - LA PIZZA importada em 0049 (37 produtos, 5 categorias, 17 grupos, 584 opções); dados guardados em `private.cardapios_importados`.
 - HAMBURGUERIA POMERODE importada em 0050 (34 produtos, 5 categorias, 2 grupos, 3 opções). Conferência item a item: `scripts/conferir_importacao.py`.
+- PIZZARIA POMERODE importada em 0051 (38 produtos, 7 categorias, 20 grupos, 729 opções). No BeeFood ela usa os mesmos IDs de grupos/produtos da LA PIZZA com preços próprios: as chaves levam o nome da marca (`beefood:pizzaria-pomerode:`) para não tocar na LA PIZZA. Conferido também o pior caso (as três marcas na mesma loja): 0 diferenças.
