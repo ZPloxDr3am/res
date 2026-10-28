@@ -34,6 +34,9 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
     const base = `/estoque?aba=meu${todas ? '&lojas=todas' : ''}`;
     let corpo: ReactNode;
     let outras = 0;
+    // pizzaria ou não: decidido pelo cardápio (tem grupo de sabores de pizza ativo?) — D-041
+    const pz = await supabase.from('grupos_opcoes').select('id', { count: 'exact', head: true }).eq('loja_id', ctx.lojaId).eq('pizza', true).eq('ativo', true);
+    const temPizza = (pz.count ?? 0) > 0;
     if (sabores) {
       const [cardapio, fichas, fatores] = await Promise.all([
         carregarCardapio(ctx.lojaId),
@@ -48,29 +51,36 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
       const pizzas = ((fatores.data ?? []) as { id: string; nome: string; fator_sabor: number }[]).filter((x) => comPizza.has(x.id)).map((x) => ({ ...x, sabores: maxSabores(x.id) }));
       const fs = (fichas.data as ItemFicha[] | null) ?? [];
       const outrosGrupos = grupos.filter((g) => !g.pizza);
-      corpo = (
+      const temOutros = outrosGrupos.some((g) => g.ativo && g.opcoes.some((o) => o.ativo));
+      corpo = temPizza ? (
         <div className="grade">
           <SaboresPizza pizzas={pizzas} grupos={grupos} insumos={p.insumos} fichas={fs} />
-          {outrosGrupos.some((g) => g.ativo && g.opcoes.some((o) => o.ativo)) && (
+          {temOutros && (
             <>
               <h2 style={{ margin: '0.6rem 0 0' }}>Bordas e adicionais</h2>
               <Fichas soOpcoes produtos={cardapio.produtos} grupos={outrosGrupos} insumos={p.insumos} fichas={fs} />
             </>
           )}
         </div>
+      ) : temOutros ? (
+        <Fichas soOpcoes produtos={cardapio.produtos} grupos={outrosGrupos} insumos={p.insumos} fichas={fs} />
+      ) : (
+        <p className="cartao dica" style={{ margin: 0 }}>
+          Esta loja ainda não tem adicionais nem opções no cardápio. Quando tiver (ex.: bacon extra, ponto da carne, molho), a ficha de cada um fica aqui.
+        </p>
       );
     } else {
       const meu = await supabase.rpc('meu_estoque', { p_loja: ctx.lojaId, p_todas: todas });
       const dados = meu.data as MeuEstoque | null;
       outras = dados?.outras_lojas ?? 0;
-      corpo = dados ? <MeuEstoqueProdutos dados={dados} todas={todas} /> : <p className="erro">{meu.error?.message ?? 'Não consegui carregar.'}</p>;
+      corpo = dados ? <MeuEstoqueProdutos dados={dados} todas={todas} temPizza={temPizza} /> : <p className="erro">{meu.error?.message ?? 'Não consegui carregar.'}</p>;
     }
     conteudo = (
       <div className="grade">
         <div className="linha" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <div className="segmentos" role="group" aria-label="O que ver">
             <Link href={base} aria-current={!sabores ? 'true' : undefined}>Produtos</Link>
-            <Link href={`${base}&ver=sabores`} aria-current={sabores ? 'true' : undefined}>Sabores, bordas e adicionais</Link>
+            <Link href={`${base}&ver=sabores`} aria-current={sabores ? 'true' : undefined}>{temPizza ? 'Sabores, bordas e adicionais' : 'Adicionais e opções'}</Link>
           </div>
           {outras > 0 && !sabores && (
             <div className="segmentos" role="group" aria-label="Lojas">

@@ -380,3 +380,10 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Na tela: quantidades em g/ml (o estoque guarda em kg/l), ingrediente novo cadastrado ali mesmo, "copiar de outro sabor" e uma prévia de quanto baixa em cada tamanho.
 - Bordas e adicionais continuam com ficha própria, sem fator.
 - **Atualização (28/10, pedido do dono):** o padrão passa a ser o tamanho **pela quantidade de sabores**: cada sabor tem a mesma porção. Broto (1 sabor) = 100%, Média (2) = 200%, Grande (3) = 300%, Gigante (4) = 400%, tirado do máximo de sabores do grupo de cada pizza. Ex.: Calabresa 100 g → Broto Calabresa baixa 100 g, Gigante 4× Calabresa 400 g, Gigante meio a meio 200 g. O tamanho pelo diâmetro continua como opção.
+
+## D-041 · A tela de pizza aparece sozinha
+
+- Não há chave para ligar a "ficha por sabor". O cardápio decide: se a loja tem um grupo de sabores de pizza ativo, aparece "Sabores, bordas e adicionais", com os tamanhos.
+- Sem grupo de pizza (hamburgueria, açaí…), aparece "Adicionais e opções", só com a ficha de cada opção, sem falar em pizza.
+- A baixa já era assim no banco: o fator de tamanho só vale para opções de grupos de pizza.
+- Para liberar ou bloquear recursos por contrato, usa-se o plano (como o estoque agrupado). Um campo "segmento" da conta fica como ideia para modelos e exemplos, não para bloquear.
