@@ -40,6 +40,12 @@ const SECOES: { titulo: string; links: Link_[] }[] = [
     ],
   },
   {
+    titulo: 'Gestão',
+    links: [
+      { href: '/gestao', rotulo: 'Gestão Empresarial', icone: 'M3 7h18v13H3zM8 7V4h8v3M3 12h18M11 12v2h2v-2' },
+    ],
+  },
+  {
     titulo: 'Ajustes',
     links: [
       { href: '/aplicativos', rotulo: 'Aplicativos', icone: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z' },
