@@ -16,3 +16,4 @@ export * from './rota.js';
 export * from './prazo.js';
 export * from './segmentos.js';
 export * from './fidelidade.js';
+export * from './estoque.js';
