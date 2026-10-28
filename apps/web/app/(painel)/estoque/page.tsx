@@ -39,7 +39,7 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
     const temPizza = (pz.count ?? 0) > 0;
     if (sabores) {
       const [cardapio, fichas, fatores] = await Promise.all([
-        carregarCardapio(ctx.lojaId),
+        carregarCardapio(ctx.lojaId, { semEvento: true }),
         supabase.rpc('fichas_loja', { p_loja: ctx.lojaId }),
         supabase.from('produtos').select('id, nome, fator_sabor').eq('loja_id', ctx.lojaId).eq('combo', false),
       ]);
