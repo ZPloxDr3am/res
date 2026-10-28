@@ -140,6 +140,34 @@ begin
   end if;
 end $$;
 
+-- fechamento do mês / CMV (D-039)
+select from pg_temp.como('00000000-0000-0000-0000-0000000001f1');
+insert into saida values ('cmv', public.fechamento_estoque(pg_temp.id('loja'), null));
+insert into saida values ('painel3', public.estoque_painel(pg_temp.id('loja')));
+reset role;
+do $$
+declare c jsonb := pg_temp.v('cmv'); r jsonb := pg_temp.v('cmv') -> 'resumo'; ef numeric := (pg_temp.v('painel3') ->> 'valor_estoque')::numeric;
+begin
+  -- tudo entrou neste mês: inicial 0, compras R$ 976, final = valor de hoje, real = compras − final
+  if (r ->> 'estoque_inicial')::numeric <> 0 or (r ->> 'compras')::numeric <> 97600 or abs((r ->> 'estoque_final')::numeric - ef) > 1
+     or (r ->> 'cmv_real')::numeric <> 97600 - (r ->> 'estoque_final')::numeric then
+    raise exception 'cmv resumo: % (valor de hoje %)', r, ef;
+  end if;
+  -- venda cancelada: teórico 0, sem faturamento; perda de 1 kg de mussarela a R$ 33
+  if (r ->> 'cmv_teorico')::numeric <> 0 or (r ->> 'faturamento')::numeric <> 0 or (r ->> 'perdas')::numeric <> 3300 then raise exception 'cmv teórico: %', r; end if;
+  if not (c ->> 'em_andamento')::boolean or jsonb_array_length(c -> 'historico') <> 6 or c #>> '{historico,5,mes}' <> c ->> 'mes'
+     or (c #>> '{historico,0,compras}')::numeric <> 0 then
+    raise exception 'cmv histórico: %', c -> 'historico';
+  end if;
+  if jsonb_array_length(c -> 'por_insumo') <> 2 or (select sum((x ->> 'real')::numeric) from jsonb_array_elements(c -> 'por_insumo') x) <> (r ->> 'cmv_real')::numeric then
+    raise exception 'cmv por insumo: %', c -> 'por_insumo';
+  end if;
+  if c ->> 'ultima_contagem' is null then raise exception 'última contagem'; end if;
+end $$;
+select from pg_temp.como('00000000-0000-0000-0000-0000000001f3');
+select from pg_temp.esperar_erro(format($q$select public.fechamento_estoque('%s', null)$q$, pg_temp.id('loja')), 'acesso');
+reset role;
+
 -- plano de várias lojas: pode agrupar, mas só antes de ter insumos
 update public.contas set plano = 'multilojas', limite_lojas = 3, limite_cardapios = 3 where id = (select conta_id from public.lojas where id = pg_temp.id('loja'));
 select from pg_temp.como('00000000-0000-0000-0000-0000000001f1');

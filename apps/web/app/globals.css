@@ -985,3 +985,15 @@ button[aria-pressed='true'].mini { background: var(--primaria-fundo); color: var
   .ct-campo input { border: 0; border-bottom: 1px solid #999; border-radius: 0; background: none; }
   .ct-folha { overflow: visible !important; }
 }
+/* ---- estoque: fechamento / CMV (D-039) */
+.cmv-conta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 0.9rem; }
+.cmv-conta > div { display: grid; gap: 0.1rem; min-width: 0; }
+.cmv-conta strong { font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+.cmv-op { font-size: 1.4rem; color: var(--texto-suave); font-weight: 300; }
+.cmv-total { padding: 0.5rem 0.9rem; border-radius: var(--raio-controle); background: var(--primaria-fundo); }
+.cmv-total strong { color: var(--primaria-forte); }
+.cmv-aviso { margin: 0; padding: 0.7rem 0.95rem; border-radius: var(--raio-controle); background: var(--superficie-2); color: var(--texto-suave); font-size: 0.92rem; }
+.cmv-aviso[data-tom='alerta'] { background: #fff1dc; color: #7a4600; }
+.cmv-aviso[data-tom='ok'] { background: var(--primaria-fundo); color: var(--primaria-forte); }
+.cmv-mes strong { min-width: 9rem; text-align: center; }
+tr[aria-current='true'] > td { background: var(--primaria-fundo); }
