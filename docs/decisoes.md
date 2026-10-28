@@ -450,3 +450,8 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **Aceite ao pagar (0042, ligado por padrão):** quando o Pix é confirmado, o pedido "Novo" vai para "Em preparo" e imprime, pelos mesmos gatilhos do aceite do quadro. Pedido agendado não: entra na hora de preparar. Desliga em Aplicativos → Mercado Pago.
 - Sem Mercado Pago, continua o Pix estático da D-042, confirmado à mão.
 - **Cartão online:** fica para uma próxima etapa. Exige pedido que só entra no quadro depois de pago.
+- **Pedido só vai para a cozinha depois de pago (0043, 28/10, depois do 1º teste no ar).** Com o aceite automático da loja ligado, o pedido com Pix era aceito e impresso antes do pagamento.
+  - Agora o pedido do cardápio digital com Pix numa loja com Mercado Pago nasce com `aguarda_pagamento`: fica "Novo", não é aceito nem impresso e não bipa.
+  - No quadro, fica na faixa **⏳ Aguardando Pix**.
+  - Pagou (pelo Mercado Pago ou "Marcar como pago"): sai da faixa e é aceito/impresso conforme a opção da loja.
+  - Sem pagamento em 40 min, o pg_cron cancela com o motivo "Pix não foi pago em 40 minutos".

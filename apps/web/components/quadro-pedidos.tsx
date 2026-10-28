@@ -107,7 +107,9 @@ export function QuadroPedidos({
   const agora = new Date();
   const fase = (p: PedidoRow) => faseAgendamento(p.agendado_para ? new Date(p.agendado_para) : null, tempoPreparo, agora);
   // agendado que ainda não chegou a hora fica fora das colunas
-  const emEspera = (p: PedidoRow) => p.status === 'novo' && fase(p) === 'agendado';
+  // Pix do Mercado Pago ainda não pago (D-044): fica fora das colunas, sem bipe, até o pagamento
+  const aguardandoPix = (p: PedidoRow) => p.status === 'novo' && !!p.aguarda_pagamento && !p.pago_em;
+  const emEspera = (p: PedidoRow) => p.status === 'novo' && (fase(p) === 'agendado' || aguardandoPix(p));
   const chaves = pedidos.filter((p) => COLUNAS.includes(p.status)).map((p) => `${p.id}:${emEspera(p) ? 'a' : 'n'}`).join(',');
 
   // pedido que chegou depois de abrir a tela, ou agendado que chegou a hora de preparar → bipe
@@ -137,7 +139,8 @@ export function QuadroPedidos({
   }, []);
 
   const abertos = pedidos.filter((p) => COLUNAS.includes(p.status) && !emEspera(p));
-  const agendados = pedidos.filter(emEspera).sort((a, b) => a.agendado_para!.localeCompare(b.agendado_para!));
+  const agendados = pedidos.filter((p) => emEspera(p) && !aguardandoPix(p)).sort((a, b) => a.agendado_para!.localeCompare(b.agendado_para!));
+  const pixPendentes = pedidos.filter(aguardandoPix);
   const encerrados = pedidos.filter((p) => !COLUNAS.includes(p.status)).reverse();
   // em "todas as lojas" o cartão mostra a loja; numa loja só, a marca (se houver mais de uma)
   const etiqueta = (p: PedidoRow) => (todas ? lojas.find((l) => l.id === p.loja_id)?.nome : marcas.length > 1 ? marcas.find((m) => m.id === p.marca_id)?.nome : null);
@@ -178,6 +181,19 @@ export function QuadroPedidos({
       </div>
       {erro && <p className="erro" role="alert">{erro}</p>}
       {!todas && <FilaImpressao n={filaImpressao} />}
+
+      {pixPendentes.length > 0 && (
+        <details open className="agendados">
+          <summary>
+            <strong>⏳ Aguardando Pix</strong> <span className="dica">{pixPendentes.length} · entram sozinhos quando o Mercado Pago confirmar; sem pagamento em 40 min, são cancelados</span>
+          </summary>
+          <div className="quadro" style={{ paddingTop: '0.5rem' }}>
+            {pixPendentes.map((p) => (
+              <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} fuso={fuso} marca={etiqueta(p)} prazoMin={prazoEntrega[p.loja_id] ?? 35} />
+            ))}
+          </div>
+        </details>
+      )}
 
       {agendados.length > 0 && (
         <details open className="agendados">
