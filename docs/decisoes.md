@@ -515,3 +515,10 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - LA PIZZA importada em 0049 (37 produtos, 5 categorias, 17 grupos, 584 opções); dados guardados em `private.cardapios_importados`.
 - HAMBURGUERIA POMERODE importada em 0050 (34 produtos, 5 categorias, 2 grupos, 3 opções). Conferência item a item: `scripts/conferir_importacao.py`.
 - PIZZARIA POMERODE importada em 0051 (38 produtos, 7 categorias, 20 grupos, 729 opções). No BeeFood ela usa os mesmos IDs de grupos/produtos da LA PIZZA com preços próprios: as chaves levam o nome da marca (`beefood:pizzaria-pomerode:`) para não tocar na LA PIZZA. Conferido também o pior caso (as três marcas na mesma loja): 0 diferenças.
+
+## D-050 — Gestão Empresarial (28/10/2026)
+
+- Menu **Gestão → Gestão Empresarial**, só para **dono e gerente** (RLS com `private.e_gestor`): CPF e dados dos funcionários são dados pessoais (LGPD). Eles também ficam **fora do histórico de alterações**, que pode ser aberto por quem não é gestor.
+- **Custos fixos e variáveis**: planilha que já vem com 25 linhas de modelo (aluguel, energia, folha, contador… / CMV, embalagens, impostos, cartão, apps, motoboys…), valores em branco; o dono preenche, renomeia, remove e acrescenta. Variáveis em % das vendas ou R$ no mês. Resumo: fixos, variáveis, sobra/prejuízo, margem e **ponto de equilíbrio** (fixos ÷ (1 − variáveis%)), com o faturamento do mês informado ou sugerido pelos pedidos concluídos nos últimos 30 dias.
+- **Funcionários** (nome, CPF validado, RG, CTPS, PIS, função, admissão, endereço) e **Dados da empresa** (razão social, CNPJ validado, endereço, responsável).
+- **Faltas** e **advertências** numeradas por loja (número nunca reaproveitado) e **documento A4 em duas vias** para imprimir ou salvar em PDF e assinar: termo de ciência de falta (justificada ou não; DSR pela Lei 605/1949 art. 6º, férias pela CLT art. 130) e advertência disciplinar (reincidência → suspensão/justa causa, CLT art. 482), com assinaturas do empregado, do responsável e de duas testemunhas para o caso de recusa. Modelo de referência: a tela recomenda confirmar com contador/advogado.
