@@ -393,7 +393,7 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 **Tela Aplicativos** (menu Ajustes), por categoria, com filtro Ligados / Disponíveis / Em breve:
 - **Incluso**: o que já é do RES (cardápio digital, segmentação, fidelidade, cupons, motoboy, impressão, estoque). O cartão abre a tela.
 - **Disponível**: liga ali mesmo, por loja, com "usar também nas outras lojas do grupo".
-- **Em breve**: Mercado Pago, TEF, SMS, WhatsApp, outros marketplaces, entregador sob demanda, KDS, API/webhooks, IA (MCP).
+- **Em breve**: Mercado Pago, TEF, SMS, WhatsApp, outros marketplaces, entregador sob demanda, KDS. (API, webhooks e IA entraram com a D-043.)
 - **iFood**: "Mais tarde", a pedido do dono (28/10). Lembrar quando o projeto estiver avançado.
 
 **Pix no cardápio**
@@ -409,3 +409,26 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 **Avaliações no Google**: o link de avaliação aparece para o cliente depois que o pedido é concluído.
 
 **Link único do grupo** (`/g/<link>`): todos os cardápios das lojas da conta, com aberto/fechado. Só o titular da conta escolhe o link.
+
+## D-043 · API aberta, webhooks e conexão com IA (MCP)
+
+**Chaves de API**
+- Por loja, até 10 ativas, criadas por gestores em Aplicativos.
+- **Só leitura**, por área: vendas, pedidos, cardápio, clientes (dados pessoais) e estoque.
+- O segredo aparece uma vez; o banco guarda só o hash (como o token do agente, D-015). Revogar corta na hora. Guarda último uso e contagem.
+
+**REST** (`/api/v1/…`, `Authorization: Bearer res_…`)
+- Rotas: `vendas`, `pedidos`, `pedidos/{número|id}`, `cardapio`, `clientes`, `estoque`.
+- A rota chama funções `api_*` com a chave pública (anon); quem confere a chave e a área é o banco (`private.loja_da_chave`).
+- Período em turnos de 05:00 a 05:00, até 92 dias (padrão: 7).
+
+**Webhooks**
+- Até 5 por loja, só `https`. Eventos: `pedido.criado`, `pedido.status` e `pedido.cancelado` (mais `teste`, pelo botão Testar).
+- Corpo em JSON com o pedido no mesmo formato da API. Cabeçalho `X-RES-Assinatura: sha256=<HMAC-SHA256 do corpo>`, feito no próprio Postgres (testado com o vetor do RFC 4231).
+- Envio por **pg_net**, direto do gatilho. Reenvio pelo **pg_cron** (a cada minuto) em 1, 2, 4, 8 e 16 min; depois desiste. Sem pg_net, fica na fila.
+- A tela mostra os 15 últimos envios de cada webhook.
+
+**MCP** (`/api/mcp/<chave>` ou `/api/mcp` com Bearer)
+- Servidor MCP em HTTP (JSON-RPC 2.0) com ferramentas só de leitura: resumo_vendas, listar_pedidos, ver_pedido, ver_cardapio, clientes, estoque.
+- A IA só vê as ferramentas das áreas da chave.
+- O link com a chave é o jeito que ChatGPT e Claude aceitam sem login. Tratado como segredo: aparece uma vez, é revogável e a chave padrão não inclui clientes.

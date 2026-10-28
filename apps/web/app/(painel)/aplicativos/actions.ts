@@ -32,3 +32,49 @@ export async function salvarLinkGrupo(link: string): Promise<R> {
   revalidatePath('/aplicativos');
   return { ok: true };
 }
+
+// ---- API aberta, webhooks e MCP (D-043)
+export async function criarChaveApi(nome: string, escopos: string[]): Promise<R<{ chave: string }>> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('criar_chave_api', { p_loja: ctx.lojaId, p_nome: nome, p_escopos: escopos });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/aplicativos');
+  return { ok: true, chave: (data as { chave: string }).chave };
+}
+
+export async function revogarChaveApi(id: string): Promise<R> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('revogar_chave_api', { p_loja: ctx.lojaId, p_id: id });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/aplicativos');
+  return { ok: true };
+}
+
+export async function salvarWebhook(id: string | null, url: string, eventos: string[], ativo: boolean): Promise<R<{ segredo?: string }>> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('salvar_webhook', { p_loja: ctx.lojaId, p_id: id, p_url: url, p_eventos: eventos, p_ativo: ativo });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/aplicativos');
+  return { ok: true, segredo: (data as { segredo?: string }).segredo };
+}
+
+export async function excluirWebhook(id: string): Promise<R> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('excluir_webhook', { p_loja: ctx.lojaId, p_id: id });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/aplicativos');
+  return { ok: true };
+}
+
+export async function testarWebhook(id: string): Promise<R> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('testar_webhook', { p_loja: ctx.lojaId, p_id: id });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/aplicativos');
+  return { ok: true };
+}

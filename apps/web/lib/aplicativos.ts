@@ -10,7 +10,7 @@ export type PainelAplicativos = {
 };
 
 /** nativo: já faz parte do RES (abre a tela); config: liga aqui; link: link do grupo; breve: em breve; depois: combinado para mais tarde */
-export type App = { id: string; nome: string; desc: string; icone: string; tipo: 'nativo' | 'config' | 'link' | 'breve' | 'depois'; href?: string; nota?: string };
+export type App = { id: string; nome: string; desc: string; icone: string; tipo: 'nativo' | 'config' | 'link' | 'breve' | 'depois' | 'api' | 'mcp'; href?: string; nota?: string };
 
 export const CATALOGO: { titulo: string; apps: App[] }[] = [
   {
@@ -63,8 +63,26 @@ export const CATALOGO: { titulo: string; apps: App[] }[] = [
       { id: 'impressao', nome: 'Impressão automática', desc: 'RES Impressão no computador da cozinha', icone: '🖨️', tipo: 'nativo', href: '/impressoras' },
       { id: 'estoque', nome: 'Estoque por NF-e', desc: 'XML da nota, ficha técnica e CMV', icone: '📦', tipo: 'nativo', href: '/estoque' },
       { id: 'kds', nome: 'Tela da cozinha (KDS)', desc: 'Pedidos numa TV ou tablet da cozinha', icone: '🍳', tipo: 'breve' },
-      { id: 'api', nome: 'API aberta e webhooks', desc: 'Para integrar o RES com outros sistemas', icone: '🔌', tipo: 'breve' },
-      { id: 'mcp', nome: 'Conectar com IA', desc: 'Pergunte sobre suas vendas no ChatGPT ou no Claude', icone: '✨', tipo: 'breve' },
+      { id: 'api', nome: 'API aberta e webhooks', desc: 'Para integrar o RES com outros sistemas', icone: '🔌', tipo: 'api' },
+      { id: 'mcp', nome: 'Conectar com IA', desc: 'Pergunte sobre suas vendas no ChatGPT ou no Claude', icone: '✨', tipo: 'mcp' },
     ],
   },
 ];
+
+// ---- API aberta, webhooks e MCP (D-043)
+export const ESCOPOS_API = [
+  { id: 'vendas', rotulo: 'Vendas', desc: 'faturamento, pedidos por dia, mais vendidos' },
+  { id: 'pedidos', rotulo: 'Pedidos', desc: 'pedidos com itens, cliente e pagamento' },
+  { id: 'cardapio', rotulo: 'Cardápio', desc: 'produtos, preços e opções' },
+  { id: 'clientes', rotulo: 'Clientes', desc: 'nome, telefone e segmento (dados pessoais)' },
+  { id: 'estoque', rotulo: 'Estoque', desc: 'insumos, saldo e custo' },
+] as const;
+export const EVENTOS_WEBHOOK = [
+  { id: 'pedido.criado', rotulo: 'Pedido novo' },
+  { id: 'pedido.status', rotulo: 'Mudou de status' },
+  { id: 'pedido.cancelado', rotulo: 'Cancelado' },
+] as const;
+export type ChaveApi = { id: string; nome: string; prefixo: string; escopos: string[]; criado_em: string; ultimo_uso: string | null; usos: number };
+export type EnvioWebhook = { id: number; evento: string; status: 'pendente' | 'enviando' | 'ok' | 'erro' | 'desistiu'; resposta: number | null; erro: string | null; tentativas: number; em: string; numero: string | null };
+export type Webhook = { id: string; url: string; eventos: string[]; ativo: boolean; segredo_fim: string; envios: EnvioWebhook[] };
+export type PainelApi = { envio_automatico: boolean; chaves: ChaveApi[]; webhooks: Webhook[] };
