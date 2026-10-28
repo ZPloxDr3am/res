@@ -48,6 +48,34 @@ do $$ begin
     raise exception 'mp_status: %', pg_temp.v('st');
   end if;
 end $$;
+-- pedido Pix do cardápio com MP: não aceita na criação (mesmo com aceite automático), não imprime; pago libera
+reset role;
+update public.lojas set aceite_automatico = true where id = pg_temp.id('loja');
+select from pg_temp.como('00000000-0000-0000-0000-0000000002c1');
+insert into ids select 'marca', id from public.marcas where slug = 'pizza-mp';
+insert into ids values ('setor', public.salvar_setor(pg_temp.id('loja'), null, 'Pizzas'));
+insert into ids values ('pz', public.criar_produto(pg_temp.id('loja'), 'Pizza MP', pg_temp.id('setor'), 50));
+reset role;
+insert into ids values ('ped', private.inserir_pedido(pg_temp.id('loja'), pg_temp.id('marca'), jsonb_build_object('tipo', 'retirada',
+  'cliente', jsonb_build_object('nome', 'Lia', 'telefone', '47996731809'), 'pagamento', 'pix',
+  'itens', jsonb_build_array(jsonb_build_object('produto_id', pg_temp.id('pz'), 'quantidade', 1))), 'cardapio_digital', null));
+insert into ids values ('ped2', private.inserir_pedido(pg_temp.id('loja'), pg_temp.id('marca'), jsonb_build_object('tipo', 'retirada',
+  'cliente', jsonb_build_object('nome', 'Rui', 'telefone', '47996731808'), 'pagamento', 'dinheiro',
+  'itens', jsonb_build_array(jsonb_build_object('produto_id', pg_temp.id('pz'), 'quantidade', 1))), 'cardapio_digital', null));
+do $$ begin
+  if (select status from public.pedidos where id = pg_temp.id('ped')) <> 'novo' or not (select aguarda_pagamento from public.pedidos where id = pg_temp.id('ped')) then
+    raise exception 'pix deveria esperar: %', (select status from public.pedidos where id = pg_temp.id('ped'));
+  end if;
+  if (select status from public.pedidos where id = pg_temp.id('ped2')) <> 'em_preparo' or (select aguarda_pagamento from public.pedidos where id = pg_temp.id('ped2')) then
+    raise exception 'dinheiro segue o aceite automático';
+  end if;
+end $$;
+update public.pedidos set pago_em = now() where id = pg_temp.id('ped');
+update public.pedidos set criado_em = now() - interval '1 hour' where id = pg_temp.id('ped2');
+do $$ begin
+  if (select aguarda_pagamento from public.pedidos where id = pg_temp.id('ped')) then raise exception 'pago deveria liberar'; end if;
+  if private.cancelar_pix_nao_pago() <> 0 then raise exception 'não deveria cancelar pedido pago nem em dinheiro'; end if;
+end $$;
 select from pg_temp.como('00000000-0000-0000-0000-0000000002c1');
 select public.desconectar_mp(pg_temp.id('loja'));
 reset role;
