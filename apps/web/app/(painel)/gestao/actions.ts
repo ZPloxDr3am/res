@@ -92,6 +92,10 @@ export type FuncionarioForm = {
   telefone: string;
   endereco: string;
   ativo: boolean;
+  /** acesso ao RES ligado a esta ficha (D-052); '' = nenhum */
+  membroId?: string;
+  /** ao desligar a ficha, tirar o acesso ao RES junto */
+  tirarAcesso?: boolean;
 };
 
 export async function salvarFuncionario(f: FuncionarioForm): Promise<R<{ id: string }>> {
@@ -114,12 +118,47 @@ export async function salvarFuncionario(f: FuncionarioForm): Promise<R<{ id: str
     telefone: vazio(f.telefone),
     endereco: vazio(f.endereco),
     ativo: f.ativo,
+    ...(f.membroId !== undefined ? { membro_id: f.membroId || null } : {}),
   };
   const q = f.id ? supabase.from('funcionarios').update(linha).eq('id', f.id).eq('loja_id', loja).select('id').single() : supabase.from('funcionarios').insert(linha).select('id').single();
   const { data, error } = await q;
-  if (error) return { ok: false, erro: error.message };
+  if (error) return { ok: false, erro: /funcionarios_membro_idx/.test(error.message) ? 'Esse acesso já está ligado a outra ficha.' : error.message };
+  if (!f.ativo && f.tirarAcesso && f.membroId) {
+    const t = await supabase.from('membros').update({ ativo: false }).eq('id', f.membroId).eq('loja_id', loja).neq('papel', 'dono');
+    if (t.error) return { ok: false, erro: `Ficha salva, mas o acesso não foi tirado: ${t.error.message}` };
+    revalidatePath('/lojas');
+  }
   revalidatePath('/gestao');
   return { ok: true, id: data.id as string };
+}
+
+/** Liga um acesso recém-criado (Equipe) a uma ficha existente ou cria a ficha agora (D-052). */
+export async function ligarFicha(
+  membroId: string,
+  ficha: { funcionarioId: string } | { novo: { nome: string; cpf: string; cargo: string; admissao: string } },
+): Promise<R> {
+  const loja = await lojaGestor();
+  const supabase = await criarClienteServidor();
+  if ('funcionarioId' in ficha) {
+    const { error } = await supabase.from('funcionarios').update({ membro_id: membroId }).eq('id', ficha.funcionarioId).eq('loja_id', loja);
+    if (error) return { ok: false, erro: /funcionarios_membro_idx/.test(error.message) ? 'Essa ficha já tem um acesso.' : error.message };
+  } else {
+    const cpf = soDigitos(ficha.novo.cpf);
+    if (cpf && !cpfValido(cpf)) return { ok: false, erro: 'Confira o CPF.' };
+    if (ficha.novo.admissao && !DATA.test(ficha.novo.admissao)) return { ok: false, erro: 'Data de admissão inválida.' };
+    const { error } = await supabase.from('funcionarios').insert({
+      loja_id: loja,
+      nome: ficha.novo.nome.trim().slice(0, 120),
+      cpf: cpf || null,
+      cargo: vazio(ficha.novo.cargo),
+      admissao: ficha.novo.admissao || null,
+      membro_id: membroId,
+    });
+    if (error) return { ok: false, erro: error.message };
+  }
+  revalidatePath('/gestao');
+  revalidatePath('/lojas');
+  return { ok: true };
 }
 
 export type RegistroForm = {

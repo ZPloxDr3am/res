@@ -36,6 +36,8 @@ export type Funcionario = {
   telefone: string | null;
   endereco: string | null;
   ativo: boolean;
+  /** acesso ao RES ligado (D-052) */
+  membro_id?: string | null;
 };
 
 export type Registro = {

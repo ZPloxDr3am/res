@@ -162,14 +162,14 @@
     "semantic_hash": "37a083e8e04f109eef39ff287cee7496"
   },
   "apps/web/app/(painel)/lojas/actions.ts": {
-    "mtime": 1793226267.896243,
-    "seen": 1793226421.452757,
+    "mtime": 1793226817.0847836,
+    "seen": 1793226825.8317733,
     "ast_hash": "a75b904b4aa3f6f4d4176e53c20212d6",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/lojas/page.tsx": {
-    "mtime": 1793226394.2783008,
-    "seen": 1793226421.4527586,
+    "mtime": 1793226817.0847836,
+    "seen": 1793226825.8317769,
     "ast_hash": "cdacf92f32343e307fd4524229086014",
     "semantic_hash": ""
   },
@@ -594,8 +594,8 @@
     "semantic_hash": "7667c66e184110893d600e09286d35ba"
   },
   "apps/web/components/gestao-lojas.tsx": {
-    "mtime": 1793226394.2677696,
-    "seen": 1793226421.4528627,
+    "mtime": 1793226817.091068,
+    "seen": 1793226825.8319664,
     "ast_hash": "60c79f98c2d38ac5a02d8a39cac64ad1",
     "semantic_hash": ""
   },
@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793226418.980252,
-    "seen": 1793226421.4531786,
+    "mtime": 1793226817.091068,
+    "seen": 1793226825.8323581,
     "ast_hash": "16ae16cbcb76a50afee44bfc98ecab48",
     "semantic_hash": ""
   },
@@ -1884,33 +1884,33 @@
     "semantic_hash": ""
   },
   "apps/web/components/equipe/equipe.tsx": {
-    "mtime": 1793226337.5925217,
-    "seen": 1793226421.4528377,
+    "mtime": 1793226817.0887835,
+    "seen": 1793226825.831921,
     "ast_hash": "09a7d04d2155cad58b9ca99cbf612115",
     "semantic_hash": ""
   },
   "apps/web/components/equipe/funcoes.tsx": {
-    "mtime": 1793226359.0402486,
-    "seen": 1793226421.4528391,
+    "mtime": 1793226817.091068,
+    "seen": 1793226825.8319244,
     "ast_hash": "6e95d6bddca8d7ad2f34f257e291bcf8",
     "semantic_hash": ""
   },
   "apps/web/lib/equipe.ts": {
-    "mtime": 1793226263.6562428,
-    "seen": 1793226421.4529123,
+    "mtime": 1793226817.091068,
+    "seen": 1793226825.8320458,
     "ast_hash": "841ea3bdfaff22f80ffef137ada06901",
     "semantic_hash": ""
   },
   "supabase/migrations/20261028000053_equipe_funcoes.sql": {
-    "mtime": 1793226202.9584584,
-    "seen": 1793226421.4530795,
+    "mtime": 1793226817.0967834,
+    "seen": 1793226825.8322878,
     "ast_hash": "920ac21915fe335243c364cf5dc9fa77",
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzz_equipe.sql": {
-    "mtime": 1793226218.09624,
-    "seen": 1793226421.4531686,
-    "ast_hash": "bf41b0957b00918d213d8bd9d3540d91",
+    "mtime": 1793226817.157932,
+    "seen": 1793226825.8323486,
+    "ast_hash": "1f2668d55f7458cc6f3e85a0e226e2b0",
     "semantic_hash": ""
   }
 }
