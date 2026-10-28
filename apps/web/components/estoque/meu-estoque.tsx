@@ -9,7 +9,7 @@ import { n, type MeuEstoque, type ProdutoEstoque } from '@/lib/estoque';
 type Filtro = 'todos' | 'sem' | 'com';
 
 /** Meu estoque (D-038): todos os produtos do cardápio com a ficha técnica — desta loja ou de todas do grupo. */
-export function MeuEstoqueProdutos({ dados, todas }: { dados: MeuEstoque; todas: boolean }) {
+export function MeuEstoqueProdutos({ dados, todas, temPizza }: { dados: MeuEstoque; todas: boolean; temPizza: boolean }) {
   const router = useRouter();
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState<Filtro>('todos');
@@ -38,7 +38,8 @@ export function MeuEstoqueProdutos({ dados, todas }: { dados: MeuEstoque; todas:
       </div>
       <p className="dica" style={{ margin: 0 }}>
         {comFicha} de {todos.length} produtos com ficha técnica{cmv != null ? ` · custo médio dos insumos ${cmv}% do preço` : ''}. Quando o pedido é concluído, cada produto vendido baixa os insumos da ficha
-        {' '}(e os sabores/adicionais escolhidos baixam os deles, em <Link href="/estoque?aba=meu&ver=sabores">Sabores e adicionais</Link>).
+        {' '}(e {temPizza ? 'os sabores, bordas e adicionais' : 'os adicionais e opções'} escolhidos baixam os deles, em{' '}
+        <Link href="/estoque?aba=meu&ver=sabores">{temPizza ? 'Sabores, bordas e adicionais' : 'Adicionais e opções'}</Link>).
       </p>
 
       {dados.lojas.map((loja) => {

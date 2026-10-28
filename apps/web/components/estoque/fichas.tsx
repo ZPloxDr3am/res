@@ -64,11 +64,11 @@ export function Fichas({ produtos, grupos, insumos, fichas, soOpcoes = false }: 
         {!alvo ? (
           <div className="grade" style={{ gap: '0.4rem' }}>
             <h2 style={{ margin: 0 }}>Como funciona</h2>
-            <p className="dica" style={{ margin: 0 }}>Escolha {soOpcoes ? 'um sabor, borda ou adicional' : 'um produto ou uma opção'} à esquerda e diga quanto ele gasta de cada insumo. Quando o pedido é concluído, o estoque baixa sozinho.</p>
+            <p className="dica" style={{ margin: 0 }}>Escolha {soOpcoes ? 'um adicional ou opção' : 'um produto ou uma opção'} à esquerda e diga quanto ele gasta de cada insumo. Quando o pedido é concluído, o estoque baixa sozinho.</p>
             <ul className="dica" style={{ margin: 0, paddingLeft: '1.1rem' }}>
-              <li><strong>Produto</strong>: o que vai em toda unidade (ex.: Pizza Grande → massa, molho, mussarela, caixa).</li>
-              <li><strong>Sabor de pizza</strong>: quanto vai numa pizza <em>inteira</em> daquele sabor. No meio a meio, baixa a metade de cada.</li>
-              <li><strong>Adicional / borda</strong>: quanto vai em cada um escolhido.</li>
+              {!soOpcoes && <li><strong>Produto</strong>: o que vai em toda unidade (ex.: Pizza Grande → massa, molho, mussarela, caixa).</li>}
+              {!soOpcoes && <li><strong>Sabor de pizza</strong>: quanto vai numa pizza <em>inteira</em> daquele sabor. No meio a meio, baixa a metade de cada.</li>}
+              <li><strong>Adicional / borda / opção</strong>: quanto vai em cada um escolhido (ex.: bacon extra → bacon 30 g).</li>
               <li>Combos baixam pelos produtos escolhidos dentro deles.</li>
             </ul>
           </div>
