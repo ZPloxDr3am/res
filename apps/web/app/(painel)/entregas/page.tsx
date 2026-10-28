@@ -45,10 +45,11 @@ export default async function Entregas({ searchParams }: { searchParams: Promise
     const textoPrazo = prazos.length === 1 ? `${prazos[0]} min depois do pedido` : (lojas.data ?? []).map((l) => `${l.nome} ${l.prazo_entrega_min} min`).join(', ');
     conteudo = <TemposEntregas rel={(rel.data as Relatorio | null) ?? null} periodo={periodo} prazos={textoPrazo} erro={rel.error ? rel.error.message : null} />;
   } else if (aba === 'bairros') {
-    const [lojas, marcas, areas] = await Promise.all([
+    const [lojas, marcas, areas, faixas] = await Promise.all([
       supabase.from('lojas').select('id, nome, cidade, endereco, lat, lng, prazo_entrega_min').in('id', ids),
       supabase.from('marcas').select('id, nome, loja_id').in('loja_id', ids).order('ordem').order('nome'),
       supabase.from('areas_entrega').select('marca_id, bairro, taxa, valor_motoboy, km, ativo').in('loja_id', ids),
+      supabase.from('faixas_km').select('marca_id, ate_km, taxa, minutos_extra').in('loja_id', ids).order('ate_km'),
     ]);
     if (lojas.error) throw new Error(lojas.error.message);
     const lista: LojaBairros[] = grupo.map((g) => {
@@ -66,6 +67,9 @@ export default async function Entregas({ searchParams }: { searchParams: Promise
           .map((m) => ({
             id: m.id as string,
             nome: m.nome as string,
+            faixas: (faixas.data ?? [])
+              .filter((f) => f.marca_id === m.id)
+              .map((f) => ({ ateKm: Number(f.ate_km), taxa: Math.round(Number(f.taxa) * 100), minutosExtra: f.minutos_extra as number })),
             areas: (areas.data ?? [])
               .filter((a) => a.marca_id === m.id)
               .map((a) => ({

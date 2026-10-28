@@ -100,3 +100,17 @@ export async function rastreioAoVivo(): Promise<AoVivo | null> {
   const { data, error } = await supabase.rpc('rastreio_ao_vivo', { p_loja: ctx.lojaId });
   return error ? null : (data as AoVivo);
 }
+
+/** Faixas de km para bairros fora da lista (D-048). taxa em centavos. */
+export type FaixaForm = { ateKm: number; taxa: number; minutosExtra: number };
+export async function salvarFaixasKm(marcaId: string, faixas: FaixaForm[]): Promise<R> {
+  if (faixas.some((f) => !(f.ateKm > 0) || f.taxa < 0 || f.minutosExtra < 0)) return { ok: false, erro: 'Confira os km, as taxas e os minutos.' };
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('salvar_faixas_km', {
+    p_marca: marcaId,
+    p_faixas: faixas.map((f) => ({ ate_km: f.ateKm, taxa: f.taxa / 100, minutos_extra: f.minutosExtra })),
+  });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/entregas');
+  return { ok: true };
+}

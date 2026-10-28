@@ -2,6 +2,8 @@
 import type { FormaPagamento } from '@res/core';
 import { lerConfig, type ProgramaPublico } from '@/lib/fidelidade';
 import { criarClienteServidor } from '@/lib/supabase/server';
+import { localizarEntrega } from '@/lib/geo';
+import { distanciaReta } from '@res/core';
 
 export interface PedidoCliente {
   tipo: 'entrega' | 'retirada';
@@ -26,6 +28,8 @@ export interface PedidoCliente {
   /** cashback (centavos) e/ou recompensa (D-031); prova = código de um pedido anterior guardado no aparelho */
   fidelidade?: { cashback: number; recompensa: string | null } | null;
   fidelidadeProva?: string | null;
+  /** ponto do endereço achado no mapa (faixa de km, D-048) */
+  destino?: { lat: number; lng: number } | null;
 }
 
 /** Envia o pedido do cliente. O banco confere tudo de novo (aberto, bairro, taxa, preço, mínimo). */
@@ -50,6 +54,7 @@ export async function enviarPedido(slug: string, p: PedidoCliente): Promise<{ ok
       cupom: p.cupom || null,
       fidelidade: p.fidelidade && (p.fidelidade.cashback > 0 || p.fidelidade.recompensa) ? p.fidelidade : null,
       fidelidade_prova: p.fidelidadeProva ?? null,
+      destino: p.tipo === 'entrega' && p.destino ? p.destino : null,
     },
   });
   if (error) return { ok: false, erro: error.message };
@@ -113,4 +118,26 @@ export async function situacaoPedidos(codigos: string[]): Promise<Record<string,
       return [c, { numero: x.numero, status: x.status, total: x.total, criado_em: x.criado_em, marca: x.marca }];
     }),
   );
+}
+
+// ---- Taxa por raio em km (D-048) ----
+export type FaixaKm = { ate_km: number; taxa: number; minutos_extra: number };
+export type EntregaKm =
+  | { ok: true; km: number; taxa: number; minutosExtra: number; lat: number; lng: number; aproximado: boolean }
+  | { ok: false; erro: string };
+
+/** Acha o endereço no mapa (perto da loja) e diz a faixa de km. O banco refaz a conta ao gravar o pedido. */
+export async function calcularEntregaKm(slug: string, e: { logradouro: string; numero?: string; bairro: string }): Promise<EntregaKm> {
+  const supabase = await criarClienteServidor();
+  const { data } = await supabase.rpc('faixas_km_publica', { p_slug: slug });
+  const cfg = data as { lat: number | null; lng: number | null; cidade: string | null; faixas: FaixaKm[] } | null;
+  if (!cfg || cfg.lat == null || cfg.lng == null || !cfg.faixas.length) return { ok: false, erro: 'Ainda não entregamos nesse bairro.' };
+  if (!e.logradouro.trim() || !e.bairro.trim()) return { ok: false, erro: 'Informe rua e bairro.' };
+  const loja = { lat: cfg.lat, lng: cfg.lng };
+  const achado = await localizarEntrega({ logradouro: e.logradouro.slice(0, 120), numero: e.numero?.slice(0, 20), bairro: e.bairro.slice(0, 80) }, cfg.cidade, loja);
+  if (!achado) return { ok: false, erro: 'Não achamos esse endereço no mapa. Confira a rua e o bairro.' };
+  const km = Math.round(distanciaReta(loja, achado.ponto) * 100) / 100;
+  const f = cfg.faixas.find((x) => x.ate_km >= km);
+  if (!f) return { ok: false, erro: `Seu endereço fica a ${km.toFixed(1).replace('.', ',')} km, fora da nossa área de entrega.` };
+  return { ok: true, km, taxa: f.taxa, minutosExtra: f.minutos_extra, lat: achado.ponto.lat, lng: achado.ponto.lng, aproximado: achado.precisao === 'bairro' };
 }
