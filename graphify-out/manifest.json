@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793222872.9402905,
-    "seen": 1793222876.9440582,
-    "ast_hash": "a63ad346b21f6b5f206bc5f08c02eb36",
+    "mtime": 1793222917.9861047,
+    "seen": 1793222920.437235,
+    "ast_hash": "5677931e56caacfaa2959689b5e13e8b",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1797,6 +1797,24 @@
     "mtime": 1793222295.3908997,
     "seen": 1793222430.5622199,
     "ast_hash": "31a0c833a61388cac907921a0ae46cb2",
+    "semantic_hash": ""
+  },
+  "scripts/conferir_importacao.py": {
+    "mtime": 1793222872.9442904,
+    "seen": 1793222920.4370844,
+    "ast_hash": "66008a5336dab7e4240259d3356839f9",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261028000050_hamburgueria_cardapio.sql": {
+    "mtime": 1793222872.9442904,
+    "seen": 1793222920.4371867,
+    "ast_hash": "cbcbdb5359283375996a92d20d23288e",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261028000051_pizzaria_cardapio.sql": {
+    "mtime": 1793222872.9823143,
+    "seen": 1793222920.4371886,
+    "ast_hash": "4a88056ddaeea4f267945d5098efe973",
     "semantic_hash": ""
   }
 }

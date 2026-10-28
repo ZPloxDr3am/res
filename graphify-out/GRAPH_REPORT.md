@@ -1,17 +1,17 @@
 # Graph Report - res  (2026-10-28)
 
 ## Corpus Check
-- 288 files · ~244,474 words
+- 291 files · ~252,071 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 5 file(s) not represented in the graph (top: (none) 2, .example 1, .css 1)
 
 ## Summary
-- 2409 nodes · 6167 edges · 120 communities (100 shown, 20 thin omitted)
+- 2410 nodes · 6167 edges · 121 communities (100 shown, 21 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 52 edges (avg confidence: 0.9)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b74d0314`
+- Built from commit: `17b64c28`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -144,12 +144,12 @@
   docs/decisoes.md → packages/core/src/combo.ts
 - `D-023 % por categoria, cupons e desconto no balcão com limite` --references--> `precoBase()`  [INFERRED]
   docs/decisoes.md → packages/core/src/preco.ts
-- `Ambiente no ar (piloto)` --references--> `main()`  [INFERRED]
-  README.md → packages/agente/src/main.ts
+- `D-036 · Estoque: entrada por NF-e e baixa pela ficha técnica` --references--> `lerNFe()`  [INFERRED]
+  docs/decisoes.md → packages/core/src/estoque.ts
 - `D-011 Pedido agendado e taxa por bairro no painel` --references--> `taxaDoBairro()`  [INFERRED]
   docs/decisoes.md → packages/core/src/agendamento.ts
-- `D-014 Impressão: fila no banco, regras como no BeeFood, navegador até o agente chegar` --references--> `montarCupom()`  [INFERRED]
-  docs/decisoes.md → packages/core/src/cupom.ts
+- `Ambiente no ar (piloto)` --references--> `main()`  [INFERRED]
+  README.md → packages/agente/src/main.ts
 
 ## Import Cycles
 - None detected.
@@ -159,7 +159,7 @@
 - **Motoboy delivery flow (QR dispatch, app, tracking, routing)** — docs_decisoes_d_017_app_motoboy_qr, docs_decisoes_d_018_comanda_motoboy_pago, docs_decisoes_d_019_app_android_leitor_qr, docs_decisoes_d_026_rastreio_motoboys, docs_decisoes_d_027_rota_sugerida, apps_mobile_motoboy_readme_res_motoboy_android [INFERRED 0.85]
 - **Stock management module (NF-e, recipes, counts, CMV)** — docs_decisoes_d_036_estoque_nfe_ficha, docs_decisoes_d_037_movimentacoes_estoque, docs_decisoes_d_038_meu_estoque_contagem, docs_decisoes_d_039_fechamento_cmv, docs_decisoes_d_040_ficha_sabor_pizza [INFERRED 0.85]
 
-## Communities (120 total, 20 thin omitted)
+## Communities (121 total, 21 thin omitted)
 
 ### Community 0 - "formatarReais"
 Cohesion: 0.05
@@ -563,23 +563,23 @@ Nodes (43): public.lojas, public.marcas, pedido_item_opcoes_item_idx, pedido_ite
 
 ## Knowledge Gaps
 - **9 isolated node(s):** `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `pedidos.qr_token (/m/d/<código>)`, `GitHub Actions CI (rules, db, build)`, `Roadmap stages 3c-7 and integrations`, `supabase/migrations (Postgres RLS, audit, atomic ops)` (+4 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 591 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 592 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **21 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `next` connect `criarClienteServidor` to `formatarReais`, `lojas/actions.ts`, `API aberta e MCP (rotas)`, `Tela de impressoras`, `Resumo de vendas`, `acompanhar-pedido.tsx`, `Dependências do painel`, `App do motoboy`, `publico.ts`, `cardapio/actions.ts`, `contextoLoja`, `Promoções e cupons (tela)`, `Quadro de pedidos`, `entregas/page.tsx`, `form-delivery.tsx`, `fidelidade/actions.ts`, `Bairros e entregas ao vivo`, `painel-caixa.tsx`, `publico.ts`, `novo-pedido.tsx`, `(painel)/layout.tsx`, `caixa/page.tsx`, `src/caixa.ts`, `app/layout.tsx`?**
-  _High betweenness centrality (0.049) - this node is a cross-community bridge._
+  _High betweenness centrality (0.059) - this node is a cross-community bridge._
 - **What connects `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `pedidos.qr_token (/m/d/<código>)`, `GitHub Actions CI (rules, db, build)` to the rest of the system?**
   _9 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `formatarReais` be split into smaller, more focused modules?**
   _Cohesion score 0.05389317889317889 - nodes in this community are weakly interconnected._
 - **Why does `formatarReais()` connect `formatarReais` to `[slug]/actions.ts`, `Resumo de vendas`, `acompanhar-pedido.tsx`, `App do motoboy`, `cardapio/actions.ts`, `contextoLoja`, `Promoções e cupons (tela)`, `Quadro de pedidos`, `form-delivery.tsx`, `fidelidade/actions.ts`, `Bairros e entregas ao vivo`, `Montagem do cupom impresso`, `preco.ts`, `painel-caixa.tsx`, `entregas/fechamento.tsx`, `publico.ts`, `novo-pedido.tsx`, `caixa/page.tsx`, `cardapio.test.ts`, `src/caixa.ts`?**
-  _High betweenness centrality (0.048) - this node is a cross-community bridge._
+  _High betweenness centrality (0.052) - this node is a cross-community bridge._
 - **Should `20261020000001_base.sql` be split into smaller, more focused modules?**
   _Cohesion score 0.1032258064516129 - nodes in this community are weakly interconnected._
 - **Why does `criarClienteServidor()` connect `criarClienteServidor` to `formatarReais`, `lojas/actions.ts`, `[slug]/actions.ts`, `Tela de impressoras`, `Resumo de vendas`, `acompanhar-pedido.tsx`, `App do motoboy`, `publico.ts`, `cardapio/actions.ts`, `contextoLoja`, `Promoções e cupons (tela)`, `Quadro de pedidos`, `entregas/page.tsx`, `form-delivery.tsx`, `fidelidade/actions.ts`, `Bairros e entregas ao vivo`, `Rota e geolocalização`, `painel-caixa.tsx`, `entregas/fechamento.tsx`, `publico.ts`, `impressao.ts`, `novo-pedido.tsx`, `m/page.tsx`, `caixa/page.tsx`, `cardapio.test.ts`, `src/caixa.ts`, `form-setor.tsx`, `expedicao.ts`?**
-  _High betweenness centrality (0.043) - this node is a cross-community bridge._
+  _High betweenness centrality (0.036) - this node is a cross-community bridge._
 - **Should `main.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.0546583850931677 - nodes in this community are weakly interconnected._
