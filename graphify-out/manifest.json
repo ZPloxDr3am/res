@@ -66,8 +66,8 @@
     "semantic_hash": "7c8c54427dc401e946d8e164c3538a21"
   },
   "apps/web/app/(painel)/cardapio/actions.ts": {
-    "mtime": 1793208033.9313219,
-    "seen": 1793208056.5084991,
+    "mtime": 1793208750.8513646,
+    "seen": 1793208755.229811,
     "ast_hash": "58f039d79d87d8548f8481e871a16b85",
     "semantic_hash": ""
   },
@@ -288,10 +288,10 @@
     "semantic_hash": "6653f6d2413afaa67f5e5af557e30816"
   },
   "apps/web/app/c/[slug]/actions.ts": {
-    "mtime": 1793202552.2381096,
-    "seen": 1793205238.7560492,
-    "ast_hash": "9cfdbe529af9fee7f7020c8585cd58c0",
-    "semantic_hash": "9cfdbe529af9fee7f7020c8585cd58c0"
+    "mtime": 1793208793.2223103,
+    "seen": 1793208922.4903097,
+    "ast_hash": "0f5577ec4b46a094ebb60bbe7fcf060f",
+    "semantic_hash": ""
   },
   "apps/web/app/c/[slug]/page.tsx": {
     "mtime": 1793207864.367312,
@@ -426,8 +426,8 @@
     "semantic_hash": "9fb3406c9aab789d0f557eadc2cf95bf"
   },
   "apps/web/components/cardapio/editor-cardapio.tsx": {
-    "mtime": 1793208033.9176283,
-    "seen": 1793208056.508622,
+    "mtime": 1793208750.8593645,
+    "seen": 1793208755.2299163,
     "ast_hash": "b143b6eca05977bed80f7977aeae9074",
     "semantic_hash": ""
   },
@@ -582,8 +582,8 @@
     "semantic_hash": "b9691fa88142aa6b2234d7c9d00a89e3"
   },
   "apps/web/components/form-grupo.tsx": {
-    "mtime": 1793208033.9182274,
-    "seen": 1793208056.508657,
+    "mtime": 1793208750.8593645,
+    "seen": 1793208755.2299523,
     "ast_hash": "1d95669c55d16a4ec306f36b10640f92",
     "semantic_hash": ""
   },
@@ -678,9 +678,9 @@
     "semantic_hash": "d472090f7948a1f67e4266a37eecb2ad"
   },
   "apps/web/components/publico/cardapio-cliente.tsx": {
-    "mtime": 1793207981.965663,
-    "seen": 1793208056.508677,
-    "ast_hash": "a8f410c339289e35df379a75213f053b",
+    "mtime": 1793208900.3219569,
+    "seen": 1793208922.490393,
+    "ast_hash": "e7f16e5d0e5166cfeeef46ecff3b6021",
     "semantic_hash": ""
   },
   "apps/web/components/publico/mapa-cliente.tsx": {
@@ -750,14 +750,14 @@
     "semantic_hash": "76946e36c151908760d136701ba9b8b1"
   },
   "apps/web/lib/cardapio-dados.ts": {
-    "mtime": 1793208033.917229,
-    "seen": 1793208056.5086935,
+    "mtime": 1793208750.8593645,
+    "seen": 1793208755.2299867,
     "ast_hash": "3a764cfbb6fe42f6c70928b18125b9a5",
     "semantic_hash": ""
   },
   "apps/web/lib/cardapio.ts": {
-    "mtime": 1793208033.916798,
-    "seen": 1793208056.5086944,
+    "mtime": 1793208750.8593645,
+    "seen": 1793208755.2299879,
     "ast_hash": "8f3d2b32dd64233b8ecbd792b53bd284",
     "semantic_hash": ""
   },
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793208053.659323,
-    "seen": 1793208056.5088863,
-    "ast_hash": "f4fd265338fbd49bd0fb84bddce71db3",
+    "mtime": 1793208919.6793745,
+    "seen": 1793208922.4906096,
+    "ast_hash": "a8ff1dcf7af15f8d8b262dcde0ba4e4b",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1740,21 +1740,27 @@
     "semantic_hash": ""
   },
   "apps/web/components/cardapio/detalhe-opcao.tsx": {
-    "mtime": 1793208033.939453,
-    "seen": 1793208056.5086198,
+    "mtime": 1793208750.8593645,
+    "seen": 1793208759.9919205,
     "ast_hash": "1c74be3275aca65362ed10e04175da93",
     "semantic_hash": ""
   },
   "apps/web/components/publico/montagem.tsx": {
-    "mtime": 1793207934.5457797,
-    "seen": 1793208056.5086794,
+    "mtime": 1793208750.8593645,
+    "seen": 1793208759.9919891,
     "ast_hash": "60c0722485db63d6c0644023f5b97984",
     "semantic_hash": ""
   },
   "supabase/migrations/20261028000046_la_pizza_sabores.sql": {
-    "mtime": 1793207992.6353195,
-    "seen": 1793208056.5088432,
+    "mtime": 1793208750.8633645,
+    "seen": 1793208759.9921887,
     "ast_hash": "221d192bb5b64f11df45d67e0b2463ec",
+    "semantic_hash": ""
+  },
+  "apps/web/components/publico/conta-cliente.tsx": {
+    "mtime": 1793208793.223367,
+    "seen": 1793208922.4903944,
+    "ast_hash": "77a940902dff77c2af0254afc2e8af2d",
     "semantic_hash": ""
   }
 }

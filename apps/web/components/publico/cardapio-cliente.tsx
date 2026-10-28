@@ -39,6 +39,7 @@ import {
 import { conferirCupom, enviarPedido } from '@/app/c/[slug]/actions';
 import { rastrear } from '@/lib/rastreio';
 import { GruposMontagem, Montador } from '@/components/publico/montagem';
+import { guardarPedido, MeusPedidos, NavCliente, PerfilCliente } from '@/components/publico/conta-cliente';
 
 type Item = { chave: number; produtoId: string; quantidade: number; escolhas: Escolhas; observacao: string; passos?: EscolhaPasso[] };
 type ItemCalculado = Item & { produto: ProdutoPublico; unitario: number; resumo: string };
@@ -101,7 +102,7 @@ export function CardapioCliente({ cardapio, agendamento, vitrine }: { cardapio: 
   const [itens, setItens] = useState<Item[]>([]);
   const [carregado, setCarregado] = useState(false);
   const [abrindo, setAbrindo] = useState<ProdutoPublico | null>(null);
-  const [etapa, setEtapa] = useState<'cardapio' | 'carrinho'>('cardapio');
+  const [etapa, setEtapa] = useState<'cardapio' | 'carrinho' | 'pedidos' | 'perfil'>('cardapio');
   const [setorVisivel, setSetorVisivel] = useState<string | null>(setores[0]?.id ?? null);
   const [busca, setBusca] = useState('');
   const [info, setInfo] = useState<string | null>(null);
@@ -278,7 +279,8 @@ export function CardapioCliente({ cardapio, agendamento, vitrine }: { cardapio: 
           }
           voltar={() => setEtapa('cardapio')}
           editar={(i) => { const p = produtos.get(i.produtoId); if (p && !p.combo) { setEditando(i); setAbrindo(p); } }}
-          concluido={(codigo) => {
+          concluido={(codigo, numero, total) => {
+            guardarPedido({ codigo, slug: marca.slug, numero, total, em: new Date().toISOString() });
             setItens([]);
             gravar(chaveCarrinho, []);
             router.push(`/c/${marca.slug}/pedido/${codigo}`);
@@ -287,13 +289,16 @@ export function CardapioCliente({ cardapio, agendamento, vitrine }: { cardapio: 
       )}
 
       {etapa === 'cardapio' && quantidade > 0 && (
-        <div className="pub-barra">
+        <div className="pub-barra cl-acima-nav">
           <button type="button" className="botao-primario" onClick={() => { rastrear({ tipo: 'begin_checkout', valor: subtotal }); setEtapa('carrinho'); }}>
             Ver pedido · {quantidade} {quantidade === 1 ? 'item' : 'itens'} · {formatarReais(subtotal)}
           </button>
         </div>
       )}
 
+      {etapa === 'pedidos' && <MeusPedidos slug={marca.slug} />}
+      {etapa === 'perfil' && <PerfilCliente />}
+      {etapa !== 'carrinho' && <NavCliente aba={etapa} setAba={(a) => { setEtapa(a); window.scrollTo({ top: 0 }); }} temSacola={quantidade > 0} />}
       {etapa === 'cardapio' && (
         <footer className="pv-rodape">
           <strong>{vitrine?.loja.nome ?? marca.nome}</strong>
@@ -412,7 +417,7 @@ function Checkout({
   alterar: (chave: number, delta: number) => void;
   voltar: () => void;
   editar: (i: ItemCalculado) => void;
-  concluido: (codigo: string) => void;
+  concluido: (codigo: string, numero: number, total: number) => void;
 }) {
   const { marca } = cardapio;
   const tiposAceitos = (['entrega', 'retirada'] as const).filter((t) => (t === 'entrega' ? marca.aceita_entrega && marca.areas.length > 0 : marca.aceita_retirada));
@@ -517,7 +522,7 @@ function Checkout({
       });
       if (!r.ok) return setErro(r.erro);
       lembrarPedidoFidelidade(cliente.telefone, r.codigo);
-      concluido(r.codigo);
+      concluido(r.codigo, r.numero, conta.t?.total ?? subtotal);
     });
 
   return (
@@ -614,8 +619,12 @@ function Checkout({
 
       <fieldset className="grade" style={{ gap: '0.5rem' }}>
         <legend>Seus dados</legend>
+        <label>
+          Seu WhatsApp
+          <input type="tel" autoComplete="tel" placeholder="(47) 99999-0000" value={cliente.telefone} onChange={(e) => setCliente({ ...cliente, telefone: e.target.value })} />
+          <span className="dica">Para avisarmos o andamento do seu pedido.</span>
+        </label>
         <label>Nome<input type="text" autoComplete="name" value={cliente.nome} maxLength={120} onChange={(e) => setCliente({ ...cliente, nome: e.target.value })} /></label>
-        <label>Telefone (WhatsApp)<input type="tel" autoComplete="tel" placeholder="(48) 99999-0000" value={cliente.telefone} onChange={(e) => setCliente({ ...cliente, telefone: e.target.value })} /></label>
       </fieldset>
 
       {tipo === 'entrega' && (
