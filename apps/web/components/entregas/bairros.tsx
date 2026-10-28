@@ -1,7 +1,7 @@
 'use client';
 import { useState, useTransition } from 'react';
 import { formatarKm, formatarReais, lerCoordenadas } from '@res/core';
-import { calcularKmBairro, localizarLoja, salvarAreas, salvarLocalLoja, type AreaForm, salvarPrazoEntrega } from '@/app/(painel)/entregas/actions';
+import { calcularKmBairro, localizarLoja, salvarAreas, salvarFaixasKm, salvarLocalLoja, type AreaForm, type FaixaForm, salvarPrazoEntrega } from '@/app/(painel)/entregas/actions';
 import { salvando } from '@/components/tempo-real';
 
 export type LojaBairros = {
@@ -12,7 +12,7 @@ export type LojaBairros = {
   lat: number | null;
   lng: number | null;
   prazoEntregaMin: number;
-  marcas: { id: string; nome: string; areas: AreaForm[] }[];
+  marcas: { id: string; nome: string; areas: AreaForm[]; faixas: FaixaForm[] }[];
 };
 
 type Msg = { tipo: 'ok' | 'erro'; texto: string } | null;
@@ -52,7 +52,10 @@ export function BairrosEntregas({ lojas, inicial }: { lojas: LojaBairros[]; inic
         <div key={loja.id} className="grade">
           <LocalLoja loja={loja} />
           {loja.marcas.map((m) => (
-            <TabelaBairros key={m.id} loja={loja} marca={m} varias={loja.marcas.length > 1} outras={todasMarcas.filter((x) => x.id !== m.id)} />
+            <div key={m.id} className="grade">
+              <TabelaBairros loja={loja} marca={m} varias={loja.marcas.length > 1} outras={todasMarcas.filter((x) => x.id !== m.id)} />
+              <FaixasKm loja={loja} marca={m} varias={loja.marcas.length > 1} />
+            </div>
           ))}
         </div>
       )}
@@ -333,6 +336,78 @@ function TabelaBairros({
           {ativos.some((l) => lerKm(l.km)) && ` · ${formatarKm(ativos.reduce((s, l) => s + (lerKm(l.km) || 0), 0) / Math.max(1, ativos.filter((l) => lerKm(l.km)).length))} da loja`}
         </p>
       )}
+    </section>
+  );
+}
+
+type LinhaFaixa = { ateKm: string; taxa: string; minutos: string };
+
+/** Taxa por raio em km para quem não está na lista de bairros (D-048). */
+function FaixasKm({ loja, marca, varias }: { loja: LojaBairros; marca: { id: string; nome: string; faixas: FaixaForm[] }; varias: boolean }) {
+  const [linhas, setLinhas] = useState<LinhaFaixa[]>(() =>
+    marca.faixas.map((f) => ({ ateKm: String(f.ateKm).replace('.', ','), taxa: reais(f.taxa), minutos: f.minutosExtra ? String(f.minutosExtra) : '' })),
+  );
+  const [msg, setMsg] = useState<Msg>(null);
+  const [pendente, iniciar] = useTransition();
+  const mudar = (i: number, x: Partial<LinhaFaixa>) => setLinhas((l) => l.map((y, j) => (j === i ? { ...y, ...x } : y)));
+  const salvar = () => {
+    const faixas: FaixaForm[] = [];
+    for (const l of linhas) {
+      const km = lerKm(l.ateKm);
+      const taxa = centavos(l.taxa);
+      const min = l.minutos.trim() ? Number(l.minutos) : 0;
+      if (km == null || Number.isNaN(km) || km <= 0) return setMsg({ tipo: 'erro', texto: 'Informe o km de cada faixa.' });
+      if (taxa == null || Number.isNaN(taxa)) return setMsg({ tipo: 'erro', texto: 'Informe a taxa de cada faixa (0 = grátis).' });
+      if (!Number.isInteger(min) || min < 0 || min > 240) return setMsg({ tipo: 'erro', texto: 'Tempo adicional em minutos (0 a 240).' });
+      faixas.push({ ateKm: km, taxa, minutosExtra: min });
+    }
+    faixas.sort((a, b) => a.ateKm - b.ateKm);
+    iniciar(async () => {
+      const r = await salvando(salvarFaixasKm(marca.id, faixas));
+      setMsg(r.ok ? { tipo: 'ok', texto: faixas.length ? `${faixas.length} faixa(s) salvas.` : 'Faixas removidas: só os bairros da lista recebem entrega.' } : { tipo: 'erro', texto: r.erro });
+    });
+  };
+  return (
+    <section className="cartao grade" aria-label={`Taxa por km${varias ? ` · ${marca.nome}` : ''}`}>
+      <h3 style={{ margin: 0 }}>Taxa por distância (raio em km){varias ? ` · ${marca.nome}` : ''}</h3>
+      <p className="dica" style={{ margin: 0 }}>
+        Para endereços <strong>fora da lista de bairros</strong>: o cardápio acha o endereço no mapa, mede a distância em linha reta até a loja e cobra a primeira faixa que couber.
+        Acima da última faixa, não entrega. Os bairros da lista continuam com o preço deles.
+      </p>
+      {loja.lat == null && linhas.length > 0 && <p className="erro" style={{ margin: 0 }}>Salve a localização da loja (acima) para as faixas funcionarem.</p>}
+      {linhas.length > 0 && (
+        <table className="tabela">
+          <thead>
+            <tr><th>Até (km)</th><th>Taxa (R$)</th><th>Tempo adicional (min)</th><th /></tr>
+          </thead>
+          <tbody>
+            {linhas.map((l, i) => (
+              <tr key={i}>
+                <td><input inputMode="decimal" aria-label="Até km" value={l.ateKm} onChange={(e) => mudar(i, { ateKm: e.target.value })} style={{ width: '6rem' }} /></td>
+                <td><input inputMode="decimal" aria-label="Taxa" value={l.taxa} onChange={(e) => mudar(i, { taxa: e.target.value })} style={{ width: '7rem' }} /></td>
+                <td><input inputMode="numeric" aria-label="Tempo adicional" value={l.minutos} placeholder="0" onChange={(e) => mudar(i, { minutos: e.target.value })} style={{ width: '6rem' }} /></td>
+                <td><button type="button" aria-label="Remover faixa" onClick={() => setLinhas((x) => x.filter((_, j) => j !== i))}>✕</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      <div className="linha" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+        <button
+          type="button"
+          onClick={() => {
+            const ult = linhas[linhas.length - 1];
+            const prox = ult ? (lerKm(ult.ateKm) ?? 0) + 2 : 3;
+            setLinhas([...linhas, { ateKm: String(Number.isNaN(prox) ? 3 : prox).replace('.', ','), taxa: '', minutos: '' }]);
+          }}
+        >
+          + Faixa
+        </button>
+        <button type="button" className="botao-primario" disabled={pendente} onClick={salvar}>
+          {pendente ? 'Salvando…' : 'Salvar faixas'}
+        </button>
+        {msg && <span className={msg.tipo === 'erro' ? 'erro' : 'dica'} role="status">{msg.texto}</span>}
+      </div>
     </section>
   );
 }

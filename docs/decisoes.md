@@ -498,3 +498,10 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - No checkout, o **WhatsApp vem antes do nome**, com o aviso "para avisarmos o andamento do seu pedido" (igual ao BeeFood).
 - Barra de baixo **Cardápio · Pedidos · Perfil**. *Pedidos* lista os pedidos feitos **neste aparelho** (`localStorage res_meus_pedidos`, até 30) e busca a situação ao vivo pelo código (`acompanhar_pedido`, até 15 por vez). *Perfil* edita os dados guardados (`res_cliente`) e tem "Esquecer meus dados".
 - **Por que só o aparelho, e não "digite o telefone e veja seus pedidos":** buscar por telefone numa página pública expõe nome, endereço e histórico de qualquer pessoa para quem souber o número. Login por código no WhatsApp fica para depois.
+
+## D-048 — Taxa de entrega por raio em km (28/10/2026)
+
+- **Bairro da lista manda**; a faixa de km vale só para endereço fora da lista (opção "Outro bairro (calcular pela distância)" no cardápio).
+- Faixas por cardápio em **Entregas → Bairros e preços**: até X km, taxa e **tempo adicional**. Acima da última faixa, não entrega.
+- Distância em **linha reta** da loja até o endereço (o "raio" do BeeFood). O servidor acha o endereço no mapa (Nominatim, perto da loja) e o **banco refaz a conta** com as coordenadas ao gravar o pedido; o ponto fica no pedido (`destino_lat/lng`, `distancia_reta_km`) e já serve à rota do motoboy.
+- Risco aceito: quem forja coordenadas paga a faixa errada, mas o pedido mostra o endereço por extenso e a rota vai para o ponto informado. O tempo adicional aparece no checkout; somar ao prazo do quadro fica para depois.

@@ -36,7 +36,7 @@ import {
   situacaoHorario,
   type VitrinePublica,
 } from '@/lib/publico';
-import { conferirCupom, enviarPedido } from '@/app/c/[slug]/actions';
+import { calcularEntregaKm, conferirCupom, enviarPedido, type EntregaKm, type FaixaKm } from '@/app/c/[slug]/actions';
 import { rastrear } from '@/lib/rastreio';
 import { GruposMontagem, Montador } from '@/components/publico/montagem';
 import { guardarPedido, MeusPedidos, NavCliente, PerfilCliente } from '@/components/publico/conta-cliente';
@@ -93,7 +93,7 @@ function resumoCombo(p: ProdutoPublico, passos: EscolhaPasso[]): string {
     .join(' + ');
 }
 
-export function CardapioCliente({ cardapio, agendamento, vitrine }: { cardapio: CardapioPublico; agendamento: AgendamentoPublico; vitrine?: VitrinePublica | null }) {
+export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [] }: { cardapio: CardapioPublico; agendamento: AgendamentoPublico; vitrine?: VitrinePublica | null; faixasKm?: FaixaKm[] }) {
   const { marca, setores } = cardapio;
   const router = useRouter();
   const chaveCarrinho = `res_carrinho_${marca.slug}`;
@@ -269,6 +269,7 @@ export function CardapioCliente({ cardapio, agendamento, vitrine }: { cardapio: 
       {etapa === 'carrinho' && (
         <Checkout
           cardapio={cardapio}
+          faixasKm={faixasKm}
           agendamento={agendamento}
           itens={calculados}
           subtotal={subtotal}
@@ -398,6 +399,7 @@ function MontadorCombo({ combo, extras, aoAdicionar, aoFechar }: { combo: Produt
 
 function Checkout({
   cardapio,
+  faixasKm,
   agendamento,
   itens,
   subtotal,
@@ -409,6 +411,7 @@ function Checkout({
   concluido,
 }: {
   cardapio: CardapioPublico;
+  faixasKm: FaixaKm[];
   agendamento: AgendamentoPublico;
   itens: ItemCalculado[];
   subtotal: number;
@@ -420,7 +423,7 @@ function Checkout({
   concluido: (codigo: string, numero: number, total: number) => void;
 }) {
   const { marca } = cardapio;
-  const tiposAceitos = (['entrega', 'retirada'] as const).filter((t) => (t === 'entrega' ? marca.aceita_entrega && marca.areas.length > 0 : marca.aceita_retirada));
+  const tiposAceitos = (['entrega', 'retirada'] as const).filter((t) => (t === 'entrega' ? marca.aceita_entrega && (marca.areas.length > 0 || faixasKm.length > 0) : marca.aceita_retirada));
   const [tipo, setTipo] = useState<'entrega' | 'retirada'>(tiposAceitos[0] ?? 'retirada');
   const [cliente, setCliente] = useState({ nome: '', telefone: '' });
   const [endereco, setEndereco] = useState({ logradouro: '', numero: '', complemento: '', bairro: '', referencia: '' });
@@ -455,12 +458,38 @@ function Checkout({
   useEffect(() => {
     const salvo = ler<{ cliente?: typeof cliente; endereco?: typeof endereco }>('res_cliente', {});
     if (salvo.cliente) setCliente(salvo.cliente);
-    if (salvo.endereco) setEndereco(salvo.endereco);
+    if (salvo.endereco) {
+      setEndereco(salvo.endereco);
+      if (faixasKm.length && salvo.endereco.bairro && taxaDoBairro(marca.areas, salvo.endereco.bairro) === null) setOutroBairro(true);
+    }
   }, []);
 
   const taxaArea = taxaDoBairro(marca.areas, endereco.bairro);
-  const area = taxaArea !== null;
-  const taxa = tipo === 'entrega' ? taxaArea ?? 0 : 0;
+  // bairro fora da lista: faixa de km pelo mapa (D-048)
+  const usaKm = faixasKm.length > 0;
+  const [outroBairro, setOutroBairro] = useState(false);
+  const [km, setKm] = useState<EntregaKm | null>(null);
+  const [calculandoKm, setCalculandoKm] = useState(false);
+  useEffect(() => {
+    if (!usaKm || tipo !== 'entrega' || taxaArea !== null) return setKm(null);
+    if (!endereco.logradouro.trim() || endereco.bairro.trim().length < 2) return setKm(null);
+    let vivo = true;
+    const t = setTimeout(() => {
+      setCalculandoKm(true);
+      calcularEntregaKm(marca.slug, endereco)
+        .then((r) => vivo && setKm(r))
+        .catch(() => vivo && setKm({ ok: false, erro: 'Não foi possível calcular a entrega agora.' }))
+        .finally(() => vivo && setCalculandoKm(false));
+    }, 900);
+    return () => {
+      vivo = false;
+      clearTimeout(t);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [usaKm, tipo, taxaArea, endereco.logradouro, endereco.numero, endereco.bairro, marca.slug]);
+  const taxaKm = km?.ok ? km.taxa : null;
+  const area = taxaArea !== null || taxaKm !== null;
+  const taxa = tipo === 'entrega' ? taxaArea ?? taxaKm ?? 0 : 0;
   const trocoPara = trocoTxt.trim() ? lerCentavos(trocoTxt) : null;
 
   const aplicarCupom = (codigo: string) =>
@@ -519,6 +548,7 @@ function Checkout({
         cupom: cupom?.codigo ?? null,
         fidelidade: usoFid,
         fidelidadeProva: provaFidelidade(cliente.telefone),
+        destino: taxaArea === null && km?.ok ? { lat: km.lat, lng: km.lng } : null,
       });
       if (!r.ok) return setErro(r.erro);
       lembrarPedidoFidelidade(cliente.telefone, r.codigo);
@@ -632,19 +662,44 @@ function Checkout({
           <legend>Endereço de entrega</legend>
           <label>
             Bairro
-            <select value={endereco.bairro} onChange={(e) => setEndereco({ ...endereco, bairro: e.target.value })}>
+            <select
+              value={outroBairro ? '__outro' : endereco.bairro}
+              onChange={(e) => {
+                const outro = e.target.value === '__outro';
+                setOutroBairro(outro);
+                setEndereco({ ...endereco, bairro: outro ? '' : e.target.value });
+              }}
+            >
               <option value="">Escolha o bairro</option>
               {marca.areas.map((a) => (
                 <option key={a.bairro} value={a.bairro}>{a.bairro} · entrega {a.taxa ? formatarReais(a.taxa) : 'grátis'}</option>
               ))}
+              {usaKm && <option value="__outro">Outro bairro (calcular pela distância)</option>}
             </select>
-            <span className="dica">Seu bairro não está na lista? Ainda não entregamos aí, mas você pode retirar na loja.</span>
+            {!usaKm && <span className="dica">Seu bairro não está na lista? Ainda não entregamos aí, mas você pode retirar na loja.</span>}
           </label>
+          {outroBairro && (
+            <label>
+              Nome do seu bairro
+              <input type="text" value={endereco.bairro} maxLength={80} onChange={(e) => setEndereco({ ...endereco, bairro: e.target.value })} />
+            </label>
+          )}
           <div className="pub-linha">
             <label style={{ flex: '3 1 12rem' }}>Rua<input type="text" autoComplete="address-line1" value={endereco.logradouro} onChange={(e) => setEndereco({ ...endereco, logradouro: e.target.value })} /></label>
             <label style={{ flex: '1 1 5rem' }}>Número<input type="text" value={endereco.numero} onChange={(e) => setEndereco({ ...endereco, numero: e.target.value })} /></label>
           </div>
           <label>Complemento<input type="text" autoComplete="address-line2" value={endereco.complemento} onChange={(e) => setEndereco({ ...endereco, complemento: e.target.value })} /></label>
+          {outroBairro && (
+            <p className={km && !km.ok ? 'erro' : 'dica'} role="status" style={{ margin: 0 }}>
+              {calculandoKm
+                ? 'Calculando a entrega…'
+                : !km
+                  ? 'Preencha rua, número e bairro para calcular a entrega.'
+                  : km.ok
+                    ? `Entrega ${km.taxa ? formatarReais(km.taxa) : 'grátis'} · ${km.km.toFixed(1).replace('.', ',')} km${km.minutosExtra ? ` · +${km.minutosExtra} min no prazo` : ''}${km.aproximado ? ' (pelo centro do bairro)' : ''}`
+                    : km.erro}
+            </p>
+          )}
           <label>Ponto de referência<input type="text" value={endereco.referencia} onChange={(e) => setEndereco({ ...endereco, referencia: e.target.value })} /></label>
         </fieldset>
       )}
