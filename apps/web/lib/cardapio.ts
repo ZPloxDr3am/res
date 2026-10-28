@@ -17,7 +17,7 @@ export async function carregarCardapio(lojaId: string): Promise<Cardapio> {
       .order('ordem'),
     supabase
       .from('grupos_opcoes')
-      .select('id, nome, formacao, obrigatorio, pizza, min_qtd, max_qtd, permite_repetir, ativo, delivery, presencial, opcoes(id, nome, preco, preco_delivery, preco_presencial, min_qtd, max_qtd, ativo, delivery, presencial, ordem, imagem_url, complementos(nome, preco), produtos(nome, preco, imagem_url))')
+      .select('id, nome, formacao, obrigatorio, pizza, min_qtd, max_qtd, permite_repetir, ativo, delivery, presencial, opcoes(id, nome, preco, preco_delivery, preco_presencial, min_qtd, max_qtd, ativo, delivery, presencial, ordem, imagem_url, descricao, selo, complementos(nome, preco), produtos(nome, preco, imagem_url))')
       .eq('loja_id', lojaId),
     supabase.from('combo_passos').select('id, combo_id, ordem, titulo, quantidade, setor_id, produtos').eq('loja_id', lojaId).order('ordem'),
     supabase.from('promocoes_categoria').select('setor_id, percentual, dias, promo_inicio, promo_fim, promo_ate').eq('loja_id', lojaId).eq('ativo', true),

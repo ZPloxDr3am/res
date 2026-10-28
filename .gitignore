@@ -19,3 +19,4 @@ graphify-out/.graphify_*.json
 !graphify-out/.graphify_labels.json
 graphify-out/.graphify_*.txt
 graphify-out/20[0-9][0-9]-*/
+graphify-out/.rebuild.lock

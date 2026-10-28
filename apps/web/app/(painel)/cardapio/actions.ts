@@ -384,3 +384,12 @@ export async function importarDe(
   revalidatePath('/cardapio');
   return { ok: true, ...(data as { categorias: number; produtos: number; grupos: number; renomeados: number }) };
 }
+
+/** Ingredientes e selo de uma opção (D-046): aparecem na montagem do cardápio digital. */
+export async function salvarDetalheOpcao(opcaoId: string, descricao: string, selo: string | null): Promise<{ ok: true } | { ok: false; erro: string }> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('salvar_detalhe_opcao', { p_opcao: opcaoId, p_descricao: descricao, p_selo: selo });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/cardapio');
+  return { ok: true };
+}

@@ -66,10 +66,10 @@
     "semantic_hash": "7c8c54427dc401e946d8e164c3538a21"
   },
   "apps/web/app/(painel)/cardapio/actions.ts": {
-    "mtime": 1793158733.6593852,
-    "seen": 1793205238.7560012,
-    "ast_hash": "acbb58ddb7010e48a9e32de3b3b90f72",
-    "semantic_hash": "acbb58ddb7010e48a9e32de3b3b90f72"
+    "mtime": 1793208033.9313219,
+    "seen": 1793208056.5084991,
+    "ast_hash": "58f039d79d87d8548f8481e871a16b85",
+    "semantic_hash": ""
   },
   "apps/web/app/(painel)/cardapio/page.tsx": {
     "mtime": 1792786116.8296635,
@@ -90,14 +90,14 @@
     "semantic_hash": "e4e858c9fc5938864c379263bdb7338d"
   },
   "apps/web/app/(painel)/delivery/actions.ts": {
-    "mtime": 1793207288.1592777,
-    "seen": 1793207405.240171,
+    "mtime": 1793207864.367312,
+    "seen": 1793207867.9442182,
     "ast_hash": "04b986d8f47d8129f4dee3893d1d30be",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/delivery/page.tsx": {
-    "mtime": 1793207288.179917,
-    "seen": 1793207405.2401738,
+    "mtime": 1793207864.367312,
+    "seen": 1793207867.9442213,
     "ast_hash": "6617c5dd69c2a2071d76473c839198e4",
     "semantic_hash": ""
   },
@@ -294,8 +294,8 @@
     "semantic_hash": "9cfdbe529af9fee7f7020c8585cd58c0"
   },
   "apps/web/app/c/[slug]/page.tsx": {
-    "mtime": 1793207511.3850365,
-    "seen": 1793207513.7095108,
+    "mtime": 1793207864.367312,
+    "seen": 1793207867.9442773,
     "ast_hash": "1a72c7931f4ae3b43f4ec4fd09f3f94b",
     "semantic_hash": ""
   },
@@ -426,10 +426,10 @@
     "semantic_hash": "9fb3406c9aab789d0f557eadc2cf95bf"
   },
   "apps/web/components/cardapio/editor-cardapio.tsx": {
-    "mtime": 1793158733.6633852,
-    "seen": 1793205238.7560744,
-    "ast_hash": "4109edb51df47bb7bc3649a5411ef4a5",
-    "semantic_hash": "4109edb51df47bb7bc3649a5411ef4a5"
+    "mtime": 1793208033.9176283,
+    "seen": 1793208056.508622,
+    "ast_hash": "b143b6eca05977bed80f7977aeae9074",
+    "semantic_hash": ""
   },
   "apps/web/components/cardapio/editor-combo.tsx": {
     "mtime": 1792884541.5178196,
@@ -438,8 +438,8 @@
     "semantic_hash": "3545dbdb59e11448a0d585f7de9fb246"
   },
   "apps/web/components/cardapio/editor-produto.tsx": {
-    "mtime": 1792883444.3124208,
-    "seen": 1793205238.7560768,
+    "mtime": 1793208033.917913,
+    "seen": 1793208056.5086248,
     "ast_hash": "b2714484c051b2e728a2e2ef1407dc63",
     "semantic_hash": "b2714484c051b2e728a2e2ef1407dc63"
   },
@@ -582,10 +582,10 @@
     "semantic_hash": "b9691fa88142aa6b2234d7c9d00a89e3"
   },
   "apps/web/components/form-grupo.tsx": {
-    "mtime": 1793158733.6633852,
-    "seen": 1793205238.756099,
-    "ast_hash": "ce8e29c7d937b00b491ad98a97c2585e",
-    "semantic_hash": "ce8e29c7d937b00b491ad98a97c2585e"
+    "mtime": 1793208033.9182274,
+    "seen": 1793208056.508657,
+    "ast_hash": "1d95669c55d16a4ec306f36b10640f92",
+    "semantic_hash": ""
   },
   "apps/web/components/form-setor.tsx": {
     "mtime": 1792884541.5178196,
@@ -678,9 +678,9 @@
     "semantic_hash": "d472090f7948a1f67e4266a37eecb2ad"
   },
   "apps/web/components/publico/cardapio-cliente.tsx": {
-    "mtime": 1793207386.3312402,
-    "seen": 1793207405.2403302,
-    "ast_hash": "6730b03a5c1dbaac1bbdc587d3278026",
+    "mtime": 1793207981.965663,
+    "seen": 1793208056.508677,
+    "ast_hash": "a8f410c339289e35df379a75213f053b",
     "semantic_hash": ""
   },
   "apps/web/components/publico/mapa-cliente.tsx": {
@@ -750,16 +750,16 @@
     "semantic_hash": "76946e36c151908760d136701ba9b8b1"
   },
   "apps/web/lib/cardapio-dados.ts": {
-    "mtime": 1793158733.667385,
-    "seen": 1793205238.7561228,
-    "ast_hash": "e326c74654a434e1ecf81d7d411b2945",
-    "semantic_hash": "e326c74654a434e1ecf81d7d411b2945"
+    "mtime": 1793208033.917229,
+    "seen": 1793208056.5086935,
+    "ast_hash": "3a764cfbb6fe42f6c70928b18125b9a5",
+    "semantic_hash": ""
   },
   "apps/web/lib/cardapio.ts": {
-    "mtime": 1793158733.667385,
-    "seen": 1793205238.7561235,
-    "ast_hash": "d33d3e12444fd198c73e75deee30c888",
-    "semantic_hash": "d33d3e12444fd198c73e75deee30c888"
+    "mtime": 1793208033.916798,
+    "seen": 1793208056.5086944,
+    "ast_hash": "8f3d2b32dd64233b8ecbd792b53bd284",
+    "semantic_hash": ""
   },
   "apps/web/lib/clientes.ts": {
     "mtime": 1793124255.8803716,
@@ -840,8 +840,8 @@
     "semantic_hash": "662714211bcb04baf9992156992c9a6b"
   },
   "apps/web/lib/publico.ts": {
-    "mtime": 1793207319.2272794,
-    "seen": 1793207405.2403662,
+    "mtime": 1793207864.371312,
+    "seen": 1793207867.9444118,
     "ast_hash": "e08d112793b87f3c8bd3ba3c83d4c9fb",
     "semantic_hash": ""
   },
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793207402.1432843,
-    "seen": 1793207405.2406104,
-    "ast_hash": "5a3b46eae39a7e6b7d62e600c9a1355a",
+    "mtime": 1793208053.659323,
+    "seen": 1793208056.5088863,
+    "ast_hash": "f4fd265338fbd49bd0fb84bddce71db3",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1722,21 +1722,39 @@
     "semantic_hash": ""
   },
   "apps/web/components/delivery/vitrine.tsx": {
-    "mtime": 1793207288.1632776,
-    "seen": 1793207405.2402823,
+    "mtime": 1793207864.371312,
+    "seen": 1793207872.650639,
     "ast_hash": "d1869c8c011143695a2820b39164868d",
     "semantic_hash": ""
   },
   "supabase/migrations/20261028000045_vitrine.sql": {
-    "mtime": 1793207231.0667067,
-    "seen": 1793207405.2405376,
+    "mtime": 1793207864.387312,
+    "seen": 1793207872.650945,
     "ast_hash": "dccf82dd07d63ec5139e53915a064236",
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzz_vitrine.sql": {
-    "mtime": 1793207246.831766,
-    "seen": 1793207405.2405775,
+    "mtime": 1793207864.387312,
+    "seen": 1793207872.650993,
     "ast_hash": "89102c21cc6c36a6f5a37a607455caab",
+    "semantic_hash": ""
+  },
+  "apps/web/components/cardapio/detalhe-opcao.tsx": {
+    "mtime": 1793208033.939453,
+    "seen": 1793208056.5086198,
+    "ast_hash": "1c74be3275aca65362ed10e04175da93",
+    "semantic_hash": ""
+  },
+  "apps/web/components/publico/montagem.tsx": {
+    "mtime": 1793207934.5457797,
+    "seen": 1793208056.5086794,
+    "ast_hash": "60c0722485db63d6c0644023f5b97984",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261028000046_la_pizza_sabores.sql": {
+    "mtime": 1793207992.6353195,
+    "seen": 1793208056.5088432,
+    "ast_hash": "221d192bb5b64f11df45d67e0b2463ec",
     "semantic_hash": ""
   }
 }

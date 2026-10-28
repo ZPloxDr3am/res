@@ -475,3 +475,20 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **Cor da marca:** substitui a cor principal em todo o cardápio, inclusive nos botões.
 - **Link de produto:** `?produto=<id>` abre a montagem direto e a URL acompanha o produto aberto, para compartilhar.
 - **Preparado para a entrega 2:** cada opção pode ter `descricao` (ingredientes) e `selo` ("recomendado" ou "novo"). O selo **"Mais pedido"** é calculado: as 3 opções mais escolhidas de cada grupo nos últimos 60 dias, com pelo menos 3 pedidos.
+
+## D-046 · Montagem do produto no cardápio (entrega 2 de 3)
+
+- **Janela de montagem:** no computador, foto grande à esquerda e escolhas à direita; no celular, folha que sobe de baixo.
+- **Cada grupo:**
+  - cabeçalho fixo com a regra ("Escolha 3 opções", "Escolha até 2"…), **contador X/Y** (verde com ✓ quando completo) e **OBRIGATÓRIO**;
+  - **🔍 busca** quando tem mais de 8 opções.
+- **Opções:**
+  - escolha única é como um botão de rádio;
+  - múltipla tem +/− (repetir sabor quando o grupo deixa). Quando o grupo enche, as demais ficam apagadas.
+  - Mostram foto, **ingredientes**, selo e "+ R$" quando faz sentido. O "+ R$" é o preço na soma e a diferença para a mais barata em "maior"; na proporcional não aparece.
+- **Passa sozinho:** ao completar um grupo, a janela rola para o próximo que falta.
+- **Ao tentar adicionar incompleto:** rola até o grupo, pinta de vermelho e mostra "Verifique a quantidade do grupo …".
+- **Rodapé:** observação (até 100 caracteres), quantidade e "Adicionar R$ X". O preço já soma o que foi escolhido enquanto monta.
+- **Selos:** "🔥 Mais pedido" é automático (D-045). "⭐ Recomendado" e "✨ Novo" e os **ingredientes** se cadastram em Cardápio → grupo → "+ Detalhes" em cada opção.
+- **Sacola:** foto, ✏️ **Editar** (reabre a montagem com as escolhas e salva por cima) e 🗑 no lugar do − quando a quantidade é 1.
+- **LA PIZZA (0046, a pedido do dono):** cada tamanho exige **exatamente** o número de sabores dele (Broto 1, Média 2, Grande 3, Gigante 4), como no BeeFood. Para meio a meio, repete um sabor: 2× Calabresa + 1× Bacon numa Grande = ⅔ e ⅓, e o estoque e o preço seguem a fração.
