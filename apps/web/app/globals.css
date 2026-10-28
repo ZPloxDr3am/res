@@ -906,13 +906,22 @@ button .np-foto-opcao { width: 26px; height: 26px; border-radius: 6px; }
 .fo-tirar, button.fo-tirar { position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; min-height: 0; padding: 0; border-radius: 999px; font-size: 0.75rem; line-height: 1; justify-content: center; background: var(--superficie); box-shadow: 0 0 0 1px var(--borda-forte); }
 .fo-depois { width: 2.4rem; height: 2.4rem; align-items: center; justify-content: center; border-radius: 9px; border: 1px dashed var(--borda); opacity: 0.5; font-size: 0.95rem; }
 
-/* ---- esboço enquanto a tela carrega */
-.esboco { display: grid; gap: 1rem; }
-.esboco span { display: block; border-radius: var(--raio-controle); background: linear-gradient(90deg, var(--borda) 0%, color-mix(in srgb, var(--borda) 40%, var(--superficie)) 50%, var(--borda) 100%); background-size: 200% 100%; animation: esboco 1.2s ease-in-out infinite; }
-.esboco-titulo { width: 12rem; height: 2rem; }
-.esboco-linha { width: 20rem; max-width: 70%; height: 0.9rem; }
-.esboco-grade { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-.esboco-grade span { height: 7rem; border-radius: var(--raio); }
-.esboco-bloco { height: 16rem; border-radius: var(--raio) !important; }
-@keyframes esboco { from { background-position: 100% 0; } to { background-position: -100% 0; } }
-@media (prefers-reduced-motion: reduce) { .esboco span { animation: none; } }
+/* ---- carregando: marca RES animada (aparece só se a tela demorar mais que um instante) */
+.carregando-res { min-height: 60vh; display: grid; place-content: center; justify-items: center; gap: 0.9rem; opacity: 0; animation: carregando-aparece 0.2s ease-out 0.12s forwards; }
+.carregando-marca { display: inline-flex; align-items: center; gap: 0.6rem; }
+.carregando-selo { width: 2.1rem; height: 2.1rem; border-radius: 11px; background: var(--primaria); box-shadow: inset -9px -9px 0 color-mix(in srgb, #000 18%, var(--primaria)); animation: carregando-selo 1.1s cubic-bezier(.5, 0, .3, 1) infinite; }
+.carregando-letras { display: inline-flex; font-size: 2.2rem; font-weight: 750; letter-spacing: -0.03em; color: var(--texto); line-height: 1; }
+.carregando-letras span { animation: carregando-letra 1.1s ease-in-out infinite; }
+.carregando-letras span:nth-child(2) { animation-delay: 0.12s; }
+.carregando-letras span:nth-child(3) { animation-delay: 0.24s; }
+.carregando-barra { width: 9rem; height: 3px; border-radius: 999px; background: color-mix(in srgb, var(--primaria) 15%, var(--borda)); overflow: hidden; }
+.carregando-barra span { display: block; width: 40%; height: 100%; border-radius: 999px; background: var(--primaria); animation: carregando-barra 1.1s ease-in-out infinite; }
+.carregando-texto { font-size: 0.85rem; color: var(--texto-suave); }
+@keyframes carregando-aparece { to { opacity: 1; } }
+@keyframes carregando-selo { 0%, 100% { transform: scale(1) rotate(0deg); } 45% { transform: scale(0.82) rotate(-8deg); } 70% { transform: scale(1.06) rotate(0deg); } }
+@keyframes carregando-letra { 0%, 100% { opacity: 1; transform: translateY(0); } 40% { opacity: 0.35; transform: translateY(-3px); } }
+@keyframes carregando-barra { from { transform: translateX(-110%); } to { transform: translateX(260%); } }
+@media (prefers-reduced-motion: reduce) {
+  .carregando-res { animation: none; opacity: 1; }
+  .carregando-selo, .carregando-letras span, .carregando-barra span { animation: none; }
+}
