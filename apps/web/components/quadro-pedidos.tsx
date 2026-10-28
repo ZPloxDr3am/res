@@ -284,6 +284,8 @@ function CartaoPedido({ pedido: p, tempoPreparo, fuso, marca, prazoMin = 35 }: {
       if (r.ok) setCancelando(false);
     });
 
+  const aguardaPix = p.status === 'novo' && !!p.aguarda_pagamento && !p.pago_em && !!p.codigo;
+  const linkPix = () => `${window.location.origin}/c/pedido/pedido/${p.codigo}`;
   return (
     <article className="pedido" data-status={p.status} data-prazo={sit && sit.estado !== 'ok' ? sit.estado : undefined}>
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center', gap: '0.4rem' }}>
@@ -294,6 +296,27 @@ function CartaoPedido({ pedido: p, tempoPreparo, fuso, marca, prazoMin = 35 }: {
           {aberto ? tempoDecorrido(new Date(p.criado_em)) : STATUS_ROTULO[p.status]}
         </span>
       </div>
+      {aguardaPix && (
+        <div className="pix-espera">
+          <strong>⏳ Aguardando Pix do cliente</strong>
+          <span className="dica">Entra na cozinha sozinho quando o Mercado Pago confirmar.</span>
+          <div className="linha" style={{ gap: '0.3rem' }}>
+            <button type="button" className="mini" onClick={() => window.open(linkPix(), '_blank', 'noopener')}>Mostrar QR</button>
+            <button type="button" className="mini" onClick={() => navigator.clipboard?.writeText(linkPix()).catch(() => {})}>Copiar link</button>
+            <button
+              type="button"
+              className="mini"
+              onClick={() => {
+                const tel = (p.cliente_telefone ?? '').replace(/\D/g, '');
+                const msg = `Olá, ${p.cliente_nome.split(' ')[0]}! Para confirmar seu pedido #${p.numero}, pague o Pix por este link: ${linkPix()}`;
+                window.open(`https://wa.me/${tel.length >= 12 ? tel : '55' + tel}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+              }}
+            >
+              Enviar no WhatsApp
+            </button>
+          </div>
+        </div>
+      )}
       {sit && prazo != null && (
         <div className={`selo-prazo ${sit.estado}`} title={`Prometido para ${horaCurta(prazo)}${agendado ? ' (agendado)' : ` (pedido + ${prazoMin} min)`}`}>
           {sit.estado === 'atrasado' ? `⚠ Atrasado ${sit.minutos} min` : sit.estado === 'perto' ? `⏱ Faltam ${sit.minutos} min` : `⏱ Entregar até ${horaCurta(prazo)}`}

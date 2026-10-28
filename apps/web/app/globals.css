@@ -1061,3 +1061,4 @@ tr[aria-current='true'] > td { background: var(--primaria-fundo); }
 .api-envios li { display: grid; grid-template-columns: 7.5rem 9rem 1fr; gap: 0.5rem; color: var(--texto-suave); }
 .api-envios li[data-st='ok'] span:last-child { color: var(--primaria); }
 .api-envios li[data-st='erro'] span:last-child, .api-envios li[data-st='desistiu'] span:last-child { color: var(--erro); }
+.pix-espera { display: grid; gap: 0.25rem; margin: 0.4rem 0; padding: 0.55rem 0.7rem; border-radius: var(--raio-controle); background: #fff1dc; color: #7a4600; }

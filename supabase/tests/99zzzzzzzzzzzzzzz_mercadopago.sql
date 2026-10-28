@@ -62,7 +62,13 @@ insert into ids values ('ped', private.inserir_pedido(pg_temp.id('loja'), pg_tem
 insert into ids values ('ped2', private.inserir_pedido(pg_temp.id('loja'), pg_temp.id('marca'), jsonb_build_object('tipo', 'retirada',
   'cliente', jsonb_build_object('nome', 'Rui', 'telefone', '47996731808'), 'pagamento', 'dinheiro',
   'itens', jsonb_build_array(jsonb_build_object('produto_id', pg_temp.id('pz'), 'quantidade', 1))), 'cardapio_digital', null));
+insert into ids values ('ped3', private.inserir_pedido(pg_temp.id('loja'), pg_temp.id('marca'), jsonb_build_object('tipo', 'balcao',
+  'cliente', jsonb_build_object('nome', 'Leo', 'telefone', '47996731807'), 'pagamento', 'pix',
+  'itens', jsonb_build_array(jsonb_build_object('produto_id', pg_temp.id('pz'), 'quantidade', 1))), 'painel', null));
 do $$ begin
+  if (select status from public.pedidos where id = pg_temp.id('ped3')) <> 'novo' or not (select aguarda_pagamento from public.pedidos where id = pg_temp.id('ped3')) then
+    raise exception 'pix do painel deveria esperar';
+  end if;
   if (select status from public.pedidos where id = pg_temp.id('ped')) <> 'novo' or not (select aguarda_pagamento from public.pedidos where id = pg_temp.id('ped')) then
     raise exception 'pix deveria esperar: %', (select status from public.pedidos where id = pg_temp.id('ped'));
   end if;
@@ -70,7 +76,7 @@ do $$ begin
     raise exception 'dinheiro segue o aceite automático';
   end if;
 end $$;
-update public.pedidos set pago_em = now() where id = pg_temp.id('ped');
+update public.pedidos set pago_em = now() where id in (pg_temp.id('ped'), pg_temp.id('ped3'));
 update public.pedidos set criado_em = now() - interval '1 hour' where id = pg_temp.id('ped2');
 do $$ begin
   if (select aguarda_pagamento from public.pedidos where id = pg_temp.id('ped')) then raise exception 'pago deveria liberar'; end if;
