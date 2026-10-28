@@ -68,9 +68,40 @@ export async function importarNFe(nfe: { chave: string; numero: string; serie: s
   return { ok: true, entradas: (data as { entradas: number }).entradas };
 }
 
-export async function salvarFicha(produtoId: string | null, opcaoId: string | null, itens: { insumo_id: string; quantidade: number }[]): Promise<R> {
+/** lojaId: outra loja do grupo (Meu estoque → Todas as lojas); o banco confere se a pessoa cuida do estoque dela. */
+export async function salvarFicha(produtoId: string | null, opcaoId: string | null, itens: { insumo_id: string; quantidade: number }[], lojaId?: string): Promise<R> {
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
-  const { error } = await supabase.rpc('salvar_ficha', { p_loja: ctx.lojaId, p_produto: produtoId, p_opcao: opcaoId, p_itens: itens });
+  const { error } = await supabase.rpc('salvar_ficha', { p_loja: lojaId ?? ctx.lojaId, p_produto: produtoId, p_opcao: opcaoId, p_itens: itens });
   return error ? { ok: false, erro: error.message } : feito();
+}
+
+export type FiltroMovimentos = { de: string; ate: string; tipos: string[]; fornecedor: string; insumo: string; produto: string; busca: string };
+/** Movimentações com filtros, resumo do período e lista (até 500). */
+export async function buscarMovimentos(f: FiltroMovimentos): Promise<{ ok: true; dados: import('@/lib/estoque').MovimentosFiltrados } | { ok: false; erro: string }> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('movimentos_estoque_filtro', { p_loja: ctx.lojaId, p_filtro: f });
+  if (error) return { ok: false, erro: error.message };
+  return { ok: true, dados: data as import('@/lib/estoque').MovimentosFiltrados };
+}
+
+/** Leva a ficha do produto para o de mesmo nome nas outras lojas do grupo (D-038). */
+export async function copiarFicha(lojaId: string | undefined, produtoId: string): Promise<R<{ copiadas: string[]; fora: { loja: string; faltam: string[] }[] }>> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('copiar_ficha', { p_loja: lojaId ?? ctx.lojaId, p_produto: produtoId });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/estoque');
+  return { ok: true, ...(data as { copiadas: string[]; fora: { loja: string; faltam: string[] }[] }) };
+}
+
+/** Contagem inteira de uma vez: o saldo de cada item vira o contado (D-038). */
+export async function salvarContagem(itens: { insumo_id: string; quantidade: number }[], obs: string): Promise<R<{ mudaram: number; diferenca: number }>> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('salvar_contagem', { p_loja: ctx.lojaId, p_itens: itens, p_obs: obs });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/estoque');
+  return { ok: true, ...(data as { mudaram: number; diferenca: number }) };
 }

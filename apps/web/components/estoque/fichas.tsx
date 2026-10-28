@@ -1,17 +1,17 @@
 'use client';
 import { useMemo, useState, useTransition } from 'react';
 import { formatarReais, paraCentavos } from '@res/core';
-import { salvarFicha } from '@/app/(painel)/estoque/actions';
+import { copiarFicha, salvarFicha } from '@/app/(painel)/estoque/actions';
 import { salvando } from '@/components/tempo-real';
 import { nomeOpcao, type GrupoRow, type ProdutoRow } from '@/lib/cardapio-dados';
 import { n, type Insumo, type ItemFicha } from '@/lib/estoque';
 
-type Alvo = { tipo: 'produto'; id: string; nome: string; preco: number | null } | { tipo: 'opcao'; id: string; nome: string; grupo: string; pizza: boolean };
+export type Alvo = { tipo: 'produto'; id: string; nome: string; preco: number | null } | { tipo: 'opcao'; id: string; nome: string; grupo: string; pizza: boolean };
 const chave = (a: Alvo) => `${a.tipo}:${a.id}`;
 const num = (t: string) => (t.trim() === '' ? NaN : Number(t.replace(',', '.')));
 
 /** Ficha técnica (D-036): quanto cada produto e cada opção gastam de cada insumo — dá a baixa nas vendas. */
-export function Fichas({ produtos, grupos, insumos, fichas }: { produtos: ProdutoRow[]; grupos: GrupoRow[]; insumos: Insumo[]; fichas: ItemFicha[] }) {
+export function Fichas({ produtos, grupos, insumos, fichas, soOpcoes = false }: { produtos: ProdutoRow[]; grupos: GrupoRow[]; insumos: Insumo[]; fichas: ItemFicha[]; soOpcoes?: boolean }) {
   const [busca, setBusca] = useState('');
   const [alvo, setAlvo] = useState<Alvo | null>(null);
   const porAlvo = useMemo(() => {
@@ -24,7 +24,7 @@ export function Fichas({ produtos, grupos, insumos, fichas }: { produtos: Produt
   }, [fichas]);
   const custo = (k: string) => (porAlvo.get(k) ?? []).reduce((s, f) => s + n(f.custo), 0);
   const filtra = (t: string) => !busca.trim() || t.toLowerCase().includes(busca.trim().toLowerCase());
-  const prods = produtos.filter((p) => !p.combo && filtra(p.nome));
+  const prods = soOpcoes ? [] : produtos.filter((p) => !p.combo && filtra(p.nome));
   const gs = grupos.filter((g) => g.ativo && g.opcoes.some((o) => o.ativo)).map((g) => ({ g, ops: g.opcoes.filter((o) => o.ativo && (filtra(nomeOpcao(o)) || filtra(g.nome))) })).filter((x) => x.ops.length);
 
   if (insumos.length === 0) return <p className="cartao dica" style={{ margin: 0 }}>Cadastre os insumos primeiro (ou importe uma NF-e) para montar as fichas técnicas.</p>;
@@ -33,7 +33,7 @@ export function Fichas({ produtos, grupos, insumos, fichas }: { produtos: Produt
     <div className="fichas">
       <aside className="cartao fichas-lista" aria-label="Produtos e opções">
         <input type="search" value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar…" aria-label="Buscar produto ou opção" />
-        <span className="fichas-titulo">Produtos</span>
+        {prods.length > 0 && <span className="fichas-titulo">Produtos</span>}
         {prods.map((p) => {
           const a: Alvo = { tipo: 'produto', id: p.id, nome: p.nome, preco: p.preco == null ? null : paraCentavos(Number(p.preco)) };
           const k = chave(a);
@@ -64,7 +64,7 @@ export function Fichas({ produtos, grupos, insumos, fichas }: { produtos: Produt
         {!alvo ? (
           <div className="grade" style={{ gap: '0.4rem' }}>
             <h2 style={{ margin: 0 }}>Como funciona</h2>
-            <p className="dica" style={{ margin: 0 }}>Escolha um produto ou uma opção à esquerda e diga quanto ele gasta de cada insumo. Quando o pedido é concluído, o estoque baixa sozinho.</p>
+            <p className="dica" style={{ margin: 0 }}>Escolha {soOpcoes ? 'um sabor, borda ou adicional' : 'um produto ou uma opção'} à esquerda e diga quanto ele gasta de cada insumo. Quando o pedido é concluído, o estoque baixa sozinho.</p>
             <ul className="dica" style={{ margin: 0, paddingLeft: '1.1rem' }}>
               <li><strong>Produto</strong>: o que vai em toda unidade (ex.: Pizza Grande → massa, molho, mussarela, caixa).</li>
               <li><strong>Sabor de pizza</strong>: quanto vai numa pizza <em>inteira</em> daquele sabor. No meio a meio, baixa a metade de cada.</li>
@@ -73,16 +73,18 @@ export function Fichas({ produtos, grupos, insumos, fichas }: { produtos: Produt
             </ul>
           </div>
         ) : (
-          <Editor key={chave(alvo)} alvo={alvo} insumos={insumos} atual={porAlvo.get(chave(alvo)) ?? []} />
+          <Editor key={chave(alvo)} alvo={alvo} insumos={insumos} atual={(porAlvo.get(chave(alvo)) ?? []).map((f) => ({ insumo_id: f.insumo_id, quantidade: n(f.quantidade) }))} />
         )}
       </section>
     </div>
   );
 }
 
-function Editor({ alvo, insumos, atual }: { alvo: Alvo; insumos: Insumo[]; atual: ItemFicha[] }) {
+/** Editor da ficha. lojaId: outra loja do grupo; outrasLojas: mostra "Levar para as outras lojas" (produto). */
+export function Editor({ alvo, insumos, atual, lojaId, outrasLojas = false, aoSalvar }: { alvo: Alvo; insumos: Insumo[]; atual: { insumo_id: string; quantidade: number }[]; lojaId?: string; outrasLojas?: boolean; aoSalvar?: () => void }) {
   const [linhas, setLinhas] = useState(() => (atual.length ? atual.map((f) => ({ insumo: f.insumo_id, qtd: String(n(f.quantidade)).replace('.', ',') })) : [{ insumo: '', qtd: '' }]));
   const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null);
+  const [salvo, setSalvo] = useState(atual.length > 0);
   const [pendente, iniciar] = useTransition();
   const ins = (id: string) => insumos.find((i) => i.id === id);
   const custoLinha = (l: { insumo: string; qtd: string }) => {
@@ -129,14 +131,36 @@ function Editor({ alvo, insumos, atual }: { alvo: Alvo; insumos: Insumo[]; atual
           disabled={pendente || invalida}
           onClick={() =>
             iniciar(async () => {
-              const r = await salvando(salvarFicha(alvo.tipo === 'produto' ? alvo.id : null, alvo.tipo === 'opcao' ? alvo.id : null, validas.map((l) => ({ insumo_id: l.insumo, quantidade: num(l.qtd) }))));
+              const r = await salvando(salvarFicha(alvo.tipo === 'produto' ? alvo.id : null, alvo.tipo === 'opcao' ? alvo.id : null, validas.map((l) => ({ insumo_id: l.insumo, quantidade: num(l.qtd) })), lojaId));
               setMsg(r.ok ? { ok: true, t: validas.length ? 'Ficha salva. As próximas vendas já baixam o estoque.' : 'Ficha removida.' } : { ok: false, t: r.erro });
+              if (r.ok) {
+                setSalvo(validas.length > 0);
+                aoSalvar?.();
+              }
             })
           }
         >
           {pendente ? 'Salvando…' : 'Salvar ficha'}
         </button>
         {invalida && <span className="dica">Complete o insumo e a quantidade de cada linha.</span>}
+        {outrasLojas && alvo.tipo === 'produto' && salvo && !invalida && (
+          <button
+            type="button"
+            disabled={pendente}
+            title="Copia esta ficha para o produto com o mesmo nome nas outras lojas do grupo"
+            onClick={() =>
+              iniciar(async () => {
+                const r = await salvando(copiarFicha(lojaId, alvo.id));
+                if (!r.ok) return setMsg({ ok: false, t: r.erro });
+                const partes = [r.copiadas.length ? `Copiada para: ${r.copiadas.join(', ')}.` : 'Nenhuma outra loja tem um produto com esse nome.'];
+                for (const f of r.fora) partes.push(`${f.loja}: falta cadastrar ${f.faltam.join(', ')}.`);
+                setMsg({ ok: r.fora.length === 0, t: partes.join(' ') });
+              })
+            }
+          >
+            Levar para as outras lojas
+          </button>
+        )}
         {msg && <span className={msg.ok ? 'dica' : 'erro'} role="status">{msg.t}</span>}
       </div>
     </div>
