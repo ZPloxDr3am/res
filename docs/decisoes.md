@@ -513,3 +513,4 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Igual ao BeeFood: cada grupo do BeeFood vira um grupo no RES (mesmo nome, mínimo, máximo, obrigatório, ordem); cada escolha **soma o valor cheio** (conferido no BeeFood: Grande 35CM 78,99 + Borda 14 + Atum 6 = 98,99); sabor só repete quando o BeeFood deixa; fotos apontam para as imagens do BeeFood.
 - Grupos de sabor de pizza/sobremesa ficam marcados como pizza (fração na comanda e baixa do estoque); fator da ficha por diâmetro (25=1, 30=2, 35=3, 40=4) só nos produtos com um grupo de sabor.
 - LA PIZZA importada em 0049 (37 produtos, 5 categorias, 17 grupos, 584 opções); dados guardados em `private.cardapios_importados`.
+- HAMBURGUERIA POMERODE importada em 0050 (34 produtos, 5 categorias, 2 grupos, 3 opções). Conferência item a item: `scripts/conferir_importacao.py`.
