@@ -1,11 +1,22 @@
 import { headers } from 'next/headers';
 import { contextoLoja } from '@/lib/loja';
 import { criarClienteServidor } from '@/lib/supabase/server';
+import Link from 'next/link';
 import { GestaoLojas, type LojaInfo } from '@/components/gestao-lojas';
+import { Equipe, type LojaEquipe } from '@/components/equipe/equipe';
+import { Funcoes } from '@/components/equipe/funcoes';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Lojas() {
+const ABAS = [
+  ['lojas', 'Lojas e cardápios'],
+  ['equipe', 'Equipe'],
+  ['funcoes', 'Funções e permissões'],
+] as const;
+
+export default async function Lojas({ searchParams }: { searchParams: Promise<{ aba?: string; loja?: string }> }) {
+  const sp = await searchParams;
+  const aba = ABAS.find(([k]) => k === sp.aba)?.[0] ?? 'lojas';
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
   const ids = ctx.lojas.map((l) => l.id);
@@ -16,6 +27,7 @@ export default async function Lojas() {
     supabase.from('convites').select('id, loja_id, email, nome, papel, criado_em').in('loja_id', ids).is('aceito_em', null).order('criado_em'),
     supabase.auth.getUser(),
   ]);
+  const { data: grupos } = await supabase.from('grupos_acesso').select('loja_id, permissoes').in('loja_id', ids).eq('nome', 'Funcionário');
   const { data: logins } = await supabase.from('usuarios_login').select('user_id, usuario').in('user_id', (membros.data ?? []).map((m) => m.user_id));
   const usuarioDe = new Map((logins ?? []).map((u) => [u.user_id as string, u.usuario as string]));
   const h = await headers();
@@ -43,5 +55,26 @@ export default async function Lojas() {
     titular: (titularDe ?? []).some((t) => t.conta_id === c.id),
   }));
 
-  return <GestaoLojas contas={listaContas} lojas={lojas} />;
+  const comEquipe: LojaEquipe[] = lojas.map((l) => ({
+    ...l,
+    meuPapel: l.equipe.find((m) => m.eu)?.papel ?? null,
+    permissoesCaixa: ((grupos ?? []).find((g) => g.loja_id === l.id)?.permissoes as string[] | undefined) ?? [],
+  }));
+  const inicial = sp.loja && lojas.some((l) => l.id === sp.loja) ? sp.loja : ctx.lojaId;
+
+  return (
+    <div className="grade">
+      <h1>Lojas e equipe</h1>
+      <nav className="abas nao-imprimir" aria-label="Lojas e equipe">
+        {ABAS.map(([k, r]) => (
+          <Link key={k} href={k === 'lojas' ? '/lojas' : `/lojas?aba=${k}`} role="tab" aria-selected={aba === k} className="aba-link">
+            {r}
+          </Link>
+        ))}
+      </nav>
+      {aba === 'lojas' && <GestaoLojas contas={listaContas} lojas={lojas} />}
+      {aba === 'equipe' && <Equipe key={inicial} lojas={comEquipe} inicial={inicial} />}
+      {aba === 'funcoes' && <Funcoes lojas={comEquipe} inicial={inicial} />}
+    </div>
+  );
 }

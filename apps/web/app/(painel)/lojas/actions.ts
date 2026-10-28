@@ -153,3 +153,21 @@ export async function definirCidade(lojaId: string, cidade: string): Promise<R> 
   revalidatePath('/lojas');
   return { ok: true };
 }
+
+/** Muda a função de alguém da equipe (o banco confere: só dono/gerente; gerente só o dono cria). */
+export async function alterarFuncao(membroId: string, papel: string): Promise<R> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('alterar_funcao_membro', { p_membro: membroId, p_papel: papel });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/lojas');
+  return { ok: true };
+}
+
+/** O que o Caixa / Atendente pode fazer nesta loja. */
+export async function salvarPermissoesEquipe(lojaId: string, permissoes: string[]): Promise<R> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('salvar_permissoes_equipe', { p_loja: lojaId, p_permissoes: permissoes });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/lojas');
+  return { ok: true };
+}
