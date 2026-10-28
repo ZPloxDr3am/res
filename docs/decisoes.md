@@ -455,3 +455,6 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
   - No quadro, fica na faixa **⏳ Aguardando Pix**.
   - Pagou (pelo Mercado Pago ou "Marcar como pago"): sai da faixa e é aceito/impresso conforme a opção da loja.
   - Sem pagamento em 40 min, o pg_cron cancela com o motivo "Pix não foi pago em 40 minutos".
+- **Pedidos do painel também (0044):** o 2º teste no ar foi um pedido lançado em "+ Novo pedido" (telefone), que não tinha a regra.
+  - Agora o pedido com Pix do painel também espera o pagamento.
+  - No cartão do quadro: **Mostrar QR** (abre a página do pedido com o Pix), **Copiar link** e **Enviar no WhatsApp** (mensagem pronta com o link para o telefone do cliente).
