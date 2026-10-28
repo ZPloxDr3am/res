@@ -957,3 +957,4 @@ button .np-foto-opcao { width: 26px; height: 26px; border-radius: 6px; }
 .fichas-custo { font-variant-numeric: tabular-nums; color: var(--texto-suave); }
 .fichas-total { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; align-items: baseline; padding: 0.7rem 0.9rem; border-radius: 10px; background: var(--superficie-2); }
 @media (max-width: 900px) { .fichas { grid-template-columns: 1fr; } .fichas-lista { position: static; max-height: 18rem; } }
+.est-modo-opcoes button { justify-content: start; align-content: start; }
