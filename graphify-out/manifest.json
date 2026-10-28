@@ -642,10 +642,10 @@
     "semantic_hash": "e1a2ae124932452ed3b517ceefb9431a"
   },
   "apps/web/components/nav-painel.tsx": {
-    "mtime": 1793201813.3284147,
-    "seen": 1793205238.7561076,
-    "ast_hash": "40c1419afeac4f834903cfc0d92a9ae8",
-    "semantic_hash": "40c1419afeac4f834903cfc0d92a9ae8"
+    "mtime": 1793224069.9162366,
+    "seen": 1793224089.9557476,
+    "ast_hash": "b34bb09fab504df72b1df0f9dec804b1",
+    "semantic_hash": ""
   },
   "apps/web/components/novo-pedido.tsx": {
     "mtime": 1793158733.6633852,
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793222917.9861047,
-    "seen": 1793222920.437235,
-    "ast_hash": "5677931e56caacfaa2959689b5e13e8b",
+    "mtime": 1793224086.7684553,
+    "seen": 1793224089.9565763,
+    "ast_hash": "3ac21e1d37761a985ef58616d36fdd82",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1812,9 +1812,75 @@
     "semantic_hash": ""
   },
   "supabase/migrations/20261028000051_pizzaria_cardapio.sql": {
-    "mtime": 1793222872.9823143,
-    "seen": 1793222920.4371886,
+    "mtime": 1793223519.4324214,
+    "seen": 1793224089.9565263,
     "ast_hash": "4a88056ddaeea4f267945d5098efe973",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/gestao/actions.ts": {
+    "mtime": 1793223880.996443,
+    "seen": 1793224089.955476,
+    "ast_hash": "9ac15031956d439b83eebe7b58f87c78",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/gestao/documento/[id]/page.tsx": {
+    "mtime": 1793224069.915837,
+    "seen": 1793224089.9554875,
+    "ast_hash": "e58d202c1b8867d405fc977e6299cf1e",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/gestao/page.tsx": {
+    "mtime": 1793223917.172445,
+    "seen": 1793224089.9554904,
+    "ast_hash": "0a40d93a3447a9cdc5b3c2d3bc3d28e3",
+    "semantic_hash": ""
+  },
+  "apps/web/components/gestao/custos.tsx": {
+    "mtime": 1793223955.6724703,
+    "seen": 1793224089.955732,
+    "ast_hash": "c2848b338afeae90b09f4fba7d47e19d",
+    "semantic_hash": ""
+  },
+  "apps/web/components/gestao/empresa.tsx": {
+    "mtime": 1793224011.2404506,
+    "seen": 1793224089.9557338,
+    "ast_hash": "7fee647373a7a118b873cb1a18feb11b",
+    "semantic_hash": ""
+  },
+  "apps/web/components/gestao/funcionarios.tsx": {
+    "mtime": 1793223973.8084486,
+    "seen": 1793224089.955735,
+    "ast_hash": "a1a41ce056804231a5a8d851c0820bad",
+    "semantic_hash": ""
+  },
+  "apps/web/components/gestao/imprimir.tsx": {
+    "mtime": 1793224053.0924532,
+    "seen": 1793224089.9557362,
+    "ast_hash": "cba0528a1d2045d6888974201ee6cf23",
+    "semantic_hash": ""
+  },
+  "apps/web/components/gestao/registros.tsx": {
+    "mtime": 1793223999.82445,
+    "seen": 1793224089.9557369,
+    "ast_hash": "b7f4a19cb54a2897a62419f887f2957f",
+    "semantic_hash": ""
+  },
+  "apps/web/lib/gestao.ts": {
+    "mtime": 1793223858.1604416,
+    "seen": 1793224089.9559488,
+    "ast_hash": "0d6de106e12cd7b9ddfeec2387ddcc17",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261028000052_gestao_empresarial.sql": {
+    "mtime": 1793223892.123008,
+    "seen": 1793224089.9565282,
+    "ast_hash": "dbe3badd61a7bd3ab258cf164316e909",
+    "semantic_hash": ""
+  },
+  "supabase/tests/99zzzzzzzzzzzzzzzzzzz_gestao.sql": {
+    "mtime": 1793223892.1236064,
+    "seen": 1793224089.9565694,
+    "ast_hash": "968e19b56c0f598bcf51f552dd9017e8",
     "semantic_hash": ""
   }
 }
