@@ -1642,5 +1642,83 @@
     "seen": 1793205238.7562785,
     "ast_hash": "77b3780dc7681ac19075be1758d54759",
     "semantic_hash": "77b3780dc7681ac19075be1758d54759"
+  },
+  ".claude/settings.json": {
+    "mtime": 1793206182.6859467,
+    "seen": 1793206194.5556998,
+    "ast_hash": "198f05dcc8ba555600a825882bb62184",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1793206182.68841,
+    "seen": 1793206194.5560567,
+    "ast_hash": "67491aa85644af0835a0b04ea190e25a",
+    "semantic_hash": ""
+  },
+  "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
+    "mtime": 1792807243.0870144,
+    "seen": 1793206194.5560644,
+    "ast_hash": "70ad8b1bac2ef96ea8b34ae6f79dc6d5",
+    "semantic_hash": ""
+  },
+  "apps-mobile/motoboy/icones/ic_launcher-mdpi.png": {
+    "mtime": 1792807243.0871086,
+    "seen": 1793206194.5560658,
+    "ast_hash": "ac510b3f4f6485d71bc5dc01ee2fa344",
+    "semantic_hash": ""
+  },
+  "apps-mobile/motoboy/icones/ic_launcher-xhdpi.png": {
+    "mtime": 1792807243.0871086,
+    "seen": 1793206194.5560672,
+    "ast_hash": "4b9169f7eb5e6d9fc3e10971a296688f",
+    "semantic_hash": ""
+  },
+  "apps-mobile/motoboy/icones/ic_launcher-xxhdpi.png": {
+    "mtime": 1792807243.0871086,
+    "seen": 1793206194.5560684,
+    "ast_hash": "33c436aa6cc1e80024d3d44c539d9844",
+    "semantic_hash": ""
+  },
+  "apps-mobile/motoboy/icones/ic_launcher-xxxhdpi.png": {
+    "mtime": 1792807243.0871086,
+    "seen": 1793206194.5560694,
+    "ast_hash": "d4bc7692f9e2c7d426bd35de6a108218",
+    "semantic_hash": ""
+  },
+  "apps-mobile/motoboy/icones/ic_launcher_round-hdpi.png": {
+    "mtime": 1792807243.0871086,
+    "seen": 1793206194.5560703,
+    "ast_hash": "f04bc7d7e9f8f22e101027a9316d655d",
+    "semantic_hash": ""
+  },
+  "apps-mobile/motoboy/icones/ic_launcher_round-mdpi.png": {
+    "mtime": 1792807243.0871086,
+    "seen": 1793206194.5560718,
+    "ast_hash": "bf7e12572e07d231df7acb5007bb10c7",
+    "semantic_hash": ""
+  },
+  "apps-mobile/motoboy/icones/ic_launcher_round-xhdpi.png": {
+    "mtime": 1792807243.0871086,
+    "seen": 1793206194.5560725,
+    "ast_hash": "3e2f51117052faf26bf5cc45e0cb5f14",
+    "semantic_hash": ""
+  },
+  "apps-mobile/motoboy/icones/ic_launcher_round-xxhdpi.png": {
+    "mtime": 1792807243.0871086,
+    "seen": 1793206194.5560734,
+    "ast_hash": "a85a34292bc658a342bd696ebe579d75",
+    "semantic_hash": ""
+  },
+  "apps-mobile/motoboy/icones/ic_launcher_round-xxxhdpi.png": {
+    "mtime": 1792807243.0871086,
+    "seen": 1793206194.5560744,
+    "ast_hash": "87d4c3a8f79ac1c4d90dc30f554505d9",
+    "semantic_hash": ""
+  },
+  "apps-mobile/motoboy/icones/icone-512.png": {
+    "mtime": 1792807243.0871086,
+    "seen": 1793206194.5560756,
+    "ast_hash": "3acb5b06cbbd1a046fafd46f19e75a3d",
+    "semantic_hash": ""
   }
 }
