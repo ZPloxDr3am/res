@@ -201,6 +201,14 @@ export async function definirFoto(produtoId: string, url: string | null): Promis
   return error ? { ok: false, erro: mensagem(error) } : pronto();
 }
 
+/** Foto de uma opção de grupo (sabor, borda, adicional) (D-035). */
+export async function definirFotoOpcao(opcaoId: string, url: string | null): Promise<Resultado> {
+  if (url && !/^https:\/\/[a-z0-9.-]+\/storage\/v1\/object\/public\/cardapio\//.test(url)) return { ok: false, erro: 'Endereço de foto inválido.' };
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.from('opcoes').update({ imagem_url: url }).eq('id', opcaoId);
+  return error ? { ok: false, erro: mensagem(error) } : pronto();
+}
+
 export async function alterarDisponibilidade(
   produtoId: string,
   marcaId: string,

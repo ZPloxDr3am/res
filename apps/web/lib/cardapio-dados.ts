@@ -13,8 +13,10 @@ export type OpcaoRow = {
   delivery: boolean;
   presencial: boolean;
   ordem: number;
+  /** foto da opção (D-035) */
+  imagem_url?: string | null;
   complementos: { nome: string; preco: number } | null;
-  produtos: { nome: string; preco: number | null } | null;
+  produtos: { nome: string; preco: number | null; imagem_url?: string | null } | null;
 };
 
 export type GrupoRow = {
@@ -104,6 +106,8 @@ export function passosCore(c: Cardapio, comboId: string, agora = new Date()): Pa
 }
 
 export const nomeOpcao = (o: OpcaoRow) => o.nome ?? o.complementos?.nome ?? o.produtos?.nome ?? '';
+/** Foto da opção: a dela ou, se a opção é um produto, a do produto. */
+export const fotoOpcao = (o: OpcaoRow) => o.imagem_url ?? o.produtos?.imagem_url ?? null;
 
 export const agendaDe = (m: ProdutoMarcaRow): AgendaPromo => ({ dias: m.promo_dias ?? null, inicio: m.promo_inicio ?? null, fim: m.promo_fim ?? null, ate: m.promo_ate ?? null });
 

@@ -19,7 +19,7 @@ import {
   type TipoPedido,
   normalizarTelefone,
 } from '@res/core';
-import { nomeOpcao, paraGrupoCore, paraProdutoCore, passosCore, type Cardapio, type GrupoRow, type PassoRow, type ProdutoRow, type SetorRow } from '@/lib/cardapio-dados';
+import { nomeOpcao, paraGrupoCore, paraProdutoCore, passosCore, type Cardapio, type GrupoRow, type PassoRow, type ProdutoRow, type SetorRow, fotoOpcao } from '@/lib/cardapio-dados';
 import { autorizarDesconto, criarPedido } from '@/app/(painel)/pedidos/actions';
 import { FidelidadeBalcao, type UsoFidelidade } from '@/components/fidelidade/balcao';
 import { buscarClientes, salvarCliente } from '@/app/(painel)/clientes/actions';
@@ -307,10 +307,13 @@ export function NovoPedido({
               {visiveis.map((p) => {
                 const base = precoBase(paraProdutoCore(p), marcaId, canal);
                 return (
-                  <button key={p.id} type="button" className="produto-botao" onClick={() => clicarProduto(p)}>
-                    <strong>{p.combo && <span className="selo selo-combo">Combo</span>} {p.nome}</strong>
-                    <span className="dica">
-                      {p.combo ? `${formatarReais(base ?? 0)} · montar` : gruposDe(p).length ? `a partir de ${formatarReais(base ?? 0)} · montar` : formatarReais(base ?? 0)}
+                  <button key={p.id} type="button" className="produto-botao" data-foto={p.imagem_url ? 'sim' : undefined} onClick={() => clicarProduto(p)}>
+                    {p.imagem_url ? <img className="np-foto" src={p.imagem_url} alt="" loading="lazy" /> : <span className="np-foto vazia" aria-hidden="true" />}
+                    <span className="np-produto-texto">
+                      <strong>{p.combo && <span className="selo selo-combo">Combo</span>} {p.nome}</strong>
+                      <span className="dica">
+                        {p.combo ? `${formatarReais(base ?? 0)} · montar` : gruposDe(p).length ? `a partir de ${formatarReais(base ?? 0)} · montar` : formatarReais(base ?? 0)}
+                      </span>
                     </span>
                   </button>
                 );
@@ -668,9 +671,10 @@ function GruposBalcao({ grupos, canal, escolhas, setEscolhas }: { grupos: GrupoR
               const preco = paraGrupoCore(g).opcoes.find((x) => x.id === o.id)!;
               const valor = (canal === 'delivery' ? preco.precoDelivery : preco.precoPresencial) ?? preco.preco ?? preco.precoItem;
               return (
-                <div key={o.id} className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>
-                    {nomeOpcao(o)} {valor > 0 && <span className="dica">{formatarReais(valor)}</span>}
+                <div key={o.id} className="linha np-opcao" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="np-opcao-nome">
+                    {fotoOpcao(o) && <img className="np-foto-opcao" src={fotoOpcao(o)!} alt="" loading="lazy" />}
+                    <span>{nomeOpcao(o)} {valor > 0 && <span className="dica">{formatarReais(valor)}</span>}</span>
                   </span>
                   <span className="passo">
                     <button type="button" aria-label={`Menos ${nomeOpcao(o)}`} disabled={qtd(g.id, o.id) === 0} onClick={() => alterar(g, o.id, -1)}>−</button>
@@ -726,8 +730,11 @@ function Montador({
   })();
   return (
     <div className="cartao grade">
-      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>{produto.nome}</h2>
+      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'nowrap' }}>
+        <span className="linha" style={{ alignItems: 'center', flexWrap: 'nowrap', gap: '0.75rem' }}>
+          {produto.imagem_url && <img className="np-foto-grande" src={produto.imagem_url} alt="" />}
+          <h2>{produto.nome}</h2>
+        </span>
         <button type="button" onClick={aoCancelar}>Fechar</button>
       </div>
       <GruposBalcao grupos={grupos} canal={canal} escolhas={escolhas} setEscolhas={setEscolhas} />
@@ -785,7 +792,10 @@ function MontadorCombo({
   return (
     <div className="cartao grade">
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2><span className="selo selo-combo">Combo</span> {combo.nome}</h2>
+        <span className="linha" style={{ alignItems: 'center', flexWrap: 'nowrap', gap: '0.75rem' }}>
+          {combo.imagem_url && <img className="np-foto-grande" src={combo.imagem_url} alt="" />}
+          <h2><span className="selo selo-combo">Combo</span> {combo.nome}</h2>
+        </span>
         <button type="button" onClick={aoCancelar}>Fechar</button>
       </div>
       {vagas.map((v, i) => (
@@ -796,6 +806,10 @@ function MontadorCombo({
               {v.passo.opcoes.map((o) => (
                 <button key={o.produto.id} type="button" aria-pressed={esc[i]?.produtoId === o.produto.id} className={esc[i]?.produtoId === o.produto.id ? 'botao-primario' : ''}
                   onClick={() => setEsc((es) => es.map((e, j) => (j === i ? { produtoId: o.produto.id, escolhas: {} } : e)))}>
+                  {(() => {
+                    const foto = produtos.find((x) => x.id === o.produto.id)?.imagem_url;
+                    return foto ? <img className="np-foto-opcao" src={foto} alt="" loading="lazy" /> : null;
+                  })()}
                   {o.produto.nome}
                 </button>
               ))}

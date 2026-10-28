@@ -884,3 +884,24 @@ article.cartao:has(> .cl-topo[aria-expanded='false']):hover { box-shadow: var(--
 .selo, .selo-agendado, .selo-motoboy, .selo-prazo { justify-self: start; width: fit-content; max-width: 100%; }
 /* coluna vazia do quadro: discreta */
 .coluna > p.dica { padding: 0.9rem 0.25rem; text-align: center; color: var(--texto-fraco); border: 1px dashed var(--borda-forte); border-radius: 10px; }
+
+/* ---- fotos no novo pedido e nas opções (D-035) */
+.produtos-grade { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0.6rem; }
+.produto-botao, button.produto-botao { display: grid; grid-template-columns: 56px 1fr; gap: 0.7rem; align-items: center; text-align: left; padding: 0.45rem 0.6rem 0.45rem 0.45rem; min-height: 4.1rem; border-radius: 12px; background: var(--superficie); }
+.produto-botao:hover:not(:disabled) { border-color: color-mix(in srgb, var(--primaria) 45%, var(--borda-forte)); }
+.np-produto-texto { display: grid; gap: 0.1rem; min-width: 0; }
+.np-produto-texto strong { font-weight: 600; line-height: 1.25; }
+.np-foto { width: 56px; height: 56px; border-radius: 9px; object-fit: cover; display: block; }
+.np-foto.vazia { background: var(--superficie-2); box-shadow: inset 0 0 0 1px var(--borda); }
+.np-foto-grande { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; flex: none; }
+.np-opcao { flex-wrap: nowrap; }
+.np-opcao-nome { display: inline-flex; align-items: center; gap: 0.6rem; min-width: 0; }
+.np-foto-opcao { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; flex: none; }
+button .np-foto-opcao { width: 26px; height: 26px; border-radius: 6px; }
+/* foto da opção no editor do grupo */
+.fo { position: relative; display: inline-flex; flex: none; }
+.fo-area, button.fo-area { width: 2.4rem; height: 2.4rem; min-height: 0; padding: 0; border-radius: 9px; border: 1px dashed var(--borda-forte); background: var(--superficie-2); color: var(--texto-fraco); overflow: hidden; justify-content: center; font-size: 1.1rem; }
+.fo-area.tem { border-style: solid; }
+.fo-area img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.fo-tirar, button.fo-tirar { position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; min-height: 0; padding: 0; border-radius: 999px; font-size: 0.75rem; line-height: 1; justify-content: center; background: var(--superficie); box-shadow: 0 0 0 1px var(--borda-forte); }
+.fo-depois { width: 2.4rem; height: 2.4rem; align-items: center; justify-content: center; border-radius: 9px; border: 1px dashed var(--borda); opacity: 0.5; font-size: 0.95rem; }

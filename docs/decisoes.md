@@ -286,3 +286,12 @@ O estudo da tela do BeeFood está em `estudo-beefood/fidelidade.md`, no projeto.
   - cartões com borda leve.
 - **Quadro de pedidos:** cada pedido tem uma faixa de cor por etapa, que fica mais grossa quando o prazo aperta, e as colunas mostram a quantidade num contador.
 - Tudo está numa camada única no fim do `globals.css` ("Refino visual"), que vale sobre as regras antigas de cada tela.
+
+## D-035 · Fotos no novo pedido e nas opções
+
+- O **Novo pedido** (balcão) mostra a foto de cada produto na lista e no topo da montagem (pizza, combo).
+- **Opções com foto** (sabores, bordas, adicionais), em `opcoes.imagem_url`:
+  - o dono envia a foto em Cardápio → Grupos de opções → editar grupo, com um quadradinho ao lado de cada opção (clicar ou arrastar e soltar);
+  - opção nova ganha foto depois que o grupo é salvo;
+  - opção que é um produto usa a foto do produto quando não tem a própria.
+- As fotos das opções aparecem no balcão, na montagem do combo e no cardápio digital do cliente.
