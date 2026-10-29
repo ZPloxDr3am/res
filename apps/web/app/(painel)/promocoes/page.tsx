@@ -13,7 +13,7 @@ export default async function Promocoes({ searchParams }: { searchParams: Promis
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
   const [cardapio, cats, cupons, usos, loja] = await Promise.all([
-    carregarCardapio(ctx.lojaId),
+    carregarCardapio(ctx.lojaId, { semEvento: true }),
     supabase.from('promocoes_categoria').select('id, setor_id, percentual, dias, promo_inicio, promo_fim, promo_ate, ativo').eq('loja_id', ctx.lojaId).order('criado_em'),
     supabase.from('cupons').select('id, codigo, descricao, tipo, valor, pedido_minimo, primeira_compra, limite_por_cliente, limite_total, dias, valido_ate, ativo').eq('loja_id', ctx.lojaId).order('criado_em'),
     supabase

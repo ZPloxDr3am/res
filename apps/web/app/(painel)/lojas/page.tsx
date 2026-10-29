@@ -22,7 +22,7 @@ export default async function Lojas({ searchParams }: { searchParams: Promise<{ 
   const ids = ctx.lojas.map((l) => l.id);
   const [contas, marcas, membros, convites, titular] = await Promise.all([
     supabase.from('contas').select('id, nome, plano, limite_lojas, limite_cardapios'),
-    supabase.from('marcas').select('id, loja_id, nome, slug').in('loja_id', ids).order('ordem'),
+    supabase.from('marcas').select('id, loja_id, nome, slug').in('loja_id', ids).eq('evento', false).order('ordem'), // evento (D-055) é bônus: não aparece nem conta aqui
     supabase.from('membros').select('id, loja_id, user_id, nome, papel, ativo').in('loja_id', ids).order('nome'),
     supabase.from('convites').select('id, loja_id, email, nome, papel, criado_em').in('loja_id', ids).is('aceito_em', null).order('criado_em'),
     supabase.auth.getUser(),

@@ -6,7 +6,7 @@ export interface ContextoLoja {
   lojaId: string;
   lojaNome: string;
   papel: string;
-  marcas: { id: string; nome: string; slug: string }[];
+  marcas: { id: string; nome: string; slug: string; evento?: boolean }[];
   /** Todas as lojas que a pessoa acessa (para o seletor e as visões "todas as lojas"). */
   lojas: { id: string; nome: string; contaId: string | null }[];
 }
@@ -42,7 +42,7 @@ export async function contextoLoja(): Promise<ContextoLoja> {
 
   const { data: marcas } = await supabase
     .from('marcas')
-    .select('id, nome, slug')
+    .select('id, nome, slug, evento')
     .eq('loja_id', m.loja_id)
     .order('ordem')
     .order('nome');

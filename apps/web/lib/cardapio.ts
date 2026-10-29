@@ -6,9 +6,9 @@ export * from './cardapio-dados';
 
 
 /** Cardápio inteiro da loja, já ordenado. A RLS garante que só vem o que é da loja do usuário. */
-export async function carregarCardapio(lojaId: string): Promise<Cardapio> {
+export async function carregarCardapio(lojaId: string, opcoes: { semEvento?: boolean } = {}): Promise<Cardapio> {
   const supabase = await criarClienteServidor();
-  const [s, p, g, cp, pc] = await Promise.all([
+  const [s, p, g, cp, pc, ev] = await Promise.all([
     supabase.from('setores').select('id, nome, nome_publico, delivery, presencial, upsell, ordem, setor_marcas(marca_id)').eq('loja_id', lojaId).order('ordem'),
     supabase
       .from('produtos')
@@ -21,10 +21,19 @@ export async function carregarCardapio(lojaId: string): Promise<Cardapio> {
       .eq('loja_id', lojaId),
     supabase.from('combo_passos').select('id, combo_id, ordem, titulo, quantidade, setor_id, produtos').eq('loja_id', lojaId).order('ordem'),
     supabase.from('promocoes_categoria').select('setor_id, percentual, dias, promo_inicio, promo_fim, promo_ate').eq('loja_id', lojaId).eq('ativo', true),
+    opcoes.semEvento ? supabase.from('marcas').select('id').eq('loja_id', lojaId).eq('evento', true) : Promise.resolve({ data: [] as { id: string }[], error: null }),
   ]);
   for (const r of [s, p, g, cp, pc]) if (r.error) throw new Error(r.error.message);
 
-  const produtos = (p.data ?? []) as unknown as ProdutoRow[];
+  let produtos = (p.data ?? []) as unknown as ProdutoRow[];
+  let setores = (s.data ?? []) as unknown as SetorRow[];
+  // cardápio de evento (D-055): as cópias dele ficam fora do editor principal
+  const eventos = new Set((ev.data ?? []).map((x) => x.id as string));
+  if (eventos.size) {
+    const soEvento = (ms: { marca_id: string }[]) => ms.length > 0 && ms.every((m) => eventos.has(m.marca_id));
+    setores = setores.filter((x) => !soEvento(x.setor_marcas)).map((x) => ({ ...x, setor_marcas: x.setor_marcas.filter((m) => !eventos.has(m.marca_id)) }));
+    produtos = produtos.filter((x) => !soEvento(x.produto_marcas)).map((x) => ({ ...x, produto_marcas: x.produto_marcas.filter((m) => !eventos.has(m.marca_id)) }));
+  }
   // % da categoria valendo agora (D-023): o maior por categoria
   const agora = new Date();
   const pct = new Map<string, number>();
@@ -37,7 +46,10 @@ export async function carregarCardapio(lojaId: string): Promise<Cardapio> {
     prod.desconto_pct = prod.setor_id ? pct.get(prod.setor_id) ?? null : null;
   }
   const grupos: Record<string, GrupoRow> = {};
+  const usados = new Set(produtos.flatMap((x) => x.produto_grupos.map((y) => y.grupo_id)));
+  const todosUsados = new Set(((p.data ?? []) as unknown as ProdutoRow[]).flatMap((x) => x.produto_grupos.map((y) => y.grupo_id)));
   for (const grupo of (g.data ?? []) as unknown as GrupoRow[]) {
+    if (eventos.size && todosUsados.has(grupo.id) && !usados.has(grupo.id)) continue; // grupo só das cópias do evento
     grupo.opcoes.sort((a, b) => a.ordem - b.ordem);
     grupos[grupo.id] = grupo;
   }
@@ -47,5 +59,5 @@ export async function carregarCardapio(lojaId: string): Promise<Cardapio> {
   const passos: Record<string, PassoRow[]> = {};
   for (const x of (cp.data ?? []) as unknown as PassoRow[]) (passos[x.combo_id] ??= []).push(x);
 
-  return { setores: (s.data ?? []) as unknown as SetorRow[], produtos, grupos, usos, passos };
+  return { setores, produtos, grupos, usos, passos };
 }

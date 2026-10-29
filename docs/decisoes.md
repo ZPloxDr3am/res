@@ -549,3 +549,11 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Em **Gestão → Funcionários**, a ficha tem o bloco **Acesso ao RES**: **criar o acesso agora** (função no RES, usuário sugerido pelo nome e senha gerada; recomendado para quem vai usar o sistema), **já tem acesso** (ligar a um existente, ex.: convite) ou **sem acesso** (quem não usa o sistema).
 - "Salvar e criar acesso" grava a ficha, cria o usuário e liga os dois; sai o mesmo **cartão de acesso** da Equipe (imprimir, WhatsApp, copiar). Se o usuário já existir, a ficha fica salva e a tela pede outro usuário.
 - O botão "+ Criar acesso" da lista abre a própria ficha com esse bloco (não precisa ir para Lojas e equipe). Gerente só aparece para o dono.
+
+## D-055 — Cardápio de Evento / Aniversário (28/10/2026)
+
+- Menu **Vendas → Evento / Aniversário**, só dono/gerente. É um **cardápio bônus** por loja (`marcas.evento`, 0056): não conta no limite do pacote, tem **link e QR próprios** e **período** (início/fim). Reaproveitável: muda nome, datas e produtos a cada nova data.
+- Ao criar, copia do cardápio base o visual, horários, bairros/faixas de km, pagamento e pedido mínimo (ajustáveis em Delivery).
+- **Escolher produtos**: cada produto vira uma **cópia** (`produtos.copia_de`) com grupos, opções, fotos e fichas técnicas. Na cópia se muda nome, preço, descrição, mínimo/máximo de cada grupo (atalhos "Sabor único" / "Até 2 sabores"), quais opções ficam e o preço de cada uma, tirar um grupo. **O cardápio principal não muda** (testado), e as cópias não aparecem no editor de Cardápio, em Promoções nem em Estoque.
+- O link do evento fora do período mostra um aviso (e o banco recusa pedido fora do período). Dentro, uma faixa "cardápio especial válido até…". Pedidos chegam no quadro normal, com o nome do evento.
+- Combos com passos ainda não podem ir para o evento.
