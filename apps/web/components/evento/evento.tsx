@@ -1,7 +1,7 @@
 'use client';
 import { useMemo, useState, useTransition } from 'react';
 import Link from 'next/link';
-import { copiarParaEvento, criarEvento, removerProdutoEvento, salvarEvento, salvarProdutoEvento } from '@/app/(painel)/evento/actions';
+import { copiarParaEvento, criarEvento, removerProdutoEvento, salvarEvento, salvarProdutoEvento, type AjusteProduto } from '@/app/(painel)/evento/actions';
 import { salvando } from '@/components/tempo-real';
 
 export type EventoInfo = { id: string; nome: string; slug: string; link: string; qr: string; ativa: boolean; inicio: string | null; fim: string | null; mensagem: string; base: string | null };
@@ -242,7 +242,7 @@ function EditorProdutoEvento({ p, aberto, abrir }: { p: ProdutoEvento; aberto: b
   const salvar = () => {
     const pr = lerReais(preco);
     if (Number.isNaN(pr)) return setMsg({ ok: false, texto: 'Confira o preço.' });
-    const gs = [];
+    const gs: AjusteProduto['grupos'] = [];
     for (const g of grupos) {
       const min = Number(g.minTxt);
       const max = Number(g.maxTxt);
@@ -251,7 +251,7 @@ function EditorProdutoEvento({ p, aberto, abrir }: { p: ProdutoEvento; aberto: b
         if (g.obrigatorio && min < 1) return setMsg({ ok: false, texto: `"${g.nome}" é obrigatório: o mínimo é 1.` });
         if (g.obrigatorio && ligadas(g) === 0) return setMsg({ ok: false, texto: `Deixe pelo menos uma opção ligada em "${g.nome}".` });
       }
-      const opcoes = [];
+      const opcoes: AjusteProduto['grupos'][number]['opcoes'] = [];
       for (const o of g.opcoes) {
         const v = lerReais(g.precos[o.id] ?? '');
         if (Number.isNaN(v)) return setMsg({ ok: false, texto: `Confira o preço de "${o.nome}".` });
