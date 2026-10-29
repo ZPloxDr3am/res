@@ -1944,9 +1944,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/evento/evento.tsx": {
-    "mtime": 1793231924.1368284,
-    "seen": 1793231974.5471375,
-    "ast_hash": "f7110118cd5be9361823da3aa6aeca1c",
+    "mtime": 1793232033.007773,
+    "seen": 1793232036.334525,
+    "ast_hash": "00122ab88480468564ff3ebc5d913945",
     "semantic_hash": ""
   },
   "supabase/migrations/20261028000056_evento.sql": {

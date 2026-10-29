@@ -1,17 +1,17 @@
 # Graph Report - res  (2026-10-28)
 
 ## Corpus Check
-- 315 files · ~276,286 words
+- 315 files · ~276,290 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 5 file(s) not represented in the graph (top: (none) 2, .example 1, .css 1)
 
 ## Summary
-- 2601 nodes · 6730 edges · 134 communities (114 shown, 20 thin omitted)
+- 2601 nodes · 6731 edges · 134 communities (114 shown, 20 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 52 edges (avg confidence: 0.9)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c1d68d39`
+- Built from commit: `b6bccb72`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -153,14 +153,14 @@
 10. `react` - 72 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `D-011 Pedido agendado e taxa por bairro no painel` --references--> `taxaDoBairro()`  [INFERRED]
-  docs/decisoes.md → packages/core/src/agendamento.ts
 - `D-022 Combos com escolhas e categoria de up-sell` --references--> `calcularCombo()`  [INFERRED]
   docs/decisoes.md → packages/core/src/combo.ts
 - `D-023 % por categoria, cupons e desconto no balcão com limite` --references--> `precoBase()`  [INFERRED]
   docs/decisoes.md → packages/core/src/preco.ts
 - `D-030 · Telefone sempre com o 9 do celular` --references--> `normalizarTelefone()`  [INFERRED]
   docs/decisoes.md → packages/core/src/segmentos.ts
+- `D-011 Pedido agendado e taxa por bairro no painel` --references--> `taxaDoBairro()`  [INFERRED]
+  docs/decisoes.md → packages/core/src/agendamento.ts
 - `D-036 · Estoque: entrada por NF-e e baixa pela ficha técnica` --references--> `lerNFe()`  [INFERRED]
   docs/decisoes.md → packages/core/src/estoque.ts
 
@@ -295,7 +295,7 @@ Cohesion: 0.08
 Nodes (24): runs-on, steps, GH_TOKEN, KS_B64, KS_PASS, jobs, apk, name (+16 more)
 
 ### Community 30 - "evento.tsx"
-Cohesion: 0.12
+Cohesion: 0.13
 Nodes (31): AjusteProduto, copiarParaEvento(), criarEvento(), msg(), R, refrescar(), removerProdutoEvento(), salvarEvento() (+23 more)
 
 ### Community 31 - "saida.ts"
@@ -631,24 +631,24 @@ Cohesion: 0.40
 Nodes (5): scripts, build, dev, start, typecheck
 
 ## Knowledge Gaps
-- **9 isolated node(s):** `pedidos.qr_token (/m/d/<código>)`, `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `GitHub Actions CI (rules, db, build)`, `Roadmap stages 3c-7 and integrations`, `supabase/migrations (Postgres RLS, audit, atomic ops)` (+4 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 621 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **9 isolated node(s):** `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `pedidos.qr_token (/m/d/<código>)`, `GitHub Actions CI (rules, db, build)`, `Roadmap stages 3c-7 and integrations`, `supabase/migrations (Postgres RLS, audit, atomic ops)` (+4 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 620 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `next` connect `next` to `gestao/actions.ts`, `middleware.ts`, `(painel)/layout.tsx`, `API aberta e MCP (rotas)`, `Tela de impressoras`, `Resumo de vendas`, `dependencies`, `app-motoboy.tsx`, `aplicativos.tsx`, `custos.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `lojas/actions.ts`, `criarClienteServidor`, `evento.tsx`, `saida.ts`, `fidelidade/actions.ts`, `bairros.tsx`, `estoque/page.tsx`, `painel-caixa.tsx`, `acompanhar-pedido.tsx`, `estoque/actions.ts`, `gestao/actions.ts`, `index.ts`, `sabores-pizza.tsx`, `web/package.json`, `equipe.tsx`, `formatarReais`, `entregas/page.tsx`, `pedido-flutuante.tsx`, `estoque/fechamento.tsx`, `mercadopago.ts`?**
-  _High betweenness centrality (0.067) - this node is a cross-community bridge._
-- **What connects `pedidos.qr_token (/m/d/<código>)`, `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `GitHub Actions CI (rules, db, build)` to the rest of the system?**
+  _High betweenness centrality (0.061) - this node is a cross-community bridge._
+- **What connects `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `pedidos.qr_token (/m/d/<código>)`, `GitHub Actions CI (rules, db, build)` to the rest of the system?**
   _9 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `20261020000001_base.sql` be split into smaller, more focused modules?**
   _Cohesion score 0.10752688172043011 - nodes in this community are weakly interconnected._
-- **Why does `formatarReais()` connect `formatarReais` to `importar-nfe.tsx`, `Resumo de vendas`, `editor-combo.tsx`, `app-motoboy.tsx`, `aplicativos.tsx`, `formatarReais`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `saida.ts`, `fidelidade/actions.ts`, `bairros.tsx`, `Montagem do cupom impresso`, `estoque/page.tsx`, `preco.ts`, `painel-caixa.tsx`, `acompanhar-pedido.tsx`, `estoque/actions.ts`, `index.ts`, `sabores-pizza.tsx`, `cardapio-cliente.tsx`, `cardapio.test.ts`, `insumos.tsx`, `contagem.tsx`, `pedido-flutuante.tsx`, `estoque/fechamento.tsx`, `mercadopago.ts`?**
+- **Why does `criarClienteServidor()` connect `criarClienteServidor` to `importar-nfe.tsx`, `entregas/page.tsx`, `gestao/actions.ts`, `m/page.tsx`, `Tela de impressoras`, `Resumo de vendas`, `app-motoboy.tsx`, `next`, `cardapio-dados.ts`, `aplicativos.tsx`, `formatarReais`, `custos.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `lojas/actions.ts`, `evento.tsx`, `saida.ts`, `fidelidade/actions.ts`, `bairros.tsx`, `m/actions.ts`, `estoque/page.tsx`, `painel-caixa.tsx`, `acompanhar-pedido.tsx`, `estoque/actions.ts`, `gestao/actions.ts`, `src/caixa.ts`, `index.ts`, `sabores-pizza.tsx`, `cardapio-cliente.tsx`, `equipe.tsx`, `formatarReais`, `cardapio.test.ts`, `entregas/page.tsx`, `form-setor.tsx`, `contagem.tsx`, `funcionarios.tsx`?**
   _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **Should `main.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.0546583850931677 - nodes in this community are weakly interconnected._
-- **Why does `criarClienteServidor()` connect `criarClienteServidor` to `importar-nfe.tsx`, `entregas/page.tsx`, `gestao/actions.ts`, `m/page.tsx`, `Tela de impressoras`, `Resumo de vendas`, `app-motoboy.tsx`, `next`, `cardapio-dados.ts`, `aplicativos.tsx`, `formatarReais`, `custos.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `lojas/actions.ts`, `evento.tsx`, `saida.ts`, `fidelidade/actions.ts`, `bairros.tsx`, `m/actions.ts`, `estoque/page.tsx`, `painel-caixa.tsx`, `acompanhar-pedido.tsx`, `estoque/actions.ts`, `gestao/actions.ts`, `src/caixa.ts`, `index.ts`, `sabores-pizza.tsx`, `cardapio-cliente.tsx`, `equipe.tsx`, `formatarReais`, `cardapio.test.ts`, `entregas/page.tsx`, `form-setor.tsx`, `contagem.tsx`, `funcionarios.tsx`?**
-  _High betweenness centrality (0.040) - this node is a cross-community bridge._
+- **Why does `formatarReais()` connect `formatarReais` to `importar-nfe.tsx`, `Resumo de vendas`, `editor-combo.tsx`, `app-motoboy.tsx`, `aplicativos.tsx`, `formatarReais`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `saida.ts`, `fidelidade/actions.ts`, `bairros.tsx`, `Montagem do cupom impresso`, `estoque/page.tsx`, `preco.ts`, `painel-caixa.tsx`, `acompanhar-pedido.tsx`, `estoque/actions.ts`, `index.ts`, `sabores-pizza.tsx`, `cardapio-cliente.tsx`, `cardapio.test.ts`, `insumos.tsx`, `contagem.tsx`, `pedido-flutuante.tsx`, `estoque/fechamento.tsx`, `mercadopago.ts`?**
+  _High betweenness centrality (0.042) - this node is a cross-community bridge._
 - **Should `20261021000014_caixa.sql` be split into smaller, more focused modules?**
   _Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected._
