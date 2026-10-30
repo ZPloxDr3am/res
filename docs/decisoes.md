@@ -557,3 +557,11 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **Escolher produtos**: cada produto vira uma **cópia** (`produtos.copia_de`) com grupos, opções, fotos e fichas técnicas. Na cópia se muda nome, preço, descrição, mínimo/máximo de cada grupo (atalhos "Sabor único" / "Até 2 sabores"), quais opções ficam e o preço de cada uma, tirar um grupo. **O cardápio principal não muda** (testado), e as cópias não aparecem no editor de Cardápio, em Promoções nem em Estoque.
 - O link do evento fora do período mostra um aviso (e o banco recusa pedido fora do período). Dentro, uma faixa "cardápio especial válido até…". Pedidos chegam no quadro normal, com o nome do evento.
 - Combos com passos ainda não podem ir para o evento.
+
+## D-056 — Pré-venda no cardápio de evento (30/10/2026)
+
+- No **Evento / Aniversário**, o dono liga a **pré-venda**: dia e hora da entrega/retirada, recado opcional e como o cliente recebe — **entrega e retirada**, **só retirada** ou **só entrega** (`marcas.prevenda`, `prevenda_entrega`, `prevenda_texto`, 0057).
+- **Só Pix**: ao ligar, as formas de pagamento do evento viram só Pix (ao desligar, voltam as do cardápio base). Precisa do Pix ligado em Aplicativos; com Mercado Pago o pagamento confirma sozinho e o não pago é cancelado em 40 min (D-044); com chave Pix, a tela avisa para conferir cada pagamento.
+- Cada pedido entra **agendado para o dia marcado** (aparece em Agendados e vai para a cozinha na hora de preparar), mesmo com a loja fechada no momento da compra. As vendas valem dentro do período do evento.
+- No banco: na pré-venda o agendamento só aceita a data marcada e o pedido pelo link só aceita Pix (testado, inclusive pagamento em dinheiro e tipo não liberado sendo recusados).
+- No cardápio público: "🎟️ Pré-venda aberta" no topo, a data de entrega/retirada e, no fechamento do pedido, o aviso de que o pagamento é agora, por Pix.

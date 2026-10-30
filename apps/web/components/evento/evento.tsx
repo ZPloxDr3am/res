@@ -1,10 +1,27 @@
 'use client';
 import { useMemo, useState, useTransition } from 'react';
 import Link from 'next/link';
-import { copiarParaEvento, criarEvento, removerProdutoEvento, salvarEvento, salvarProdutoEvento, type AjusteProduto } from '@/app/(painel)/evento/actions';
+import { copiarParaEvento, criarEvento, removerProdutoEvento, salvarEvento, salvarPrevenda, salvarProdutoEvento, type AjusteProduto } from '@/app/(painel)/evento/actions';
 import { salvando } from '@/components/tempo-real';
 
-export type EventoInfo = { id: string; nome: string; slug: string; link: string; qr: string; ativa: boolean; inicio: string | null; fim: string | null; mensagem: string; base: string | null };
+export type EventoInfo = {
+  id: string;
+  nome: string;
+  slug: string;
+  link: string;
+  qr: string;
+  ativa: boolean;
+  inicio: string | null;
+  fim: string | null;
+  mensagem: string;
+  base: string | null;
+  prevenda: boolean;
+  entrega: string | null;
+  texto: string;
+  aceitaEntrega: boolean;
+  aceitaRetirada: boolean;
+  pix: 'mercado_pago' | 'manual' | 'nenhum';
+};
 export type GrupoEvento = { id: string; nome: string; min: number; max: number; obrigatorio: boolean; permite_repetir: boolean; pizza: boolean; opcoes: { id: string; nome: string; preco: number; ativo: boolean }[] };
 export type ProdutoEvento = { id: string; nome: string; descricao: string; preco: number; imagem: string | null; ativo: boolean; categoria: string; grupos: GrupoEvento[] };
 export type ProdutoPrincipal = { id: string; nome: string; categoria: string; preco: number; imagem: string | null; grupos: number; noEvento: boolean };
@@ -65,6 +82,7 @@ export function PainelEvento({
       ) : (
         <>
           <ConfigEvento e={evento} />
+          <PreVenda e={evento} />
           <section className="cartao grade" aria-label="Produtos do evento">
             <div>
               <h2 style={{ margin: 0 }}>2. Produtos do evento ({produtos.length})</h2>
@@ -409,6 +427,79 @@ function EscolherProdutos({ evento, principais, aoAdicionar }: { evento: string;
           </ul>
         </div>
       ))}
+    </section>
+  );
+}
+
+type Modo = 'ambos' | 'retirada' | 'entrega';
+
+/** Pré-venda (D-056): o cliente compra antes, paga por Pix e recebe/retira no dia marcado. */
+function PreVenda({ e }: { e: EventoInfo }) {
+  const [ativa, setAtiva] = useState(e.prevenda);
+  const [entrega, setEntrega] = useState(paraLocal(e.entrega));
+  const [texto, setTexto] = useState(e.texto);
+  const [modo, setModo] = useState<Modo>(e.aceitaEntrega && e.aceitaRetirada ? 'ambos' : e.aceitaEntrega ? 'entrega' : 'retirada');
+  const [msg, setMsg] = useState<Msg>(null);
+  const [pendente, iniciar] = useTransition();
+  const salvar = (liga: boolean) =>
+    iniciar(async () => {
+      const r = await salvando(
+        salvarPrevenda(e.id, { ativa: liga, entrega: paraIso(entrega), texto, aceitaEntrega: modo !== 'retirada', aceitaRetirada: modo !== 'entrega' }),
+      );
+      if (r.ok) setAtiva(liga);
+      setMsg(r.ok ? { ok: true, texto: liga ? 'Pré-venda ligada. Os pedidos chegam como agendados para o dia marcado.' : 'Pré-venda desligada.' } : { ok: false, texto: r.erro });
+    });
+
+  return (
+    <section className="cartao grade" aria-label="Pré-venda">
+      <div className="linha" style={{ justifyContent: 'space-between' }}>
+        <div>
+          <h2 style={{ margin: 0 }}>🎟️ Pré-venda {ativa ? <span className="selo" style={{ color: '#15803d' }}>ligada</span> : <span className="selo">desligada</span>}</h2>
+          <p className="dica" style={{ margin: 0 }}>
+            O cliente compra <b>antes</b>, paga <b>só por Pix</b> na hora do pedido e recebe ou retira <b>no dia que você marcar</b>. Ótimo para encomendas de aniversário, datas especiais e lotes limitados.
+          </p>
+        </div>
+      </div>
+
+      {e.pix === 'mercado_pago' && <p className="dica" style={{ margin: 0 }}>✅ Pix pelo Mercado Pago: o pagamento é confirmado sozinho, e pedido não pago é cancelado em 40 minutos.</p>}
+      {e.pix === 'manual' && <p className="aviso" style={{ margin: 0 }}>⚠️ Pix manual (chave Pix): confira cada pagamento antes de preparar. Para confirmar sozinho, conecte o Mercado Pago em <Link href="/aplicativos">Aplicativos</Link>.</p>}
+      {e.pix === 'nenhum' && <p className="erro" style={{ margin: 0 }}>Para a pré-venda, ligue o Pix em <Link href="/aplicativos">Aplicativos</Link> (de preferência o Mercado Pago, que confirma sozinho).</p>}
+
+      <div className="gc-campos">
+        <label>
+          Dia e hora da entrega / retirada
+          <input type="datetime-local" value={entrega} onChange={(x) => setEntrega(x.target.value)} />
+        </label>
+        <label className="gc-largo">
+          Recado sobre a entrega/retirada (opcional)
+          <input value={texto} maxLength={200} placeholder="Ex.: Retirada das 18h às 22h no balcão" onChange={(x) => setTexto(x.target.value)} />
+        </label>
+      </div>
+
+      <fieldset className="eq-modos gc-modos">
+        <legend>Como o cliente recebe</legend>
+        {([
+          ['ambos', 'Entrega e retirada', 'O cliente escolhe na hora do pedido.'],
+          ['retirada', 'Só retirada', 'O cliente busca na loja no dia marcado.'],
+          ['entrega', 'Só entrega', 'Vale a taxa dos bairros/km do evento (em Delivery).'],
+        ] as [Modo, string, string][]).map(([v, t, d]) => (
+          <label key={v} className="eq-modo" data-escolhido={modo === v || undefined}>
+            <input type="radio" name="prevenda-modo" checked={modo === v} onChange={() => setModo(v)} />
+            <span><b>{t}</b><span className="dica">{d}</span></span>
+          </label>
+        ))}
+      </fieldset>
+
+      <p className="dica" style={{ margin: 0 }}>
+        As vendas valem dentro do período do evento (acima). Cada pedido entra em Pedidos na faixa <b>Agendados</b> e vai para a cozinha na hora de preparar para o dia marcado.
+      </p>
+      <div className="linha">
+        <button type="button" className="botao-primario" disabled={pendente || e.pix === 'nenhum'} onClick={() => salvar(true)}>
+          {pendente ? 'Salvando…' : ativa ? 'Salvar pré-venda' : 'Ligar a pré-venda'}
+        </button>
+        {ativa && <button type="button" disabled={pendente} onClick={() => salvar(false)}>Desligar a pré-venda</button>}
+        {msg && <span className={msg.ok ? 'dica' : 'erro'} role="status">{msg.texto}</span>}
+      </div>
     </section>
   );
 }
