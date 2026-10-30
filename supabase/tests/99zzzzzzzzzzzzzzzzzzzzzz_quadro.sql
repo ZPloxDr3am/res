@@ -45,3 +45,14 @@ insert into saida values ('fora', public.historico_clientes(array[pg_temp.id('lo
 reset role;
 \o
 select case when jsonb_array_length(pg_temp.v('h') -> '47999990041') = 2 and not (pg_temp.v('h') ? '47999990099') and pg_temp.v('fora') = '{}'::jsonb then 'ok histórico do cliente (só para a equipe)' else 'FALHOU histórico ' || pg_temp.v('h')::text || ' / ' || pg_temp.v('fora')::text end;
+
+-- 0059: aviso por etapa
+\o /dev/null
+insert into ids select 'ped', id from public.pedidos where loja_id = pg_temp.id('loja') order by numero limit 1;
+select from pg_temp.como('00000000-0000-0000-0000-0000000003d1');
+select from public.marcar_aviso(pg_temp.id('ped'), 'em_entrega');
+select from pg_temp.como('00000000-0000-0000-0000-0000000003d3');
+select from pg_temp.esperar_erro(format($q$select public.marcar_aviso('%s', 'pronto')$q$, pg_temp.id('ped')), 'não encontrado');
+reset role;
+\o
+select case when (select avisos ? 'em_entrega' and not avisos ? 'pronto' from public.pedidos where id = pg_temp.id('ped')) then 'ok aviso marcado por etapa (só a equipe)' else 'FALHOU aviso' end;

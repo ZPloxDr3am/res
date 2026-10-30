@@ -26,6 +26,8 @@ export type PedidoRow = {
   pago_em: string | null;
   /** Pix do Mercado Pago ainda não pago (D-044) */
   aguarda_pagamento?: boolean;
+  /** etapas em que o cliente já foi avisado no WhatsApp (D-058): { em_entrega: '2026-…' } */
+  avisos?: Record<string, string>;
   codigo?: string;
   aceito_em: string | null;
   pronto_em: string | null;
@@ -52,7 +54,7 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
     supabase
       .from('pedidos')
       .select(
-        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, agendado_para, entregador_nome, pago_em, aguarda_pagamento, codigo, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, previsao_chegada, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_id, opcao_id, grupo_nome, nome, quantidade, fracao, ordem))',
+        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, agendado_para, entregador_nome, pago_em, aguarda_pagamento, avisos, codigo, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, previsao_chegada, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_id, opcao_id, grupo_nome, nome, quantidade, fracao, ordem))',
       )
       .in('loja_id', lojaIds)
       .or(`status.not.in.(concluido,cancelado),criado_em.gte.${desde}`)

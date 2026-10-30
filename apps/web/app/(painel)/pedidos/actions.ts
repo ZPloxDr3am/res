@@ -134,3 +134,11 @@ export async function autorizarDesconto(usuario: string, senha: string): Promise
     await sb.auth.signOut();
   }
 }
+
+/** Marca que o cliente foi avisado no WhatsApp nesta etapa do pedido (D-058). */
+export async function marcarAviso(pedidoId: string, etapa: StatusPedido, avisado = true): Promise<Resultado> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('marcar_aviso', { p_pedido: pedidoId, p_etapa: etapa, p_avisado: avisado });
+  if (error) return { ok: false, erro: error.message };
+  return { ok: true };
+}

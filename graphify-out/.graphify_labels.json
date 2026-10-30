@@ -1,6 +1,5 @@
 {
   "6": "Banco: impressão",
-  "7": "Banco: fidelidade",
   "8": "Banco: estoque",
   "9": "API aberta e MCP (rotas)",
   "15": "CI (testes automáticos)",
@@ -42,7 +41,6 @@
   "93": "Grupo 93: 99zzzzzzzzzzzzzzz_mercadopago.sql",
   "96": "Grupo 96: 70_caixa.sql",
   "100": "Grupo 100: tempos_ajuste.sql",
-  "102": "Grupo 102: 20_cardapio_pedidos.sql",
   "105": "Grupo 105: next.config.mjs",
   "106": "Grupo 106: vercel.json",
   "108": "Grupo 108: test-db.sh",

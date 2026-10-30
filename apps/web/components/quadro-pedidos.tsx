@@ -20,7 +20,7 @@ import {
   type StatusPedido,
 } from '@res/core';
 import type { PedidoRow } from '@/lib/pedidos';
-import { definirAceiteAutomatico, marcarPago, mudarStatus } from '@/app/(painel)/pedidos/actions';
+import { definirAceiteAutomatico, marcarAviso, marcarPago, mudarStatus } from '@/app/(painel)/pedidos/actions';
 import { salvando } from '@/components/tempo-real';
 import { BotaoNovoPedido } from '@/components/pedido-flutuante';
 import { useImprimir } from '@/components/impressao/usar-impressao';
@@ -47,6 +47,22 @@ function seloCliente(p: PedidoRow, historico: Record<string, string[]>): { texto
   if (dias > 30) return { texto: `${n} · voltou após ${dias} dias`, titulo: `${s ? `${s.emoji} ${s.rotulo}: ` : ''}o último pedido foi há ${dias} dias. Vale um agrado!`, tipo: 'volta' };
   return { texto: `${n}${s ? ` · ${s.emoji} ${s.rotulo}` : ''}`, titulo: s?.regra ?? '', tipo: seg === 'fieis' ? 'fiel' : 'normal' };
 }
+
+/** Abre o WhatsApp do cliente com a mensagem da etapa. false se o pedido não tem telefone. */
+function abrirWhatsApp(p: PedidoRow, marca: string | null | undefined, fuso: string): boolean {
+  const tel = (p.cliente_telefone ?? '').replace(/\D/g, '');
+  if (!tel) return false;
+  window.open(`https://wa.me/${tel.length >= 12 ? tel : '55' + tel}?text=${encodeURIComponent(mensagemCliente(p, marca, fuso))}`, '_blank', 'noopener');
+  return true;
+}
+
+// Etapas que entram no "Avisar todos" (D-058)
+const ETAPAS_AVISO: { id: string; rotulo: string; vale: (p: PedidoRow) => boolean }[] = [
+  { id: 'saiu', rotulo: '🛵 Saíram para entrega', vale: (p) => p.status === 'em_entrega' },
+  { id: 'retirada', rotulo: '🏪 Prontos para retirada', vale: (p) => p.status === 'pronto' && p.tipo === 'retirada' },
+  { id: 'aceito', rotulo: '👨‍🍳 Em preparo (pedido aceito)', vale: (p) => p.status === 'em_preparo' },
+];
+const CHAVE_ETAPAS = 'res_avisar_etapas';
 
 /** Mensagem pronta para o WhatsApp do cliente, conforme a etapa do pedido. */
 function mensagemCliente(p: PedidoRow, marca: string | null | undefined, fuso: string): string {
@@ -288,6 +304,7 @@ export function QuadroPedidos({
             />
             Aceite automático
           </label>}
+          <AvisarTodos pedidos={pedidos} nomeMarca={nomeMarca} fuso={fuso} />
           <BotaoNovoPedido />
         </div>
       </div>
@@ -411,25 +428,12 @@ function CartaoPedido({
   selo?: ReturnType<typeof seloCliente>;
   prazoMin?: number;
 }) {
-  const chaveAviso = `res_avisado_${p.id}_${p.status}`;
-  const [avisado, setAvisado] = useState(false);
-  useEffect(() => {
-    try {
-      setAvisado(localStorage.getItem(chaveAviso) === '1');
-    } catch {
-      /* ignora */
-    }
-  }, [chaveAviso]);
+  const [avisadoAgora, setAvisadoAgora] = useState(false);
+  const avisado = avisadoAgora || !!p.avisos?.[p.status];
   const avisarCliente = () => {
-    const tel = (p.cliente_telefone ?? '').replace(/\D/g, '');
-    if (!tel) return;
-    window.open(`https://wa.me/${tel.length >= 12 ? tel : '55' + tel}?text=${encodeURIComponent(mensagemCliente(p, nomeMarca, fuso))}`, '_blank', 'noopener');
-    try {
-      localStorage.setItem(chaveAviso, '1');
-    } catch {
-      /* ignora */
-    }
-    setAvisado(true);
+    if (!abrirWhatsApp(p, nomeMarca, fuso)) return;
+    setAvisadoAgora(true);
+    void salvando(marcarAviso(p.id, p.status));
   };
   const [cancelando, setCancelando] = useState(false);
   const [motivo, setMotivo] = useState('');
@@ -619,5 +623,94 @@ function CartaoPedido({
       )}
       {erro && <p className="erro" role="alert">{erro}</p>}
     </article>
+  );
+}
+
+/** "Avisar todos" (D-058): fila dos clientes ainda não avisados; o caixa vai clicando e enviando um por um. */
+function AvisarTodos({ pedidos, nomeMarca, fuso }: { pedidos: PedidoRow[]; nomeMarca: (p: PedidoRow) => string | null; fuso: string }) {
+  const [aberto, setAberto] = useState(false);
+  const [etapas, setEtapas] = useState<string[]>(['saiu', 'retirada']);
+  const [feitos, setFeitos] = useState<Set<string>>(new Set());
+  const [pulados, setPulados] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    try {
+      const e = JSON.parse(localStorage.getItem(CHAVE_ETAPAS) ?? 'null') as string[] | null;
+      if (Array.isArray(e)) setEtapas(e);
+    } catch {
+      /* ignora */
+    }
+  }, []);
+  const chave = (p: PedidoRow) => `${p.id}:${p.status}`;
+  const fila = pedidos
+    .filter((p) => !!p.cliente_telefone && !(p.status === 'novo' && p.aguarda_pagamento && !p.pago_em))
+    .filter((p) => ETAPAS_AVISO.some((e) => etapas.includes(e.id) && e.vale(p)))
+    .filter((p) => !p.avisos?.[p.status] && !feitos.has(chave(p)))
+    .sort((a, b) => (a.status === b.status ? a.numero - b.numero : a.status === 'em_entrega' ? -1 : b.status === 'em_entrega' ? 1 : a.status === 'pronto' ? -1 : 1));
+  const pendentes = fila.filter((p) => !pulados.has(chave(p)));
+  const enviar = (p: PedidoRow) => {
+    if (!abrirWhatsApp(p, nomeMarca(p), fuso)) return;
+    setFeitos((s) => new Set(s).add(chave(p)));
+    void salvando(marcarAviso(p.id, p.status));
+  };
+  const mudarEtapa = (id: string) =>
+    setEtapas((e) => {
+      const n = e.includes(id) ? e.filter((x) => x !== id) : [...e, id];
+      try {
+        localStorage.setItem(CHAVE_ETAPAS, JSON.stringify(n));
+      } catch {
+        /* ignora */
+      }
+      return n;
+    });
+
+  return (
+    <>
+      <button type="button" onClick={() => setAberto(true)} data-pendente={fila.length > 0 || undefined} className="qp-avisar">
+        📣 Avisar clientes{fila.length > 0 && <span className="qp-chip-n">{fila.length}</span>}
+      </button>
+      {aberto && (
+        <div className="pub-folha-fundo" role="dialog" aria-modal="true" aria-label="Avisar clientes" onClick={(e) => e.target === e.currentTarget && setAberto(false)}>
+          <div className="pub-folha qp-folha">
+            <div className="linha" style={{ justifyContent: 'space-between' }}>
+              <h2 style={{ margin: 0 }}>📣 Avisar clientes no WhatsApp</h2>
+              <button type="button" className="mini" onClick={() => setAberto(false)}>Fechar</button>
+            </div>
+            <p className="dica" style={{ margin: 0 }}>
+              Cada clique abre o WhatsApp do próximo cliente com a mensagem pronta: é só apertar enviar e voltar aqui. Quem já foi avisado sai da lista, em todas as telas da loja.
+            </p>
+            <div className="qp-filtros">
+              {ETAPAS_AVISO.map((e) => (
+                <button key={e.id} type="button" className="qp-chip" aria-pressed={etapas.includes(e.id)} onClick={() => mudarEtapa(e.id)}>
+                  {e.rotulo} <span className="qp-chip-n">{pedidos.filter((p) => !!p.cliente_telefone && e.vale(p) && !p.avisos?.[p.status] && !feitos.has(chave(p))).length}</span>
+                </button>
+              ))}
+            </div>
+            {pendentes.length > 0 ? (
+              <button type="button" className="botao-primario qp-proximo" onClick={() => enviar(pendentes[0]!)}>
+                💬 Avisar {pendentes[0]!.cliente_nome.split(' ')[0]} · #{pendentes[0]!.numero} <span className="dica" style={{ color: 'inherit' }}>({pendentes.length} na fila)</span>
+              </button>
+            ) : (
+              <p className="dica" style={{ margin: 0 }}>✅ Ninguém esperando aviso{pulados.size ? ' (fora os pulados)' : ''}.</p>
+            )}
+            <ul className="qp-fila">
+              {fila.map((p) => (
+                <li key={p.id} data-pulado={pulados.has(chave(p)) || undefined}>
+                  <span className="grade" style={{ gap: 0, minWidth: 0 }}>
+                    <strong>#{p.numero} · {p.cliente_nome}</strong>
+                    <span className="dica">{ETAPAS_AVISO.find((e) => e.vale(p))?.rotulo}{nomeMarca(p) ? ` · ${nomeMarca(p)}` : ''}</span>
+                  </span>
+                  <span className="linha" style={{ gap: '0.3rem', flexWrap: 'nowrap' }}>
+                    <button type="button" className="mini" onClick={() => enviar(p)}>💬 Avisar</button>
+                    <button type="button" className="mini" onClick={() => setPulados((s) => { const n = new Set(s); if (n.has(chave(p))) n.delete(chave(p)); else n.add(chave(p)); return n; })}>
+                      {pulados.has(chave(p)) ? 'Voltar' : 'Pular'}
+                    </button>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
