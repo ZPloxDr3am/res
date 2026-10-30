@@ -192,8 +192,8 @@
     "semantic_hash": "bc67b9f2cf82302b066ee476aca08cb5"
   },
   "apps/web/app/(painel)/pedidos/page.tsx": {
-    "mtime": 1793402111.1036525,
-    "seen": 1793402179.2686532,
+    "mtime": 1793402497.149642,
+    "seen": 1793402503.3223155,
     "ast_hash": "97911404f11be73231634ec40beb2502",
     "semantic_hash": ""
   },
@@ -708,8 +708,8 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1793402161.7172155,
-    "seen": 1793402179.2688737,
+    "mtime": 1793402497.153642,
+    "seen": 1793402503.3225048,
     "ast_hash": "f986cea18da5175b49931f752968c56f",
     "semantic_hash": ""
   },
@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793402175.4376493,
-    "seen": 1793402179.2691827,
+    "mtime": 1793402497.153642,
+    "seen": 1793402503.3227818,
     "ast_hash": "3dfb7325c246f1ced0210b018b740683",
     "semantic_hash": ""
   },
@@ -1965,18 +1965,6 @@
     "mtime": 1793399672.6882222,
     "seen": 1793402179.2690823,
     "ast_hash": "ed98752993ce5e4153f91bb6480ebd0a",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261030000058_historico_clientes.sql": {
-    "mtime": 1793402089.3433723,
-    "seen": 1793402179.269085,
-    "ast_hash": "3fcd68268790cae9520be253af40d010",
-    "semantic_hash": ""
-  },
-  "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzz_quadro.sql": {
-    "mtime": 1793402089.3489807,
-    "seen": 1793402179.269175,
-    "ast_hash": "0194c670a98c18245c82fa70840adc57",
     "semantic_hash": ""
   }
 }

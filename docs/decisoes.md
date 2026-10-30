@@ -571,3 +571,9 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **Filtros rápidos** com contador no topo do quadro: loja (em "todas as lojas") ou marca, tipo (entrega/retirada/balcão), canal (cardápio digital / lançado na loja) e situação (⚠️ atrasados, 🛵 prontos sem motoboy, 💰 a cobrar, ⏳ aguardando Pix, 🌱 1º pedido). Dentro do grupo soma, entre grupos filtra junto; ficam lembrados no aparelho; "Limpar filtros". O alerta de pedido novo toca mesmo fora do filtro.
 - **Selo do cliente** no cartão, pelo telefone em todas as lojas do grupo (`historico_clientes`, 0058): "🌱 1º pedido", "5º pedido · 💎 Fiéis" ou "3º pedido · voltou após 45 dias".
 - **💬 Avisar cliente**: abre o WhatsApp do cliente com a mensagem pronta da etapa (recebido/em preparo, pronto para retirada, saiu para entrega com o motoboy e a previsão, entregue, cancelado com o motivo) e o link de acompanhamento — vale também para pedido lançado no balcão/telefone. Vira "✓ Avisado" naquela etapa (no aparelho).
+
+## D-058 — "Avisar clientes" em fila (30/10/2026)
+
+- Botão **📣 Avisar clientes (N)** no quadro: abre a fila dos clientes ainda não avisados, por etapa (🛵 saíram para entrega, 🏪 prontos para retirada e, se quiser, 👨‍🍳 em preparo). Um clique abre o WhatsApp do próximo com a mensagem pronta; o caixa envia e volta para o próximo. Dá para pular e avisar fora de ordem.
+- Quem já foi avisado fica **no pedido** (`pedidos.avisos`, por etapa, `marcar_aviso`, 0059), não no aparelho: todas as telas da loja veem a mesma fila e o mesmo "✓ Avisado" no cartão.
+- Envio 100% automático depende do WhatsApp oficial (API da Meta), que fica para depois do cadastro na Meta.
