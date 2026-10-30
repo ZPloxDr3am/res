@@ -1304,3 +1304,19 @@ li[data-on] .mg-radio { border: 6px solid var(--primaria); }
 .ev-faixa { position: sticky; top: 0; z-index: 5; padding: 0.55rem 1rem; text-align: center; font-size: 0.92rem; background: var(--primaria); color: var(--primaria-texto); }
 .ev-faixa a { color: inherit; text-decoration: underline; }
 .pv-prevenda { display: grid; gap: 0.2rem; padding: 0.75rem 0.9rem; border-radius: 12px; border: 1.5px solid var(--primaria); background: color-mix(in srgb, var(--primaria) 8%, var(--superficie)); }
+
+/* ---------- Quadro: filtros rápidos e selo do cliente (D-057) */
+.qp-filtros { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+.qp-chip { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.65rem; border-radius: 999px; border: 1px solid var(--borda); background: var(--superficie); font-size: 0.85rem; cursor: pointer; }
+.qp-chip:disabled { opacity: 0.45; cursor: default; }
+.qp-chip-n { font-weight: 700; font-variant-numeric: tabular-nums; min-width: 1.2rem; padding: 0 0.3rem; border-radius: 999px; background: color-mix(in srgb, var(--borda) 60%, transparent); text-align: center; }
+.qp-chip[aria-pressed='true'] { background: var(--primaria); border-color: var(--primaria); color: var(--primaria-texto); }
+.qp-chip[aria-pressed='true'] .qp-chip-n { background: color-mix(in srgb, #fff 25%, transparent); }
+.qp-chip[data-cor='erro']:not(:disabled):not([aria-pressed='true']) { border-color: var(--erro); color: var(--erro); }
+.qp-chip[data-cor='aviso']:not(:disabled):not([aria-pressed='true']) { border-color: #d97706; color: #b45309; }
+.qp-sep { width: 1px; height: 1.3rem; background: var(--borda); margin: 0 0.15rem; }
+.qp-selo-cliente { display: inline-block; margin-top: 0.15rem; font-size: 0.78rem; padding: 0.05rem 0.45rem; border-radius: 999px; background: color-mix(in srgb, var(--borda) 45%, transparent); }
+.qp-selo-cliente[data-tipo='novo'] { background: #dcfce7; color: #166534; }
+.qp-selo-cliente[data-tipo='volta'] { background: #fef3c7; color: #92400e; }
+.qp-selo-cliente[data-tipo='fiel'] { background: #e0e7ff; color: #3730a3; }
+button.mini[data-avisado] { color: #15803d; }
