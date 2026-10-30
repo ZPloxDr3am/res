@@ -565,3 +565,9 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Cada pedido entra **agendado para o dia marcado** (aparece em Agendados e vai para a cozinha na hora de preparar), mesmo com a loja fechada no momento da compra. As vendas valem dentro do período do evento.
 - No banco: na pré-venda o agendamento só aceita a data marcada e o pedido pelo link só aceita Pix (testado, inclusive pagamento em dinheiro e tipo não liberado sendo recusados).
 - No cardápio público: "🎟️ Pré-venda aberta" no topo, a data de entrega/retirada e, no fechamento do pedido, o aviso de que o pagamento é agora, por Pix.
+
+## D-057 — Quadro de pedidos: filtros rápidos, selo do cliente e "Avisar cliente" (30/10/2026)
+
+- **Filtros rápidos** com contador no topo do quadro: loja (em "todas as lojas") ou marca, tipo (entrega/retirada/balcão), canal (cardápio digital / lançado na loja) e situação (⚠️ atrasados, 🛵 prontos sem motoboy, 💰 a cobrar, ⏳ aguardando Pix, 🌱 1º pedido). Dentro do grupo soma, entre grupos filtra junto; ficam lembrados no aparelho; "Limpar filtros". O alerta de pedido novo toca mesmo fora do filtro.
+- **Selo do cliente** no cartão, pelo telefone em todas as lojas do grupo (`historico_clientes`, 0058): "🌱 1º pedido", "5º pedido · 💎 Fiéis" ou "3º pedido · voltou após 45 dias".
+- **💬 Avisar cliente**: abre o WhatsApp do cliente com a mensagem pronta da etapa (recebido/em preparo, pronto para retirada, saiu para entrega com o motoboy e a previsão, entregue, cancelado com o motivo) e o link de acompanhamento — vale também para pedido lançado no balcão/telefone. Vira "✓ Avisado" naquela etapa (no aparelho).
