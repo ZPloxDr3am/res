@@ -14,7 +14,13 @@ export default async function Pedidos({ searchParams }: { searchParams: Promise<
   // histórico de cada cliente no grupo, para o selo do cartão (D-057)
   const telefones = [...new Set(pedidos.map((p) => p.cliente_telefone).filter((t): t is string => !!t))];
   const supabase = await criarClienteServidor();
-  const { data: hist } = telefones.length ? await supabase.rpc('historico_clientes', { p_lojas: ids, p_telefones: telefones }) : { data: {} };
+  const [{ data: hist }, { data: lj }] = await Promise.all([
+    telefones.length ? supabase.rpc('historico_clientes', { p_lojas: ids, p_telefones: telefones }) : Promise.resolve({ data: {} }),
+    supabase.from('lojas').select('pausa_ate, pausa_recado').eq('id', ctx.lojaId).maybeSingle(),
+  ]);
+  // pausa temporária (D-059); sem a migração 0060 a consulta falha e fica sem pausa
+  const pausaAte = (lj as { pausa_ate?: string | null } | null)?.pausa_ate ?? null;
+  const pausa = pausaAte && new Date(pausaAte).getTime() > Date.now() ? { ate: pausaAte, recado: (lj as { pausa_recado?: string | null }).pausa_recado ?? null } : null;
   return (
     <>
       <TempoReal lojaId={ctx.lojaId} tabelas={['pedidos', 'impressoes']} reservaMs={20000} todasAsLojas={todas} />
@@ -30,6 +36,7 @@ export default async function Pedidos({ searchParams }: { searchParams: Promise<
         lojaAtual={ctx.lojaNome}
         todas={todas}
         historico={(hist as Record<string, string[]> | null) ?? {}}
+        pausa={pausa}
       />
     </>
   );

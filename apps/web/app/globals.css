@@ -129,6 +129,8 @@ legend { color: var(--texto-suave); font-size: 0.85rem; padding: 0 0.25rem; }
 .pub-status.aberto { background: color-mix(in srgb, var(--primaria) 16%, transparent); color: var(--primaria); }
 .pub-status.fechado { background: color-mix(in srgb, var(--erro) 14%, transparent); color: var(--erro); }
 .pub-mensagem { margin: 0; font-size: 0.95rem; }
+.pv-pausa { padding: 0.6rem 0.8rem; border-radius: 10px; border: 1px solid #f59e0b; background: #fffbeb; color: #78350f; font-weight: 600; }
+@media (prefers-color-scheme: dark) { .pv-pausa { background: #3a2a06; color: #fde68a; border-color: #b45309; } }
 .pub-horarios { list-style: none; padding: 0; margin: 0.4rem 0 0; display: grid; gap: 0.2rem; }
 .pub-horarios li { display: flex; justify-content: space-between; }
 .pub-horarios li.hoje { font-weight: 700; color: var(--texto); }
@@ -1322,6 +1324,9 @@ li[data-on] .mg-radio { border: 6px solid var(--primaria); }
 button.mini[data-avisado] { color: #15803d; }
 .qp-avisar { display: inline-flex; align-items: center; gap: 0.35rem; }
 .qp-avisar[data-pendente] { border-color: #16a34a; color: #15803d; font-weight: 600; }
+.qp-pausar[data-ativa] { border-color: #d97706; color: #b45309; font-weight: 600; }
+.qp-pausa { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.7rem 0.9rem; border: 1px solid #f59e0b; border-radius: 10px; background: #fffbeb; color: #78350f; }
+@media (prefers-color-scheme: dark) { .qp-pausa { background: #3a2a06; color: #fde68a; border-color: #b45309; } }
 .qp-folha { max-width: 640px; }
 .qp-proximo { width: 100%; padding: 0.8rem 1rem; font-size: 1.02rem; }
 .qp-fila { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; max-height: 50vh; overflow: auto; }

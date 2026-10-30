@@ -20,7 +20,7 @@ import {
   type StatusPedido,
 } from '@res/core';
 import type { PedidoRow } from '@/lib/pedidos';
-import { definirAceiteAutomatico, marcarAviso, marcarPago, mudarStatus } from '@/app/(painel)/pedidos/actions';
+import { definirAceiteAutomatico, marcarAviso, marcarPago, mudarStatus, pausarLoja } from '@/app/(painel)/pedidos/actions';
 import { salvando } from '@/components/tempo-real';
 import { BotaoNovoPedido } from '@/components/pedido-flutuante';
 import { useImprimir } from '@/components/impressao/usar-impressao';
@@ -130,6 +130,7 @@ export function QuadroPedidos({
   lojaAtual,
   todas,
   historico = {},
+  pausa = null,
 }: {
   pedidos: PedidoRow[];
   aceiteAutomatico: boolean;
@@ -142,6 +143,7 @@ export function QuadroPedidos({
   lojaAtual: string;
   todas: boolean;
   historico?: Record<string, string[]>;
+  pausa?: { ate: string; recado: string | null } | null;
 }) {
   const [filtros, setFiltros] = useState<Filtros>(SEM_FILTRO);
   useEffect(() => {
@@ -304,10 +306,12 @@ export function QuadroPedidos({
             />
             Aceite automático
           </label>}
+          {!todas && <PausaLoja pausa={pausa} fuso={fuso} lojaNome={lojaAtual} modo="botao" />}
           <AvisarTodos pedidos={pedidos} nomeMarca={nomeMarca} fuso={fuso} />
           <BotaoNovoPedido />
         </div>
       </div>
+      {!todas && <PausaLoja pausa={pausa} fuso={fuso} lojaNome={lojaAtual} modo="faixa" />}
       {erro && <p className="erro" role="alert">{erro}</p>}
       {!todas && <FilaImpressao n={filaImpressao} />}
 
@@ -708,6 +712,95 @@ function AvisarTodos({ pedidos, nomeMarca, fuso }: { pedidos: PedidoRow[]; nomeM
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// ---- Pausa temporária com recado (D-059)
+const MINUTOS_PAUSA = [15, 30, 45, 60, 90];
+const RECADOS_PAUSA = [
+  'Estamos com muitos pedidos agora. Voltamos já! 🙏',
+  'Pausa rápida na cozinha. Já voltamos!',
+  'Faltou entregador por um instante. Voltamos em breve!',
+];
+
+function PausaLoja({ pausa, fuso, lojaNome, modo }: { pausa: { ate: string; recado: string | null } | null; fuso: string; lojaNome: string; modo: 'botao' | 'faixa' }) {
+  const [aberto, setAberto] = useState(false);
+  const [minutos, setMinutos] = useState(30);
+  const [recado, setRecado] = useState(RECADOS_PAUSA[0]!);
+  const [erro, setErro] = useState<string | null>(null);
+  const [pendente, iniciar] = useTransition();
+  const [agora, setAgora] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setAgora(Date.now()), 15000);
+    return () => clearInterval(t);
+  }, []);
+  const ate = pausa ? new Date(pausa.ate).getTime() : 0;
+  const ativa = !!pausa && ate > agora;
+  const hora = (t: number) => new Intl.DateTimeFormat('pt-BR', { timeZone: fuso, hour: '2-digit', minute: '2-digit' }).format(new Date(t));
+  const faltam = Math.max(1, Math.ceil((ate - agora) / 60000));
+  const agir = (min: number, texto?: string) =>
+    iniciar(async () => {
+      const r = await salvando(pausarLoja(min, texto));
+      setErro(r.ok ? null : r.erro);
+      if (r.ok) setAberto(false);
+    });
+
+  if (modo === 'faixa') {
+    if (!ativa) return null;
+    return (
+      <div className="qp-pausa" role="status">
+        <span className="grade" style={{ gap: '0.1rem', minWidth: 0 }}>
+          <strong>⏸ {lojaNome} pausada · volta sozinha às {hora(ate)} (faltam {faltam} min)</strong>
+          <span>O cardápio não aceita pedidos agora{pausa!.recado ? <> e mostra: <em>“{pausa!.recado}”</em></> : '.'} Pedidos agendados só para depois da pausa.</span>
+        </span>
+        <span className="linha" style={{ gap: '0.4rem' }}>
+          <button type="button" className="mini" disabled={pendente} onClick={() => agir(Math.min(240, Math.ceil((ate - Date.now()) / 60000) + 15), pausa!.recado ?? undefined)}>+15 min</button>
+          <button type="button" className="botao-primario" disabled={pendente} onClick={() => agir(0)}>▶ Retomar agora</button>
+        </span>
+        {erro && <p className="erro" role="alert" style={{ margin: 0 }}>{erro}</p>}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <button type="button" className="qp-pausar" data-ativa={ativa || undefined} onClick={() => (ativa ? agir(0) : setAberto(true))} disabled={pendente}
+        title={ativa ? 'Reabrir a loja agora' : 'Parar de receber pedidos por um tempo'}>
+        {ativa ? `▶ Retomar (pausada até ${hora(ate)})` : '⏸ Pausar loja'}
+      </button>
+      {aberto && (
+        <div className="pub-folha-fundo" role="dialog" aria-modal="true" aria-label="Pausar a loja" onClick={(e) => e.target === e.currentTarget && setAberto(false)}>
+          <div className="pub-folha qp-folha">
+            <div className="linha" style={{ justifyContent: 'space-between' }}>
+              <h2 style={{ margin: 0 }}>⏸ Pausar {lojaNome}</h2>
+              <button type="button" className="mini" onClick={() => setAberto(false)}>Fechar</button>
+            </div>
+            <p className="dica" style={{ margin: 0 }}>
+              O cardápio para de aceitar pedidos e mostra seu recado. A loja reabre sozinha no horário; dá para retomar antes. Vale para todos os cardápios desta loja.
+            </p>
+            <strong>Por quanto tempo?</strong>
+            <div className="qp-filtros">
+              {MINUTOS_PAUSA.map((m) => (
+                <button key={m} type="button" className="qp-chip" aria-pressed={minutos === m} onClick={() => setMinutos(m)}>
+                  {m < 60 ? `${m} min` : m === 60 ? '1 hora' : '1h30'}
+                </button>
+              ))}
+            </div>
+            <strong>Recado para o cliente</strong>
+            <div className="grade" style={{ gap: '0.3rem' }}>
+              {RECADOS_PAUSA.map((r) => (
+                <button key={r} type="button" className="qp-chip" style={{ textAlign: 'left' }} aria-pressed={recado === r} onClick={() => setRecado(r)}>{r}</button>
+              ))}
+              <input value={recado} maxLength={160} onChange={(e) => setRecado(e.target.value)} placeholder="Ou escreva o seu recado" aria-label="Recado" />
+            </div>
+            <button type="button" className="botao-primario qp-proximo" disabled={pendente} onClick={() => agir(minutos, recado)}>
+              ⏸ Pausar até {hora(Date.now() + minutos * 60000)}
+            </button>
+            {erro && <p className="erro" role="alert" style={{ margin: 0 }}>{erro}</p>}
           </div>
         </div>
       )}

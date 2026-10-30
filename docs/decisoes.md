@@ -577,3 +577,9 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Botão **📣 Avisar clientes (N)** no quadro: abre a fila dos clientes ainda não avisados, por etapa (🛵 saíram para entrega, 🏪 prontos para retirada e, se quiser, 👨‍🍳 em preparo). Um clique abre o WhatsApp do próximo com a mensagem pronta; o caixa envia e volta para o próximo. Dá para pular e avisar fora de ordem.
 - Quem já foi avisado fica **no pedido** (`pedidos.avisos`, por etapa, `marcar_aviso`, 0059), não no aparelho: todas as telas da loja veem a mesma fila e o mesmo "✓ Avisado" no cartão.
 - Envio 100% automático depende do WhatsApp oficial (API da Meta), que fica para depois do cadastro na Meta.
+
+## D-059 — Pausa temporária com recado (30/10/2026)
+- No quadro de pedidos, **⏸ Pausar loja** por 15/30/45/60/90 min com recado pronto ou escrito. Qualquer pessoa da equipe pausa (é o caixa quem sente a cozinha apertar).
+- A pausa é da **loja** (todos os cardápios dela) e passa por cima do "Abrir agora". Reabre sozinha no horário; dá para **+15 min** ou **Retomar agora** pela faixa amarela do quadro.
+- O cardápio mostra "⏸ Pausado · volta às HH:MM" e o recado. Agendamento continua, mas só com horários depois da pausa. A pré-venda do evento não é afetada (é para outra data).
+- Banco: `lojas.pausa_ate/pausa_recado/pausa_por`, `pausar_loja`, `pausa_publica`; `marca_aberta` e `horarios_agendamento` consideram a pausa (migração 0060).

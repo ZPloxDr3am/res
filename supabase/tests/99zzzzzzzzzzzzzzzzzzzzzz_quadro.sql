@@ -56,3 +56,27 @@ select from pg_temp.esperar_erro(format($q$select public.marcar_aviso('%s', 'pro
 reset role;
 \o
 select case when (select avisos ? 'em_entrega' and not avisos ? 'pronto' from public.pedidos where id = pg_temp.id('ped')) then 'ok aviso marcado por etapa (só a equipe)' else 'FALHOU aviso' end;
+
+-- 0060: pausa temporária
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000003d1');
+select from public.pausar_loja(pg_temp.id('loja'), 30, 'Muitos pedidos, voltamos já!');
+select from pg_temp.como('00000000-0000-0000-0000-0000000003d3');
+select from pg_temp.esperar_erro(format($q$select public.pausar_loja('%s', 10)$q$, pg_temp.id('loja')), 'não encontrada');
+reset role;
+set role anon;
+insert into saida values ('pausa', public.pausa_publica('pizza-qd'));
+insert into saida values ('cp', public.cardapio_publico('pizza-qd'));
+select from pg_temp.esperar_erro(format($q$select public.criar_pedido_publico('pizza-qd', '{"tipo":"retirada","pagamento":"dinheiro","cliente":{"nome":"Bia","telefone":"47999990042"},"itens":[{"produto_id":"%s","quantidade":1,"escolhas":{}}]}')$q$, pg_temp.id('pz')), 'fechad');
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000003d1');
+select from public.pausar_loja(pg_temp.id('loja'), 0);
+reset role;
+set role anon;
+insert into saida values ('cp2', public.cardapio_publico('pizza-qd'));
+insert into saida values ('pausa2', coalesce(public.pausa_publica('pizza-qd'), 'null'::jsonb));
+reset role;
+\o
+select case when pg_temp.v('pausa') ->> 'recado' = 'Muitos pedidos, voltamos já!' and (pg_temp.v('cp') #>> '{marca,aberta}')::boolean = false
+             and (pg_temp.v('cp2') #>> '{marca,aberta}')::boolean and pg_temp.v('pausa2') = 'null'::jsonb
+            then 'ok pausa fecha a loja com recado e retoma' else 'FALHOU pausa ' || pg_temp.v('pausa')::text || pg_temp.v('cp2')::text end;
