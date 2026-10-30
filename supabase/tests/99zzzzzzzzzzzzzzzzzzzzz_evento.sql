@@ -97,3 +97,38 @@ select case when (pg_temp.v('evpub') ->> 'nome') = 'Aniversário 5 anos' and (pg
 select case when (select count(*) from public.marcas where loja_id = pg_temp.id('loja') and evento) = 1
              and (select count(*) from public.areas_entrega where marca_id = pg_temp.id('ev')) = 1 then 'ok evento bônus com bairros copiados' else 'FALHOU evento bônus' end;
 select case when not exists (select 1 from public.produtos where id = pg_temp.id('copia')) and not exists (select 1 from public.grupos_opcoes where id = pg_temp.id('g_copia')) then 'ok tirar do evento apaga só a cópia' else 'FALHOU remover' end;
+
+-- 0057: pré-venda (só Pix, para a data do evento; aqui só retirada)
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000003c1');
+select from public.salvar_evento(pg_temp.id('ev'), jsonb_build_object('nome', 'Aniversário 5 anos', 'inicio', (now() - interval '1 hour')::text, 'fim', (now() + interval '2 day')::text));
+insert into ids values ('copia2', public.copiar_para_evento(pg_temp.id('ev'), pg_temp.id('media')));
+insert into ids select 'g2', grupo_id from public.produto_grupos where produto_id = pg_temp.id('copia2');
+insert into ids select 'o2', id from public.opcoes where grupo_id = pg_temp.id('g2') and nome = 'Calabresa';
+-- sem Pix ligado: não deixa
+select from pg_temp.esperar_erro(format($q$select public.salvar_prevenda('%s', jsonb_build_object('ativa', true, 'entrega', (now() + interval '3 day')::text))$q$, pg_temp.id('ev')), 'ligue o Pix');
+reset role;
+insert into public.integracoes (loja_id, tipo, ativo, config) values (pg_temp.id('loja'), 'pix', true, '{"tipo_chave":"cpf","chave":"12345678909","nome":"Rui","cidade":"Itapema"}');
+create temp table quando as select date_trunc('minute', now() + interval '3 day') as t;
+grant select on quando to authenticated, anon;
+-- loja fechada agora: na pré-venda não importa
+update public.marcas set status_cardapio = 'fechado' where id = pg_temp.id('ev');
+select from pg_temp.como('00000000-0000-0000-0000-0000000003c1');
+insert into saida values ('pv', public.salvar_prevenda(pg_temp.id('ev'), jsonb_build_object('ativa', true, 'entrega', (select t from quando)::text, 'texto', 'Retirada das 18h às 22h', 'aceita_entrega', false, 'aceita_retirada', true)));
+reset role;
+set role anon;
+insert into saida values ('ped_pv', public.criar_pedido_publico('pizza-ev-aniversario', jsonb_build_object('tipo', 'retirada', 'pagamento', 'pix', 'agendado_para', (select t from quando),
+  'cliente', jsonb_build_object('nome', 'Duda', 'telefone', '47999990031'),
+  'itens', jsonb_build_array(jsonb_build_object('produto_id', pg_temp.id('copia2'), 'quantidade', 1, 'escolhas', jsonb_build_object(pg_temp.id('g2'), jsonb_build_object(pg_temp.id('o2'), 2)))))));
+select from pg_temp.esperar_erro(format($q$select public.criar_pedido_publico('pizza-ev-aniversario', '{"tipo":"retirada","pagamento":"dinheiro","agendado_para":"%s","cliente":{"nome":"Eva","telefone":"47999990032"},"itens":[{"produto_id":"%s","quantidade":1,"escolhas":{"%s":{"%s":2}}}]}')$q$, (select t from quando), pg_temp.id('copia2'), pg_temp.id('g2'), pg_temp.id('o2')), 'Forma de pagamento');
+select from pg_temp.esperar_erro(format($q$select public.criar_pedido_publico('pizza-ev-aniversario', '{"tipo":"entrega","pagamento":"pix","agendado_para":"%s","cliente":{"nome":"Eva","telefone":"47999990033"},"endereco":{"logradouro":"Rua A","bairro":"Centro"},"itens":[{"produto_id":"%s","quantidade":1,"escolhas":{"%s":{"%s":2}}}]}')$q$, (select t from quando), pg_temp.id('copia2'), pg_temp.id('g2'), pg_temp.id('o2')), 'não está disponível');
+select from pg_temp.esperar_erro(format($q$select public.criar_pedido_publico('pizza-ev-aniversario', '{"tipo":"retirada","pagamento":"pix","agendado_para":"%s","cliente":{"nome":"Eva","telefone":"47999990034"},"itens":[{"produto_id":"%s","quantidade":1,"escolhas":{"%s":{"%s":2}}}]}')$q$, ((select t from quando) + interval '1 hour'), pg_temp.id('copia2'), pg_temp.id('g2'), pg_temp.id('o2')), 'data do evento');
+insert into saida values ('evpub2', public.evento_publico('pizza-ev-aniversario'));
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000003c1');
+select from public.salvar_prevenda(pg_temp.id('ev'), jsonb_build_object('ativa', false, 'aceita_entrega', true, 'aceita_retirada', true));
+reset role;
+\o
+select case when (select agendado_para = (select t from quando) and pagamento = 'pix' from public.pedidos where loja_id = pg_temp.id('loja') and numero = (pg_temp.v('ped_pv') ->> 'numero')::int) then 'ok pré-venda agendada para o dia do evento, só Pix (mesmo com a loja fechada)' else 'FALHOU pré-venda' end;
+select case when (pg_temp.v('evpub2') ->> 'prevenda')::boolean and (pg_temp.v('evpub2') ->> 'texto') = 'Retirada das 18h às 22h' and not (pg_temp.v('evpub2') ->> 'aceita_entrega')::boolean then 'ok pré-venda pública' else 'FALHOU evento_publico pré-venda' end;
+select case when (select not prevenda and 'dinheiro' = any (formas_pagamento) from public.marcas where id = pg_temp.id('ev')) then 'ok desligar a pré-venda devolve as formas de pagamento' else 'FALHOU desligar pré-venda' end;

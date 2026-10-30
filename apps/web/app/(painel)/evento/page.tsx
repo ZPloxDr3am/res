@@ -20,7 +20,7 @@ export default async function Evento() {
   }
   const supabase = await criarClienteServidor();
   const [{ data: marcas, error }, cardapio] = await Promise.all([
-    supabase.from('marcas').select('id, nome, slug, ativa, evento, evento_inicio, evento_fim, evento_base, mensagem_cardapio').eq('loja_id', ctx.lojaId).order('ordem'),
+    supabase.from('marcas').select('id, nome, slug, ativa, evento, evento_inicio, evento_fim, evento_base, mensagem_cardapio, prevenda, prevenda_entrega, prevenda_texto, aceita_entrega, aceita_retirada').eq('loja_id', ctx.lojaId).order('ordem'),
     carregarCardapio(ctx.lojaId),
   ]);
   const h = await headers();
@@ -42,6 +42,18 @@ export default async function Evento() {
       fim: (ev.evento_fim as string | null) ?? null,
       mensagem: (ev.mensagem_cardapio as string | null) ?? '',
       base: (ev.evento_base as string | null) ?? null,
+      prevenda: (ev.prevenda as boolean) ?? false,
+      entrega: (ev.prevenda_entrega as string | null) ?? null,
+      texto: (ev.prevenda_texto as string | null) ?? '',
+      aceitaEntrega: ev.aceita_entrega as boolean,
+      aceitaRetirada: ev.aceita_retirada as boolean,
+      pix: await (async () => {
+        const [{ data: mp }, { data: pix }] = await Promise.all([
+          supabase.rpc('mp_status', { p_loja: ctx.lojaId }),
+          supabase.from('integracoes').select('ativo').eq('loja_id', ctx.lojaId).eq('tipo', 'pix').maybeSingle(),
+        ]);
+        return (mp as { conectado?: boolean } | null)?.conectado ? 'mercado_pago' : pix?.ativo ? 'manual' : 'nenhum';
+      })(),
     };
   }
 

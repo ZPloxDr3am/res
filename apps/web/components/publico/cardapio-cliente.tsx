@@ -93,7 +93,9 @@ function resumoCombo(p: ProdutoPublico, passos: EscolhaPasso[]): string {
     .join(' + ');
 }
 
-export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [] }: { cardapio: CardapioPublico; agendamento: AgendamentoPublico; vitrine?: VitrinePublica | null; faixasKm?: FaixaKm[] }) {
+export type Prevenda = { entrega: string; texto: string | null };
+
+export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [], prevenda = null }: { cardapio: CardapioPublico; agendamento: AgendamentoPublico; vitrine?: VitrinePublica | null; faixasKm?: FaixaKm[]; prevenda?: Prevenda | null }) {
   const { marca, setores } = cardapio;
   const router = useRouter();
   const chaveCarrinho = `res_carrinho_${marca.slug}`;
@@ -188,7 +190,11 @@ export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [] 
           <div className="grade" style={{ gap: '0.25rem', minWidth: 0 }}>
             <h1>{marca.nome}</h1>
             <div className="pub-linha">
-              <span className={`pub-status ${marca.aberta ? 'aberto' : 'fechado'}`}>{situacaoHorario(marca.horarios, marca.aberta, marca.fuso)}</span>
+              {prevenda ? (
+                <span className="pub-status aberto">🎟️ Pré-venda aberta</span>
+              ) : (
+                <span className={`pub-status ${marca.aberta ? 'aberto' : 'fechado'}`}>{situacaoHorario(marca.horarios, marca.aberta, marca.fuso)}</span>
+              )}
               {vitrine?.loja.cidade && <span className="dica">📍 {vitrine.loja.cidade}</span>}
               <button type="button" className="pv-link" onClick={() => setInfo('sobre')}>Mais informações</button>
             </div>
@@ -198,7 +204,8 @@ export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [] 
           {marca.aceita_entrega && <span className="dica">🛵 Entrega {vitrine ? `${vitrine.loja.prazo_entrega_min - 5}–${vitrine.loja.prazo_entrega_min + 5} min` : ''}</span>}
           {marca.aceita_retirada && <span className="dica">🏪 Retirada ~{marca.tempo_preparo_min} min</span>}
           {marca.pedido_minimo > 0 && <span className="dica">Pedido mínimo {formatarReais(marca.pedido_minimo)}</span>}
-          {!marca.aberta && podeAgendar && <span className="dica">Agende para {rotuloHorario(new Date(agendamento.horarios[0]!), marca.fuso)} ou depois</span>}
+          {prevenda && <span className="dica">📅 {marca.aceita_entrega && marca.aceita_retirada ? 'Entrega ou retirada' : marca.aceita_entrega ? 'Entrega' : 'Retirada'} em {rotuloHorario(new Date(prevenda.entrega), marca.fuso)}{prevenda.texto ? ` · ${prevenda.texto}` : ''} · pagamento por Pix</span>}
+          {!prevenda && !marca.aberta && podeAgendar && <span className="dica">Agende para {rotuloHorario(new Date(agendamento.horarios[0]!), marca.fuso)} ou depois</span>}
         </div>
         {marca.mensagem && <p className="pub-mensagem">{marca.mensagem}</p>}
       </header>
@@ -269,6 +276,7 @@ export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [] 
       {etapa === 'carrinho' && (
         <Checkout
           cardapio={cardapio}
+          prevenda={prevenda}
           faixasKm={faixasKm}
           agendamento={agendamento}
           itens={calculados}
@@ -399,6 +407,7 @@ function MontadorCombo({ combo, extras, aoAdicionar, aoFechar }: { combo: Produt
 
 function Checkout({
   cardapio,
+  prevenda,
   faixasKm,
   agendamento,
   itens,
@@ -411,6 +420,7 @@ function Checkout({
   concluido,
 }: {
   cardapio: CardapioPublico;
+  prevenda: Prevenda | null;
   faixasKm: FaixaKm[];
   agendamento: AgendamentoPublico;
   itens: ItemCalculado[];
@@ -439,7 +449,7 @@ function Checkout({
   const [usoFid, setUsoFid] = useState<UsoFidelidade>({ cashback: 0, recompensa: null });
   const podeAgendar = agendamento.horarios.length > 0;
   // fechada agora: só agendando
-  const [agendar, setAgendar] = useState(!marca.aberta && podeAgendar);
+  const [agendar, setAgendar] = useState(!!prevenda || (!marca.aberta && podeAgendar));
   // horários agrupados por dia no fuso da loja
   const dias = useMemo(() => {
     const m = new Map<string, string[]>();
@@ -450,7 +460,7 @@ function Checkout({
     return [...m.entries()];
   }, [agendamento.horarios, marca.fuso]);
   const [dia, setDia] = useState(dias[0]?.[0] ?? '');
-  const [horario, setHorario] = useState(dias[0]?.[1][0] ?? '');
+  const [horario, setHorario] = useState(prevenda?.entrega ?? dias[0]?.[1][0] ?? '');
   const horariosDoDia = dias.find(([d]) => d === dia)?.[1] ?? [];
   const rotuloDia = (d: string) => rotuloHorario(new Date(dias.find(([x]) => x === d)![1][0]!), marca.fuso).replace(/ \d{2}:\d{2}$/, '');
 
@@ -524,7 +534,7 @@ function Checkout({
   })();
 
   const faltando: string[] = [];
-  if (!marca.aberta && !agendar) faltando.push(podeAgendar ? 'escolher um horário' : 'a loja abrir');
+  if (!prevenda && !marca.aberta && !agendar) faltando.push(podeAgendar ? 'escolher um horário' : 'a loja abrir');
   if (agendar && !horario) faltando.push('o horário do agendamento');
   if (itens.length === 0) faltando.push('itens no pedido');
   if (subtotal < marca.pedido_minimo) faltando.push(`pedido mínimo de ${formatarReais(marca.pedido_minimo)}`);
@@ -611,7 +621,16 @@ function Checkout({
         </fieldset>
       )}
 
-      {(podeAgendar || !marca.aberta) && (
+      {prevenda && (
+        <div className="pv-prevenda" role="note">
+          <b>🎟️ Pré-venda</b>
+          <span>
+            Seu pedido é para <b>{rotuloHorario(new Date(prevenda.entrega), marca.fuso)}</b>
+            {prevenda.texto ? ` (${prevenda.texto})` : ''}. O pagamento é feito agora, por Pix.
+          </span>
+        </div>
+      )}
+      {!prevenda && (podeAgendar || !marca.aberta) && (
         <fieldset className="grade" style={{ gap: '0.5rem' }}>
           <legend>Para quando?</legend>
           {marca.aberta && (

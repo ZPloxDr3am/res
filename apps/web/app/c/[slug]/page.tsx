@@ -36,7 +36,8 @@ export default async function PaginaCardapio({ params }: { params: Promise<{ slu
   ]);
   // cardápio de evento (D-055): faixa com a validade; fora do período, só o aviso
   const { data: evData } = await supabase.rpc('evento_publico', { p_slug: slug });
-  const ev = evData as { nome: string; inicio: string | null; fim: string | null; agora: string; base: string | null } | null;
+  const ev = evData as { nome: string; inicio: string | null; fim: string | null; agora: string; base: string | null; prevenda?: boolean; entrega?: string | null; texto?: string | null } | null;
+  const prevenda = ev?.prevenda && ev.entrega && Date.parse(ev.entrega) > Date.parse(ev.agora) ? { entrega: ev.entrega, texto: ev.texto ?? null } : null;
   const fmt = (d: string) => new Date(d).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' });
   if (ev) {
     const agora = Date.parse(ev.agora);
@@ -59,11 +60,11 @@ export default async function PaginaCardapio({ params }: { params: Promise<{ slu
     <>
       {ev && (
         <div className="ev-faixa" role="note">
-          🎉 <b>{ev.nome}</b> · cardápio especial{ev.fim ? ` válido até ${fmt(ev.fim)}` : ''}
+          🎉 <b>{ev.nome}</b> · {prevenda ? `pré-venda para ${fmt(prevenda.entrega)}` : 'cardápio especial'}{ev.fim ? ` · ${prevenda ? 'vendas' : 'válido'} até ${fmt(ev.fim)}` : ''}
           {ev.base && <> · <Link href={`/c/${ev.base}`}>ver cardápio completo</Link></>}
         </div>
       )}
-      <CardapioCliente cardapio={cardapio} agendamento={agendamento} vitrine={vitrine} faixasKm={((fx.data as { faixas?: FaixaKm[] } | null)?.faixas ?? [])} />
+      <CardapioCliente cardapio={cardapio} agendamento={agendamento} vitrine={vitrine} faixasKm={((fx.data as { faixas?: FaixaKm[] } | null)?.faixas ?? [])} prevenda={prevenda} />
       <Rastreamento config={(rastreio.data as ConfigRastreio | null) ?? {}} />
     </>
   );

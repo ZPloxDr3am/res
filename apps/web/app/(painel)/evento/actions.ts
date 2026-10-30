@@ -64,3 +64,15 @@ export async function removerProdutoEvento(produto: string): Promise<R> {
   refrescar();
   return { ok: true };
 }
+
+/** Pré-venda do evento (D-056): só Pix, para a data de entrega/retirada; entrega e/ou retirada. */
+export async function salvarPrevenda(marca: string, d: { ativa: boolean; entrega: string | null; texto: string; aceitaEntrega: boolean; aceitaRetirada: boolean }): Promise<R> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('salvar_prevenda', {
+    p_marca: marca,
+    p_dados: { ativa: d.ativa, entrega: d.entrega ?? '', texto: d.texto, aceita_entrega: d.aceitaEntrega, aceita_retirada: d.aceitaRetirada },
+  });
+  if (error) return { ok: false, erro: error.message };
+  refrescar();
+  return { ok: true };
+}

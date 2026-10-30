@@ -1303,3 +1303,4 @@ li[data-on] .mg-radio { border: 6px solid var(--primaria); }
 .ev-escolher li { display: flex; gap: 0.6rem; align-items: center; padding: 0.4rem 0.5rem; border: 1px solid var(--borda); border-radius: 10px; }
 .ev-faixa { position: sticky; top: 0; z-index: 5; padding: 0.55rem 1rem; text-align: center; font-size: 0.92rem; background: var(--primaria); color: var(--primaria-texto); }
 .ev-faixa a { color: inherit; text-decoration: underline; }
+.pv-prevenda { display: grid; gap: 0.2rem; padding: 0.75rem 0.9rem; border-radius: 12px; border: 1.5px solid var(--primaria); background: color-mix(in srgb, var(--primaria) 8%, var(--superficie)); }
