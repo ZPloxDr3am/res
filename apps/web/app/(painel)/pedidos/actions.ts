@@ -142,3 +142,14 @@ export async function marcarAviso(pedidoId: string, etapa: StatusPedido, avisado
   if (error) return { ok: false, erro: error.message };
   return { ok: true };
 }
+
+/** Pausa temporária da loja com recado (D-059). minutos = 0 retoma. */
+export async function pausarLoja(minutos: number, recado?: string): Promise<Resultado> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('pausar_loja', { p_loja: ctx.lojaId, p_minutos: Math.round(minutos), p_recado: recado ?? null });
+  if (error) return { ok: false, erro: mensagem(error) };
+  revalidatePath('/pedidos');
+  revalidatePath('/delivery');
+  return { ok: true };
+}

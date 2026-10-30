@@ -28,12 +28,15 @@ export default async function PaginaCardapio({ params }: { params: Promise<{ slu
   const cardapio = await carregar(slug);
   if (!cardapio) notFound();
   const supabase = await criarClienteServidor();
-  const [{ data }, rastreio, vit, fx] = await Promise.all([
+  const [{ data }, rastreio, vit, fx, pz] = await Promise.all([
     supabase.rpc('horarios_agendamento', { p_slug: slug }),
     supabase.rpc('rastreamento_publico', { p_slug: slug }),
     supabase.rpc('vitrine_publica', { p_slug: slug }),
     supabase.rpc('faixas_km_publica', { p_slug: slug }),
+    supabase.rpc('pausa_publica', { p_slug: slug }),
   ]);
+  // pausa temporária com recado (D-059)
+  const pausa = (pz.data as { ate: string; recado: string | null } | null) ?? null;
   // cardápio de evento (D-055): faixa com a validade; fora do período, só o aviso
   const { data: evData } = await supabase.rpc('evento_publico', { p_slug: slug });
   const ev = evData as { nome: string; inicio: string | null; fim: string | null; agora: string; base: string | null; prevenda?: boolean; entrega?: string | null; texto?: string | null } | null;
@@ -64,7 +67,7 @@ export default async function PaginaCardapio({ params }: { params: Promise<{ slu
           {ev.base && <> · <Link href={`/c/${ev.base}`}>ver cardápio completo</Link></>}
         </div>
       )}
-      <CardapioCliente cardapio={cardapio} agendamento={agendamento} vitrine={vitrine} faixasKm={((fx.data as { faixas?: FaixaKm[] } | null)?.faixas ?? [])} prevenda={prevenda} />
+      <CardapioCliente cardapio={cardapio} agendamento={agendamento} vitrine={vitrine} faixasKm={((fx.data as { faixas?: FaixaKm[] } | null)?.faixas ?? [])} prevenda={prevenda} pausa={pausa} />
       <Rastreamento config={(rastreio.data as ConfigRastreio | null) ?? {}} />
     </>
   );

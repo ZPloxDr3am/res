@@ -95,7 +95,7 @@ function resumoCombo(p: ProdutoPublico, passos: EscolhaPasso[]): string {
 
 export type Prevenda = { entrega: string; texto: string | null };
 
-export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [], prevenda = null }: { cardapio: CardapioPublico; agendamento: AgendamentoPublico; vitrine?: VitrinePublica | null; faixasKm?: FaixaKm[]; prevenda?: Prevenda | null }) {
+export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [], prevenda = null, pausa = null }: { cardapio: CardapioPublico; agendamento: AgendamentoPublico; vitrine?: VitrinePublica | null; faixasKm?: FaixaKm[]; prevenda?: Prevenda | null; pausa?: { ate: string; recado: string | null } | null }) {
   const { marca, setores } = cardapio;
   const router = useRouter();
   const chaveCarrinho = `res_carrinho_${marca.slug}`;
@@ -192,6 +192,8 @@ export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [],
             <div className="pub-linha">
               {prevenda ? (
                 <span className="pub-status aberto">🎟️ Pré-venda aberta</span>
+              ) : pausa ? (
+                <span className="pub-status fechado">⏸ Pausado · volta às {new Intl.DateTimeFormat('pt-BR', { timeZone: marca.fuso, hour: '2-digit', minute: '2-digit' }).format(new Date(pausa.ate))}</span>
               ) : (
                 <span className={`pub-status ${marca.aberta ? 'aberto' : 'fechado'}`}>{situacaoHorario(marca.horarios, marca.aberta, marca.fuso)}</span>
               )}
@@ -207,6 +209,11 @@ export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [],
           {prevenda && <span className="dica">📅 {marca.aceita_entrega && marca.aceita_retirada ? 'Entrega ou retirada' : marca.aceita_entrega ? 'Entrega' : 'Retirada'} em {rotuloHorario(new Date(prevenda.entrega), marca.fuso)}{prevenda.texto ? ` · ${prevenda.texto}` : ''} · pagamento por Pix</span>}
           {!prevenda && !marca.aberta && podeAgendar && <span className="dica">Agende para {rotuloHorario(new Date(agendamento.horarios[0]!), marca.fuso)} ou depois</span>}
         </div>
+        {!prevenda && pausa && (
+          <p className="pub-mensagem pv-pausa">
+            ⏸ {pausa.recado || 'Pausamos os pedidos por alguns minutos.'} Voltamos às {new Intl.DateTimeFormat('pt-BR', { timeZone: marca.fuso, hour: '2-digit', minute: '2-digit' }).format(new Date(pausa.ate))}.
+          </p>
+        )}
         {marca.mensagem && <p className="pub-mensagem">{marca.mensagem}</p>}
       </header>
 
