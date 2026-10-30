@@ -43,6 +43,7 @@ const SECOES: { titulo: string; links: Link_[] }[] = [
   {
     titulo: 'Gestão',
     links: [
+      { href: '/financeiro', rotulo: 'Financeiro', icone: 'M3 6h18v12H3zM3 10h18M7 15h3M15 15h2' },
       { href: '/gestao', rotulo: 'Gestão Empresarial', icone: 'M3 7h18v13H3zM8 7V4h8v3M3 12h18M11 12v2h2v-2' },
     ],
   },

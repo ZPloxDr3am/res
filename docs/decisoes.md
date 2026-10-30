@@ -583,3 +583,15 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - A pausa é da **loja** (todos os cardápios dela) e passa por cima do "Abrir agora". Reabre sozinha no horário; dá para **+15 min** ou **Retomar agora** pela faixa amarela do quadro.
 - O cardápio mostra "⏸ Pausado · volta às HH:MM" e o recado. Agendamento continua, mas só com horários depois da pausa. A pré-venda do evento não é afetada (é para outra data).
 - Banco: `lojas.pausa_ate/pausa_recado/pausa_por`, `pausar_loja`, `pausa_publica`; `marca_aberta` e `horarios_agendamento` consideram a pausa (migração 0060).
+
+## D-060 — Financeiro (30/10/2026)
+- Nova tela **Gestão → Financeiro** (dono/gerente), versão melhorada do Financeiro do BeeFood: Visão do mês, Contas a pagar e receber, Fluxo de caixa (30 dias), DRE (ano, mês a mês, loja ou grupo somado, baixa para Excel) e Cadastros (taxas, categorias, fornecedores, contas).
+- **Não digitar duas vezes:**
+  - **Custos fixos** da planilha da Gestão Empresarial viram contas a pagar mês a mês ("↻ Trazer custos fixos", 1/3/6/12 meses, dia de vencimento). Opção **automático todo mês**. Uma conta por custo por mês (nunca duplica); valor mudado na planilha atualiza as contas ainda não pagas daqui para frente.
+  - **NF-e** importadas no estoque aparecem para virar conta a pagar em um clique (fornecedor criado pelo CNPJ, à vista ou parcelado).
+  - **Vendas** (pedidos concluídos) e **taxas** de cada forma de pagamento (% + fixo) entram sozinhas no DRE.
+  - **Custo das vendas** = CMV real do estoque quando o estoque teve movimento no mês; senão, as contas lançadas em "Custo das vendas" (não conta duas vezes).
+- Lançamento: uma vez, **parcelado** (divide o valor, competência no mês da compra) ou **todo mês** (recorrente); "✓ Paguei" em um clique; excluir uma ou as próximas da série.
+- Categorias prontas (37), cada uma ligada a uma linha do DRE; "Retiradas dos sócios" fica abaixo do lucro e "Aportes" fora do resultado.
+- Fluxo de caixa: saldo de hoje (informado, fica no aparelho) + contas + vendas previstas (média de 28 dias, líquida de taxas); avisa o dia em que o caixa fica negativo.
+- Banco: `fin_categorias`, `fin_fornecedores`, `fin_contas`, `fin_taxas`, `fin_lancamentos`, `fin_config`; `preparar_financeiro`, `criar_lancamento`, `gerar_contas_custos`, `config_custos_financeiro`, `nfe_sem_conta`, `lancar_nfe`, `dre_financeiro`, `vendas_recentes_financeiro` (migração 0061).
