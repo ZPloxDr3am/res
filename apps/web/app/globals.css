@@ -1332,3 +1332,42 @@ button.mini[data-avisado] { color: #15803d; }
 .qp-fila { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; max-height: 50vh; overflow: auto; }
 .qp-fila li { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.45rem 0.6rem; border: 1px solid var(--borda); border-radius: 10px; }
 .qp-fila li[data-pulado] { opacity: 0.5; }
+
+/* ---------- Financeiro (D-060) */
+:root { --fin-receita: #15803d; --fin-despesa: #b91c1c; --fin-hoje: #b45309; }
+@media (prefers-color-scheme: dark) { :root { --fin-receita: #4ade80; --fin-despesa: #f87171; --fin-hoje: #fbbf24; } }
+.fin-btn-despesa { border-color: color-mix(in srgb, var(--fin-despesa) 50%, var(--borda)); color: var(--fin-despesa); font-weight: 600; }
+.fin-btn-receita { border-color: color-mix(in srgb, var(--fin-receita) 50%, var(--borda)); color: var(--fin-receita); font-weight: 600; }
+.fin-situacoes { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+.fin-sit { display: grid; gap: 0.1rem; text-align: left; padding: 0.55rem 0.75rem; border-radius: 10px; border: 1px solid var(--borda); background: var(--superficie); }
+.fin-sit span { font-size: 0.8rem; color: var(--texto-suave); }
+.fin-sit[aria-pressed='true'] { box-shadow: 0 0 0 2px var(--primaria); }
+.fin-sit[data-sit='vencido'] strong { color: var(--fin-despesa); }
+.fin-sit[data-sit='hoje'] strong { color: var(--fin-hoje); }
+.fin-sit[data-sit='pago'] strong { color: var(--fin-receita); }
+.fin-selo { display: inline-block; font-size: 0.76rem; font-weight: 600; padding: 0.12rem 0.55rem; border-radius: 999px; background: var(--superficie-2); color: var(--texto-suave); white-space: nowrap; }
+.fin-selo[data-sit='vencido'] { background: color-mix(in srgb, var(--fin-despesa) 14%, transparent); color: var(--fin-despesa); }
+.fin-selo[data-sit='hoje'] { background: color-mix(in srgb, var(--fin-hoje) 16%, transparent); color: var(--fin-hoje); }
+.fin-selo[data-sit='pago'] { background: color-mix(in srgb, var(--fin-receita) 14%, transparent); color: var(--fin-receita); }
+.fin-tabela tr[data-sit='pago'] td { opacity: 0.7; }
+.fin-tabela td { vertical-align: middle; }
+.fin-alertas { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.fin-alertas .fin-selo { font-size: 0.9rem; padding: 0.35rem 0.8rem; }
+.fin-cartoes { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); }
+.fin-cartao { display: grid; gap: 0.15rem; }
+.fin-cartao strong { font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+.fin-cartao[data-destaque] strong { color: var(--fin-hoje); }
+.fin-cartao[data-neg] strong { color: var(--fin-despesa); }
+.fin-auto { border-left: 4px solid var(--primaria); }
+.fin-dre td:first-child { white-space: normal; min-width: 14rem; }
+.fin-dre tr[data-nivel='total'] td { font-weight: 700; background: var(--superficie-2); }
+.fin-dre tr[data-nivel='sub'] td:first-child { padding-left: 1.6rem; }
+.fin-dre tr[data-nivel='pct'] td { color: var(--texto-suave); font-size: 0.82rem; }
+.fin-dre [data-vazio] { opacity: 0.45; }
+.fin-dre [data-neg], .fin-fluxo [data-neg] { color: var(--fin-despesa); }
+.fin-fluxo tr[data-vazio] td { color: var(--texto-suave); }
+.fin-cats { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr)); }
+.fin-cats ul { list-style: none; padding: 0; margin: 0.3rem 0 0; display: grid; gap: 0.2rem; }
+.fin-cats li { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.2rem 0; border-bottom: 1px solid var(--borda); }
+.fin-cats li[data-inativo] > span:first-child { opacity: 0.45; text-decoration: line-through; }
+.abas-metrica a[aria-current] { background: var(--superficie); box-shadow: var(--sombra); font-weight: 600; }
