@@ -615,3 +615,10 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Pedido de **retirada** em preparo vira **Pronto** sozinho quando acaba o tempo de preparo (o da loja + o acréscimo do modo movimento que o pedido recebeu); agendado: 5 min antes do horário. Entrega e salão não mudam.
 - Roda a cada minuto no banco (pg_cron, `private.retiradas_prontas`), mesmo com o quadro fechado; fica no histórico do pedido como "Automático". O cliente vê "pronto" no acompanhamento e o pedido entra na fila do **📣 Avisar clientes** (🏪 prontos para retirada).
 - Banco (0064): `lojas.pronto_auto_retirada`, `private.retiradas_prontas`, `definir_pronto_auto`.
+
+## D-064 — Meta de vendas com projeção (01/11/2026)
+- No topo do **Resumo**, cartão **🎯 Meta do mês**: barra do vendido com a marca de "onde deveria estar hoje", **projeção do mês**, adiantado/atrasado em relação ao ideal, **quanto vender por dia** para bater e comparação com o mês anterior até o mesmo dia.
+- A projeção usa a **média de cada dia da semana nas últimas 8 semanas** (sexta pesa mais que segunda); com menos de 2 semanas de histórico, usa o ritmo do mês. A curva ideal da meta também segue o peso dos dias.
+- Meta **por loja e mês**, definida por dono/gerente; vale para os meses seguintes até ser trocada. Com várias lojas, "todas as lojas" soma as metas (e avisa quais estão sem meta). Sugestão: mês anterior +10%.
+- Mesma regra de faturamento do Resumo (pedidos não cancelados, pela data do pedido).
+- Banco (0065): `metas_vendas`, `salvar_meta_vendas`, `meta_vendas`.

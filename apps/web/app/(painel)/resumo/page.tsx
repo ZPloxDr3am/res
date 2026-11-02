@@ -17,6 +17,8 @@ import { criarClienteServidor } from '@/lib/supabase/server';
 import { GraficoDias, type DiaLojas } from '@/components/grafico-dias';
 import { GraficoLojas } from '@/components/resumo/grafico-lojas';
 import { corDaLoja } from '@/lib/cores';
+import { MetaMes } from '@/components/resumo/meta-mes';
+import type { DadosMeta } from '@/lib/meta';
 
 export const dynamic = 'force-dynamic';
 
@@ -69,6 +71,13 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
   const { data, error } = await supabase.rpc('resumo_vendas', { p_lojas: ids, p_inicio: periodo.inicio, p_fim: fim });
   if (error) throw new Error(error.message);
   const r = data as Resumo;
+  // meta do mês corrente (D-064), das mesmas lojas do filtro
+  const [{ data: dm }, { data: eu }] = await Promise.all([
+    supabase.rpc('meta_vendas', { p_lojas: ids, p_mes: hoje }),
+    supabase.auth.getUser(),
+  ]);
+  const { data: ms } = await supabase.from('membros').select('loja_id, papel').eq('user_id', eu.user?.id ?? '').eq('ativo', true).in('loja_id', ids);
+  const podeMeta = (ms ?? []).filter((m) => m.papel === 'dono' || m.papel === 'gerente').map((m) => m.loja_id as string);
 
   if (r.atual.length === 0) {
     return (
@@ -158,6 +167,8 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
         <button className="mini">Aplicar</button>
       </form>
       {erroPeriodo && <p className="erro">{erroPeriodo}</p>}
+
+      {dm ? <MetaMes key={`${lojaFiltro}-${(dm as DadosMeta).mes}`} dados={dm as DadosMeta} podeEditar={podeMeta} /> : null}
 
       <div className="kpis">
         <Kpi
