@@ -137,3 +137,19 @@ select case when (pg_temp.v('meta') #>> '{lojas,0,meta}')::numeric = 500000 and 
              and (pg_temp.v('meta2') #>> '{lojas,0,meta}')::numeric = 800000 and (pg_temp.v('meta2') #>> '{lojas,0,vendido}')::numeric > 0
              and jsonb_array_length(pg_temp.v('meta2') -> 'media_semana') = 7 and pg_temp.v('meta_fora') = 'null'::jsonb
             then 'ok meta do mês (herda a anterior) e dados da projeção' else 'FALHOU meta ' || pg_temp.v('meta2')::text end;
+
+-- 0066: relatórios
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000003d1');
+select from public.mudar_status_pedido((select id from public.pedidos where loja_id = pg_temp.id('loja') and status = 'novo' order by numero limit 1), 'cancelado', 'Cliente desistiu');
+insert into saida values ('rel', public.relatorio_vendas(array[pg_temp.id('loja')], now() - interval '1 day', now() + interval '1 minute'));
+select from pg_temp.como('00000000-0000-0000-0000-0000000003d3');
+insert into saida values ('rel_fora', coalesce(public.relatorio_vendas(array[pg_temp.id('loja')], now() - interval '1 day', now()), 'null'::jsonb));
+reset role;
+\o
+select case when jsonb_array_length(pg_temp.v('rel') -> 'cancelados') = 1
+             and pg_temp.v('rel') #>> '{cancelados,0,motivo}' = 'Cliente desistiu' and pg_temp.v('rel') #>> '{cancelados,0,etapa}' = 'novo'
+             and pg_temp.v('rel') #>> '{cancelados,0,por}' = 'Rui'
+             and (pg_temp.v('rel') #>> '{produtos,0,qtd}')::int = (pg_temp.v('rel') ->> 'pedidos')::int - 1
+             and pg_temp.v('rel_fora') = 'null'::jsonb
+            then 'ok relatórios: curva ABC sem cancelados e cancelamentos com motivo, etapa e quem' else 'FALHOU relatorio ' || (pg_temp.v('rel') -> 'cancelados')::text || (pg_temp.v('rel') -> 'produtos')::text || (pg_temp.v('rel') ->> 'pedidos') end;
