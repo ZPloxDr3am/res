@@ -1531,3 +1531,8 @@ button.mini[data-avisado] { color: #15803d; }
   .est-detalhe > td { padding: 0.6rem !important; }
   .est-detalhe-corpo { position: sticky; left: 0.6rem; width: calc(100vw - 3.2rem); max-width: calc(100vw - 3.2rem); white-space: normal; }
 }
+.est-valor { display: block; padding: 0.45rem 0.7rem; border-radius: 8px; font-size: 0.92rem; }
+.est-valor[data-tipo='perda'] { background: color-mix(in srgb, #dc2626 10%, var(--superficie)); border-left: 4px solid #dc2626; }
+.est-valor[data-tipo='perda'] b { color: #b91c1c; }
+.est-valor[data-tipo='sobra'] { background: color-mix(in srgb, #16a34a 10%, var(--superficie)); border-left: 4px solid #16a34a; }
+@media (prefers-color-scheme: dark) { .est-valor[data-tipo='perda'] b { color: #f87171; } }

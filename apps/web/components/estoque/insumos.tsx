@@ -122,7 +122,7 @@ function Ajuste({ i }: { i: Insumo }) {
             iniciar(async () => {
               const c = num(custo);
               const r = await salvando(ajustarEstoque(i.id, tipo, q, tipo === 'entrada' && Number.isFinite(c) ? Math.round(c * 100) : null, motivo));
-              setMsg(r.ok ? { ok: true, t: 'Estoque atualizado.' } : { ok: false, t: r.erro });
+              setMsg(r.ok ? { ok: true, t: tipo === 'perda' ? `Perda registrada: ${formatarReais(Math.round(q * n(i.custo_medio)))}.` : 'Estoque atualizado.' } : { ok: false, t: r.erro });
               if (r.ok) {
                 setQtd('');
                 setCusto('');
@@ -134,7 +134,19 @@ function Ajuste({ i }: { i: Insumo }) {
           {tipo === 'contagem' ? 'Salvar contagem' : tipo === 'entrada' ? 'Dar entrada' : 'Registrar perda'}
         </button>
       </div>
+      {/* valor em jogo antes de salvar (D-072): perda e diferença da contagem a custo médio */}
+      {tipo === 'perda' && Number.isFinite(q) && q > 0 && (
+        <span className="est-valor" data-tipo="perda">
+          Valor perdido: <b>{formatarReais(Math.round(q * n(i.custo_medio)))}</b> <span className="dica">({quantidadeTexto(q, i.unidade)} × {formatarReais(Math.round(n(i.custo_medio)))}/{i.unidade.toLowerCase()}, custo médio)</span>
+        </span>
+      )}
+      {tipo === 'contagem' && Number.isFinite(q) && qtd.trim() !== '' && q !== n(i.saldo) && (
+        <span className="est-valor" data-tipo={q < n(i.saldo) ? 'perda' : 'sobra'}>
+          {q < n(i.saldo) ? 'Faltando' : 'Sobrando'} {quantidadeTexto(Math.abs(q - n(i.saldo)), i.unidade)} em relação ao sistema: <b>{formatarReais(Math.round(Math.abs(q - n(i.saldo)) * n(i.custo_medio)))}</b>
+        </span>
+      )}
       {tipo === 'contagem' && <span className="dica">O saldo passa a ser o que você contou; a diferença fica registrada nas movimentações.</span>}
+      {tipo === 'perda' && <span className="dica">A perda sai do estoque pelo custo médio e aparece em Movimentações e no Fechamento do mês (CMV).</span>}
       {msg && <span className={msg.ok ? 'dica' : 'erro'} role="status">{msg.t}</span>}
     </div>
   );
