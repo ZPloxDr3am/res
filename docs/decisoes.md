@@ -669,3 +669,7 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 ## D-071 — Estoque: tocar no item abre o ajuste (02/11/2026)
 - Em **Insumos**, tocar em qualquer lugar da linha abre **Ajustar** (entrada, perda, contagem e dados do insumo); em **Meu estoque**, tocar no produto abre **Montar/Editar ficha**. No celular a linha mostra "Ajustar ›" / "Editar ficha ›" embaixo do nome, sem precisar rolar a tabela para o lado até o botão.
 - O painel aberto fica do tamanho da tela (não rola de lado junto com a tabela).
+
+## D-072 — Perda mostra o valor antes de registrar (02/11/2026)
+- Ao registrar **Perda** de um insumo, aparece "Valor perdido: R$ X" (quantidade × custo médio) antes de salvar, e a confirmação repete o valor. Na **Contagem**, aparece quanto está faltando ou sobrando em relação ao sistema, em quantidade e em R$.
+- O valor já era gravado (movimento a custo médio) e aparece em Movimentações (Perdas) e no Fechamento do mês (CMV).
