@@ -665,3 +665,7 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Barra de baixo com os 4 mais usados (**Pedidos, Novo pedido, Estoque, Resumo**) + **Mais**, que abre todas as telas em blocos grandes coloridos por seção (Operação azul, Vendas verde, Clientes roxo, Gestão laranja, Ajustes cinza), com troca de loja e Sair.
 - Quadro de pedidos: botões (som, aceite, movimento, pausar, avisar, novo pedido) e filtros numa linha que rola de lado, em vez de ocupar a tela inteira.
 - Abas, períodos e filtros rolam de lado; números em 2 por linha; tabelas rolam dentro do cartão; campos com 16px (o celular não dá zoom ao tocar).
+
+## D-071 — Estoque: tocar no item abre o ajuste (02/11/2026)
+- Em **Insumos**, tocar em qualquer lugar da linha abre **Ajustar** (entrada, perda, contagem e dados do insumo); em **Meu estoque**, tocar no produto abre **Montar/Editar ficha**. No celular a linha mostra "Ajustar ›" / "Editar ficha ›" embaixo do nome, sem precisar rolar a tabela para o lado até o botão.
+- O painel aberto fica do tamanho da tela (não rola de lado junto com a tabela).

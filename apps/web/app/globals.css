@@ -1520,3 +1520,14 @@ button.mini[data-avisado] { color: #15803d; }
   .conteudo :is(div, section, article):has(> table) { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .conteudo h1 { overflow-wrap: anywhere; }
 }
+
+/* ---------- Estoque: toque na linha abre o ajuste / a ficha (D-071) */
+.est-linha-toque { cursor: pointer; }
+.est-linha-toque[data-aberto] td { background: color-mix(in srgb, var(--primaria) 8%, var(--superficie)); }
+.est-toque-dica { display: none; }
+@media (max-width: 700px) {
+  .est-toque-dica { display: block; margin-top: 0.2rem; font-size: 0.78rem; font-weight: 600; color: var(--primaria); }
+  /* o painel aberto fica do tamanho da tela, sem rolar para o lado junto com a tabela */
+  .est-detalhe > td { padding: 0.6rem !important; }
+  .est-detalhe-corpo { position: sticky; left: 0.6rem; width: calc(100vw - 3.2rem); max-width: calc(100vw - 3.2rem); white-space: normal; }
+}
