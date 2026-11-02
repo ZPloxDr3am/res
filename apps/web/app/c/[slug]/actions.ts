@@ -70,9 +70,13 @@ export async function conferirCupom(
   taxa: number,
   tipo: 'entrega' | 'retirada',
   telefone: string,
+  extra?: { bairro: string; km: number | null; itens: { produto_id: string; total: number }[] },
 ): Promise<{ ok: true; codigo: string; desconto: number; descricao: string } | { ok: false; erro: string }> {
   const supabase = await criarClienteServidor();
-  const { data, error } = await supabase.rpc('validar_cupom', { p_slug: slug, p_codigo: codigo, p_subtotal: subtotal, p_taxa: taxa, p_tipo: tipo, p_telefone: telefone });
+  // com bairro, km e itens (D-066): cupom por área/produto
+  const { data, error } = extra
+    ? await supabase.rpc('validar_cupom', { p_slug: slug, p_codigo: codigo, p_subtotal: subtotal, p_taxa: taxa, p_tipo: tipo, p_telefone: telefone, p_bairro: extra.bairro, p_km: extra.km, p_itens: extra.itens })
+    : await supabase.rpc('validar_cupom', { p_slug: slug, p_codigo: codigo, p_subtotal: subtotal, p_taxa: taxa, p_tipo: tipo, p_telefone: telefone });
   if (error) return { ok: false, erro: error.message };
   const r = data as { codigo: string; desconto: number; descricao: string };
   return { ok: true, codigo: r.codigo, desconto: Number(r.desconto), descricao: r.descricao };

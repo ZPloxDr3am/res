@@ -56,7 +56,15 @@ export type CupomForm = {
   dias: number[];
   validoAte: string | null;
   ativo: boolean;
+  /** Só nestes bairros (vazio = todos) — D-066 */
+  bairros: string[];
+  /** Só até X km da loja (nulo = sem limite) */
+  kmMax: number | null;
+  /** Só com estes produtos; o desconto é calculado sobre eles (vazio = pedido todo) */
+  produtos: string[];
 };
+
+const limparLista = (xs: string[]) => [...new Set(xs.map((x) => x.trim()).filter(Boolean))];
 
 /** Cria ou atualiza o cupom; na criação pode copiar para outras lojas do grupo. */
 export async function salvarCupom(f: CupomForm, outrasLojas: string[] = []): Promise<R> {
@@ -81,7 +89,11 @@ export async function salvarCupom(f: CupomForm, outrasLojas: string[] = []): Pro
     dias: dias.length === 7 ? null : dias,
     valido_ate: f.validoAte || null,
     ativo: f.ativo,
+    bairros: limparLista(f.bairros).length ? limparLista(f.bairros) : null,
+    km_max: f.kmMax && f.kmMax > 0 ? f.kmMax : null,
+    produtos: f.produtos.length ? [...new Set(f.produtos)] : null,
   };
+  if (f.produtos.length && outrasLojas.length) return { ok: false, erro: 'Cupom só de certos produtos vale para esta loja (os produtos são de cada loja). Crie nas outras lojas separado.' };
   if (f.id) {
     const { error } = await supabase.from('cupons').update(linha).eq('id', f.id);
     if (error) return { ok: false, erro: error.code === '23505' ? `Já existe o cupom ${codigo} nesta loja.` : error.message };
@@ -115,4 +127,56 @@ export async function salvarLimiteDesconto(pct: number | null): Promise<R> {
   if (!data?.length) return { ok: false, erro: 'Só quem cuida dos dados da empresa pode mudar o limite.' };
   revalidatePath('/promocoes');
   return { ok: true };
+}
+
+// ---- Frete grátis automático (D-066)
+export type FreteGratisForm = {
+  id: string | null;
+  nome: string;
+  marcaId: string | null;
+  pedidoMinimo: number; // centavos
+  bairros: string[];
+  kmMax: number | null;
+  produtos: string[];
+  dias: number[];
+  validoAte: string | null;
+  ativo: boolean;
+};
+
+export async function salvarFreteGratis(f: FreteGratisForm): Promise<R> {
+  if (!f.nome.trim()) return { ok: false, erro: 'Dê um nome para a regra (aparece para o cliente).' };
+  if (!(f.pedidoMinimo >= 0)) return { ok: false, erro: 'Confira o pedido mínimo.' };
+  const dias = [...new Set(f.dias)].filter((x) => x >= 0 && x <= 6).sort();
+  if (dias.length === 0) return { ok: false, erro: 'Escolha pelo menos um dia.' };
+  if (f.validoAte && !DATA.test(f.validoAte)) return { ok: false, erro: 'Data de validade inválida.' };
+  if (f.kmMax != null && !(f.kmMax > 0 && f.kmMax <= 100)) return { ok: false, erro: 'Distância de 0,1 a 100 km.' };
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const linha = {
+    nome: f.nome.trim().slice(0, 60),
+    marca_id: f.marcaId || null,
+    pedido_minimo: f.pedidoMinimo / 100,
+    bairros: limparLista(f.bairros).length ? limparLista(f.bairros) : null,
+    km_max: f.kmMax,
+    produtos: f.produtos.length ? [...new Set(f.produtos)] : null,
+    dias: dias.length === 7 ? null : dias,
+    valido_ate: f.validoAte || null,
+    ativo: f.ativo,
+  };
+  const { error } = f.id
+    ? await supabase.from('frete_gratis').update(linha).eq('id', f.id)
+    : await supabase.from('frete_gratis').insert({ ...linha, loja_id: ctx.lojaId });
+  return error ? { ok: false, erro: error.message } : fim();
+}
+
+export async function alternarFreteGratis(id: string, ativo: boolean): Promise<R> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.from('frete_gratis').update({ ativo }).eq('id', id);
+  return error ? { ok: false, erro: error.message } : fim();
+}
+
+export async function excluirFreteGratis(id: string): Promise<R> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.from('frete_gratis').delete().eq('id', id);
+  return error ? { ok: false, erro: error.message } : fim();
 }

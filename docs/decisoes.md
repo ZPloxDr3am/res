@@ -630,3 +630,10 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
   - **Calendário do mês**: cada dia com o faturamento (cor mais forte = vendeu mais), pedidos e cancelados; melhor dia do mês.
 - Pedidos cancelados não entram na curva ABC. Mesma permissão do Resumo ("relatórios").
 - Banco (0066): `relatorio_vendas`.
+
+## D-066 — Cupom por área/produto e frete grátis automático (01/11/2026)
+- **Cupom** ganhou "Onde e com o quê vale" (tudo opcional): **bairros**, **até X km da loja** e **produtos**. Com produtos, o pedido precisa ter um deles e o desconto em % ou R$ é calculado **só sobre esses produtos** (ex.: REFRI50 = 50% no refrigerante). Cupom com produtos não é copiado para outras lojas (produtos são de cada loja).
+- **Frete grátis automático** (Promoções → Frete grátis), sem cupom: regras por loja, para todos os cardápios ou um — **a partir de R$ X**, em certos **bairros**, **até X km** e/ou quando o pedido tem certos **produtos**, com dias e validade. Vale no cardápio digital: o cardápio mostra a regra no topo, "Faltam R$ X para a entrega grátis" e a taxa riscada; o banco confere ao gravar.
+- A taxa continua no pedido e o mesmo valor entra como desconto (`pedidos.frete_gratis` guarda o nome da regra): o motoboy recebe normalmente. Cupom de entrega grátis em pedido que já tem frete grátis é recusado com aviso.
+- km = linha reta até o endereço do cliente; cupom com limite de km sem endereço localizado não é barrado (a regra de frete grátis por km, sim).
+- Banco (0067): `cupons.bairros/km_max/produtos`, `frete_gratis`, `private.base_cupom/regra_frete_gratis/aplicar_frete_gratis`, `frete_gratis_publico`, `validar_cupom` (com bairro, km e itens); `aplicar_cupom` e `criar_pedido_publico` atualizados.

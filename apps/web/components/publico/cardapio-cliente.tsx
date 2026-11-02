@@ -95,7 +95,20 @@ function resumoCombo(p: ProdutoPublico, passos: EscolhaPasso[]): string {
 
 export type Prevenda = { entrega: string; texto: string | null };
 
-export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [], prevenda = null, pausa = null }: { cardapio: CardapioPublico; agendamento: AgendamentoPublico; vitrine?: VitrinePublica | null; faixasKm?: FaixaKm[]; prevenda?: Prevenda | null; pausa?: { ate: string; recado: string | null } | null }) {
+/** Regra de frete grátis automático (D-066), valores em centavos. */
+export type FreteGratisPublico = { nome: string; pedido_minimo: number; bairros: string[] | null; km_max: number | null; produtos: string[] | null; produtos_nomes: string[] | null };
+const mesmoBairro = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
+function regraFreteGratis(fretes: FreteGratisPublico[], subtotal: number, bairro: string, km: number | null, produtos: string[]) {
+  return fretes.find(
+    (f) =>
+      subtotal >= f.pedido_minimo &&
+      (!f.bairros?.length || f.bairros.some((b) => mesmoBairro(b, bairro))) &&
+      (f.km_max == null || (km != null && km <= Number(f.km_max))) &&
+      (!f.produtos?.length || f.produtos.some((id) => produtos.includes(id))),
+  ) ?? null;
+}
+
+export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [], prevenda = null, pausa = null, fretes = [] }: { cardapio: CardapioPublico; agendamento: AgendamentoPublico; vitrine?: VitrinePublica | null; faixasKm?: FaixaKm[]; prevenda?: Prevenda | null; pausa?: { ate: string; recado: string | null } | null; fretes?: FreteGratisPublico[] }) {
   const { marca, setores } = cardapio;
   const router = useRouter();
   const chaveCarrinho = `res_carrinho_${marca.slug}`;
@@ -215,6 +228,9 @@ export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [],
             ⏸ {pausa.recado || 'Pausamos os pedidos por alguns minutos.'} Voltamos às {new Intl.DateTimeFormat('pt-BR', { timeZone: marca.fuso, hour: '2-digit', minute: '2-digit' }).format(new Date(pausa.ate))}.
           </p>
         )}
+        {!prevenda && marca.aceita_entrega && fretes.length > 0 && (
+          <p className="pub-mensagem pv-frete">🛵 {fretes[0]!.nome}{fretes.length > 1 ? ` (e mais ${fretes.length - 1} ${fretes.length > 2 ? 'regras' : 'regra'})` : ''}</p>
+        )}
         {marca.mensagem && <p className="pub-mensagem">{marca.mensagem}</p>}
       </header>
 
@@ -286,6 +302,7 @@ export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [],
           cardapio={cardapio}
           prevenda={prevenda}
           faixasKm={faixasKm}
+          fretes={fretes}
           agendamento={agendamento}
           itens={calculados}
           subtotal={subtotal}
@@ -417,6 +434,7 @@ function Checkout({
   cardapio,
   prevenda,
   faixasKm,
+  fretes,
   agendamento,
   itens,
   subtotal,
@@ -430,6 +448,7 @@ function Checkout({
   cardapio: CardapioPublico;
   prevenda: Prevenda | null;
   faixasKm: FaixaKm[];
+  fretes: FreteGratisPublico[];
   agendamento: AgendamentoPublico;
   itens: ItemCalculado[];
   subtotal: number;
@@ -507,12 +526,20 @@ function Checkout({
   }, [usaKm, tipo, taxaArea, endereco.logradouro, endereco.numero, endereco.bairro, marca.slug]);
   const taxaKm = km?.ok ? km.taxa : null;
   const area = taxaArea !== null || taxaKm !== null;
-  const taxa = tipo === 'entrega' ? taxaArea ?? taxaKm ?? 0 : 0;
+  const taxaCheia = tipo === 'entrega' ? taxaArea ?? taxaKm ?? 0 : 0;
+  // frete grátis automático (D-066): o banco confere de novo ao gravar
+  const regraFrete = tipo === 'entrega' && taxaCheia > 0 ? regraFreteGratis(fretes, subtotal, endereco.bairro, km?.ok ? km.km : null, itens.map((i) => i.produtoId)) : null;
+  const taxa = regraFrete ? 0 : taxaCheia;
+  const faltaFrete = tipo === 'entrega' && taxaCheia > 0 && !regraFrete ? regraFreteGratis(fretes, Number.MAX_SAFE_INTEGER, endereco.bairro, km?.ok ? km.km : null, itens.map((i) => i.produtoId)) : null;
   const trocoPara = trocoTxt.trim() ? lerCentavos(trocoTxt) : null;
 
   const aplicarCupom = (codigo: string) =>
     iniciarCupom(async () => {
-      const r = await conferirCupom(marca.slug, codigo, subtotal, taxa, tipo, normalizarTelefone(cliente.telefone));
+      const r = await conferirCupom(marca.slug, codigo, subtotal, taxa, tipo, normalizarTelefone(cliente.telefone), {
+        bairro: endereco.bairro,
+        km: km?.ok ? km.km : null,
+        itens: itens.map((i) => ({ produto_id: i.produtoId, total: i.unitario * i.quantidade })),
+      });
       if (!r.ok) {
         setCupom(null);
         return setCupomErro(r.erro);
@@ -521,7 +548,7 @@ function Checkout({
       setCupom({ codigo: r.codigo, desconto: r.desconto, descricao: r.descricao });
     });
   // pedido mudou: confere o cupom de novo (o desconto depende do subtotal e da entrega)
-  const chaveCupom = `${subtotal}|${taxa}|${tipo}`;
+  const chaveCupom = `${subtotal}|${taxa}|${tipo}|${endereco.bairro}`;
   const [chaveAnterior, setChaveAnterior] = useState(chaveCupom);
   useEffect(() => {
     if (chaveAnterior === chaveCupom) return;
@@ -765,7 +792,8 @@ function Checkout({
       {conta.t && (
         <div className="grade" style={{ gap: '0.2rem' }}>
           <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Subtotal</span><span>{formatarReais(conta.t.subtotal)}</span></div>
-          {tipo === 'entrega' && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Entrega</span><span>{area ? (taxa ? formatarReais(taxa) : 'Grátis') : '—'}</span></div>}
+          {tipo === 'entrega' && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Entrega{regraFrete ? ` · ${regraFrete.nome}` : ''}</span><span>{area ? (regraFrete ? <><s className="dica">{formatarReais(taxaCheia)}</s> Grátis</> : taxa ? formatarReais(taxa) : 'Grátis') : '—'}</span></div>}
+          {faltaFrete && faltaFrete.pedido_minimo > subtotal && <div className="dica">🛵 Faltam {formatarReais(faltaFrete.pedido_minimo - subtotal)} para a entrega grátis</div>}
           {conta.t.desconto > 0 && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Cupom {cupom?.codigo}</span><span>−{formatarReais(conta.t.desconto)}</span></div>}
           {agendar && horario && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Agendado</span><span>{rotuloHorario(new Date(horario), marca.fuso)}</span></div>}
           {usoFid.cashback > 0 && <div className="pub-linha" style={{ justifyContent: 'space-between' }}><span className="dica">Cashback</span><span>−{formatarReais(Math.min(usoFid.cashback, conta.t.total))}</span></div>}

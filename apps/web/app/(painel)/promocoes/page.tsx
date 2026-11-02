@@ -1,7 +1,7 @@
 import { contextoLoja } from '@/lib/loja';
 import { carregarCardapio } from '@/lib/cardapio';
 import { criarClienteServidor } from '@/lib/supabase/server';
-import { PainelPromocoes, type CupomLinha, type PromoCategoriaLinha, type PromoProdutoLinha, type UsoCupom } from '@/components/promocoes/painel-promocoes';
+import { PainelPromocoes, type CupomLinha, type FreteGratisLinha, type PromoCategoriaLinha, type PromoProdutoLinha, type UsoCupom } from '@/components/promocoes/painel-promocoes';
 import { agendaDe, situacaoPromo } from '@/lib/cardapio-dados';
 
 export const dynamic = 'force-dynamic';
@@ -12,10 +12,10 @@ export default async function Promocoes({ searchParams }: { searchParams: Promis
   const { aba } = await searchParams;
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
-  const [cardapio, cats, cupons, usos, loja] = await Promise.all([
+  const [cardapio, cats, cupons, usos, loja, fretes, areas] = await Promise.all([
     carregarCardapio(ctx.lojaId, { semEvento: true }),
     supabase.from('promocoes_categoria').select('id, setor_id, percentual, dias, promo_inicio, promo_fim, promo_ate, ativo').eq('loja_id', ctx.lojaId).order('criado_em'),
-    supabase.from('cupons').select('id, codigo, descricao, tipo, valor, pedido_minimo, primeira_compra, limite_por_cliente, limite_total, dias, valido_ate, ativo').eq('loja_id', ctx.lojaId).order('criado_em'),
+    supabase.from('cupons').select('id, codigo, descricao, tipo, valor, pedido_minimo, primeira_compra, limite_por_cliente, limite_total, dias, valido_ate, ativo, bairros, km_max, produtos').eq('loja_id', ctx.lojaId).order('criado_em'),
     supabase
       .from('pedidos')
       .select('id, numero, cupom_id, cliente_nome, cliente_telefone, desconto, total, criado_em, status')
@@ -24,7 +24,11 @@ export default async function Promocoes({ searchParams }: { searchParams: Promis
       .order('criado_em', { ascending: false })
       .limit(1000),
     supabase.from('lojas').select('limite_desconto_pct').eq('id', ctx.lojaId).single(),
+    supabase.from('frete_gratis').select('id, nome, marca_id, pedido_minimo, bairros, km_max, produtos, dias, valido_ate, ativo').eq('loja_id', ctx.lojaId).order('criado_em'),
+    supabase.from('areas_entrega').select('bairro, marca_id').in('marca_id', ctx.marcas.map((m) => m.id)),
   ]);
+  const bairros = [...new Set((areas.data ?? []).map((a) => (a.bairro as string).trim()))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  const produtosLista = cardapio.produtos.filter((p) => !p.combo).map((p) => ({ id: p.id, nome: p.nome })).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
 
   const produtosPromo: PromoProdutoLinha[] = cardapio.produtos.flatMap((p) => {
     const pm = p.produto_marcas.find((m) => m.preco_promocional != null);
@@ -37,7 +41,22 @@ export default async function Promocoes({ searchParams }: { searchParams: Promis
 
   return (
     <PainelPromocoes
-      aba={aba === 'categoria' || aba === 'cupons' || aba === 'balcao' ? aba : 'produto'}
+      aba={aba === 'categoria' || aba === 'cupons' || aba === 'balcao' || aba === 'frete' ? aba : 'produto'}
+      bairros={bairros}
+      produtosLista={produtosLista}
+      marcas={ctx.marcas.filter((m) => !m.evento).map((m) => ({ id: m.id, nome: m.nome }))}
+      fretes={(fretes.data ?? []).map((x) => ({
+        id: x.id as string,
+        nome: x.nome as string,
+        marcaId: (x.marca_id as string | null) ?? null,
+        pedidoMinimo: c(x.pedido_minimo)!,
+        bairros: (x.bairros as string[] | null) ?? [],
+        kmMax: x.km_max == null ? null : Number(x.km_max),
+        produtos: (x.produtos as string[] | null) ?? [],
+        dias: (x.dias as number[] | null) ?? [0, 1, 2, 3, 4, 5, 6],
+        validoAte: (x.valido_ate as string | null) ?? null,
+        ativo: x.ativo as boolean,
+      })) satisfies FreteGratisLinha[]}
       lojaNome={ctx.lojaNome}
       setores={cardapio.setores.map((s) => ({ id: s.id, nome: s.nome }))}
       produtosPromo={produtosPromo}
@@ -64,6 +83,9 @@ export default async function Promocoes({ searchParams }: { searchParams: Promis
         dias: (x.dias as number[] | null) ?? [0, 1, 2, 3, 4, 5, 6],
         validoAte: (x.valido_ate as string | null) ?? null,
         ativo: x.ativo as boolean,
+        bairros: (x.bairros as string[] | null) ?? [],
+        kmMax: x.km_max == null ? null : Number(x.km_max),
+        produtos: (x.produtos as string[] | null) ?? [],
       }))}
       usos={(usos.data ?? []).map((u) => ({
         id: u.id as string,
