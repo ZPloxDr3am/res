@@ -210,8 +210,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/resumo/page.tsx": {
-    "mtime": 1793586132.8543627,
-    "seen": 1793586147.6264088,
+    "mtime": 1793586336.830227,
+    "seen": 1793586547.3897715,
     "ast_hash": "7ab94d09961005b3f147cc072e6330c2",
     "semantic_hash": ""
   },
@@ -642,9 +642,9 @@
     "semantic_hash": "e1a2ae124932452ed3b517ceefb9431a"
   },
   "apps/web/components/nav-painel.tsx": {
-    "mtime": 1793579443.7532597,
-    "seen": 1793580351.783839,
-    "ast_hash": "80871487daf03bc6b2c149168cde4e4d",
+    "mtime": 1793586532.5829525,
+    "seen": 1793586547.3898966,
+    "ast_hash": "053a633b9544dd842cbc8baf99facc4d",
     "semantic_hash": ""
   },
   "apps/web/components/novo-pedido.tsx": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793586144.1622152,
-    "seen": 1793586147.6270654,
-    "ast_hash": "b4ef2c614c4cb5e647b927e0742a02a1",
+    "mtime": 1793586544.1323774,
+    "seen": 1793586547.390225,
+    "ast_hash": "e8235fdb26e070b3cbcd28340f9d8d02",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1974,9 +1974,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzz_quadro.sql": {
-    "mtime": 1793586067.9433641,
-    "seen": 1793586147.6270485,
-    "ast_hash": "3044cd4d797b226d577105b9ed167b57",
+    "mtime": 1793586448.1622334,
+    "seen": 1793586547.390217,
+    "ast_hash": "b165cd3ae7f74cf32117589d8b25ea5d",
     "semantic_hash": ""
   },
   "supabase/migrations/20261030000059_avisos_cliente.sql": {
@@ -2082,27 +2082,45 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/resumo/actions.ts": {
-    "mtime": 1793586132.8388953,
-    "seen": 1793586147.6264064,
+    "mtime": 1793586336.830227,
+    "seen": 1793586547.3897698,
     "ast_hash": "38066bce5a6266cfc7f9f13fcddc7158",
     "semantic_hash": ""
   },
   "apps/web/components/resumo/meta-mes.tsx": {
-    "mtime": 1793586132.8401926,
-    "seen": 1793586147.6266263,
+    "mtime": 1793586336.830227,
+    "seen": 1793586547.3899152,
     "ast_hash": "e314041104c320459bbef09a49f86738",
     "semantic_hash": ""
   },
   "apps/web/lib/meta.ts": {
-    "mtime": 1793586095.3862123,
-    "seen": 1793586147.6266575,
+    "mtime": 1793586336.830227,
+    "seen": 1793586547.389943,
     "ast_hash": "7fdf00b9228b43c4e021165545f1130b",
     "semantic_hash": ""
   },
   "supabase/migrations/20261101000065_meta_vendas.sql": {
-    "mtime": 1793586053.90221,
-    "seen": 1793586147.626958,
+    "mtime": 1793586336.8422267,
+    "seen": 1793586547.3901727,
     "ast_hash": "55f4c72790f4462c31ed3f7eb9c29936",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/relatorios/page.tsx": {
+    "mtime": 1793586544.1323774,
+    "seen": 1793586547.389767,
+    "ast_hash": "68ba2e3831d5fae2280c3c382443380a",
+    "semantic_hash": ""
+  },
+  "apps/web/lib/relatorios.ts": {
+    "mtime": 1793586532.56837,
+    "seen": 1793586547.3899589,
+    "ast_hash": "c68eccb9dab11f4069a6e3307075cd5c",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261101000066_relatorios.sql": {
+    "mtime": 1793586439.2626104,
+    "seen": 1793586547.3901744,
+    "ast_hash": "4b240eb7272e06c69a9321994aff42ec",
     "semantic_hash": ""
   }
 }
