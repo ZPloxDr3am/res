@@ -62,7 +62,7 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
       .or(`status.not.in.(concluido,cancelado),criado_em.gte.${desde}`)
       .order('criado_em', { ascending: true })
       .limit(500),
-    supabase.from('lojas').select('aceite_automatico, tempo_preparo_min, fuso_horario, movimento_min, movimento_ate').eq('id', lojaPrincipal).single(),
+    supabase.from('lojas').select('aceite_automatico, tempo_preparo_min, fuso_horario, movimento_min, movimento_ate, pronto_auto_retirada').eq('id', lojaPrincipal).single(),
     supabase
       .from('impressoes')
       .select('id', { count: 'exact', head: true })
@@ -80,6 +80,8 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
   return {
     pedidos: lista,
     aceiteAutomatico: loja.data?.aceite_automatico ?? false,
+    /** retirada vira "Pronto" sozinha no fim do preparo (D-063) */
+    prontoAutoRetirada: (loja.data?.pronto_auto_retirada as boolean | undefined) ?? false,
     tempoPreparo: loja.data?.tempo_preparo_min ?? 30,
     fuso: (loja.data?.fuso_horario as string | undefined) ?? 'America/Sao_Paulo',
     filaImpressao: fila.count ?? 0,
