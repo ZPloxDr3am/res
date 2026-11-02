@@ -2106,9 +2106,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/relatorios/page.tsx": {
-    "mtime": 1793588671.0470402,
-    "seen": 1793588687.9799995,
-    "ast_hash": "a472646aa137a1d427cf7cf6d323b483",
+    "mtime": 1793588766.3357358,
+    "seen": 1793588768.4918642,
+    "ast_hash": "1114287c1e8fc6772b5ba111baea89e8",
     "semantic_hash": ""
   },
   "apps/web/lib/relatorios.ts": {
