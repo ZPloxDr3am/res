@@ -1,5 +1,6 @@
 'use client';
 import { useState, useTransition } from 'react';
+import Link from 'next/link';
 import { salvarCustos, type EscopoCustos } from '@/app/(painel)/gestao/actions';
 import { salvando } from '@/components/tempo-real';
 import { resumirCustos, type Custo } from '@/lib/gestao';
@@ -197,6 +198,7 @@ export function PlanilhaCustos({
       <div className="linha nao-imprimir gc-salvar">
         <button type="button" className="botao-primario" disabled={pendente} onClick={salvar}>{pendente ? 'Salvando…' : 'Salvar planilha'}</button>
         <button type="button" onClick={() => window.print()}>Imprimir</button>
+        <Link className="botao" href="/financeiro" title="Os custos fixos viram contas a pagar mês a mês, sem digitar de novo">↻ Levar para o Financeiro</Link>
         {alterado && !msg && <span className="dica">Há alterações não salvas.</span>}
         {msg && <span className={msg.tipo === 'erro' ? 'erro' : 'dica'} role="status">{msg.texto}</span>}
       </div>
