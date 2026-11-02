@@ -179,3 +179,19 @@ select case when (select desconto from public.pedidos where cliente_nome = 'Dani
              and (select desconto from public.pedidos where cliente_nome = 'Fê') = 5
              and (pg_temp.v('vc') ->> 'desconto')::int = 500 and jsonb_array_length(pg_temp.v('fgp')) = 1
             then 'ok cupom por bairro/produto e frete grátis automático' else 'FALHOU cupom area ' || coalesce((select row(desconto, taxa_entrega, frete_gratis)::text from public.pedidos where cliente_nome = 'Edu'), '-') || pg_temp.v('vc')::text end;
+
+-- 0068: relatório de operação
+\o /dev/null
+reset role;
+update public.pedidos set criado_por = '00000000-0000-0000-0000-0000000003d1', origem = 'painel' where cliente_nome = 'Fê';
+update public.pedidos set status = 'concluido', aceito_em = criado_em + interval '2 minutes', pronto_em = criado_em + interval '20 minutes',
+       saiu_em = criado_em + interval '25 minutes', concluido_em = criado_em + interval '40 minutes', entregador_nome = 'Zé'
+ where cliente_nome = 'Edu';
+select from pg_temp.como('00000000-0000-0000-0000-0000000003d1');
+insert into saida values ('op', public.relatorio_operacao(array[pg_temp.id('loja')], now() - interval '1 day', now() + interval '1 minute'));
+reset role;
+\o
+select case when (pg_temp.v('op') #>> '{valores,frete_gratis_pedidos}')::int = 1 and (pg_temp.v('op') #>> '{valores,cupons_pedidos}')::int >= 2
+             and (pg_temp.v('op') #>> '{tempos,rota}')::numeric = 15 and (pg_temp.v('op') #>> '{motoboys,0,nome}') = 'Zé'
+             and (pg_temp.v('op') #>> '{pessoas,0,nome}') = 'Rui' and jsonb_array_length(pg_temp.v('op') -> 'pico') >= 1
+            then 'ok relatório de operação' else 'FALHOU operacao ' || pg_temp.v('op')::text end;

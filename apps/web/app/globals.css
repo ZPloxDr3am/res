@@ -1412,3 +1412,6 @@ button.mini[data-avisado] { color: #15803d; }
 .rel-cal-dia b { font-size: 0.85rem; }
 .rel-cal-dia[data-futuro] { opacity: 0.45; }
 @media (max-width: 560px) { .rel-cal-dia { min-height: 3.2rem; font-size: 0.66rem; padding: 0.25rem; } .rel-cal-dia .dica { display: none; } }
+.rel-pico { border-collapse: separate; border-spacing: 2px; font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+.rel-pico th { font-weight: 600; color: var(--texto-suave); padding: 0 0.3rem; text-align: center; }
+.rel-pico td { min-width: 1.9rem; height: 1.7rem; text-align: center; border-radius: 4px; background: color-mix(in srgb, var(--primaria) calc(var(--int, 0) * 80%), var(--superficie-2, #f4f4f5)); color: var(--texto); }

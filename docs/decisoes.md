@@ -637,3 +637,14 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - A taxa continua no pedido e o mesmo valor entra como desconto (`pedidos.frete_gratis` guarda o nome da regra): o motoboy recebe normalmente. Cupom de entrega grátis em pedido que já tem frete grátis é recusado com aviso.
 - km = linha reta até o endereço do cliente; cupom com limite de km sem endereço localizado não é barrado (a regra de frete grátis por km, sim).
 - Banco (0067): `cupons.bairros/km_max/produtos`, `frete_gratis`, `private.base_cupom/regra_frete_gratis/aplicar_frete_gratis`, `frete_gratis_publico`, `validar_cupom` (com bairro, km e itens); `aplicar_cupom` e `criar_pedido_publico` atualizados.
+
+## D-067 — Relatórios: aba Operação (01/11/2026)
+- Primeira aba dos **Relatórios**, com período e loja:
+  - **Valores**: faturamento e ticket médio, frete cobrado, **frete grátis concedido**, **cupons concedidos**, descontos no total; **acréscimos** aparecem zerados até existir taxa de serviço (tablet).
+  - **Tempos médios**: para aceitar, em preparo, pronto esperando motoboy, **em rota**, entrega completa e **% de entregas no prazo** (prazo da loja + modo movimento; agendado com 10 min de tolerância).
+  - **Horário de pico**: dia da semana × hora (pedidos), com as horas mais fortes.
+  - **Canais** (com ticket e cancelados), **formas de pagamento**, **clientes novos × recorrentes** e **bairros que mais pedem**.
+  - **Por pessoa**: pedidos lançados no balcão por login (pedidos, valor, ticket, descontos dados, cancelados).
+  - **Motoboys**: entregas, tempo médio em rota, pedido → entregue, % no prazo e km.
+- Fica para o atendimento por tablet: garçom (pedidos, taxa de serviço, up-sell aceito), mesas (giro, tempo de mesa, ticket por pessoa), couvert e acréscimos.
+- Banco (0068): `relatorio_operacao`.
