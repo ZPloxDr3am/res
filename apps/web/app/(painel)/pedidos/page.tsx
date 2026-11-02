@@ -10,7 +10,7 @@ export default async function Pedidos({ searchParams }: { searchParams: Promise<
   const ctx = await contextoLoja();
   const todas = ctx.lojas.length > 1 && (await searchParams).todas === '1';
   const ids = todas ? ctx.lojas.map((l) => l.id) : [ctx.lojaId];
-  const { pedidos, aceiteAutomatico, tempoPreparo, fuso, filaImpressao, prazoEntrega } = await carregarQuadro(ids, ctx.lojaId);
+  const { pedidos, aceiteAutomatico, tempoPreparo, fuso, filaImpressao, prazoEntrega, movimento } = await carregarQuadro(ids, ctx.lojaId);
   // histórico de cada cliente no grupo, para o selo do cartão (D-057)
   const telefones = [...new Set(pedidos.map((p) => p.cliente_telefone).filter((t): t is string => !!t))];
   const supabase = await criarClienteServidor();
@@ -37,6 +37,7 @@ export default async function Pedidos({ searchParams }: { searchParams: Promise<
         todas={todas}
         historico={(hist as Record<string, string[]> | null) ?? {}}
         pausa={pausa}
+        movimento={movimento}
       />
     </>
   );

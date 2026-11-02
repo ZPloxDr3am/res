@@ -153,3 +153,13 @@ export async function pausarLoja(minutos: number, recado?: string): Promise<Resu
   revalidatePath('/delivery');
   return { ok: true };
 }
+
+/** Modo movimento (D-062): +minutos no preparo e na entrega por algumas horas. minutos = 0 desliga. */
+export async function definirMovimento(minutos: number, horas: number | null): Promise<Resultado> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('definir_movimento', { p_loja: ctx.lojaId, p_minutos: Math.round(minutos), p_horas: horas });
+  if (error) return { ok: false, erro: mensagem(error) };
+  revalidatePath('/pedidos');
+  return { ok: true };
+}

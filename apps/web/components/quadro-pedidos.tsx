@@ -20,7 +20,7 @@ import {
   type StatusPedido,
 } from '@res/core';
 import type { PedidoRow } from '@/lib/pedidos';
-import { definirAceiteAutomatico, marcarAviso, marcarPago, mudarStatus, pausarLoja } from '@/app/(painel)/pedidos/actions';
+import { definirAceiteAutomatico, definirMovimento, marcarAviso, marcarPago, mudarStatus, pausarLoja } from '@/app/(painel)/pedidos/actions';
 import { salvando } from '@/components/tempo-real';
 import { BotaoNovoPedido } from '@/components/pedido-flutuante';
 import { useImprimir } from '@/components/impressao/usar-impressao';
@@ -131,6 +131,7 @@ export function QuadroPedidos({
   todas,
   historico = {},
   pausa = null,
+  movimento = null,
 }: {
   pedidos: PedidoRow[];
   aceiteAutomatico: boolean;
@@ -144,6 +145,7 @@ export function QuadroPedidos({
   todas: boolean;
   historico?: Record<string, string[]>;
   pausa?: { ate: string; recado: string | null } | null;
+  movimento?: { min: number; ate: string } | null;
 }) {
   const [filtros, setFiltros] = useState<Filtros>(SEM_FILTRO);
   useEffect(() => {
@@ -240,8 +242,8 @@ export function QuadroPedidos({
   const atrasadoPedido = (p: PedidoRow) => {
     if (!COLUNAS.includes(p.status)) return false;
     const ag = p.agendado_para ? Date.parse(p.agendado_para) : null;
-    const preparo = (p.status === 'em_preparo' || p.status === 'novo') && (ag ? Date.now() > ag : (Date.now() - Date.parse(p.aceito_em ?? p.criado_em)) / 60000 > tempoPreparo);
-    const entrega = p.tipo === 'entrega' && situacaoPrazo(calcularPrazo(Date.parse(p.criado_em), ag, prazoEntrega[p.loja_id] ?? 35), Date.now()).estado === 'atrasado';
+    const preparo = (p.status === 'em_preparo' || p.status === 'novo') && (ag ? Date.now() > ag : (Date.now() - Date.parse(p.aceito_em ?? p.criado_em)) / 60000 > tempoPreparo + (p.prazo_extra_min ?? 0));
+    const entrega = p.tipo === 'entrega' && situacaoPrazo(calcularPrazo(Date.parse(p.criado_em), ag, (prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)), Date.now()).estado === 'atrasado';
     return preparo || entrega;
   };
   const situacoes = (p: PedidoRow): string[] => {
@@ -306,12 +308,14 @@ export function QuadroPedidos({
             />
             Aceite automático
           </label>}
+          {!todas && <MovimentoLoja movimento={movimento} fuso={fuso} tempoPreparo={tempoPreparo} modo="botao" />}
           {!todas && <PausaLoja pausa={pausa} fuso={fuso} lojaNome={lojaAtual} modo="botao" />}
           <AvisarTodos pedidos={pedidos} nomeMarca={nomeMarca} fuso={fuso} />
           <BotaoNovoPedido />
         </div>
       </div>
       {!todas && <PausaLoja pausa={pausa} fuso={fuso} lojaNome={lojaAtual} modo="faixa" />}
+      {!todas && <MovimentoLoja movimento={movimento} fuso={fuso} tempoPreparo={tempoPreparo} modo="faixa" />}
       {erro && <p className="erro" role="alert">{erro}</p>}
       {!todas && <FilaImpressao n={filaImpressao} />}
 
@@ -345,7 +349,7 @@ export function QuadroPedidos({
           </summary>
           <div className="quadro" style={{ paddingTop: '0.5rem' }}>
             {pixPendentes.map((p) => (
-              <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} fuso={fuso} marca={etiqueta(p)} nomeMarca={nomeMarca(p)} selo={seloCliente(p, historico)} prazoMin={prazoEntrega[p.loja_id] ?? 35} />
+              <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} fuso={fuso} marca={etiqueta(p)} nomeMarca={nomeMarca(p)} selo={seloCliente(p, historico)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} />
             ))}
           </div>
         </details>
@@ -358,7 +362,7 @@ export function QuadroPedidos({
           </summary>
           <div className="quadro" style={{ paddingTop: '0.5rem' }}>
             {agendados.map((p) => (
-              <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} fuso={fuso} marca={etiqueta(p)} nomeMarca={nomeMarca(p)} selo={seloCliente(p, historico)} prazoMin={prazoEntrega[p.loja_id] ?? 35} />
+              <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} fuso={fuso} marca={etiqueta(p)} nomeMarca={nomeMarca(p)} selo={seloCliente(p, historico)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} />
             ))}
           </div>
         </details>
@@ -375,7 +379,7 @@ export function QuadroPedidos({
                 {STATUS_ROTULO[status]} <span className="dica">{lista.length}</span>
               </h2>
               {lista.map((p) => (
-                <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} fuso={fuso} marca={etiqueta(p)} nomeMarca={nomeMarca(p)} selo={seloCliente(p, historico)} prazoMin={prazoEntrega[p.loja_id] ?? 35} />
+                <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} fuso={fuso} marca={etiqueta(p)} nomeMarca={nomeMarca(p)} selo={seloCliente(p, historico)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} />
               ))}
               {lista.length === 0 && <p className="dica" style={{ margin: 0 }}>Nenhum.</p>}
             </section>
@@ -387,7 +391,7 @@ export function QuadroPedidos({
         <summary className="dica">Concluídos e cancelados nas últimas 12 horas ({encerrados.length})</summary>
         <div className="quadro" style={{ paddingTop: '0.5rem' }}>
           {encerrados.map((p) => (
-            <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo} fuso={fuso} marca={etiqueta(p)} nomeMarca={nomeMarca(p)} selo={seloCliente(p, historico)} prazoMin={prazoEntrega[p.loja_id] ?? 35} />
+            <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} fuso={fuso} marca={etiqueta(p)} nomeMarca={nomeMarca(p)} selo={seloCliente(p, historico)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} />
           ))}
         </div>
       </details>
@@ -799,6 +803,91 @@ function PausaLoja({ pausa, fuso, lojaNome, modo }: { pausa: { ate: string; reca
             </div>
             <button type="button" className="botao-primario qp-proximo" disabled={pendente} onClick={() => agir(minutos, recado)}>
               ⏸ Pausar até {hora(Date.now() + minutos * 60000)}
+            </button>
+            {erro && <p className="erro" role="alert" style={{ margin: 0 }}>{erro}</p>}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// ---- Modo movimento (D-062): +minutos no preparo e na entrega por um tempo
+const MIN_MOVIMENTO = [10, 20, 30, 45];
+const HORAS_MOVIMENTO: [number | null, string][] = [[1, '1 hora'], [2, '2 horas'], [null, 'Até eu desligar']];
+
+function MovimentoLoja({ movimento, fuso, tempoPreparo, modo }: { movimento: { min: number; ate: string } | null; fuso: string; tempoPreparo: number; modo: 'botao' | 'faixa' }) {
+  const [aberto, setAberto] = useState(false);
+  const [min, setMin] = useState(20);
+  const [horas, setHoras] = useState<number | null>(2);
+  const [erro, setErro] = useState<string | null>(null);
+  const [pendente, iniciar] = useTransition();
+  const [agora, setAgora] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setAgora(Date.now()), 30000);
+    return () => clearInterval(t);
+  }, []);
+  const ate = movimento ? Date.parse(movimento.ate) : 0;
+  const ativo = !!movimento && ate > agora;
+  const hora = (t: number) => new Intl.DateTimeFormat('pt-BR', { timeZone: fuso, hour: '2-digit', minute: '2-digit' }).format(new Date(t));
+  const ateTexto = ativo ? (ate - agora > 11 * 3600_000 ? 'até você desligar' : `até ${hora(ate)}`) : '';
+  const agir = (m: number, h: number | null) =>
+    iniciar(async () => {
+      const r = await salvando(definirMovimento(m, h));
+      setErro(r.ok ? null : r.erro);
+      if (r.ok) setAberto(false);
+    });
+
+  if (modo === 'faixa') {
+    if (!ativo) return null;
+    return (
+      <div className="qp-pausa qp-movimento" role="status">
+        <span className="grade" style={{ gap: '0.1rem', minWidth: 0 }}>
+          <strong>🔥 Modo movimento: +{movimento!.min} min no preparo e na entrega · {ateTexto}</strong>
+          <span>O cardápio já mostra o prazo maior. Os pedidos que entrarem agora ganham +{movimento!.min} min; os de antes continuam com o prazo deles.</span>
+        </span>
+        <span className="linha" style={{ gap: '0.4rem' }}>
+          {MIN_MOVIMENTO.filter((m) => m !== movimento!.min).slice(0, 2).map((m) => (
+            <button key={m} type="button" className="mini" disabled={pendente} onClick={() => agir(m, Math.max(0.25, (ate - Date.now()) / 3600_000))}>+{m} min</button>
+          ))}
+          <button type="button" className="botao-primario" disabled={pendente} onClick={() => agir(0, null)}>Voltar ao normal</button>
+        </span>
+        {erro && <p className="erro" role="alert" style={{ margin: 0 }}>{erro}</p>}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <button type="button" className="qp-pausar" data-ativa={ativo || undefined} onClick={() => (ativo ? agir(0, null) : setAberto(true))} disabled={pendente}
+        title={ativo ? 'Voltar aos prazos normais' : 'Cozinha apertou? Some minutos ao prazo por um tempo'}>
+        {ativo ? `🔥 +${movimento!.min} min · desligar` : '🔥 Movimento'}
+      </button>
+      {aberto && (
+        <div className="pub-folha-fundo" role="dialog" aria-modal="true" aria-label="Modo movimento" onClick={(e) => e.target === e.currentTarget && setAberto(false)}>
+          <div className="pub-folha qp-folha">
+            <div className="linha" style={{ justifyContent: 'space-between' }}>
+              <h2 style={{ margin: 0 }}>🔥 Modo movimento</h2>
+              <button type="button" className="mini" onClick={() => setAberto(false)}>Fechar</button>
+            </div>
+            <p className="dica" style={{ margin: 0 }}>
+              Some minutos ao tempo de preparo e de entrega sem fechar a loja. O cliente vê o prazo real no cardápio e no acompanhamento, e o quadro não marca atraso à toa.
+            </p>
+            <strong>Quantos minutos a mais?</strong>
+            <div className="qp-filtros">
+              {MIN_MOVIMENTO.map((m) => (
+                <button key={m} type="button" className="qp-chip" aria-pressed={min === m} onClick={() => setMin(m)}>+{m} min</button>
+              ))}
+            </div>
+            <strong>Por quanto tempo?</strong>
+            <div className="qp-filtros">
+              {HORAS_MOVIMENTO.map(([h, r]) => (
+                <button key={r} type="button" className="qp-chip" aria-pressed={horas === h} onClick={() => setHoras(h)}>{r}</button>
+              ))}
+            </div>
+            <p className="dica" style={{ margin: 0 }}>Preparo passa de {tempoPreparo} para <b>{tempoPreparo + min} min</b>.</p>
+            <button type="button" className="botao-primario qp-proximo" disabled={pendente} onClick={() => agir(min, horas)}>
+              🔥 Ligar +{min} min {horas ? `até ${hora(Date.now() + horas * 3600_000)}` : 'até eu desligar'}
             </button>
             {erro && <p className="erro" role="alert" style={{ margin: 0 }}>{erro}</p>}
           </div>

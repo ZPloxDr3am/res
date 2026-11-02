@@ -136,7 +136,7 @@ export type VitrinePublica = {
   descricao: string | null;
   instagram: string | null;
   whatsapp: string | null;
-  loja: { nome: string; cnpj: string | null; endereco: string | null; cidade: string | null; prazo_entrega_min: number; tempo_preparo_min: number };
+  loja: { nome: string; cnpj: string | null; endereco: string | null; cidade: string | null; prazo_entrega_min: number; tempo_preparo_min: number; /** modo movimento em vigor (D-062) */ movimento_min?: number };
   produtos: Record<string, { serve: number | null; restricoes: string[] }>;
   opcoes: Record<string, { descricao: string | null; selo: 'mais_pedido' | 'recomendado' | 'novo' | null }>;
 };

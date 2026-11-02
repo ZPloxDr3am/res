@@ -28,6 +28,8 @@ export type PedidoRow = {
   aguarda_pagamento?: boolean;
   /** etapas em que o cliente já foi avisado no WhatsApp (D-058): { em_entrega: '2026-…' } */
   avisos?: Record<string, string>;
+  /** minutos a mais prometidos porque o pedido entrou no modo movimento (D-062) */
+  prazo_extra_min?: number;
   codigo?: string;
   aceito_em: string | null;
   pronto_em: string | null;
@@ -54,13 +56,13 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
     supabase
       .from('pedidos')
       .select(
-        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, agendado_para, entregador_nome, pago_em, aguarda_pagamento, avisos, codigo, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, previsao_chegada, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_id, opcao_id, grupo_nome, nome, quantidade, fracao, ordem))',
+        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, agendado_para, entregador_nome, pago_em, aguarda_pagamento, avisos, prazo_extra_min, codigo, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, previsao_chegada, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_id, opcao_id, grupo_nome, nome, quantidade, fracao, ordem))',
       )
       .in('loja_id', lojaIds)
       .or(`status.not.in.(concluido,cancelado),criado_em.gte.${desde}`)
       .order('criado_em', { ascending: true })
       .limit(500),
-    supabase.from('lojas').select('aceite_automatico, tempo_preparo_min, fuso_horario').eq('id', lojaPrincipal).single(),
+    supabase.from('lojas').select('aceite_automatico, tempo_preparo_min, fuso_horario, movimento_min, movimento_ate').eq('id', lojaPrincipal).single(),
     supabase
       .from('impressoes')
       .select('id', { count: 'exact', head: true })
@@ -81,6 +83,11 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
     tempoPreparo: loja.data?.tempo_preparo_min ?? 30,
     fuso: (loja.data?.fuso_horario as string | undefined) ?? 'America/Sao_Paulo',
     filaImpressao: fila.count ?? 0,
+    /** modo movimento em vigor na loja (D-062) */
+    movimento:
+      loja.data?.movimento_ate && Date.parse(loja.data.movimento_ate as string) > Date.now() && Number(loja.data.movimento_min) > 0
+        ? { min: Number(loja.data.movimento_min), ate: loja.data.movimento_ate as string }
+        : null,
     /** prazo de entrega (min) de cada loja (D-028) */
     prazoEntrega: Object.fromEntries((prazos.data ?? []).map((l) => [l.id as string, (l.prazo_entrega_min as number | null) ?? 35])) as Record<string, number>,
   };

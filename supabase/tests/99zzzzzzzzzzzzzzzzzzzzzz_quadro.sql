@@ -80,3 +80,27 @@ reset role;
 select case when pg_temp.v('pausa') ->> 'recado' = 'Muitos pedidos, voltamos já!' and (pg_temp.v('cp') #>> '{marca,aberta}')::boolean = false
              and (pg_temp.v('cp2') #>> '{marca,aberta}')::boolean and pg_temp.v('pausa2') = 'null'::jsonb
             then 'ok pausa fecha a loja com recado e retoma' else 'FALHOU pausa ' || pg_temp.v('pausa')::text || pg_temp.v('cp2')::text end;
+
+-- 0063: modo movimento
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000003d1');
+select from public.pausar_loja(pg_temp.id('loja'), 0);
+select from public.definir_movimento(pg_temp.id('loja'), 20, 1);
+select from pg_temp.como('00000000-0000-0000-0000-0000000003d3');
+select from pg_temp.esperar_erro(format($q$select public.definir_movimento('%s', 10)$q$, pg_temp.id('loja')), 'não encontrada');
+reset role;
+set role anon;
+insert into saida values ('cpm', public.cardapio_publico('pizza-qd'));
+select public.criar_pedido_publico('pizza-qd', format('{"tipo":"retirada","pagamento":"dinheiro","cliente":{"nome":"Caio","telefone":"47999990043"},"itens":[{"produto_id":"%s","quantidade":1,"escolhas":{}}]}', pg_temp.id('pz'))::jsonb);
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000003d1');
+select from public.definir_movimento(pg_temp.id('loja'), 0);
+reset role;
+set role anon;
+insert into saida values ('cpm2', public.cardapio_publico('pizza-qd'));
+reset role;
+\o
+select case when (pg_temp.v('cpm') #>> '{marca,tempo_preparo_min}')::int = (pg_temp.v('cpm2') #>> '{marca,tempo_preparo_min}')::int + 20
+             and (select prazo_extra_min from public.pedidos where loja_id = pg_temp.id('loja') and cliente_nome = 'Caio') = 20
+             and (select max(prazo_extra_min) from public.pedidos where loja_id = pg_temp.id('loja') and cliente_nome <> 'Caio') = 0
+            then 'ok modo movimento soma no prazo e fica guardado no pedido' else 'FALHOU movimento ' || (pg_temp.v('cpm') #>> '{marca,tempo_preparo_min}') || '/' || (pg_temp.v('cpm2') #>> '{marca,tempo_preparo_min}') end;
