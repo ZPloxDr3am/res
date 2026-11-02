@@ -291,7 +291,7 @@ export function QuadroPedidos({
             </span>
           )}
         </div>
-        <div className="linha" style={{ alignItems: 'center' }}>
+        <div className="linha qp-controles" style={{ alignItems: 'center' }}>
           <button type="button" onClick={alternarSom} aria-pressed={som}>
             {som ? '🔔 Som ligado' : '🔕 Ligar som'}
           </button>
@@ -336,7 +336,7 @@ export function QuadroPedidos({
       {erro && <p className="erro" role="alert">{erro}</p>}
       {!todas && <FilaImpressao n={filaImpressao} />}
 
-      <div className="qp-filtros" role="toolbar" aria-label="Filtrar pedidos">
+      <div className="qp-filtros qp-filtros-quadro" role="toolbar" aria-label="Filtrar pedidos">
         {locais.map((l) => chip('local', l.id, l.nome, conta((p) => localDe(p) === l.id)))}
         {locais.length > 0 && <span className="qp-sep" aria-hidden />}
         {chip('tipo', 'entrega', '🛵 Entrega', conta((p) => p.tipo === 'entrega'))}

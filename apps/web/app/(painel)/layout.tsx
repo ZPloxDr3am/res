@@ -22,7 +22,7 @@ export default async function PainelLayout({ children }: { children: React.React
           {ctx.marcas.length > 1 && <span className="dica menu-marcas">{ctx.marcas.map((m) => m.nome).join(' · ')}</span>}
         </div>
         <nav>
-          <NavPainel />
+          <NavPainel lojas={ctx.lojas.map((l) => ({ id: l.id, nome: l.nome }))} lojaAtual={ctx.lojaId} lojaNome={ctx.lojaNome} />
         </nav>
         <form action="/auth/sair" method="post" className="menu-rodape">
           <button className="menu-item">

@@ -1446,3 +1446,70 @@ button.mini[data-avisado] { color: #15803d; }
 }
 .rel-pico td { background: color-mix(in srgb, #ea580c calc(var(--int, 0) * 85%), color-mix(in srgb, #fde68a 25%, var(--superficie))); }
 .rel-cal-dia { background: color-mix(in srgb, #16a34a calc(var(--int, 0) * 60%), var(--superficie)); }
+
+/* ---------- Celular (D-070) ---------- */
+.menu-barra, .menu-folha-fundo { display: none; }
+@media (max-width: 700px) {
+  /* a regra do desktop (236px | 1fr) vinha depois e espremia o conteúdo numa coluna estreita */
+  .painel { grid-template-columns: minmax(0, 1fr); }
+  .painel > .conteudo { padding: 0.9rem 0.85rem calc(5.4rem + env(safe-area-inset-bottom)); max-width: 100vw; overflow-x: clip; }
+  .conteudo > .grade, .conteudo > div > .grade { gap: 0.9rem; }
+  h1 { font-size: 1.35rem; }
+  h2 { font-size: 1.05rem; }
+  .cartao { padding: 0.85rem 0.9rem; }
+
+  /* barra de baixo: 4 atalhos grandes + Mais */
+  .menu nav { overflow: visible; }
+  .menu-secoes, .menu-rodape { display: none !important; }
+  .menu-barra { display: grid; grid-template-columns: repeat(5, 1fr); list-style: none; margin: 0; padding: 0; width: 100%; }
+  .menu-barra .menu-item { flex-direction: column; gap: 0.15rem; font-size: 0.7rem; padding: 0.45rem 0.1rem; text-align: center; line-height: 1.1; border-radius: 10px; }
+  .menu-barra .menu-item span { display: block !important; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .menu-barra .menu-item[aria-current='page'] { background: color-mix(in srgb, var(--primaria) 16%, transparent); }
+
+  /* "Mais": todas as telas em blocos coloridos por seção */
+  .menu-folha-fundo { display: flex; position: fixed; inset: 0; z-index: 30; background: rgb(0 0 0 / 0.4); align-items: flex-end; }
+  .menu-folha { width: 100%; max-height: 88vh; overflow-y: auto; background: var(--fundo); border-radius: 18px 18px 0 0; padding: 0.9rem 0.9rem calc(1rem + env(safe-area-inset-bottom)); display: grid; gap: 0.9rem; animation: entrar 0.18s ease-out; }
+  .menu-folha-topo { display: flex; align-items: center; gap: 0.6rem; }
+  .menu-folha-topo .seletor-loja { display: grid !important; flex: 1; }
+  .menu-folha-topo strong { flex: 1; }
+  .menu-folha-secao h2 { margin: 0 0 0.4rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cor); }
+  .menu-folha-grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.45rem; }
+  .menu-bloco { display: grid; justify-items: center; align-content: center; gap: 0.3rem; min-height: 4.6rem; padding: 0.5rem 0.3rem; border-radius: 12px; text-align: center; font-size: 0.78rem; font-weight: 600; line-height: 1.15; color: var(--texto); text-decoration: none;
+    background: color-mix(in srgb, var(--cor, #64748b) 9%, var(--superficie)); border: 1px solid color-mix(in srgb, var(--cor, #64748b) 28%, var(--borda)); }
+  .menu-bloco svg { color: var(--cor, #64748b); width: 24px; height: 24px; }
+  .menu-bloco[aria-current='page'] { background: var(--cor); color: #fff; }
+  .menu-bloco[aria-current='page'] svg { color: #fff; }
+  .menu-sair { width: 100%; min-height: 2.8rem; color: var(--erro, #b91c1c); }
+
+  /* quadro de pedidos: controles e filtros numa linha que rola de lado */
+  .qp-controles { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 0.4rem; padding-bottom: 0.15rem; width: 100%; }
+  .qp-controles > * { flex: 0 0 auto; }
+  .qp-controles button, .qp-controles .botao-primario { min-height: 2.4rem; padding: 0.35rem 0.75rem; font-size: 0.88rem; white-space: nowrap; }
+  .qp-controles .check { white-space: nowrap; font-size: 0.85rem; padding: 0.3rem 0.6rem; border: 1px solid var(--borda); border-radius: 999px; background: var(--superficie); }
+  .qp-filtros-quadro { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 0.2rem; }
+  .qp-filtros-quadro > * { flex: 0 0 auto; }
+  .qp-chip { white-space: nowrap; }
+
+  /* abas e filtros que rolam de lado em vez de espremer */
+  .abas, .segmentos, .abas-metrica { display: flex; max-width: 100%; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+  .abas > *, .segmentos > *, .abas-metrica > * { flex: 0 0 auto; }
+  .filtros { gap: 0.5rem; }
+  .filtros > label, .filtros > select { flex: 1 1 9rem; }
+  .filtros input[type='date'] { width: 100%; }
+
+  /* números: 2 por linha */
+  .kpis, .fin-cartoes, .rel-abc-resumo { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 0.55rem; }
+  .kpi strong, .fin-cartao strong { font-size: 1.15rem !important; }
+  .kpi .dica, .fin-cartao .dica { font-size: 0.76rem; }
+  .rel-kpi-selo { font-size: 0.6rem; padding: 0.05rem 0.35rem; }
+
+  /* tabelas: rolam de lado dentro do cartão */
+  .tabela-rolagem { margin: 0 -0.1rem; -webkit-overflow-scrolling: touch; }
+  .tabela { font-size: 0.84rem; }
+  .tabela th, .tabela td { padding: 0.45rem 0.5rem; }
+
+  /* campos com toque confortável */
+  input, select, textarea, button { font-size: 16px; }
+  .mini, button.mini { font-size: 0.85rem; min-height: 2.2rem; }
+  .pub-folha, .qp-folha { max-height: 90vh; }
+}

@@ -659,3 +659,9 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - O app **só carrega o site**: tudo o que mudar no RES aparece sozinho, sem instalar de novo. Só é preciso baixar um APK novo se mudar algo do próprio app (ícone, permissões).
 - Gerado no GitHub (`.github/workflows/painel-app.yml`) a cada mudança em `apps-mobile/painel/`, publicado na release **gestao-latest**. Assina com a mesma chave do app do motoboy.
 - Link: https://github.com/ZPloxDr3am/res/releases/download/gestao-latest/RES.apk
+
+## D-070 — Painel adaptado ao celular (02/11/2026)
+- Corrigido: no celular o conteúdo ficava espremido numa coluna estreita (a regra do desktop "menu 236px | conteúdo" vinha depois da do celular) e a página rolava de lado.
+- Barra de baixo com os 4 mais usados (**Pedidos, Novo pedido, Estoque, Resumo**) + **Mais**, que abre todas as telas em blocos grandes coloridos por seção (Operação azul, Vendas verde, Clientes roxo, Gestão laranja, Ajustes cinza), com troca de loja e Sair.
+- Quadro de pedidos: botões (som, aceite, movimento, pausar, avisar, novo pedido) e filtros numa linha que rola de lado, em vez de ocupar a tela inteira.
+- Abas, períodos e filtros rolam de lado; números em 2 por linha; tabelas rolam dentro do cartão; campos com 16px (o celular não dá zoom ao tocar).

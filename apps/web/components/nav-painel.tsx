@@ -1,7 +1,9 @@
 'use client';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { usePedidoFlutuante } from '@/components/pedido-flutuante';
+import { SeletorLoja } from '@/components/seletor-loja';
 
 // Ícones simples em traço (sem biblioteca), 20×20, herdam a cor do texto.
 const Icone = ({ d }: { d: string }) => (
@@ -59,8 +61,14 @@ const SECOES: { titulo: string; links: Link_[] }[] = [
 ];
 const LINKS = SECOES.flatMap((s) => s.links);
 
-export function NavPainel() {
+// celular (D-070): barra de baixo com os 4 mais usados + "Mais" (todas as telas, por seção e com cor)
+const BARRA = ['/pedidos', '/pedidos/novo', '/estoque', '/resumo'];
+const COR_SECAO: Record<string, string> = { Operação: '#2563eb', Vendas: '#16a34a', Clientes: '#9333ea', Gestão: '#d97706', Ajustes: '#64748b' };
+
+export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '' }: { lojas?: { id: string; nome: string }[]; lojaAtual?: string; lojaNome?: string }) {
   const atual = usePathname();
+  const [mais, setMais] = useState(false);
+  useEffect(() => setMais(false), [atual]);
   const { abrir, estado } = usePedidoFlutuante();
   // o link mais específico que casa com a rota atual fica marcado
   const ativo = LINKS.filter((l) => atual === l.href || atual.startsWith(l.href + '/')).sort((a, b) => b.href.length - a.href.length)[0]?.href;
@@ -80,14 +88,61 @@ export function NavPainel() {
       )}
     </li>
   );
+  const naBarra = BARRA.map((h) => LINKS.find((l) => l.href === h)).filter((l): l is Link_ => !!l);
+  const ativoForaDaBarra = !!ativo && !BARRA.includes(ativo);
   return (
-    <div className="menu-secoes">
-      {SECOES.map((s) => (
-        <section key={s.titulo} className="menu-secao" aria-label={s.titulo}>
-          <h2 className="menu-secao-titulo">{s.titulo}</h2>
-          <ul className="menu-lista">{s.links.map(item)}</ul>
-        </section>
-      ))}
-    </div>
+    <>
+      <div className="menu-secoes">
+        {SECOES.map((s) => (
+          <section key={s.titulo} className="menu-secao" aria-label={s.titulo}>
+            <h2 className="menu-secao-titulo">{s.titulo}</h2>
+            <ul className="menu-lista">{s.links.map(item)}</ul>
+          </section>
+        ))}
+      </div>
+      <ul className="menu-barra">
+        {naBarra.map(item)}
+        <li>
+          <button type="button" className="menu-item" aria-expanded={mais} aria-current={ativoForaDaBarra ? 'page' : undefined} onClick={() => setMais(true)}>
+            <Icone d="M4 6h16M4 12h16M4 18h16" />
+            <span>{ativoForaDaBarra ? LINKS.find((l) => l.href === ativo)?.rotulo : 'Mais'}</span>
+          </button>
+        </li>
+      </ul>
+      {mais && (
+        <div className="menu-folha-fundo" role="dialog" aria-modal="true" aria-label="Todas as telas" onClick={(e) => e.target === e.currentTarget && setMais(false)}>
+          <div className="menu-folha">
+            <div className="menu-folha-topo">
+              <span className="marca-res">RES</span>
+              {lojas.length > 1 ? <SeletorLoja lojas={lojas} atual={lojaAtual} /> : <strong>{lojaNome}</strong>}
+              <button type="button" className="mini" onClick={() => setMais(false)} aria-label="Fechar">✕</button>
+            </div>
+            {SECOES.map((s) => (
+              <section key={s.titulo} className="menu-folha-secao" style={{ ['--cor' as string]: COR_SECAO[s.titulo] ?? '#64748b' }}>
+                <h2>{s.titulo}</h2>
+                <div className="menu-folha-grade">
+                  {s.links.map((l) =>
+                    l.href === '/pedidos/novo' ? (
+                      <button key={l.href} type="button" className="menu-bloco" onClick={() => { setMais(false); abrir(); }}>
+                        <Icone d={l.icone} />
+                        <span>{l.rotulo}</span>
+                      </button>
+                    ) : (
+                      <Link key={l.href} href={l.href} className="menu-bloco" aria-current={ativo === l.href ? 'page' : undefined}>
+                        <Icone d={l.icone} />
+                        <span>{l.rotulo}</span>
+                      </Link>
+                    ),
+                  )}
+                </div>
+              </section>
+            ))}
+            <form action="/auth/sair" method="post">
+              <button className="menu-bloco menu-sair">Sair</button>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
