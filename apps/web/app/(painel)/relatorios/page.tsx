@@ -125,7 +125,7 @@ function PainelOperacao({ op, varias }: { op: Operacao; varias: boolean }) {
             <div key={`${c.origem}-${c.tipo}`} className="rel-barra-linha">
               <span><i className="rel-ponto" style={{ background: CORES_BARRA[i % CORES_BARRA.length] }} />{ORIGEM[c.origem] ?? c.origem} · {TIPO[c.tipo] ?? c.tipo}</span>
               <span className="rel-acc"><span style={{ width: `${(c.valor / Math.max(1, v.faturamento)) * 100}%`, background: CORES_BARRA[i % CORES_BARRA.length] }} /></span>
-              <span className="dica">{formatarReais(c.valor)} · ticket {formatarReais(c.pedidos ? Math.round(c.valor / c.pedidos) : 0)}{c.cancelados ? ` · ${c.cancelados}✕` : ''}</span>
+              <span className="dica">{c.pedidos} ped. · {formatarReais(c.valor)} · ticket {formatarReais(c.pedidos ? Math.round(c.valor / c.pedidos) : 0)}{c.cancelados ? ` · ${c.cancelados}✕` : ''}</span>
             </div>
           ))}
         </div>

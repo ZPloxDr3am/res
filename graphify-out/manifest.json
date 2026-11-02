@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793587746.8580472,
-    "seen": 1793587750.0120668,
-    "ast_hash": "2c4004d28ec5199bce2ef2eccf4f74a6",
+    "mtime": 1793588683.737894,
+    "seen": 1793588687.980775,
+    "ast_hash": "6b5991a578cc482b39e54148c9ab4115",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1974,8 +1974,8 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzz_quadro.sql": {
-    "mtime": 1793587679.167945,
-    "seen": 1793587750.012058,
+    "mtime": 1793587974.4180608,
+    "seen": 1793588687.9807606,
     "ast_hash": "d5db9bf7e1449ac1deacbbec7aac5827",
     "semantic_hash": ""
   },
@@ -2106,9 +2106,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/relatorios/page.tsx": {
-    "mtime": 1793587734.5091352,
-    "seen": 1793587750.0115426,
-    "ast_hash": "dc1b4ef2d9b531db6aae8fc517ca29d1",
+    "mtime": 1793588671.0470402,
+    "seen": 1793588687.9799995,
+    "ast_hash": "a472646aa137a1d427cf7cf6d323b483",
     "semantic_hash": ""
   },
   "apps/web/lib/relatorios.ts": {
@@ -2130,8 +2130,8 @@
     "semantic_hash": ""
   },
   "supabase/migrations/20261101000068_relatorio_operacao.sql": {
-    "mtime": 1793587679.167945,
-    "seen": 1793587750.0120082,
+    "mtime": 1793587974.4180608,
+    "seen": 1793588687.9806778,
     "ast_hash": "c95d93bd611957f4f847004cf40fe214",
     "semantic_hash": ""
   }
