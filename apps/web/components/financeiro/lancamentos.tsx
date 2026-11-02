@@ -10,10 +10,16 @@ const ler = (s: string) => {
   return Number.isFinite(n) ? n : NaN;
 };
 
-type Cad = { categorias: Categoria[]; fornecedores: Fornecedor[]; contas: ContaFin[] };
+type Cad = { categorias: Categoria[]; fornecedores: Fornecedor[]; contas: ContaFin[]; /** soma do grupo: loja de cada cadastro */ donos?: Record<string, string | null> };
+/** Lojas: no financeiro do grupo, para dizer de qual loja é a conta; na soma do grupo, para mostrar a loja de cada uma. */
+type Lojas = { lista: { id: string; nome: string }[]; modo: 'grupo' | 'soma' } | null;
 
 /** Contas a pagar e a receber (D-060): filtros por situação, "✓ Paguei" em um clique, novo/editar. */
-export function Lancamentos({ lancamentos, cad, titulo, compacto = false }: { lancamentos: Lancamento[]; cad: Cad; titulo?: string; compacto?: boolean }) {
+export function Lancamentos({ lancamentos, cad, titulo, compacto = false, lojas = null }: { lancamentos: Lancamento[]; cad: Cad; titulo?: string; compacto?: boolean; lojas?: Lojas }) {
+  const [loja, setLoja] = useState('');
+  const nomeLoja = useMemo(() => new Map((lojas?.lista ?? []).map((l) => [l.id, l.nome])), [lojas]);
+  const lojaDe = (l: Lancamento) => (lojas?.modo === 'soma' ? l.loja_id : l.loja_ref) ?? '';
+  const podeCriar = lojas?.modo !== 'soma';
   const hoje = hojeSP();
   const [tipo, setTipo] = useState<'todos' | TipoLanc>('todos');
   const [sit, setSit] = useState<Situacao | 'todas'>('todas');
@@ -24,7 +30,7 @@ export function Lancamentos({ lancamentos, cad, titulo, compacto = false }: { la
   const cat = useMemo(() => new Map(cad.categorias.map((c) => [c.id, c])), [cad.categorias]);
   const forn = useMemo(() => new Map(cad.fornecedores.map((f) => [f.id, f.nome])), [cad.fornecedores]);
 
-  const doTipo = lancamentos.filter((l) => tipo === 'todos' || l.tipo === tipo);
+  const doTipo = lancamentos.filter((l) => (tipo === 'todos' || l.tipo === tipo) && (!loja || (loja === '-' ? !lojaDe(l) : lojaDe(l) === loja)));
   const soma = (s: Situacao) => doTipo.filter((l) => situacao(l, hoje) === s).reduce((a, l) => a + l.valor * (tipo === 'todos' && l.tipo === 'receita' ? -1 : 1), 0);
   const lista = doTipo
     .filter((l) => sit === 'todas' || situacao(l, hoje) === sit)
@@ -50,10 +56,14 @@ export function Lancamentos({ lancamentos, cad, titulo, compacto = false }: { la
     <div className="grade">
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         {titulo ? <h2 style={{ margin: 0 }}>{titulo}</h2> : <span />}
-        <span className="linha" style={{ gap: '0.4rem' }}>
-          <button type="button" className="fin-btn-despesa" onClick={() => setForm({ novo: 'despesa' })}>− Despesa</button>
-          <button type="button" className="fin-btn-receita" onClick={() => setForm({ novo: 'receita' })}>+ Receita</button>
-        </span>
+        {podeCriar ? (
+          <span className="linha" style={{ gap: '0.4rem' }}>
+            <button type="button" className="fin-btn-despesa" onClick={() => setForm({ novo: 'despesa' })}>− Despesa</button>
+            <button type="button" className="fin-btn-receita" onClick={() => setForm({ novo: 'receita' })}>+ Receita</button>
+          </span>
+        ) : (
+          <span className="dica">Para lançar, abra o financeiro de uma loja.</span>
+        )}
       </div>
       {!compacto && (
         <div className="linha" style={{ gap: '0.5rem', alignItems: 'center' }}>
@@ -62,6 +72,13 @@ export function Lancamentos({ lancamentos, cad, titulo, compacto = false }: { la
               <button key={t} type="button" aria-pressed={tipo === t} onClick={() => setTipo(t)}>{t === 'todos' ? 'Tudo' : t === 'despesa' ? 'A pagar' : 'A receber'}</button>
             ))}
           </div>
+ {lojas && lojas.lista.length > 1 && (
+            <select value={loja} onChange={(e) => setLoja(e.target.value)} aria-label="Loja" style={{ maxWidth: '14rem' }}>
+              <option value="">Todas as lojas</option>
+              {lojas.modo === 'grupo' && <option value="-">Do grupo (sem loja)</option>}
+              {lojas.lista.map((l) => <option key={l.id} value={l.id}>{l.nome}</option>)}
+            </select>
+          )}
           <input type="search" placeholder="Buscar descrição, fornecedor, categoria" value={busca} onChange={(e) => setBusca(e.target.value)} style={{ maxWidth: '18rem' }} aria-label="Buscar" />
         </div>
       )}
@@ -101,6 +118,7 @@ export function Lancamentos({ lancamentos, cad, titulo, compacto = false }: { la
                       {l.parcelas && !l.recorrente ? <span className="selo" style={{ marginLeft: 6 }}>{l.parcela}/{l.parcelas}</span> : null}
                       {l.recorrente ? <span className="selo" style={{ marginLeft: 6 }} title="Repete todo mês">↻ mensal</span> : null}
                       {l.origem === 'nfe' && <span className="selo" style={{ marginLeft: 6 }}>NF-e</span>}
+                      {lojas && lojas.lista.length > 1 && <span className="selo fin-loja" style={{ marginLeft: 6 }}>{nomeLoja.get(lojaDe(l)) ?? (lojas.modo === 'grupo' ? 'Grupo' : '—')}</span>}
                       {(l.fornecedor_id || l.forma) && <span className="dica" style={{ display: 'block' }}>{[forn.get(l.fornecedor_id ?? ''), l.forma].filter(Boolean).join(' · ')}</span>}
                     </td>
                     <td>{c ? c.nome : <span className="dica">sem categoria</span>}</td>
@@ -122,12 +140,20 @@ export function Lancamentos({ lancamentos, cad, titulo, compacto = false }: { la
           </table>
         </div>
       )}
-      {form && <FormLancamento key={'novo' in form ? form.novo : form.editar.id} inicial={form} cad={cad} fechar={() => setForm(null)} />}
+      {form && <FormLancamento key={'novo' in form ? form.novo : form.editar.id} inicial={form} cad={lojas?.modo === 'soma' && 'editar' in form ? cadDa(cad, form.editar) : cad} lojasGrupo={lojas?.modo === 'grupo' ? lojas.lista : null} fechar={() => setForm(null)} />}
     </div>
   );
 }
 
-function FormLancamento({ inicial, cad, fechar }: { inicial: { novo: TipoLanc } | { editar: Lancamento }; cad: Cad; fechar: () => void }) {
+/** Na soma do grupo, cada conta só aceita categoria, fornecedor e caixa/banco da própria loja. */
+function cadDa(cad: Cad, l: Lancamento): Cad {
+  const d = cad.donos;
+  if (!d) return cad;
+  const daLoja = <T extends { id: string }>(xs: T[]) => xs.filter((x) => d[x.id] === l.loja_id);
+  return { categorias: daLoja(cad.categorias), fornecedores: daLoja(cad.fornecedores), contas: daLoja(cad.contas) };
+}
+
+function FormLancamento({ inicial, cad, fechar, lojasGrupo }: { inicial: { novo: TipoLanc } | { editar: Lancamento }; cad: Cad; fechar: () => void; lojasGrupo: { id: string; nome: string }[] | null }) {
   const ed = 'editar' in inicial ? inicial.editar : null;
   const tipo: TipoLanc = ed ? ed.tipo : (inicial as { novo: TipoLanc }).novo;
   const hoje = hojeSP();
@@ -144,6 +170,7 @@ function FormLancamento({ inicial, cad, fechar }: { inicial: { novo: TipoLanc } 
     modo: 'unico' as NovoLancamento['modo'],
     vezes: '2',
     observacao: ed?.observacao ?? '',
+    lojaRef: ed?.loja_ref ?? '',
   });
   const [erro, setErro] = useState<string | null>(null);
   const [mais, setMais] = useState(false);
@@ -158,8 +185,8 @@ function FormLancamento({ inicial, cad, fechar }: { inicial: { novo: TipoLanc } 
     iniciar(async () => {
       const comp = d.competencia ? `${d.competencia}-01` : '';
       const r = ed
-        ? await salvando(editarLancamento(ed.id, { ...d, valor, competencia: comp || ed.competencia }))
-        : await salvando(criarLancamento({ ...d, tipo, valor, competencia: comp, vezes: d.modo === 'unico' ? 1 : vezes }));
+        ? await salvando(editarLancamento(ed.id, { ...d, valor, competencia: comp || ed.competencia, lojaRef: lojasGrupo ? d.lojaRef : undefined }))
+        : await salvando(criarLancamento({ ...d, tipo, valor, competencia: comp, vezes: d.modo === 'unico' ? 1 : vezes, lojaRef: lojasGrupo ? d.lojaRef : '' }));
       if (!r.ok) return setErro(r.erro);
       if (deNovo) {
         m({ descricao: '', valor: '', observacao: '' });
@@ -204,6 +231,15 @@ function FormLancamento({ inicial, cad, fechar }: { inicial: { novo: TipoLanc } 
               ))}
             </select>
           </label>
+          {lojasGrupo && lojasGrupo.length > 1 && (
+            <label title="Para ver o resultado de cada loja no DRE">
+              De qual loja?
+              <select value={d.lojaRef} onChange={(e) => m({ lojaRef: e.target.value })}>
+                <option value="">Do grupo todo</option>
+                {lojasGrupo.map((l) => <option key={l.id} value={l.id}>{l.nome}</option>)}
+              </select>
+            </label>
+          )}
           {tipo === 'despesa' && (
             <label>
               Fornecedor

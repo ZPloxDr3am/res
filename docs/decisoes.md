@@ -595,3 +595,10 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Categorias prontas (37), cada uma ligada a uma linha do DRE; "Retiradas dos sócios" fica abaixo do lucro e "Aportes" fora do resultado.
 - Fluxo de caixa: saldo de hoje (informado, fica no aparelho) + contas + vendas previstas (média de 28 dias, líquida de taxas); avisa o dia em que o caixa fica negativo.
 - Banco: `fin_categorias`, `fin_fornecedores`, `fin_contas`, `fin_taxas`, `fin_lancamentos`, `fin_config`; `preparar_financeiro`, `criar_lancamento`, `gerar_contas_custos`, `config_custos_financeiro`, `nfe_sem_conta`, `lancar_nfe`, `dre_financeiro`, `vendas_recentes_financeiro` (migração 0061).
+
+## D-061 — Financeiro por loja ou do grupo todo (01/11/2026)
+- O Financeiro segue a **mesma escolha** da Gestão Empresarial para quem tem várias lojas (`gestao_conta.modo`, D-053), feita uma vez e valendo para Custos e Financeiro:
+  - **Cada loja separada**: cada loja tem contas, categorias, fornecedores e DRE próprios. Quem gere mais de uma loja tem a aba **"Soma do grupo"** (visão do mês, contas, fluxo e DRE somados; para lançar, abre-se a loja).
+  - **O grupo todo junto**: um financeiro só (registros com `grupo_id` = a conta). Cada lançamento pode dizer **de qual loja é** (`loja_ref`) ou ficar do grupo. DRE: "Grupo todo" ou cada loja (vendas dela + contas marcadas com ela). Custos fixos vêm da planilha do grupo. Só o titular da conta mexe (como na planilha do grupo).
+- As **taxas** das formas de pagamento continuam por loja (cada loja tem sua maquininha).
+- Migração 0062: `grupo_id` em `fin_categorias/fin_fornecedores/fin_contas/fin_lancamentos`, `loja_ref`, `gestao_conta.custos_auto/dia_custos`, `private.fin_pode/fin_escopo/fin_exigir/fin_semear`; as funções do financeiro passaram a resolver loja/grupo sozinhas.

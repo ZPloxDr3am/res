@@ -2,11 +2,12 @@
 import { revalidatePath } from 'next/cache';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import { contextoLoja } from '@/lib/loja';
+import { escopoFinanceiro } from '@/lib/financeiro-escopo';
 import type { ContaFin, Fornecedor, Taxa, TipoLanc } from '@/lib/financeiro';
 
 type R<T = object> = ({ ok: true } & T) | { ok: false; erro: string };
 const msg = (m: string) =>
-  /row-level security|permission denied/.test(m) ? 'Só o dono ou o gerente mexem no Financeiro.' : /fin_fornecedores_doc/.test(m) ? 'Já existe um fornecedor com esse CPF/CNPJ.' : /fin_categorias_loja_id_tipo_nome/.test(m) ? 'Já existe uma categoria com esse nome.' : m;
+  /titular da conta/.test(m) ? m : /row-level security|permission denied/.test(m) ? 'Só o dono ou o gerente mexem no Financeiro.' : /fin_fornecedores_(doc|grupo_doc)/.test(m) ? 'Já existe um fornecedor com esse CPF/CNPJ.' : /fin_categorias_(loja_id_tipo_nome|grupo_nome)/.test(m) ? 'Já existe uma categoria com esse nome.' : m;
 const refrescar = () => revalidatePath('/financeiro');
 
 export interface NovoLancamento {
@@ -23,6 +24,16 @@ export interface NovoLancamento {
   modo: 'unico' | 'parcelado' | 'recorrente';
   vezes: number;
   observacao: string;
+  /** Só no financeiro do grupo: de qual loja é (vazio = do grupo todo). */
+  lojaRef?: string;
+}
+
+/** Dono dos registros novos: a loja, ou o grupo quando a conta controla tudo junto (D-061). */
+async function donoFin() {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const e = await escopoFinanceiro(supabase, ctx);
+  return { supabase, ctx, dono: e.dono };
 }
 
 export async function criarLancamento(d: NovoLancamento): Promise<R<{ id: string }>> {
@@ -30,7 +41,7 @@ export async function criarLancamento(d: NovoLancamento): Promise<R<{ id: string
   if (!Number.isFinite(d.valor) || d.valor <= 0) return { ok: false, erro: 'Informe o valor.' };
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
-  const { data, error } = await supabase.rpc('criar_lancamento', { p_loja: ctx.lojaId, p_dados: d });
+  const { data, error } = await supabase.rpc('criar_lancamento', { p_loja: ctx.lojaId, p_dados: { ...d, loja_ref: d.lojaRef ?? '' } });
   if (error) return { ok: false, erro: msg(error.message) };
   refrescar();
   return { ok: true, id: data as string };
@@ -38,7 +49,7 @@ export async function criarLancamento(d: NovoLancamento): Promise<R<{ id: string
 
 export async function editarLancamento(
   id: string,
-  d: { descricao: string; valor: number; vencimento: string; competencia: string; categoria: string; fornecedor: string; conta: string; forma: string; observacao: string },
+  d: { descricao: string; valor: number; vencimento: string; competencia: string; categoria: string; fornecedor: string; conta: string; forma: string; observacao: string; lojaRef?: string },
 ): Promise<R> {
   if (!d.descricao.trim()) return { ok: false, erro: 'Escreva uma descrição.' };
   if (!Number.isFinite(d.valor) || d.valor <= 0) return { ok: false, erro: 'Informe o valor.' };
@@ -55,6 +66,7 @@ export async function editarLancamento(
       conta_id: d.conta || null,
       forma: d.forma || null,
       observacao: d.observacao.trim() || null,
+      ...(d.lojaRef !== undefined ? { loja_ref: d.lojaRef || null } : {}),
     })
     .eq('id', id)
     .select('id');
@@ -132,12 +144,11 @@ export async function salvarTaxas(taxas: Taxa[]): Promise<R> {
 
 export async function salvarCategoria(d: { id?: string; tipo: TipoLanc; linha: string; grupo: string; nome: string; ativo: boolean }): Promise<R> {
   if (!d.nome.trim() || !d.grupo.trim()) return { ok: false, erro: 'Preencha o nome e o grupo.' };
-  const ctx = await contextoLoja();
-  const supabase = await criarClienteServidor();
+  const { supabase, dono } = await donoFin();
   const linha = { tipo: d.tipo, linha: d.linha, grupo: d.grupo.trim(), nome: d.nome.trim(), ativo: d.ativo };
   const { error } = d.id
     ? await supabase.from('fin_categorias').update(linha).eq('id', d.id)
-    : await supabase.from('fin_categorias').insert({ ...linha, loja_id: ctx.lojaId, ordem: 999 });
+    : await supabase.from('fin_categorias').insert({ ...linha, ...dono, ordem: 999 });
   if (error) return { ok: false, erro: msg(error.message) };
   refrescar();
   return { ok: true };
@@ -149,12 +160,11 @@ export async function salvarFornecedor(d: Omit<Fornecedor, 'id'> & { id?: string
   if (doc && doc.length !== 11 && doc.length !== 14) return { ok: false, erro: 'CPF tem 11 números e CNPJ tem 14.' };
   const tel = (d.telefone ?? '').replace(/\D/g, '');
   if (tel && (tel.length < 10 || tel.length > 13)) return { ok: false, erro: 'Confira o telefone (com DDD).' };
-  const ctx = await contextoLoja();
-  const supabase = await criarClienteServidor();
+  const { supabase, dono } = await donoFin();
   const linha = { nome: d.nome.trim(), documento: doc || null, telefone: tel || null, observacao: d.observacao?.trim() || null, ativo: d.ativo };
   const r = d.id
     ? await supabase.from('fin_fornecedores').update(linha).eq('id', d.id).select('id').single()
-    : await supabase.from('fin_fornecedores').insert({ ...linha, loja_id: ctx.lojaId }).select('id').single();
+    : await supabase.from('fin_fornecedores').insert({ ...linha, ...dono }).select('id').single();
   if (r.error) return { ok: false, erro: msg(r.error.message) };
   refrescar();
   return { ok: true, id: r.data.id as string };
@@ -162,10 +172,9 @@ export async function salvarFornecedor(d: Omit<Fornecedor, 'id'> & { id?: string
 
 export async function salvarContaFin(d: Omit<ContaFin, 'id'> & { id?: string }): Promise<R> {
   if (!d.nome.trim()) return { ok: false, erro: 'Dê um nome para a conta.' };
-  const ctx = await contextoLoja();
-  const supabase = await criarClienteServidor();
+  const { supabase, dono } = await donoFin();
   const linha = { nome: d.nome.trim(), tipo: d.tipo, ativo: d.ativo };
-  const { error } = d.id ? await supabase.from('fin_contas').update(linha).eq('id', d.id) : await supabase.from('fin_contas').insert({ ...linha, loja_id: ctx.lojaId });
+  const { error } = d.id ? await supabase.from('fin_contas').update(linha).eq('id', d.id) : await supabase.from('fin_contas').insert({ ...linha, ...dono });
   if (error) return { ok: false, erro: msg(error.message) };
   refrescar();
   return { ok: true };
