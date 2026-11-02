@@ -1,0 +1,15 @@
+{
+  "name": "res-gestao-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RES (gestão): app Android (Capacitor) que abre o painel do RES no celular — pedidos, estoque, CMV, financeiro. Carrega o site: tudo o que muda no RES aparece sem atualizar o APK.",
+  "scripts": {
+    "android": "cap add android && cap sync android && node scripts/ajustar-android.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "6.2.0",
+    "@capacitor/app": "6.0.2",
+    "@capacitor/cli": "6.2.0",
+    "@capacitor/core": "6.2.0"
+  }
+}

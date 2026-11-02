@@ -653,3 +653,9 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Cartões com cor e ícone pelo significado: **verde** = entra dinheiro / bom, **azul** = informação, **laranja** = concedido / atenção, **vermelho** = perda / ruim, **cinza** = ainda sem dado.
 - Tempos médios ganham selo **bom / atenção / demorado** com legenda: aceitar ≤3/6 min, preparo ≤25/35, esperando motoboy ≤5/10, rota ≤20/30, entrega completa ≤45/60; entregas no prazo ≥90% / ≥75%. Motoboys com % no prazo e tempo de rota coloridos.
 - Canais e formas de pagamento com uma cor por item (ponto + barra); clientes novos (roxo) × recorrentes (verde) numa barra; pico em laranja (mais forte = mais pedidos); calendário em verde; cancelamentos em vermelho.
+
+## D-069 — App RES (gestão) para Android (02/11/2026)
+- **RES.apk** (Capacitor, como o app do motoboy): abre o painel do RES no celular (pedidos, estoque, CMV, financeiro…), com login guardado e câmera liberada (fotos e leitura de código).
+- O app **só carrega o site**: tudo o que mudar no RES aparece sozinho, sem instalar de novo. Só é preciso baixar um APK novo se mudar algo do próprio app (ícone, permissões).
+- Gerado no GitHub (`.github/workflows/painel-app.yml`) a cada mudança em `apps-mobile/painel/`, publicado na release **gestao-latest**. Assina com a mesma chave do app do motoboy.
+- Link: https://github.com/ZPloxDr3am/res/releases/download/gestao-latest/RES.apk
