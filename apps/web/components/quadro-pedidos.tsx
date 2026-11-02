@@ -20,7 +20,7 @@ import {
   type StatusPedido,
 } from '@res/core';
 import type { PedidoRow } from '@/lib/pedidos';
-import { definirAceiteAutomatico, definirMovimento, marcarAviso, marcarPago, mudarStatus, pausarLoja } from '@/app/(painel)/pedidos/actions';
+import { definirAceiteAutomatico, definirMovimento, definirProntoAuto, marcarAviso, marcarPago, mudarStatus, pausarLoja } from '@/app/(painel)/pedidos/actions';
 import { salvando } from '@/components/tempo-real';
 import { BotaoNovoPedido } from '@/components/pedido-flutuante';
 import { useImprimir } from '@/components/impressao/usar-impressao';
@@ -121,6 +121,7 @@ function bipar() {
 export function QuadroPedidos({
   pedidos,
   aceiteAutomatico,
+  prontoAutoRetirada = false,
   tempoPreparo,
   fuso,
   filaImpressao = 0,
@@ -135,6 +136,7 @@ export function QuadroPedidos({
 }: {
   pedidos: PedidoRow[];
   aceiteAutomatico: boolean;
+  prontoAutoRetirada?: boolean;
   tempoPreparo: number;
   fuso: string;
   filaImpressao?: number;
@@ -307,6 +309,21 @@ export function QuadroPedidos({
               }}
             />
             Aceite automático
+          </label>}
+          {!todas && <label className="check" title={`Pedido de retirada em preparo vira "Pronto" sozinho depois de ${tempoPreparo} min (ou 5 min antes do horário agendado)`}>
+            <input
+              type="checkbox"
+              checked={prontoAutoRetirada}
+              disabled={pendente}
+              onChange={(e) => {
+                const v = e.target.checked;
+                iniciar(async () => {
+                  const r = await salvando(definirProntoAuto(v));
+                  setErro(r.ok ? null : r.erro);
+                });
+              }}
+            />
+            Retirada pronta sozinha
           </label>}
           {!todas && <MovimentoLoja movimento={movimento} fuso={fuso} tempoPreparo={tempoPreparo} modo="botao" />}
           {!todas && <PausaLoja pausa={pausa} fuso={fuso} lojaNome={lojaAtual} modo="botao" />}

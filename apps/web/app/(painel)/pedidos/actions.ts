@@ -163,3 +163,13 @@ export async function definirMovimento(minutos: number, horas: number | null): P
   revalidatePath('/pedidos');
   return { ok: true };
 }
+
+/** Retirada vira "Pronto" sozinha no fim do tempo de preparo (D-063). */
+export async function definirProntoAuto(ligado: boolean): Promise<Resultado> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('definir_pronto_auto', { p_loja: ctx.lojaId, p_ligado: ligado });
+  if (error) return { ok: false, erro: mensagem(error) };
+  revalidatePath('/pedidos');
+  return { ok: true };
+}

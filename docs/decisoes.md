@@ -609,3 +609,9 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Cada pedido feito no período guarda o acréscimo (`pedidos.prazo_extra_min`): o prazo dele (quadro, acompanhamento do cliente, motoboy, rastreio) não muda quando o movimento acaba, e os pedidos de antes não viram "atrasados" de repente.
 - Diferente da pausa (D-059): a loja continua recebendo pedidos.
 - Banco (0063): `lojas.movimento_min/movimento_ate`, `pedidos.prazo_extra_min` (gatilho na criação), `private.movimento_extra`, `definir_movimento`; `entrega_json`, `rastreio_ao_vivo`, `acompanhar_pedido`, `vitrine_publica`, `cardapio_publico`, `horarios_agendamento` e `validar_agendamento` somam o acréscimo.
+
+## D-063 — "Pronto" automático na retirada (01/11/2026)
+- Opção no quadro de pedidos: **"Retirada pronta sozinha"** (por loja, quem cuida dos dados da empresa liga, como o aceite automático).
+- Pedido de **retirada** em preparo vira **Pronto** sozinho quando acaba o tempo de preparo (o da loja + o acréscimo do modo movimento que o pedido recebeu); agendado: 5 min antes do horário. Entrega e salão não mudam.
+- Roda a cada minuto no banco (pg_cron, `private.retiradas_prontas`), mesmo com o quadro fechado; fica no histórico do pedido como "Automático". O cliente vê "pronto" no acompanhamento e o pedido entra na fila do **📣 Avisar clientes** (🏪 prontos para retirada).
+- Banco (0064): `lojas.pronto_auto_retirada`, `private.retiradas_prontas`, `definir_pronto_auto`.

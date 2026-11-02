@@ -104,3 +104,19 @@ select case when (pg_temp.v('cpm') #>> '{marca,tempo_preparo_min}')::int = (pg_t
              and (select prazo_extra_min from public.pedidos where loja_id = pg_temp.id('loja') and cliente_nome = 'Caio') = 20
              and (select max(prazo_extra_min) from public.pedidos where loja_id = pg_temp.id('loja') and cliente_nome <> 'Caio') = 0
             then 'ok modo movimento soma no prazo e fica guardado no pedido' else 'FALHOU movimento ' || (pg_temp.v('cpm') #>> '{marca,tempo_preparo_min}') || '/' || (pg_temp.v('cpm2') #>> '{marca,tempo_preparo_min}') end;
+
+-- 0064: pronto automático na retirada
+\o /dev/null
+reset role;
+update public.pedidos set status = 'em_preparo', aceito_em = now() - interval '2 hours' where loja_id = pg_temp.id('loja') and cliente_nome = 'Caio';
+update public.pedidos set status = 'em_preparo', aceito_em = now() where loja_id = pg_temp.id('loja') and cliente_nome = 'Ana' and numero = (select min(numero) from public.pedidos where loja_id = pg_temp.id('loja'));
+insert into saida values ('pr0', to_jsonb(private.retiradas_prontas()));
+select from pg_temp.como('00000000-0000-0000-0000-0000000003d1');
+select from public.definir_pronto_auto(pg_temp.id('loja'), true);
+reset role;
+\o
+select case when pg_temp.v('pr0') = '0'
+             and (select status from public.pedidos where loja_id = pg_temp.id('loja') and cliente_nome = 'Caio') = 'pronto'
+             and (select status from public.pedidos where loja_id = pg_temp.id('loja') and numero = (select min(numero) from public.pedidos where loja_id = pg_temp.id('loja'))) = 'em_preparo'
+             and exists (select 1 from public.pedido_eventos e join public.pedidos p on p.id = e.pedido_id where p.cliente_nome = 'Caio' and e.para = 'pronto' and e.motivo like 'Automático%')
+            then 'ok retirada fica pronta sozinha no tempo de preparo (só com a opção ligada)' else 'FALHOU pronto automático' end;
