@@ -174,9 +174,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/pedidos/actions.ts": {
-    "mtime": 1793584214.3777502,
-    "seen": 1793584234.3447783,
-    "ast_hash": "508f5a3f6648725133c33c719fc5c3ff",
+    "mtime": 1793584993.266719,
+    "seen": 1793585006.74538,
+    "ast_hash": "b1084edc0892425e4b13cbe9f896859e",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/pedidos/expedicao.ts": {
@@ -192,9 +192,9 @@
     "semantic_hash": "bc67b9f2cf82302b066ee476aca08cb5"
   },
   "apps/web/app/(painel)/pedidos/page.tsx": {
-    "mtime": 1793584214.3775465,
-    "seen": 1793584234.344783,
-    "ast_hash": "0a06e62eccced67fe2fb29731b15cde0",
+    "mtime": 1793584993.266307,
+    "seen": 1793585006.7453885,
+    "ast_hash": "763d5964c882284da32bef87a0d37306",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/promocoes/actions.ts": {
@@ -678,8 +678,8 @@
     "semantic_hash": "d472090f7948a1f67e4266a37eecb2ad"
   },
   "apps/web/components/publico/cardapio-cliente.tsx": {
-    "mtime": 1793584221.153296,
-    "seen": 1793584234.344921,
+    "mtime": 1793584837.0315783,
+    "seen": 1793585006.74567,
     "ast_hash": "aeb70e945030928f2f1427784ce35d68",
     "semantic_hash": ""
   },
@@ -708,9 +708,9 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1793584214.3789952,
-    "seen": 1793584234.3449311,
-    "ast_hash": "dd3ef48c6a92e3b524073ee08b80a29b",
+    "mtime": 1793584993.2676487,
+    "seen": 1793585006.745686,
+    "ast_hash": "10c90d138483d3c395d6f5ff6db464d7",
     "semantic_hash": ""
   },
   "apps/web/components/resumo/grafico-lojas.tsx": {
@@ -834,14 +834,14 @@
     "semantic_hash": "001a137a606e225f972739e75fc6c7aa"
   },
   "apps/web/lib/pedidos.ts": {
-    "mtime": 1793584214.3772798,
-    "seen": 1793584234.344966,
-    "ast_hash": "9ad70209a8983654f7227aca3344c90e",
+    "mtime": 1793584993.2659457,
+    "seen": 1793585006.745746,
+    "ast_hash": "f6c77030e88af678c3225dfb0ac3a9cb",
     "semantic_hash": ""
   },
   "apps/web/lib/publico.ts": {
-    "mtime": 1793584221.1526833,
-    "seen": 1793584234.3449674,
+    "mtime": 1793584837.0315783,
+    "seen": 1793585006.7457483,
     "ast_hash": "42f90fb6c734655105ce3dbf48334f20",
     "semantic_hash": ""
   },
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793584230.9348931,
-    "seen": 1793584234.345185,
-    "ast_hash": "d73ed71605c54ceaa4c37d28b3ef1f20",
+    "mtime": 1793585003.499588,
+    "seen": 1793585006.746154,
+    "ast_hash": "9e07bdce041d8daf8fbfebd8e2611d42",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1974,9 +1974,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzz_quadro.sql": {
-    "mtime": 1793584140.8068879,
-    "seen": 1793584234.3451762,
-    "ast_hash": "a9a214dffbb4fd317e4aead3e605b2de",
+    "mtime": 1793584945.2235847,
+    "seen": 1793585006.7461386,
+    "ast_hash": "64f2590c4d5543390c6674cdc4afa107",
     "semantic_hash": ""
   },
   "supabase/migrations/20261030000059_avisos_cliente.sql": {
@@ -2070,9 +2070,15 @@
     "semantic_hash": ""
   },
   "supabase/migrations/20261101000063_modo_movimento.sql": {
-    "mtime": 1793584131.7105746,
-    "seen": 1793584234.345131,
+    "mtime": 1793584837.0395782,
+    "seen": 1793585006.7460508,
     "ast_hash": "3f3f343b5e6aa90edb7d38ef26fc7e03",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261101000064_pronto_retirada.sql": {
+    "mtime": 1793584945.2209818,
+    "seen": 1793585006.7460544,
+    "ast_hash": "e769d97f005063edd3f48e17bdbe94d7",
     "semantic_hash": ""
   }
 }
