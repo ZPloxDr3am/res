@@ -174,8 +174,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/pedidos/actions.ts": {
-    "mtime": 1793403909.1725895,
-    "seen": 1793404327.892546,
+    "mtime": 1793579443.7514493,
+    "seen": 1793580351.7836373,
     "ast_hash": "ce8fa07302000e215cbadf601ce365cd",
     "semantic_hash": ""
   },
@@ -192,8 +192,8 @@
     "semantic_hash": "bc67b9f2cf82302b066ee476aca08cb5"
   },
   "apps/web/app/(painel)/pedidos/page.tsx": {
-    "mtime": 1793403909.1725895,
-    "seen": 1793404327.8925514,
+    "mtime": 1793579443.7514493,
+    "seen": 1793580351.7836432,
     "ast_hash": "35c7b12208daaef20d53f4f797ece431",
     "semantic_hash": ""
   },
@@ -294,8 +294,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/c/[slug]/page.tsx": {
-    "mtime": 1793403909.1725895,
-    "seen": 1793404327.8925796,
+    "mtime": 1793579443.7514493,
+    "seen": 1793580351.7836776,
     "ast_hash": "f1348196bcc55f5d0dd8d5c858389561",
     "semantic_hash": ""
   },
@@ -642,8 +642,8 @@
     "semantic_hash": "e1a2ae124932452ed3b517ceefb9431a"
   },
   "apps/web/components/nav-painel.tsx": {
-    "mtime": 1793404246.3765328,
-    "seen": 1793404327.8927522,
+    "mtime": 1793579443.7532597,
+    "seen": 1793580351.783839,
     "ast_hash": "80871487daf03bc6b2c149168cde4e4d",
     "semantic_hash": ""
   },
@@ -678,8 +678,8 @@
     "semantic_hash": "d472090f7948a1f67e4266a37eecb2ad"
   },
   "apps/web/components/publico/cardapio-cliente.tsx": {
-    "mtime": 1793403909.1725895,
-    "seen": 1793404327.892762,
+    "mtime": 1793579443.7532597,
+    "seen": 1793580351.78385,
     "ast_hash": "886247b13d5a88ee895a3977af258f4d",
     "semantic_hash": ""
   },
@@ -708,8 +708,8 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1793403909.1765895,
-    "seen": 1793404327.892773,
+    "mtime": 1793579443.7532597,
+    "seen": 1793580351.7838628,
     "ast_hash": "2775962f01730aed9634c9b4ff7dc233",
     "semantic_hash": ""
   },
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793404323.769422,
-    "seen": 1793404327.8930523,
-    "ast_hash": "fdb1be686264194d2f270afa3f86c0bd",
+    "mtime": 1793580347.0805128,
+    "seen": 1793580351.7842658,
+    "ast_hash": "abdce138da0d4bf1063eb9db476b9ce2",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1818,9 +1818,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/gestao/actions.ts": {
-    "mtime": 1793228305.380158,
-    "seen": 1793228312.0239222,
-    "ast_hash": "531524bd70e53c25b2b0cc10f5caa80c",
+    "mtime": 1793580231.0505083,
+    "seen": 1793580351.7836149,
+    "ast_hash": "0245178a870b18339d820ee7262650bb",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/gestao/documento/[id]/page.tsx": {
@@ -1836,8 +1836,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/gestao/custos.tsx": {
-    "mtime": 1793404323.769422,
-    "seen": 1793404327.8927288,
+    "mtime": 1793579443.7532597,
+    "seen": 1793580351.7838109,
     "ast_hash": "be6bdb2dbe7dfb5c9c2d4bfcd700c9ca",
     "semantic_hash": ""
   },
@@ -1920,9 +1920,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/gestao/grupo.tsx": {
-    "mtime": 1793228305.384158,
-    "seen": 1793228394.3486862,
-    "ast_hash": "e7444991d158dc3eedf54a8c2e14c719",
+    "mtime": 1793580231.0498996,
+    "seen": 1793580351.7838178,
+    "ast_hash": "4f06adde96c9c47147c1799405c62406",
     "semantic_hash": ""
   },
   "supabase/migrations/20261028000055_gestao_grupo.sql": {
@@ -1974,8 +1974,8 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzz_quadro.sql": {
-    "mtime": 1793403909.1845896,
-    "seen": 1793404327.893043,
+    "mtime": 1793579443.7615342,
+    "seen": 1793580351.7842524,
     "ast_hash": "4207dc6a8ae7f96f745c2c6b27f7bb15",
     "semantic_hash": ""
   },
@@ -1986,75 +1986,87 @@
     "semantic_hash": ""
   },
   "supabase/migrations/20261030000060_pausa_loja.sql": {
-    "mtime": 1793403909.1845896,
-    "seen": 1793404327.892986,
+    "mtime": 1793579443.7615342,
+    "seen": 1793580351.7841527,
     "ast_hash": "75429a19b4b0c5512ba1fa5066aa83d8",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/financeiro/actions.ts": {
-    "mtime": 1793404098.480229,
-    "seen": 1793404327.8925233,
-    "ast_hash": "a0830c7acee57890a03a522cda273282",
+    "mtime": 1793580190.5056047,
+    "seen": 1793580351.783609,
+    "ast_hash": "b846ddf6de4471e31f3788fd5075baba",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/financeiro/page.tsx": {
-    "mtime": 1793404246.3757865,
-    "seen": 1793404327.8925266,
-    "ast_hash": "10760b9ec01b927303a65a9c3fc6614e",
+    "mtime": 1793580292.4992943,
+    "seen": 1793580351.7836127,
+    "ast_hash": "f6c4b2dc327a38cb0789ddc52a290086",
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/automaticos.tsx": {
-    "mtime": 1793404120.4165847,
-    "seen": 1793404327.8926692,
+    "mtime": 1793579443.7514493,
+    "seen": 1793580351.7837887,
     "ast_hash": "733c35ab6a32ac29a386da3388d22eee",
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/baixar.tsx": {
-    "mtime": 1793404183.5485833,
-    "seen": 1793404327.8926706,
+    "mtime": 1793579443.7532597,
+    "seen": 1793580351.7837908,
     "ast_hash": "6cfec2e22e66ac3fc14fe75b9d99dd2e",
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/cadastros.tsx": {
-    "mtime": 1793404178.3605833,
-    "seen": 1793404327.8926723,
+    "mtime": 1793579443.7532597,
+    "seen": 1793580351.7837932,
     "ast_hash": "060a4a1240bc22b14226359cdc5333ae",
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/dre.tsx": {
-    "mtime": 1793404014.108587,
-    "seen": 1793404327.892714,
+    "mtime": 1793579443.7532597,
+    "seen": 1793580351.783796,
     "ast_hash": "76c1e13953f10d5ec357ffbe8a0b2bca",
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/fluxo.tsx": {
-    "mtime": 1793404139.2765844,
-    "seen": 1793404327.8927166,
+    "mtime": 1793579443.7532597,
+    "seen": 1793580351.783798,
     "ast_hash": "a25b5737a91df3b3c1e0d2f45555a8a2",
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/lancamentos.tsx": {
-    "mtime": 1793403998.0885875,
-    "seen": 1793404327.8927183,
-    "ast_hash": "459bed87bb6933d19af4cc29b5b671f2",
+    "mtime": 1793580217.9957743,
+    "seen": 1793580351.7838,
+    "ast_hash": "711269c2f926f917828e6daa94ec6ffe",
     "semantic_hash": ""
   },
   "apps/web/lib/financeiro.ts": {
-    "mtime": 1793403909.859283,
-    "seen": 1793404327.8927937,
-    "ast_hash": "a43cac65453f245c1fa9f1768602c354",
+    "mtime": 1793580212.8641498,
+    "seen": 1793580351.7838924,
+    "ast_hash": "22f5a40be51cdea58535215a92f649ee",
     "semantic_hash": ""
   },
   "supabase/migrations/20261030000061_financeiro.sql": {
-    "mtime": 1793404045.4442286,
-    "seen": 1793404327.8929877,
+    "mtime": 1793579443.7615342,
+    "seen": 1793580351.784155,
     "ast_hash": "e4e380d01951c59a250a0fd569fec2d6",
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzz_financeiro.sql": {
-    "mtime": 1793404079.9867926,
-    "seen": 1793404327.8930445,
-    "ast_hash": "1572a3891545c3aabf77b7d3b9b31fd0",
+    "mtime": 1793580143.109969,
+    "seen": 1793580351.7842548,
+    "ast_hash": "c99497408a2bd53b61802b7376fc6ac4",
+    "semantic_hash": ""
+  },
+  "apps/web/lib/financeiro-escopo.ts": {
+    "mtime": 1793580173.5685027,
+    "seen": 1793580351.7838898,
+    "ast_hash": "9e535abddbfc766f3923bdeb82f55360",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261101000062_financeiro_grupo.sql": {
+    "mtime": 1793580105.7776947,
+    "seen": 1793580351.7841566,
+    "ast_hash": "cbee71550704f980c4dfe86dc889c6b1",
     "semantic_hash": ""
   }
 }
