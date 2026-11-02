@@ -38,15 +38,25 @@ const PAGAMENTO: Record<string, string> = { dinheiro: 'Dinheiro', pix: 'Pix', ca
 const TIPO: Record<string, string> = { entrega: 'entrega', retirada: 'retirada', balcao: 'balcão', local: 'salão', mesa: 'mesa' };
 const min = (v: number | null) => (v == null ? '—' : `${Number(v).toLocaleString('pt-BR', { maximumFractionDigits: 0 })} min`);
 
-function Kpi({ rotulo, valor, sub }: { rotulo: string; valor: ReactNode; sub?: ReactNode }) {
+/** Cores dos cartões (D-068): verde = entra dinheiro / bom, azul = informação, laranja = concedido / atenção, vermelho = perda / ruim, roxo = clientes, cinza = ainda sem dado. */
+type Cor = 'verde' | 'azul' | 'laranja' | 'vermelho' | 'roxo' | 'cinza';
+function Kpi({ rotulo, valor, sub, cor = 'azul', icone, selo }: { rotulo: string; valor: ReactNode; sub?: ReactNode; cor?: Cor; icone?: string; selo?: string }) {
   return (
-    <div className="cartao kpi">
-      <span className="dica">{rotulo}</span>
+    <div className="cartao kpi rel-kpi" data-cor={cor}>
+      <span className="rel-kpi-topo">
+        {icone && <span className="rel-kpi-icone" aria-hidden>{icone}</span>}
+        <span className="dica">{rotulo}</span>
+        {selo && <span className="rel-kpi-selo">{selo}</span>}
+      </span>
       <strong style={{ fontSize: '1.35rem' }}>{valor}</strong>
       {sub && <span className="dica">{sub}</span>}
     </div>
   );
 }
+/** Tempo: verde até `bom` min, laranja até `ruim`, vermelho acima; sem dado = cinza. */
+const corTempo = (v: number | null, bom: number, ruim: number): Cor => (v == null ? 'cinza' : v <= bom ? 'verde' : v <= ruim ? 'laranja' : 'vermelho');
+const seloTempo = (c: Cor) => (c === 'verde' ? 'bom' : c === 'laranja' ? 'atenção' : c === 'vermelho' ? 'demorado' : undefined);
+const CORES_BARRA = ['#2563eb', '#16a34a', '#d97706', '#9333ea', '#dc2626', '#0891b2', '#db2777', '#65a30d'];
 
 function PainelOperacao({ op, varias }: { op: Operacao; varias: boolean }) {
   const v = op.valores;
@@ -60,27 +70,30 @@ function PainelOperacao({ op, varias }: { op: Operacao; varias: boolean }) {
   const totalPorHora = horas.map((h) => ({ h, n: op.pico.filter((p) => p.hora === h).reduce((a, p) => a + p.pedidos, 0) })).sort((a, b) => b.n - a.n);
   return (
     <>
-      <h2 style={{ margin: 0 }}>Valores</h2>
+      <h2 className="rel-titulo" style={{ margin: 0 }}>Valores</h2>
       <div className="kpis">
-        <Kpi rotulo="Faturamento" valor={formatarReais(v.faturamento)} sub={`${v.pedidos} pedidos · ticket médio ${formatarReais(ticket)}`} />
-        <Kpi rotulo="Frete cobrado" valor={formatarReais(v.frete - v.frete_gratis)} sub={`taxas de entrega pagas pelos clientes`} />
-        <Kpi rotulo="Frete grátis concedido" valor={formatarReais(v.frete_gratis)} sub={`${v.frete_gratis_pedidos} pedido(s)`} />
-        <Kpi rotulo="Cupons concedidos" valor={formatarReais(v.cupons)} sub={`${v.cupons_pedidos} pedido(s) com cupom`} />
-        <Kpi rotulo="Descontos (total)" valor={formatarReais(v.descontos)} sub={`${v.pedidos_com_desconto} pedido(s) · cupons, balcão, fidelidade e frete grátis`} />
-        <Kpi rotulo="Acréscimos" valor={formatarReais(v.acrescimos)} sub="taxa de serviço e outros: entram com o atendimento por tablet" />
+        <Kpi cor="verde" icone="💰" rotulo="Faturamento" valor={formatarReais(v.faturamento)} sub={`${v.pedidos} pedidos · ticket médio ${formatarReais(ticket)}`} />
+        <Kpi cor="azul" icone="🛵" rotulo="Frete cobrado" valor={formatarReais(v.frete - v.frete_gratis)} sub={`taxas de entrega pagas pelos clientes`} />
+        <Kpi cor="laranja" icone="🎁" rotulo="Frete grátis concedido" valor={formatarReais(v.frete_gratis)} sub={`${v.frete_gratis_pedidos} pedido(s)`} />
+        <Kpi cor="laranja" icone="🎟️" rotulo="Cupons concedidos" valor={formatarReais(v.cupons)} sub={`${v.cupons_pedidos} pedido(s) com cupom`} />
+        <Kpi cor="vermelho" icone="🏷️" rotulo="Descontos (total)" valor={formatarReais(v.descontos)} sub={`${v.pedidos_com_desconto} pedido(s) · cupons, balcão, fidelidade e frete grátis`} />
+        <Kpi cor="cinza" icone="➕" rotulo="Acréscimos" valor={formatarReais(v.acrescimos)} sub="taxa de serviço e outros: entram com o atendimento por tablet" />
       </div>
 
-      <h2 style={{ margin: 0 }}>Tempos médios</h2>
+      <div className="linha" style={{ alignItems: 'baseline', justifyContent: 'space-between' }}>
+        <h2 className="rel-titulo" style={{ margin: 0 }}>Tempos médios</h2>
+        <span className="rel-legenda"><i data-cor="verde" /> bom <i data-cor="laranja" /> atenção <i data-cor="vermelho" /> demorado</span>
+      </div>
       <div className="kpis">
-        <Kpi rotulo="Para aceitar" valor={min(t.aceite)} sub="do pedido chegar até ir para a cozinha" />
-        <Kpi rotulo="Em preparo" valor={min(t.preparo)} sub="de aceito até pronto" />
-        <Kpi rotulo="Pronto esperando motoboy" valor={min(t.espera_motoboy)} sub="de pronto até sair" />
-        <Kpi rotulo="Em rota" valor={min(t.rota)} sub="de sair até entregar" />
-        <Kpi rotulo="Entrega completa" valor={min(t.total_entrega)} sub="do pedido até o cliente" />
-        <Kpi rotulo="Entregas no prazo" valor={t.entregas ? pct((t.no_prazo / t.entregas) * 100) : '—'} sub={`${t.no_prazo} de ${t.entregas} entregas`} />
+        <Kpi cor={corTempo(t.aceite, 3, 6)} selo={seloTempo(corTempo(t.aceite, 3, 6))} icone="⏱️" rotulo="Para aceitar" valor={min(t.aceite)} sub="do pedido chegar até ir para a cozinha" />
+        <Kpi cor={corTempo(t.preparo, 25, 35)} selo={seloTempo(corTempo(t.preparo, 25, 35))} icone="👨‍🍳" rotulo="Em preparo" valor={min(t.preparo)} sub="de aceito até pronto" />
+        <Kpi cor={corTempo(t.espera_motoboy, 5, 10)} selo={seloTempo(corTempo(t.espera_motoboy, 5, 10))} icone="⏳" rotulo="Pronto esperando motoboy" valor={min(t.espera_motoboy)} sub="de pronto até sair" />
+        <Kpi cor={corTempo(t.rota, 20, 30)} selo={seloTempo(corTempo(t.rota, 20, 30))} icone="🛵" rotulo="Em rota" valor={min(t.rota)} sub="de sair até entregar" />
+        <Kpi cor={corTempo(t.total_entrega, 45, 60)} selo={seloTempo(corTempo(t.total_entrega, 45, 60))} icone="🏁" rotulo="Entrega completa" valor={min(t.total_entrega)} sub="do pedido até o cliente" />
+        <Kpi cor={!t.entregas ? 'cinza' : t.no_prazo / t.entregas >= 0.9 ? 'verde' : t.no_prazo / t.entregas >= 0.75 ? 'laranja' : 'vermelho'} selo={!t.entregas ? undefined : t.no_prazo / t.entregas >= 0.9 ? 'bom' : t.no_prazo / t.entregas >= 0.75 ? 'atenção' : 'ruim'} icone="✅" rotulo="Entregas no prazo" valor={t.entregas ? pct((t.no_prazo / t.entregas) * 100) : '—'} sub={`${t.no_prazo} de ${t.entregas} entregas`} />
       </div>
 
-      <h2 style={{ margin: 0 }}>Horário de pico</h2>
+      <h2 className="rel-titulo" style={{ margin: 0 }}>Horário de pico</h2>
       {horas.length === 0 ? (
         <p className="cartao dica" style={{ margin: 0 }}>Sem pedidos no período.</p>
       ) : (
@@ -108,27 +121,33 @@ function PainelOperacao({ op, varias }: { op: Operacao; varias: boolean }) {
       <div className="rel-grupos">
         <div className="cartao grade" style={{ gap: '0.35rem' }}>
           <strong>Canais</strong>
-          {op.canais.map((c) => (
+          {op.canais.map((c, i) => (
             <div key={`${c.origem}-${c.tipo}`} className="rel-barra-linha">
-              <span>{ORIGEM[c.origem] ?? c.origem} · {TIPO[c.tipo] ?? c.tipo}</span>
-              <span className="dica">{c.pedidos} ped.</span>
+              <span><i className="rel-ponto" style={{ background: CORES_BARRA[i % CORES_BARRA.length] }} />{ORIGEM[c.origem] ?? c.origem} · {TIPO[c.tipo] ?? c.tipo}</span>
+              <span className="rel-acc"><span style={{ width: `${(c.valor / Math.max(1, v.faturamento)) * 100}%`, background: CORES_BARRA[i % CORES_BARRA.length] }} /></span>
               <span className="dica">{formatarReais(c.valor)} · ticket {formatarReais(c.pedidos ? Math.round(c.valor / c.pedidos) : 0)}{c.cancelados ? ` · ${c.cancelados}✕` : ''}</span>
             </div>
           ))}
         </div>
         <div className="cartao grade" style={{ gap: '0.35rem' }}>
           <strong>Formas de pagamento</strong>
-          {op.pagamentos.map((p) => (
+          {op.pagamentos.map((p, i) => (
             <div key={p.forma} className="rel-barra-linha">
-              <span>{PAGAMENTO[p.forma] ?? p.forma}</span>
-              <span className="rel-acc"><span style={{ width: `${(p.valor / Math.max(1, v.faturamento)) * 100}%` }} /></span>
+              <span><i className="rel-ponto" style={{ background: CORES_BARRA[i % CORES_BARRA.length] }} />{PAGAMENTO[p.forma] ?? p.forma}</span>
+              <span className="rel-acc"><span style={{ width: `${(p.valor / Math.max(1, v.faturamento)) * 100}%`, background: CORES_BARRA[i % CORES_BARRA.length] }} /></span>
               <span className="dica">{formatarReais(p.valor)} · {p.pedidos}</span>
             </div>
           ))}
         </div>
         <div className="cartao grade" style={{ gap: '0.35rem' }}>
           <strong>Clientes</strong>
-          <span><b>{op.clientes.novos}</b> novos · <b>{recorrentes}</b> que já tinham pedido antes</span>
+          <span><b style={{ color: '#9333ea' }}>{op.clientes.novos}</b> novos · <b style={{ color: '#16a34a' }}>{recorrentes}</b> que já tinham pedido antes</span>
+          {op.clientes.com_telefone > 0 && (
+            <span className="rel-pilha" aria-hidden>
+              <span style={{ width: `${(op.clientes.novos / op.clientes.com_telefone) * 100}%`, background: '#9333ea' }} />
+              <span style={{ width: `${(recorrentes / op.clientes.com_telefone) * 100}%`, background: '#16a34a' }} />
+            </span>
+          )}
           <span className="dica">{op.clientes.com_telefone ? `${pct((recorrentes / op.clientes.com_telefone) * 100)} voltaram` : ''}{op.clientes.pedidos_sem_telefone ? ` · ${op.clientes.pedidos_sem_telefone} pedido(s) sem telefone` : ''}</span>
           {op.bairros.length > 0 && <strong style={{ marginTop: '0.4rem' }}>Bairros que mais pedem</strong>}
           {op.bairros.slice(0, 8).map((b) => (
@@ -141,7 +160,7 @@ function PainelOperacao({ op, varias }: { op: Operacao; varias: boolean }) {
         </div>
       </div>
 
-      <h2 style={{ margin: 0 }}>Por pessoa (pedidos lançados no balcão)</h2>
+      <h2 className="rel-titulo" style={{ margin: 0 }}>Por pessoa (pedidos lançados no balcão)</h2>
       {op.pessoas.length === 0 ? (
         <p className="cartao dica" style={{ margin: 0 }}>Nenhum pedido lançado no balcão no período.</p>
       ) : (
@@ -165,7 +184,7 @@ function PainelOperacao({ op, varias }: { op: Operacao; varias: boolean }) {
       )}
       <p className="dica" style={{ margin: 0 }}>Com o atendimento por tablet, os garçons entram aqui também (pedidos, taxa de serviço e up-sell por garçom).</p>
 
-      <h2 style={{ margin: 0 }}>Motoboys</h2>
+      <h2 className="rel-titulo" style={{ margin: 0 }}>Motoboys</h2>
       {op.motoboys.length === 0 ? (
         <p className="cartao dica" style={{ margin: 0 }}>Nenhuma entrega concluída no período.</p>
       ) : (
@@ -177,9 +196,9 @@ function PainelOperacao({ op, varias }: { op: Operacao; varias: boolean }) {
                 <tr key={m.nome}>
                   <td>{m.nome}</td>
                   <td className="num">{m.entregas}</td>
-                  <td className="num">{min(m.rota)}</td>
+                  <td className="num"><span className="rel-pct" data-cor={corTempo(m.rota, 20, 30)}>{min(m.rota)}</span></td>
                   <td className="num">{min(m.total)}</td>
-                  <td className="num">{m.entregas ? pct((m.no_prazo / m.entregas) * 100) : '—'}</td>
+                  <td className="num"><span className="rel-pct" data-cor={!m.entregas ? 'cinza' : m.no_prazo / m.entregas >= 0.9 ? 'verde' : m.no_prazo / m.entregas >= 0.75 ? 'laranja' : 'vermelho'}>{m.entregas ? pct((m.no_prazo / m.entregas) * 100) : '—'}</span></td>
                   <td className="num">{Number(m.km).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}</td>
                 </tr>
               ))}
@@ -329,7 +348,7 @@ export default async function Relatorios({ searchParams }: { searchParams: Promi
         {linhas.map(([k, x]) => (
           <div key={k} className="rel-barra-linha">
             <span>{k}</span>
-            <span className="rel-acc"><span style={{ width: `${(x.n / cs.length) * 100}%` }} /></span>
+            <span className="rel-acc"><span style={{ width: `${(x.n / cs.length) * 100}%`, background: '#dc2626' }} /></span>
             <span className="dica">{x.n} · {formatarReais(x.v)}</span>
           </div>
         ))}
@@ -341,9 +360,9 @@ export default async function Relatorios({ searchParams }: { searchParams: Promi
       ) : (
         <>
           <div className="kpis">
-            <div className="cartao kpi"><span className="dica">Cancelados</span><strong style={{ fontSize: '1.5rem' }}>{cs.length}</strong><span className="dica">{pct(taxa)} dos {r.pedidos} pedidos</span></div>
-            <div className="cartao kpi"><span className="dica">Valor perdido</span><strong style={{ fontSize: '1.5rem' }}>{formatarReais(total)}</strong><span className="dica">{r.faturamento > 0 ? `${pct((total / (r.faturamento + total)) * 100)} do que entrou` : ''}</span></div>
-            <div className="cartao kpi"><span className="dica">Depois de aceitos</span><strong style={{ fontSize: '1.5rem' }}>{cs.filter((c) => c.etapa && c.etapa !== 'novo').length}</strong><span className="dica">já tinham ido para a cozinha (custo de insumo)</span></div>
+            <div className="cartao kpi rel-kpi" data-cor="vermelho"><span className="dica">❌ Cancelados</span><strong style={{ fontSize: '1.5rem' }}>{cs.length}</strong><span className="dica">{pct(taxa)} dos {r.pedidos} pedidos</span></div>
+            <div className="cartao kpi rel-kpi" data-cor="vermelho"><span className="dica">💸 Valor perdido</span><strong style={{ fontSize: '1.5rem' }}>{formatarReais(total)}</strong><span className="dica">{r.faturamento > 0 ? `${pct((total / (r.faturamento + total)) * 100)} do que entrou` : ''}</span></div>
+            <div className="cartao kpi rel-kpi" data-cor="laranja"><span className="dica">👨‍🍳 Depois de aceitos</span><strong style={{ fontSize: '1.5rem' }}>{cs.filter((c) => c.etapa && c.etapa !== 'novo').length}</strong><span className="dica">já tinham ido para a cozinha (custo de insumo)</span></div>
           </div>
           <div className="rel-grupos">
             {bloco('Por motivo', agrupar((c) => c.motivo))}
