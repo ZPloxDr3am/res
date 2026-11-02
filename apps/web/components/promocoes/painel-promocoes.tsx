@@ -4,7 +4,11 @@ import Link from 'next/link';
 import { DIAS_CURTOS, formatarReais, percentualDesconto, resumoAgenda, type AgendaPromo } from '@res/core';
 import {
   alternarCupom,
+  alternarFreteGratis,
   excluirCupom,
+  excluirFreteGratis,
+  salvarFreteGratis,
+  type FreteGratisForm,
   excluirPromoCategoria,
   salvarCupom,
   salvarLimiteDesconto,
@@ -18,7 +22,9 @@ export type PromoProdutoLinha = { id: string; nome: string; de: number | null; p
 export type PromoCategoriaLinha = Omit<PromoCategoriaForm, 'id'> & { id: string };
 export type CupomLinha = Omit<CupomForm, 'id'> & { id: string };
 export type UsoCupom = { id: string; numero: number; cupomId: string; cliente: string; telefone: string | null; desconto: number; total: number; criadoEm: string; cancelado: boolean };
-type Aba = 'produto' | 'categoria' | 'cupons' | 'balcao';
+export type FreteGratisLinha = Omit<FreteGratisForm, 'id'> & { id: string };
+type Aba = 'produto' | 'categoria' | 'cupons' | 'frete' | 'balcao';
+type Opcoes = { bairros: string[]; produtosLista: { id: string; nome: string }[] };
 type Msg = { tipo: 'ok' | 'erro'; texto: string } | null;
 
 const TODOS = [0, 1, 2, 3, 4, 5, 6];
@@ -55,6 +61,10 @@ export function PainelPromocoes(props: {
   usos: UsoCupom[];
   limiteDesconto: number | null;
   outrasLojas: { id: string; nome: string }[];
+  bairros: string[];
+  produtosLista: { id: string; nome: string }[];
+  marcas: { id: string; nome: string }[];
+  fretes: FreteGratisLinha[];
 }) {
   const [aba, setAba] = useState<Aba>(props.aba);
   const valendoCat = props.categorias.filter((c) => c.ativo).length;
@@ -63,6 +73,7 @@ export function PainelPromocoes(props: {
     { id: 'produto', nome: 'Promoção no produto', resumo: `${props.produtosPromo.length} produto(s) · De / Por` },
     { id: 'categoria', nome: '% numa categoria', resumo: valendoCat ? `${valendoCat} ativa(s)` : 'Ex.: terça, pizzas -20%' },
     { id: 'cupons', nome: 'Cupons', resumo: ativosCupom ? `${ativosCupom} ativo(s)` : 'Código no cardápio digital' },
+    { id: 'frete', nome: 'Frete grátis', resumo: props.fretes.some((f) => f.ativo) ? `${props.fretes.filter((f) => f.ativo).length} regra(s) ativa(s)` : 'Por valor, bairro ou produto' },
     { id: 'balcao', nome: 'Desconto no balcão', resumo: props.limiteDesconto == null ? 'Sem limite' : `Limite ${props.limiteDesconto}% sem gerente` },
   ];
   return (
@@ -81,7 +92,8 @@ export function PainelPromocoes(props: {
       </div>
       {aba === 'produto' && <AbaProduto linhas={props.produtosPromo} />}
       {aba === 'categoria' && <AbaCategoria setores={props.setores} linhas={props.categorias} />}
-      {aba === 'cupons' && <AbaCupons cupons={props.cupons} usos={props.usos} outrasLojas={props.outrasLojas} />}
+      {aba === 'cupons' && <AbaCupons cupons={props.cupons} usos={props.usos} outrasLojas={props.outrasLojas} opcoes={{ bairros: props.bairros, produtosLista: props.produtosLista }} />}
+      {aba === 'frete' && <AbaFrete fretes={props.fretes} marcas={props.marcas} opcoes={{ bairros: props.bairros, produtosLista: props.produtosLista }} />}
       {aba === 'balcao' && <AbaBalcao limite={props.limiteDesconto} />}
     </div>
   );
@@ -208,17 +220,69 @@ function AbaCategoria({ setores, linhas }: { setores: { id: string; nome: string
   );
 }
 
-const vazioCupom = (): CupomForm => ({ id: null, codigo: '', descricao: '', tipo: 'percentual', valor: 10, pedidoMinimo: 0, primeiraCompra: false, limitePorCliente: 1, limiteTotal: null, dias: TODOS, validoAte: null, ativo: true });
+const vazioCupom = (): CupomForm => ({ id: null, codigo: '', descricao: '', tipo: 'percentual', valor: 10, pedidoMinimo: 0, primeiraCompra: false, limitePorCliente: 1, limiteTotal: null, dias: TODOS, validoAte: null, ativo: true, bairros: [], kmMax: null, produtos: [] });
+
+/** Escolher vários (bairros ou produtos): chips com o que já está escolhido + campo com sugestões. */
+function Escolha({ rotulo, dica, valores, opcoes, mudar, livre = false }: { rotulo: string; dica: string; valores: string[]; opcoes: { id: string; nome: string }[]; mudar: (v: string[]) => void; livre?: boolean }) {
+  const [txt, setTxt] = useState('');
+  const nome = (id: string) => opcoes.find((o) => o.id === id)?.nome ?? id;
+  const lista = `esc-${rotulo.replace(/\W/g, '')}`;
+  const adicionar = () => {
+    const t = txt.trim();
+    if (!t) return;
+    const o = opcoes.find((x) => x.nome.toLowerCase() === t.toLowerCase());
+    const id = o?.id ?? (livre ? t : null);
+    if (id && !valores.includes(id)) mudar([...valores, id]);
+    setTxt('');
+  };
+  return (
+    <div className="grade" style={{ gap: '0.3rem' }}>
+      <span>{rotulo} <span className="dica">{dica}</span></span>
+      <div className="linha" style={{ gap: '0.3rem', alignItems: 'center' }}>
+        {valores.map((v) => (
+          <button key={v} type="button" className="pr-chip" onClick={() => mudar(valores.filter((x) => x !== v))} title="Tirar">{nome(v)} ✕</button>
+        ))}
+        <input list={lista} value={txt} onChange={(e) => setTxt(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); adicionar(); } }} placeholder={valores.length ? 'mais um…' : 'escolha ou digite'} style={{ width: '13rem' }} aria-label={rotulo} />
+        <datalist id={lista}>{opcoes.filter((o) => !valores.includes(o.id)).map((o) => <option key={o.id} value={o.nome} />)}</datalist>
+        <button type="button" className="mini" onClick={adicionar}>Adicionar</button>
+      </div>
+    </div>
+  );
+}
+
+function Restricoes({ f, mudar, opcoes, cupom }: { f: { bairros: string[]; kmMax: number | null; produtos: string[] }; mudar: (x: Partial<{ bairros: string[]; kmMax: number | null; produtos: string[] }>) => void; opcoes: Opcoes; cupom: boolean }) {
+  return (
+    <div className="cd-secao grade pr-restricoes" style={{ gap: '0.6rem' }}>
+      <strong>Onde e com o quê vale <span className="dica">(tudo opcional)</span></strong>
+      <Escolha rotulo="Bairros" dica="(vazio = todos)" valores={f.bairros} opcoes={opcoes.bairros.map((b) => ({ id: b, nome: b }))} mudar={(bairros) => mudar({ bairros })} livre />
+      <label className="linha" style={{ alignItems: 'center', gap: '0.35rem' }}>
+        <span>Até</span>
+        <input inputMode="decimal" value={f.kmMax ?? ''} placeholder="∞" onChange={(e) => { const n = Number(e.target.value.replace(',', '.')); mudar({ kmMax: e.target.value && Number.isFinite(n) && n > 0 ? n : null }); }} style={{ width: '5rem' }} />
+        <span>km da loja <span className="dica">(em linha reta, pelo endereço do cliente)</span></span>
+      </label>
+      <Escolha
+        rotulo="Produtos"
+        dica={cupom ? '(o pedido precisa ter um deles; % e R$ são calculados só sobre eles)' : '(entrega grátis quando o pedido tem um deles)'}
+        valores={f.produtos}
+        opcoes={opcoes.produtosLista}
+        mudar={(produtos) => mudar({ produtos })}
+      />
+    </div>
+  );
+}
 
 function regraCupom(c: CupomLinha): string {
   const partes = [c.tipo === 'percentual' ? `${c.valor}% off` : c.tipo === 'valor' ? `${formatarReais(c.valor)} off` : 'Entrega grátis'];
   if (c.primeiraCompra) partes.push('só na primeira compra');
   if (c.pedidoMinimo > 0) partes.push(`pedido mínimo ${formatarReais(c.pedidoMinimo)}`);
   if (c.dias.length < 7) partes.push(c.dias.map((d) => DIAS_CURTOS[d]).join(', '));
+  if (c.bairros.length) partes.push(`só em ${c.bairros.join(', ')}`);
+  if (c.kmMax) partes.push(`até ${String(c.kmMax).replace('.', ',')} km`);
+  if (c.produtos.length) partes.push(`com ${c.produtos.length} produto(s) escolhido(s)`);
   return partes.join(' · ');
 }
 
-function AbaCupons({ cupons, usos, outrasLojas }: { cupons: CupomLinha[]; usos: UsoCupom[]; outrasLojas: { id: string; nome: string }[] }) {
+function AbaCupons({ cupons, usos, outrasLojas, opcoes }: { cupons: CupomLinha[]; usos: UsoCupom[]; outrasLojas: { id: string; nome: string }[]; opcoes: Opcoes }) {
   const [f, setF] = useState<CupomForm | null>(null);
   const [valorTxt, setValorTxt] = useState('');
   const [minTxt, setMinTxt] = useState('');
@@ -307,6 +371,7 @@ function AbaCupons({ cupons, usos, outrasLojas }: { cupons: CupomLinha[]; usos: 
               <input type="number" min={1} value={f.limiteTotal ?? ''} placeholder="∞" onChange={(e) => setF({ ...f, limiteTotal: e.target.value ? Math.max(1, Number(e.target.value)) : null })} style={{ width: '5.5rem' }} />
             </label>
           </div>
+          <Restricoes f={f} mudar={(x) => setF({ ...f, ...x })} opcoes={opcoes} cupom />
           <span className="dica">Dias que vale</span>
           <Dias valor={f.dias} mudar={(dias) => setF({ ...f, dias })} />
           <div className="linha" style={{ alignItems: 'center', gap: '0.9rem' }}>
@@ -432,6 +497,108 @@ function AbaBalcao({ limite }: { limite: number | null }) {
         {msg && <span className={msg.tipo === 'ok' ? 'dica' : 'erro'} role="status">{msg.texto}</span>}
       </div>
       <p className="dica" style={{ margin: 0 }}>Todo desconto aparece no Resumo, em &quot;Descontos&quot;, e o motivo fica no histórico do pedido.</p>
+    </section>
+  );
+}
+
+const vazioFrete = (): FreteGratisForm => ({ id: null, nome: 'Entrega grátis', marcaId: null, pedidoMinimo: 0, bairros: [], kmMax: null, produtos: [], dias: TODOS, validoAte: null, ativo: true });
+
+function regraFrete(f: FreteGratisLinha, produtos: { id: string; nome: string }[], marcas: { id: string; nome: string }[]): string {
+  const partes: string[] = [];
+  partes.push(f.pedidoMinimo > 0 ? `pedidos a partir de ${formatarReais(f.pedidoMinimo)}` : 'qualquer valor');
+  if (f.bairros.length) partes.push(`em ${f.bairros.join(', ')}`);
+  if (f.kmMax) partes.push(`até ${String(f.kmMax).replace('.', ',')} km`);
+  if (f.produtos.length) partes.push(`com ${f.produtos.map((id) => produtos.find((p) => p.id === id)?.nome ?? '?').join(' ou ')}`);
+  if (f.dias.length < 7) partes.push(f.dias.map((d) => DIAS_CURTOS[d]).join(', '));
+  if (f.marcaId) partes.push(`só no cardápio ${marcas.find((m) => m.id === f.marcaId)?.nome ?? ''}`);
+  if (f.validoAte) partes.push(`até ${f.validoAte.slice(8, 10)}/${f.validoAte.slice(5, 7)}`);
+  return partes.join(' · ');
+}
+
+/** Frete grátis automático (sem cupom): por valor, bairro, distância ou produto (D-066). */
+function AbaFrete({ fretes, marcas, opcoes }: { fretes: FreteGratisLinha[]; marcas: { id: string; nome: string }[]; opcoes: Opcoes }) {
+  const [f, setF] = useState<FreteGratisForm | null>(null);
+  const [minTxt, setMinTxt] = useState('');
+  const [msg, setMsg] = useState<Msg>(null);
+  const [pendente, iniciar] = useTransition();
+  const abrir = (x: FreteGratisForm) => {
+    setF(x);
+    setMinTxt(x.pedidoMinimo ? reais(x.pedidoMinimo) : '');
+  };
+  const fazer = (p: Promise<{ ok: true } | { ok: false; erro: string }>, ok: string, depois?: () => void) =>
+    iniciar(async () => {
+      const r = await salvando(p);
+      setMsg(r.ok ? { tipo: 'ok', texto: ok } : { tipo: 'erro', texto: r.erro });
+      if (r.ok) depois?.();
+    });
+  const salvar = () => {
+    if (!f) return;
+    const pedidoMinimo = lerCentavos(minTxt);
+    if (pedidoMinimo == null) return setMsg({ tipo: 'erro', texto: 'Pedido mínimo inválido.' });
+    fazer(salvarFreteGratis({ ...f, pedidoMinimo }), f.id ? 'Regra salva.' : 'Regra criada.', () => setF(null));
+  };
+  return (
+    <section className="cartao grade">
+      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2>Frete grátis automático</h2>
+        {!f && <button type="button" className="botao-primario" onClick={() => abrir(vazioFrete())}>+ Nova regra</button>}
+      </div>
+      <p className="dica" style={{ margin: 0 }}>
+        Sem cupom: quando o pedido de entrega do cardápio digital cumpre a regra, a taxa sai de graça sozinha, e o cardápio já avisa o cliente (&quot;Entrega grátis acima de R$ 80&quot;). O motoboy recebe normalmente.
+      </p>
+      {f && (
+        <div className="cd-secao grade" style={{ gap: '0.6rem' }}>
+          <h3>{f.id ? 'Editar regra' : 'Nova regra'}</h3>
+          <div className="linha" style={{ alignItems: 'flex-end' }}>
+            <label style={{ flex: '2 1 14rem' }}>
+              Nome (o cliente vê)
+              <input value={f.nome} maxLength={60} onChange={(e) => setF({ ...f, nome: e.target.value })} placeholder="Entrega grátis acima de R$ 80" />
+            </label>
+            <label style={{ width: '9rem' }}>
+              A partir de (R$)
+              <input inputMode="decimal" value={minTxt} onChange={(e) => setMinTxt(e.target.value)} placeholder="0,00" />
+            </label>
+            {marcas.length > 1 && (
+              <label style={{ flex: '1 1 10rem' }}>
+                Cardápio
+                <select value={f.marcaId ?? ''} onChange={(e) => setF({ ...f, marcaId: e.target.value || null })}>
+                  <option value="">Todos</option>
+                  {marcas.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+                </select>
+              </label>
+            )}
+          </div>
+          <Restricoes f={f} mudar={(x) => setF({ ...f, ...x })} opcoes={opcoes} cupom={false} />
+          <span className="dica">Dias que vale</span>
+          <Dias valor={f.dias} mudar={(dias) => setF({ ...f, dias })} />
+          <label className="linha" style={{ alignItems: 'center', gap: '0.35rem' }}>
+            <span>Vale até</span>
+            <input type="date" value={f.validoAte ?? ''} onChange={(e) => setF({ ...f, validoAte: e.target.value || null })} style={{ width: '10rem' }} />
+            <span className="dica">(vazio = sem validade)</span>
+          </label>
+          <div className="linha">
+            <button type="button" className="botao-primario" disabled={pendente} onClick={salvar}>{pendente ? 'Salvando…' : f.id ? 'Salvar regra' : 'Criar regra'}</button>
+            <button type="button" onClick={() => setF(null)}>Cancelar</button>
+          </div>
+        </div>
+      )}
+      {msg && <p className={msg.tipo === 'ok' ? 'dica' : 'erro'} role="status" style={{ margin: 0 }}>{msg.texto}</p>}
+      {fretes.length === 0 && !f && <p className="dica">Nenhuma regra ainda. Exemplo: &quot;Entrega grátis acima de R$ 80 no Centro&quot;.</p>}
+      <div className="pr-cupons">
+        {fretes.map((x) => (
+          <article key={x.id} className={`pr-cupom ${x.ativo ? '' : 'inativo'}`}>
+            <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+              <strong>🛵 {x.nome}</strong>
+              <label className="interruptor"><input type="checkbox" checked={x.ativo} disabled={pendente} onChange={(e) => fazer(alternarFreteGratis(x.id, e.target.checked), e.target.checked ? 'Regra ativa.' : 'Regra pausada.')} /> {x.ativo ? 'Ativa' : 'Pausada'}</label>
+            </div>
+            <span className="dica">{regraFrete(x, opcoes.produtosLista, marcas)}</span>
+            <div className="linha" style={{ gap: '0.35rem' }}>
+              <button type="button" className="mini" onClick={() => abrir({ ...x })}>Editar</button>
+              <button type="button" className="mini texto-perigo" disabled={pendente} onClick={() => fazer(excluirFreteGratis(x.id), 'Regra excluída.')}>Excluir</button>
+            </div>
+          </article>
+        ))}
+      </div>
     </section>
   );
 }

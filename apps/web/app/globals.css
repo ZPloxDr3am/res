@@ -130,6 +130,7 @@ legend { color: var(--texto-suave); font-size: 0.85rem; padding: 0 0.25rem; }
 .pub-status.fechado { background: color-mix(in srgb, var(--erro) 14%, transparent); color: var(--erro); }
 .pub-mensagem { margin: 0; font-size: 0.95rem; }
 .pv-pausa { padding: 0.6rem 0.8rem; border-radius: 10px; border: 1px solid #f59e0b; background: #fffbeb; color: #78350f; font-weight: 600; }
+.pv-frete { padding: 0.5rem 0.8rem; border-radius: 10px; border: 1px solid color-mix(in srgb, #16a34a 50%, transparent); background: color-mix(in srgb, #16a34a 10%, transparent); font-weight: 600; }
 @media (prefers-color-scheme: dark) { .pv-pausa { background: #3a2a06; color: #fde68a; border-color: #b45309; } }
 .pub-horarios { list-style: none; padding: 0; margin: 0.4rem 0 0; display: grid; gap: 0.2rem; }
 .pub-horarios li { display: flex; justify-content: space-between; }
@@ -555,6 +556,8 @@ details.cd-secao > summary { cursor: pointer; }
 .pr-selo.ok { background: color-mix(in srgb, var(--primaria) 18%, transparent); color: var(--primaria); }
 .pr-cupons { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 0.8rem; }
 .pr-cupom { display: grid; gap: 0.45rem; padding: 0.9rem 1rem; border-radius: 14px; border: 2px dashed var(--primaria); background: var(--superficie); }
+.pr-chip { border: 1px solid var(--primaria); background: var(--primaria-fundo, transparent); color: var(--texto); border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.85rem; }
+.pr-restricoes { border-left: 3px solid var(--primaria); }
 .pr-cupom.inativo { border-color: var(--borda); opacity: 0.75; }
 .pr-codigo { font-size: 1.25rem; letter-spacing: 0.06em; }
 .pr-numeros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.45rem; }

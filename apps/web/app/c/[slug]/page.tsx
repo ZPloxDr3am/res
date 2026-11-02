@@ -1,3 +1,4 @@
+import type { FreteGratisPublico } from '@/components/publico/cardapio-cliente';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { criarClienteServidor } from '@/lib/supabase/server';
@@ -28,12 +29,13 @@ export default async function PaginaCardapio({ params }: { params: Promise<{ slu
   const cardapio = await carregar(slug);
   if (!cardapio) notFound();
   const supabase = await criarClienteServidor();
-  const [{ data }, rastreio, vit, fx, pz] = await Promise.all([
+  const [{ data }, rastreio, vit, fx, pz, fg] = await Promise.all([
     supabase.rpc('horarios_agendamento', { p_slug: slug }),
     supabase.rpc('rastreamento_publico', { p_slug: slug }),
     supabase.rpc('vitrine_publica', { p_slug: slug }),
     supabase.rpc('faixas_km_publica', { p_slug: slug }),
     supabase.rpc('pausa_publica', { p_slug: slug }),
+    supabase.rpc('frete_gratis_publico', { p_slug: slug }),
   ]);
   // pausa temporária com recado (D-059)
   const pausa = (pz.data as { ate: string; recado: string | null } | null) ?? null;
@@ -67,7 +69,7 @@ export default async function PaginaCardapio({ params }: { params: Promise<{ slu
           {ev.base && <> · <Link href={`/c/${ev.base}`}>ver cardápio completo</Link></>}
         </div>
       )}
-      <CardapioCliente cardapio={cardapio} agendamento={agendamento} vitrine={vitrine} faixasKm={((fx.data as { faixas?: FaixaKm[] } | null)?.faixas ?? [])} prevenda={prevenda} pausa={pausa} />
+      <CardapioCliente cardapio={cardapio} agendamento={agendamento} vitrine={vitrine} faixasKm={((fx.data as { faixas?: FaixaKm[] } | null)?.faixas ?? [])} prevenda={prevenda} pausa={pausa} fretes={(fg.data as FreteGratisPublico[] | null) ?? []} />
       <Rastreamento config={(rastreio.data as ConfigRastreio | null) ?? {}} />
     </>
   );

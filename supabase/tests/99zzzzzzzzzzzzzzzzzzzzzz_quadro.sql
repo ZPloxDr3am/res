@@ -153,3 +153,29 @@ select case when jsonb_array_length(pg_temp.v('rel') -> 'cancelados') = 1
              and (pg_temp.v('rel') #>> '{produtos,0,qtd}')::int = (pg_temp.v('rel') ->> 'pedidos')::int - 1
              and pg_temp.v('rel_fora') = 'null'::jsonb
             then 'ok relatórios: curva ABC sem cancelados e cancelamentos com motivo, etapa e quem' else 'FALHOU relatorio ' || (pg_temp.v('rel') -> 'cancelados')::text || (pg_temp.v('rel') -> 'produtos')::text || (pg_temp.v('rel') ->> 'pedidos') end;
+
+-- 0067: cupom por área/produto e frete grátis
+\o /dev/null
+reset role;
+insert into ids values ('beb', (select public.criar_produto(pg_temp.id('loja'), 'Refri', pg_temp.id('setor'), 10)));
+insert into public.cupons (loja_id, codigo, tipo, valor, bairros) values (pg_temp.id('loja'), 'CENTRO10', 'percentual', 10, array['Centro']);
+insert into public.cupons (loja_id, codigo, tipo, valor, produtos) values (pg_temp.id('loja'), 'REFRI50', 'percentual', 50, array[pg_temp.id('beb')]);
+insert into public.frete_gratis (loja_id, nome, pedido_minimo, bairros) values (pg_temp.id('loja'), 'Frete grátis no Centro acima de R$ 80', 80, array['centro']);
+set role anon;
+-- 1 pizza (50) entrega no Centro com CENTRO10: 10% de 50 = 5; frete 5 cobrado (abaixo de 80)
+insert into saida select 'c1', public.criar_pedido_publico('pizza-qd', format('{"tipo":"entrega","pagamento":"dinheiro","cliente":{"nome":"Dani","telefone":"47999990061"},"endereco":{"logradouro":"Rua A","numero":"1","bairro":"Centro"},"cupom":"CENTRO10","itens":[{"produto_id":"%s","quantidade":1,"escolhas":{}}]}', pg_temp.id('pz'))::jsonb);
+-- 2 pizzas (100): frete grátis automático
+insert into saida select 'c2', public.criar_pedido_publico('pizza-qd', format('{"tipo":"entrega","pagamento":"dinheiro","cliente":{"nome":"Edu","telefone":"47999990062"},"endereco":{"logradouro":"Rua A","numero":"1","bairro":"Centro"},"itens":[{"produto_id":"%s","quantidade":2,"escolhas":{}}]}', pg_temp.id('pz'))::jsonb);
+-- REFRI50 só com refri: pizza + refri → 50% de 10 = 5
+insert into saida select 'c3', public.criar_pedido_publico('pizza-qd', format('{"tipo":"retirada","pagamento":"dinheiro","cliente":{"nome":"Fê","telefone":"47999990063"},"cupom":"REFRI50","itens":[{"produto_id":"%s","quantidade":1,"escolhas":{}},{"produto_id":"%s","quantidade":1,"escolhas":{}}]}', pg_temp.id('pz'), pg_temp.id('beb'))::jsonb);
+select from pg_temp.esperar_erro(format($q$select public.criar_pedido_publico('pizza-qd', '{"tipo":"retirada","pagamento":"dinheiro","cliente":{"nome":"Gil","telefone":"47999990064"},"cupom":"CENTRO10","itens":[{"produto_id":"%s","quantidade":1,"escolhas":{}}]}')$q$, pg_temp.id('pz')), 'vale só para entregas em');
+select from pg_temp.esperar_erro(format($q$select public.criar_pedido_publico('pizza-qd', '{"tipo":"retirada","pagamento":"dinheiro","cliente":{"nome":"Hu","telefone":"47999990065"},"cupom":"REFRI50","itens":[{"produto_id":"%s","quantidade":1,"escolhas":{}}]}')$q$, pg_temp.id('pz')), 'vale para: Refri');
+insert into saida values ('vc', public.validar_cupom('pizza-qd', 'REFRI50', 6000, 0, 'retirada', '47999990066', null, null, format('[{"produto_id":"%s","total":5000},{"produto_id":"%s","total":1000}]', pg_temp.id('pz'), pg_temp.id('beb'))::jsonb));
+insert into saida values ('fgp', public.frete_gratis_publico('pizza-qd'));
+reset role;
+\o
+select case when (select desconto from public.pedidos where cliente_nome = 'Dani') = 5 and (select taxa_entrega from public.pedidos where cliente_nome = 'Dani') = 5
+             and (select desconto = taxa_entrega and frete_gratis is not null and total = subtotal from public.pedidos where cliente_nome = 'Edu')
+             and (select desconto from public.pedidos where cliente_nome = 'Fê') = 5
+             and (pg_temp.v('vc') ->> 'desconto')::int = 500 and jsonb_array_length(pg_temp.v('fgp')) = 1
+            then 'ok cupom por bairro/produto e frete grátis automático' else 'FALHOU cupom area ' || coalesce((select row(desconto, taxa_entrega, frete_gratis)::text from public.pedidos where cliente_nome = 'Edu'), '-') || pg_temp.v('vc')::text end;
