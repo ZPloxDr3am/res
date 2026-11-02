@@ -27,6 +27,7 @@ const SECOES: { titulo: string; links: Link_[] }[] = [
   {
     titulo: 'Vendas',
     links: [
+      { href: '/relatorios', rotulo: 'Relatórios', icone: 'M4 20V10M10 20V4M16 20v-7M22 20H2' },
       { href: '/cardapio', rotulo: 'Cardápio', icone: 'M6 3h12v18l-6-4-6 4zM9 8h6M9 12h6' },
       { href: '/delivery', rotulo: 'Delivery', icone: 'M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z' },
       { href: '/promocoes', rotulo: 'Promoções', icone: 'M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01' },

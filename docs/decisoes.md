@@ -622,3 +622,11 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Meta **por loja e mês**, definida por dono/gerente; vale para os meses seguintes até ser trocada. Com várias lojas, "todas as lojas" soma as metas (e avisa quais estão sem meta). Sugestão: mês anterior +10%.
 - Mesma regra de faturamento do Resumo (pedidos não cancelados, pela data do pedido).
 - Banco (0065): `metas_vendas`, `salvar_meta_vendas`, `meta_vendas`.
+
+## D-065 — Relatórios: curva ABC, cancelamentos e calendário (01/11/2026)
+- Nova tela **Vendas → Relatórios**, com período (hoje, ontem, 7/30 dias, mês, datas) e loja (ou todas):
+  - **Curva ABC** em três visões: **Produtos** (valor), **Sabores** (em pizzas inteiras: meia = 0,5) e **Bordas e adicionais** (valor cobrado). A = itens que somam os primeiros 80%, B = até 95%, C = o resto, com o que fazer com cada classe. Baixa para Excel.
+  - **Cancelamentos**: quantidade, % dos pedidos, valor perdido, quantos já tinham ido para a cozinha; por motivo, etapa, canal e quem cancelou; lista completa.
+  - **Calendário do mês**: cada dia com o faturamento (cor mais forte = vendeu mais), pedidos e cancelados; melhor dia do mês.
+- Pedidos cancelados não entram na curva ABC. Mesma permissão do Resumo ("relatórios").
+- Banco (0066): `relatorio_vendas`.

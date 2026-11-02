@@ -1387,3 +1387,25 @@ button.mini[data-avisado] { color: #15803d; }
 .meta-bom { color: #15803d; }
 .meta-ruim { color: #b91c1c; }
 @media (prefers-color-scheme: dark) { .meta-bom { color: #4ade80; } .meta-ruim { color: #f87171; } }
+
+/* ---------- Relatórios (D-065) */
+.rel-abc-resumo { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); }
+.rel-abc-resumo .cartao { display: grid; gap: 0.2rem; border-left: 4px solid var(--borda); }
+.rel-abc-resumo [data-classe='A'] { border-left-color: #16a34a; }
+.rel-abc-resumo [data-classe='B'] { border-left-color: #d97706; }
+.rel-abc-resumo [data-classe='C'] { border-left-color: #94a3b8; }
+.rel-classe { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 6px; font-weight: 700; color: #fff; background: #94a3b8; }
+.rel-classe[data-classe='A'] { background: #16a34a; }
+.rel-classe[data-classe='B'] { background: #d97706; }
+.rel-acc { display: inline-block; vertical-align: middle; width: 5rem; height: 6px; border-radius: 999px; background: color-mix(in srgb, var(--borda) 70%, transparent); overflow: hidden; }
+.rel-acc > span { display: block; height: 100%; background: var(--primaria); }
+.rel-grupos { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); }
+.rel-barra-linha { display: grid; grid-template-columns: minmax(0, 1fr) 5rem auto; gap: 0.5rem; align-items: center; font-size: 0.9rem; }
+.rel-barra-linha > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rel-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.35rem; }
+.rel-cal-cab { text-align: center; font-size: 0.78rem; color: var(--texto-suave); font-weight: 600; }
+.rel-cal-dia { display: grid; gap: 0.05rem; min-height: 4.2rem; padding: 0.35rem 0.4rem; border-radius: 8px; border: 1px solid var(--borda); font-size: 0.78rem; font-variant-numeric: tabular-nums;
+  background: color-mix(in srgb, var(--primaria) calc(var(--int, 0) * 55%), var(--superficie)); }
+.rel-cal-dia b { font-size: 0.85rem; }
+.rel-cal-dia[data-futuro] { opacity: 0.45; }
+@media (max-width: 560px) { .rel-cal-dia { min-height: 3.2rem; font-size: 0.66rem; padding: 0.25rem; } .rel-cal-dia .dica { display: none; } }
