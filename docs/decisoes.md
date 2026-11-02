@@ -648,3 +648,8 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
   - **Motoboys**: entregas, tempo médio em rota, pedido → entregue, % no prazo e km.
 - Fica para o atendimento por tablet: garçom (pedidos, taxa de serviço, up-sell aceito), mesas (giro, tempo de mesa, ticket por pessoa), couvert e acréscimos.
 - Banco (0068): `relatorio_operacao`.
+
+## D-068 — Relatórios com cores (02/11/2026)
+- Cartões com cor e ícone pelo significado: **verde** = entra dinheiro / bom, **azul** = informação, **laranja** = concedido / atenção, **vermelho** = perda / ruim, **cinza** = ainda sem dado.
+- Tempos médios ganham selo **bom / atenção / demorado** com legenda: aceitar ≤3/6 min, preparo ≤25/35, esperando motoboy ≤5/10, rota ≤20/30, entrega completa ≤45/60; entregas no prazo ≥90% / ≥75%. Motoboys com % no prazo e tempo de rota coloridos.
+- Canais e formas de pagamento com uma cor por item (ponto + barra); clientes novos (roxo) × recorrentes (verde) numa barra; pico em laranja (mais forte = mais pedidos); calendário em verde; cancelamentos em vermelho.
