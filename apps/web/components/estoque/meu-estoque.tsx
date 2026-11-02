@@ -60,13 +60,14 @@ export function MeuEstoqueProdutos({ dados, todas, temPizza }: { dados: MeuEstoq
                       const pct = p.ficha.length && p.preco ? Math.round((n(p.custo) / p.preco) * 100) : null;
                       return (
                         <Fragment key={k}>
-                          <tr>
+                          <tr className="est-linha-toque" data-aberto={aberto === k || undefined} onClick={(e) => { if (!(e.target as HTMLElement).closest('a, button, input, select, label')) setAberto(aberto === k ? null : k); }}>
                             <td>
                               <div className="me-produto">
                                 {p.imagem_url ? <img src={p.imagem_url} alt="" loading="lazy" /> : <span className="me-sem-foto" aria-hidden>{p.nome.slice(0, 1)}</span>}
                                 <div>
                                   <strong>{p.nome}</strong>
                                   <span className="dica">{p.categoria ?? 'Sem categoria'}{p.grupos ? ` · ${p.grupos} grupo(s) de opções` : ''}</span>
+                                  <span className="est-toque-dica" aria-hidden>{aberto === k ? '▲' : p.ficha.length ? 'Editar ficha ›' : 'Montar ficha ›'}</span>
                                 </div>
                               </div>
                             </td>
@@ -82,6 +83,7 @@ export function MeuEstoqueProdutos({ dados, todas, temPizza }: { dados: MeuEstoq
                           {aberto === k && (
                             <tr className="est-detalhe">
                               <td colSpan={5}>
+                                <div className="est-detalhe-corpo">
                                 {insumos.length === 0 ? (
                                   <p className="dica" style={{ margin: 0 }}>Cadastre os insumos {todas ? `do estoque de ${loja.nome} ` : ''}primeiro (aba Insumos, Contagem ou importando uma NF-e).</p>
                                 ) : (
@@ -94,6 +96,7 @@ export function MeuEstoqueProdutos({ dados, todas, temPizza }: { dados: MeuEstoq
                                     aoSalvar={() => router.refresh()}
                                   />
                                 )}
+                                </div>
                               </td>
                             </tr>
                           )}

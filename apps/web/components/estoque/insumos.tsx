@@ -60,8 +60,9 @@ export function ListaInsumos({ insumos }: { insumos: Insumo[] }) {
 function LinhaInsumo({ i, sit, aberto, alternar }: { i: Insumo; sit: SituacaoEstoque; aberto: boolean; alternar: () => void }) {
   return (
     <>
-      <tr>
-        <td><strong>{i.nome}</strong>{i.categoria ? <span className="dica"> · {i.categoria}</span> : null}</td>
+      {/* toque na linha abre o ajuste (no celular, sem rolar até o botão) */}
+      <tr className="est-linha-toque" data-aberto={aberto || undefined} onClick={(e) => { if (!(e.target as HTMLElement).closest('a, button, input, select, label')) alternar(); }}>
+        <td><strong>{i.nome}</strong>{i.categoria ? <span className="dica"> · {i.categoria}</span> : null}<span className="est-toque-dica" aria-hidden>{aberto ? '▲' : 'Ajustar ›'}</span></td>
         <td className={n(i.saldo) < 0 ? 'erro' : undefined}>{quantidadeTexto(n(i.saldo), i.unidade)}</td>
         <td className="dica">{i.minimo == null ? '—' : quantidadeTexto(n(i.minimo), i.unidade)}</td>
         <td>{formatarReais(Math.round(n(i.custo_medio)))} <span className="dica">/{i.unidade.toLowerCase()}</span></td>
@@ -75,7 +76,7 @@ function LinhaInsumo({ i, sit, aberto, alternar }: { i: Insumo; sit: SituacaoEst
       {aberto && (
         <tr className="est-detalhe">
           <td colSpan={7}>
-            <div className="grade" style={{ gap: '1rem' }}>
+            <div className="grade est-detalhe-corpo" style={{ gap: '1rem' }}>
               <Ajuste i={i} />
               <FormInsumo i={i} aoFechar={alternar} />
             </div>
