@@ -10,7 +10,16 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', curren
 const pct = (n: number) => `${n.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`;
 
 /** Escolha do dono com várias lojas: custos de cada loja separada ou do grupo todo junto (D-053). */
-export function EscolhaModo({ contaId, modo, titular, lojas, ver }: { contaId: string; modo: 'separado' | 'grupo'; titular: boolean; lojas: string[]; ver: 'loja' | 'grupo' }) {
+export function EscolhaModo({ contaId, modo, titular, lojas, ver, destino = '/gestao', rotulos = ['Planilha desta loja', 'Soma do grupo'] }: {
+  contaId: string;
+  modo: 'separado' | 'grupo';
+  titular: boolean;
+  lojas: string[];
+  ver: 'loja' | 'grupo';
+  /** Tela que usa a escolha (Gestão ou Financeiro): vale para as duas. */
+  destino?: string;
+  rotulos?: [string, string];
+}) {
   const [pendente, iniciar] = useTransition();
   const [erro, setErro] = useState<string | null>(null);
   const router = useRouter();
@@ -19,14 +28,14 @@ export function EscolhaModo({ contaId, modo, titular, lojas, ver }: { contaId: s
       const r = await salvando(salvarModoGrupo(contaId, m));
       if (!r.ok) return setErro(r.erro);
       setErro(null);
-      router.replace('/gestao');
+      router.replace(destino);
       router.refresh();
     });
 
   return (
-    <section className="cartao grade nao-imprimir" aria-label="Como controlar os custos">
+    <section className="cartao grade nao-imprimir" aria-label="Como controlar os custos e o financeiro">
       <div>
-        <h2 style={{ margin: 0 }}>Você tem {lojas.length} lojas: como quer controlar os custos?</h2>
+        <h2 style={{ margin: 0 }}>Você tem {lojas.length} lojas: como quer controlar os custos e o financeiro?</h2>
         <p className="dica" style={{ margin: 0 }}>{lojas.join(' · ')}</p>
       </div>
       <div className="eq-modos gc-modos">
@@ -34,14 +43,14 @@ export function EscolhaModo({ contaId, modo, titular, lojas, ver }: { contaId: s
           <input type="radio" name="modo-grupo" checked={modo === 'separado'} disabled={!titular || pendente} onChange={() => trocar('separado')} />
           <span>
             <b>Cada loja separada</b>
-            <span className="dica">Uma planilha por loja, com o faturamento dela. Bom quando cada loja tem aluguel, equipe e contas próprias. Você ainda vê a soma do grupo.</span>
+            <span className="dica">Planilha de custos e financeiro (contas, DRE) de cada loja. Bom quando cada loja tem aluguel, equipe e contas próprias. Você ainda vê a soma do grupo.</span>
           </span>
         </label>
         <label className="eq-modo" data-escolhido={modo === 'grupo' || undefined}>
           <input type="radio" name="modo-grupo" checked={modo === 'grupo'} disabled={!titular || pendente} onChange={() => trocar('grupo')} />
           <span>
             <b>O grupo todo junto</b>
-            <span className="dica">Uma planilha só para as {lojas.length} lojas, com o faturamento somado. Bom quando dividem cozinha, equipe ou contas e é difícil separar.</span>
+            <span className="dica">Uma planilha e um financeiro só para as {lojas.length} lojas, com o faturamento somado (dá para marcar de qual loja é cada conta). Bom quando dividem cozinha, equipe ou contas.</span>
           </span>
         </label>
       </div>
@@ -49,11 +58,11 @@ export function EscolhaModo({ contaId, modo, titular, lojas, ver }: { contaId: s
       {erro && <p className="erro" style={{ margin: 0 }}>{erro}</p>}
       {modo === 'separado' && (
         <nav className="abas" aria-label="Ver">
-          <Link href="/gestao" role="tab" aria-selected={ver === 'loja'} className="aba-link">Planilha desta loja</Link>
-          <Link href="/gestao?ver=grupo" role="tab" aria-selected={ver === 'grupo'} className="aba-link">Soma do grupo</Link>
+          <Link href={destino} role="tab" aria-selected={ver === 'loja'} className="aba-link">{rotulos[0]}</Link>
+          <Link href={`${destino}${destino.includes('?') ? '&' : '?'}ver=grupo`} role="tab" aria-selected={ver === 'grupo'} className="aba-link">{rotulos[1]}</Link>
         </nav>
       )}
-      <p className="dica" style={{ margin: 0 }}>Pode trocar quando quiser: nada é apagado, cada planilha fica guardada.</p>
+      <p className="dica" style={{ margin: 0 }}>Vale para os Custos e para o Financeiro. Pode trocar quando quiser: nada é apagado, cada lado fica guardado.</p>
     </section>
   );
 }

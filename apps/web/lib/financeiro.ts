@@ -50,6 +50,10 @@ export interface Lancamento {
   recorrente: boolean;
   origem: 'manual' | 'custo' | 'nfe';
   observacao: string | null;
+  /** Loja dona (financeiro da loja) — nulo no financeiro do grupo. */
+  loja_id?: string | null;
+  /** No financeiro do grupo: de qual loja é (nulo = do grupo todo). */
+  loja_ref?: string | null;
 }
 export interface NfePendente {
   id: string;

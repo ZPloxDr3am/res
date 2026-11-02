@@ -82,3 +82,46 @@ select case when (pg_temp.v('dre') #>> '{meses,9,vendas}')::numeric = 100 and (p
              and (pg_temp.v('dre') #>> '{meses,9,linhas,despesas_operacionais}')::numeric = 2300 + (select valor from public.fin_lancamentos where origem = 'custo' and descricao = 'Contador' and competencia = '2026-10-01')
              and (pg_temp.v('dre') #>> '{meses,9,linhas,custo_vendas}')::numeric = 100
             then 'ok DRE com vendas, taxas e contas por linha' else 'FALHOU dre ' || (pg_temp.v('dre') -> 'meses' -> 9)::text end;
+
+-- 0062: financeiro do grupo todo junto
+\o /dev/null
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000003e3', 'fin3@example.com');
+select from pg_temp.como('00000000-0000-0000-0000-0000000003e1');
+insert into ids select 'conta', conta_id from public.lojas where id = pg_temp.id('loja');
+reset role;
+update public.contas set limite_lojas = 3, limite_cardapios = 3 where id = pg_temp.id('conta');
+select from pg_temp.como('00000000-0000-0000-0000-0000000003e1');
+insert into ids values ('loja2', public.criar_loja_na_conta(pg_temp.id('conta'), 'Loja F2', 'Pizza F2', 'pizza-fin2'));
+-- separado: cada loja com o seu; o DRE das duas soma as duas
+select from public.preparar_financeiro(pg_temp.id('loja2'));
+select public.criar_lancamento(pg_temp.id('loja2'), '{"tipo":"despesa","descricao":"Luz loja 2","valor":50,"vencimento":"2026-10-08"}'::jsonb);
+insert into saida values ('dre_sep', public.dre_financeiro(array[pg_temp.id('loja'), pg_temp.id('loja2')], 2026));
+-- grupo: lançamentos vão para o grupo; loja_ref opcional
+select from public.preparar_gestao_grupo(pg_temp.id('conta'));
+update public.gestao_conta set modo = 'grupo' where conta_id = pg_temp.id('conta');
+select from public.preparar_financeiro(pg_temp.id('loja'));
+insert into ids values ('gl1', public.criar_lancamento(pg_temp.id('loja'), '{"tipo":"despesa","descricao":"Contador do grupo","valor":400,"vencimento":"2026-10-12"}'::jsonb));
+insert into ids values ('gl2', public.criar_lancamento(pg_temp.id('loja'), format('{"tipo":"despesa","descricao":"Gás loja 2","valor":90,"vencimento":"2026-10-12","loja_ref":"%s"}', pg_temp.id('loja2'))::jsonb));
+update public.custos set valor = 1000 where conta_id = pg_temp.id('conta') and nome = 'Aluguel';
+insert into saida values ('gg', to_jsonb(public.gerar_contas_custos(pg_temp.id('loja2'), '2026-10-01', 5, 1)));
+insert into saida values ('dre_grupo', public.dre_financeiro(array[pg_temp.id('loja'), pg_temp.id('loja2')], 2026));
+insert into saida values ('dre_l2', public.dre_financeiro(array[pg_temp.id('loja2')], 2026));
+-- gerente (não titular) não mexe no financeiro do grupo
+reset role;
+insert into public.membros (loja_id, user_id, nome, papel) values (pg_temp.id('loja'), '00000000-0000-0000-0000-0000000003e3', 'Gil', 'gerente');
+select from pg_temp.como('00000000-0000-0000-0000-0000000003e3');
+select from pg_temp.esperar_erro(format($q$select public.criar_lancamento('%s', '{"tipo":"despesa","descricao":"x","valor":1,"vencimento":"2026-10-01"}')$q$, pg_temp.id('loja')), 'titular');
+insert into saida values ('ger', to_jsonb((select count(*) from public.fin_lancamentos where grupo_id is not null)));
+reset role;
+\o
+select case when (pg_temp.v('dre_sep') #>> '{meses,9,sem_categoria,despesa}')::numeric = 50
+             and (select grupo_id from public.fin_lancamentos where id = pg_temp.id('gl1')) = pg_temp.id('conta')
+             and (select loja_id from public.fin_lancamentos where id = pg_temp.id('gl1')) is null
+             and (select count(*) from public.fin_categorias where grupo_id = pg_temp.id('conta')) = 37
+             and pg_temp.v('gg') = '1'
+             and (select vencimento from public.fin_lancamentos where grupo_id = pg_temp.id('conta') and origem = 'custo') = '2026-10-05'
+            then 'ok financeiro do grupo: lançamentos, categorias e custos do grupo' else 'FALHOU grupo ' || coalesce(pg_temp.v('gg')::text, '') end;
+select case when (pg_temp.v('dre_grupo') #>> '{meses,9,sem_categoria,despesa}')::numeric = 50 + 400 + 90
+             and (pg_temp.v('dre_l2') #>> '{meses,9,sem_categoria,despesa}')::numeric = 50 + 90
+            then 'ok DRE do grupo soma o grupo; da loja pega só o que é dela' else 'FALHOU dre grupo ' || (pg_temp.v('dre_grupo') #> '{meses,9}')::text || (pg_temp.v('dre_l2') #> '{meses,9}')::text end;
+select case when pg_temp.v('ger') = '0' then 'ok só o titular vê o financeiro do grupo' else 'FALHOU gerente vê grupo' end;

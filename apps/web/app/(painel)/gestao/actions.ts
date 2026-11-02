@@ -70,6 +70,7 @@ export async function salvarModoGrupo(contaId: string, modo: 'separado' | 'grupo
   if (error) return { ok: false, erro: error.message };
   if (!data?.length) return { ok: false, erro: 'Só o titular da conta escolhe como controlar os custos.' };
   revalidatePath('/gestao');
+  revalidatePath('/financeiro');
   return { ok: true };
 }
 
