@@ -602,3 +602,10 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
   - **O grupo todo junto**: um financeiro só (registros com `grupo_id` = a conta). Cada lançamento pode dizer **de qual loja é** (`loja_ref`) ou ficar do grupo. DRE: "Grupo todo" ou cada loja (vendas dela + contas marcadas com ela). Custos fixos vêm da planilha do grupo. Só o titular da conta mexe (como na planilha do grupo).
 - As **taxas** das formas de pagamento continuam por loja (cada loja tem sua maquininha).
 - Migração 0062: `grupo_id` em `fin_categorias/fin_fornecedores/fin_contas/fin_lancamentos`, `loja_ref`, `gestao_conta.custos_auto/dia_custos`, `private.fin_pode/fin_escopo/fin_exigir/fin_semear`; as funções do financeiro passaram a resolver loja/grupo sozinhas.
+
+## D-062 — Modo movimento (01/11/2026)
+- No quadro de pedidos, **🔥 Movimento**: soma **+10/+20/+30/+45 min** ao tempo de preparo e de entrega por **1 h, 2 h ou até desligar** (no máximo 12 h). Qualquer pessoa da equipe liga; faixa laranja no quadro com "Voltar ao normal".
+- O cardápio mostra o prazo maior (entrega, retirada) e o selo **"🔥 Alta demanda"**; o agendamento empurra o primeiro horário.
+- Cada pedido feito no período guarda o acréscimo (`pedidos.prazo_extra_min`): o prazo dele (quadro, acompanhamento do cliente, motoboy, rastreio) não muda quando o movimento acaba, e os pedidos de antes não viram "atrasados" de repente.
+- Diferente da pausa (D-059): a loja continua recebendo pedidos.
+- Banco (0063): `lojas.movimento_min/movimento_ate`, `pedidos.prazo_extra_min` (gatilho na criação), `private.movimento_extra`, `definir_movimento`; `entrega_json`, `rastreio_ao_vivo`, `acompanhar_pedido`, `vitrine_publica`, `cardapio_publico`, `horarios_agendamento` e `validar_agendamento` somam o acréscimo.

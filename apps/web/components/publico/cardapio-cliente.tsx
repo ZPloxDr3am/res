@@ -203,6 +203,7 @@ export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [],
           </div>
         </div>
         <div className="pub-linha pv-resumo">
+          {!prevenda && (vitrine?.loja.movimento_min ?? 0) > 0 && <span className="pub-status fechado" title="A cozinha está com muitos pedidos agora">🔥 Alta demanda · prazo maior</span>}
           {marca.aceita_entrega && <span className="dica">🛵 Entrega {vitrine ? `${vitrine.loja.prazo_entrega_min - 5}–${vitrine.loja.prazo_entrega_min + 5} min` : ''}</span>}
           {marca.aceita_retirada && <span className="dica">🏪 Retirada ~{marca.tempo_preparo_min} min</span>}
           {marca.pedido_minimo > 0 && <span className="dica">Pedido mínimo {formatarReais(marca.pedido_minimo)}</span>}
