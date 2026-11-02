@@ -198,14 +198,14 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/promocoes/actions.ts": {
-    "mtime": 1793587014.811573,
-    "seen": 1793587118.9348345,
+    "mtime": 1793587648.5220413,
+    "seen": 1793587655.374851,
     "ast_hash": "7d4e63891fa4fd109331ee576ff6a768",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/promocoes/page.tsx": {
-    "mtime": 1793587014.8120508,
-    "seen": 1793587118.9348366,
+    "mtime": 1793587648.5260413,
+    "seen": 1793587655.3748543,
     "ast_hash": "107e9b5250f1b3a580f3142dfcf7a98e",
     "semantic_hash": ""
   },
@@ -288,14 +288,14 @@
     "semantic_hash": "6653f6d2413afaa67f5e5af557e30816"
   },
   "apps/web/app/c/[slug]/actions.ts": {
-    "mtime": 1793587100.014199,
-    "seen": 1793587118.9348614,
+    "mtime": 1793587648.5260413,
+    "seen": 1793587655.3749232,
     "ast_hash": "cfb9782e867a56223ffd28d44a36c3b2",
     "semantic_hash": ""
   },
   "apps/web/app/c/[slug]/page.tsx": {
-    "mtime": 1793587100.014596,
-    "seen": 1793587118.9348626,
+    "mtime": 1793587648.5260413,
+    "seen": 1793587655.3749259,
     "ast_hash": "638cb242d52991e6c79d18f4f053791a",
     "semantic_hash": ""
   },
@@ -666,8 +666,8 @@
     "semantic_hash": "4674d7e103dd3e82b3e4f168c14220ab"
   },
   "apps/web/components/promocoes/painel-promocoes.tsx": {
-    "mtime": 1793587056.1453285,
-    "seen": 1793587118.93498,
+    "mtime": 1793587648.5260413,
+    "seen": 1793587655.3751059,
     "ast_hash": "406398c60f6aaff466ea5a5d52ebadb7",
     "semantic_hash": ""
   },
@@ -678,8 +678,8 @@
     "semantic_hash": "d472090f7948a1f67e4266a37eecb2ad"
   },
   "apps/web/components/publico/cardapio-cliente.tsx": {
-    "mtime": 1793587100.0161,
-    "seen": 1793587118.9349825,
+    "mtime": 1793587648.5260413,
+    "seen": 1793587655.3751094,
     "ast_hash": "9cc5d72e0f7342af9e507aa98de527ed",
     "semantic_hash": ""
   },
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793587115.4073095,
-    "seen": 1793587118.9352808,
-    "ast_hash": "33000f1dd1062be70d9963bb542badf5",
+    "mtime": 1793587746.8580472,
+    "seen": 1793587750.0120668,
+    "ast_hash": "2c4004d28ec5199bce2ef2eccf4f74a6",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1974,9 +1974,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzz_quadro.sql": {
-    "mtime": 1793586970.3142645,
-    "seen": 1793587118.9352725,
-    "ast_hash": "069a592bf2d34b7e0a7e7ccd1ee3d73a",
+    "mtime": 1793587679.167945,
+    "seen": 1793587750.012058,
+    "ast_hash": "d5db9bf7e1449ac1deacbbec7aac5827",
     "semantic_hash": ""
   },
   "supabase/migrations/20261030000059_avisos_cliente.sql": {
@@ -2106,9 +2106,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/relatorios/page.tsx": {
-    "mtime": 1793586789.6302538,
-    "seen": 1793587118.9348385,
-    "ast_hash": "68ba2e3831d5fae2280c3c382443380a",
+    "mtime": 1793587734.5091352,
+    "seen": 1793587750.0115426,
+    "ast_hash": "dc1b4ef2d9b531db6aae8fc517ca29d1",
     "semantic_hash": ""
   },
   "apps/web/lib/relatorios.ts": {
@@ -2124,9 +2124,15 @@
     "semantic_hash": ""
   },
   "supabase/migrations/20261101000067_cupom_area_frete.sql": {
-    "mtime": 1793586953.8696456,
-    "seen": 1793587118.9352217,
+    "mtime": 1793587648.5380414,
+    "seen": 1793587655.3754702,
     "ast_hash": "bd8c6dc4217954907d4af023ac53529d",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261101000068_relatorio_operacao.sql": {
+    "mtime": 1793587679.167945,
+    "seen": 1793587750.0120082,
+    "ast_hash": "c95d93bd611957f4f847004cf40fe214",
     "semantic_hash": ""
   }
 }
