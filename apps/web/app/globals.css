@@ -1513,3 +1513,10 @@ button.mini[data-avisado] { color: #15803d; }
   .mini, button.mini { font-size: 0.85rem; min-height: 2.2rem; }
   .pub-folha, .qp-folha { max-height: 90vh; }
 }
+@media (max-width: 700px) {
+  /* grade de uma coluna não cresce além da tela por causa de uma tabela larga */
+  .grade { grid-template-columns: minmax(0, 1fr); }
+  .grade > *, .linha > * { min-width: 0; }
+  .conteudo :is(div, section, article):has(> table) { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .conteudo h1 { overflow-wrap: anywhere; }
+}
