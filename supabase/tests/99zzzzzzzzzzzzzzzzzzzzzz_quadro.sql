@@ -120,3 +120,20 @@ select case when pg_temp.v('pr0') = '0'
              and (select status from public.pedidos where loja_id = pg_temp.id('loja') and numero = (select min(numero) from public.pedidos where loja_id = pg_temp.id('loja'))) = 'em_preparo'
              and exists (select 1 from public.pedido_eventos e join public.pedidos p on p.id = e.pedido_id where p.cliente_nome = 'Caio' and e.para = 'pronto' and e.motivo like 'Automático%')
             then 'ok retirada fica pronta sozinha no tempo de preparo (só com a opção ligada)' else 'FALHOU pronto automático' end;
+
+-- 0065: meta de vendas
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000003d1');
+select from public.salvar_meta_vendas(pg_temp.id('loja'), (date_trunc('month', now()) - interval '1 month')::date, 5000);
+insert into saida values ('meta', public.meta_vendas(array[pg_temp.id('loja')], now()::date));
+select from public.salvar_meta_vendas(pg_temp.id('loja'), now()::date, 8000);
+insert into saida values ('meta2', public.meta_vendas(array[pg_temp.id('loja')], now()::date));
+select from pg_temp.como('00000000-0000-0000-0000-0000000003d3');
+select from pg_temp.esperar_erro(format($q$select public.salvar_meta_vendas('%s', now()::date, 1)$q$, pg_temp.id('loja')), 'Só o dono');
+insert into saida values ('meta_fora', coalesce(public.meta_vendas(array[pg_temp.id('loja')], now()::date), 'null'::jsonb));
+reset role;
+\o
+select case when (pg_temp.v('meta') #>> '{lojas,0,meta}')::numeric = 500000 and (pg_temp.v('meta') #>> '{lojas,0,meta_do_mes}')::boolean = false
+             and (pg_temp.v('meta2') #>> '{lojas,0,meta}')::numeric = 800000 and (pg_temp.v('meta2') #>> '{lojas,0,vendido}')::numeric > 0
+             and jsonb_array_length(pg_temp.v('meta2') -> 'media_semana') = 7 and pg_temp.v('meta_fora') = 'null'::jsonb
+            then 'ok meta do mês (herda a anterior) e dados da projeção' else 'FALHOU meta ' || pg_temp.v('meta2')::text end;
