@@ -1,0 +1,20 @@
+name: Rodada de testes
+description: Pedido para testar um módulo (roteiro de qualidade)
+title: "Testar: "
+labels: ["tipo:teste"]
+body:
+  - type: input
+    id: roteiro
+    attributes:
+      label: Roteiro
+      placeholder: docs/qualidade/roteiros/estoque-cmv.md
+    validations:
+      required: true
+  - type: textarea
+    id: foco
+    attributes:
+      label: O que mudou e precisa de atenção
+  - type: input
+    id: prazo
+    attributes:
+      label: Até quando
