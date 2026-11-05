@@ -1,7 +1,7 @@
 # Graph Report - res  (2026-11-05)
 
 ## Corpus Check
-- 366 files · ~324,482 words
+- 366 files · ~324,484 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 6 file(s) not represented in the graph (top: (none) 3, .example 1, .css 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `29d55d77`
+- Built from commit: `e7bc9eae`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -176,6 +176,8 @@
 10. `public.produtos` - 78 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `Método de trabalho (duas pessoas, 05/11/2026)` --references--> `main()`  [INFERRED]
+  CLAUDE.md → packages/agente/src/main.ts
 - `1. Princípios` --references--> `main()`  [INFERRED]
   docs/desenvolvimento/METODO.md → packages/agente/src/main.ts
 - `5. Para os dois não se atropelarem` --references--> `main()`  [INFERRED]
@@ -184,8 +186,6 @@
   docs/desenvolvimento/METODO.md → packages/agente/src/main.ts
 - `9. Trabalhando com o Claude` --references--> `main()`  [INFERRED]
   docs/desenvolvimento/METODO.md → packages/agente/src/main.ts
-- `Método de trabalho (duas pessoas, 05/11/2026)` --references--> `main()`  [INFERRED]
-  CLAUDE.md → packages/agente/src/main.ts
 
 ## Import Cycles
 - None detected.
@@ -739,7 +739,7 @@ Nodes (4): pedidos_b_segura_pix, pedidos_pago_libera, private.pago_libera(), pri
 
 ### Community 153 - "Roteiro (o que vem, em ordem)"
 Cohesion: 0.40
-Nodes (5): Agora (delivery e gestão — Emmanuel), Depois, Fora (decidido não fazer agora), Próximo (salão — Dev 2), Roteiro (o que vem, em ordem)
+Nodes (5): Agora (delivery e gestão — Emmanuel), Depois, Fora (decidido não fazer agora), Próximo (salão — Hugo), Roteiro (o que vem, em ordem)
 
 ### Community 155 - "[token]/page.tsx"
 Cohesion: 0.50
@@ -754,16 +754,16 @@ Nodes (3): dynamic, metadata, PaginaDespacho()
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `next` connect `next` to `estoque/page.tsx`, `gestao/page.tsx`, `nav-painel.tsx`, `API aberta e MCP (rotas)`, `salvando`, `relatorios/page.tsx`, `next`, `fidelidade/actions.ts`, `web/package.json`, `app-motoboy.tsx`, `criarClienteServidor`, `novo-pedido.tsx`, `aplicativos.tsx`, `gestao/actions.ts`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `financeiro/page.tsx`, `evento.tsx`, `form-delivery.tsx`, `acompanhar-pedido.tsx`, `estoque/actions.ts`, `sabores-pizza.tsx`, `painel-caixa.tsx`, `index.ts`, `src/caixa.ts`, `resumo/page.tsx`, `cardapio-cliente.tsx`, `equipe.tsx`, `gestao/actions.ts`, `resultados.tsx`, `gestao.ts`, `salvando`, `criarClienteServidor`, `mercadopago.ts`, `formatarReais`?**
-  _High betweenness centrality (0.062) - this node is a cross-community bridge._
+  _High betweenness centrality (0.066) - this node is a cross-community bridge._
 - **What connects `pedidos.qr_token (/m/d/<código>)`, `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `GitHub Actions CI (rules, db, build)` to the rest of the system?**
   _9 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `20261020000001_base.sql` be split into smaller, more focused modules?**
   _Cohesion score 0.08408408408408409 - nodes in this community are weakly interconnected._
-- **Why does `criarClienteServidor()` connect `criarClienteServidor` to `estoque/page.tsx`, `gestao/page.tsx`, `insumos.tsx`, `salvando`, `relatorios/page.tsx`, `next`, `geo.ts`, `fidelidade/actions.ts`, `app-motoboy.tsx`, `contagem.tsx`, `criarClienteServidor`, `novo-pedido.tsx`, `aplicativos.tsx`, `salvando`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `financeiro/page.tsx`, `evento.tsx`, `form-delivery.tsx`, `acompanhar-pedido.tsx`, `next`, `estoque/actions.ts`, `sabores-pizza.tsx`, `painel-caixa.tsx`, `index.ts`, `src/caixa.ts`, `resumo/page.tsx`, `cardapio-cliente.tsx`, `equipe.tsx`, `painel/package.json`, `gestao/actions.ts`, `resultados.tsx`, `gestao.ts`, `funcionarios.tsx`, `programa.tsx`, `salvando`?**
-  _High betweenness centrality (0.058) - this node is a cross-community bridge._
+- **Why does `formatarReais()` connect `formatarReais` to `estoque/page.tsx`, `insumos.tsx`, `nav-painel.tsx`, `fidelidade/actions.ts`, `movimentos.tsx`, `contagem.tsx`, `app-motoboy.tsx`, `ref_node_test`, `novo-pedido.tsx`, `aplicativos.tsx`, `salvando`, `Promoções e cupons (tela)`, `form-delivery.tsx`, `next`, `Montagem do cupom impresso`, `estoque/actions.ts`, `sabores-pizza.tsx`, `preco.ts`, `painel-caixa.tsx`, `index.ts`, `resumo/page.tsx`, `cardapio-cliente.tsx`, `painel/package.json`, `promocao.test.ts`, `resultados.tsx`, `salvando`?**
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **Should `gestao/page.tsx` be split into smaller, more focused modules?**
   _Cohesion score 0.14 - nodes in this community are weakly interconnected._
-- **Why does `formatarReais()` connect `formatarReais` to `estoque/page.tsx`, `insumos.tsx`, `nav-painel.tsx`, `fidelidade/actions.ts`, `movimentos.tsx`, `contagem.tsx`, `app-motoboy.tsx`, `ref_node_test`, `novo-pedido.tsx`, `aplicativos.tsx`, `salvando`, `Promoções e cupons (tela)`, `form-delivery.tsx`, `next`, `Montagem do cupom impresso`, `estoque/actions.ts`, `sabores-pizza.tsx`, `preco.ts`, `painel-caixa.tsx`, `index.ts`, `resumo/page.tsx`, `cardapio-cliente.tsx`, `painel/package.json`, `promocao.test.ts`, `resultados.tsx`, `salvando`?**
-  _High betweenness centrality (0.036) - this node is a cross-community bridge._
+- **Why does `criarClienteServidor()` connect `criarClienteServidor` to `estoque/page.tsx`, `gestao/page.tsx`, `insumos.tsx`, `salvando`, `relatorios/page.tsx`, `next`, `geo.ts`, `fidelidade/actions.ts`, `app-motoboy.tsx`, `contagem.tsx`, `criarClienteServidor`, `novo-pedido.tsx`, `aplicativos.tsx`, `salvando`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `financeiro/page.tsx`, `evento.tsx`, `form-delivery.tsx`, `acompanhar-pedido.tsx`, `next`, `estoque/actions.ts`, `sabores-pizza.tsx`, `painel-caixa.tsx`, `index.ts`, `src/caixa.ts`, `resumo/page.tsx`, `cardapio-cliente.tsx`, `equipe.tsx`, `painel/package.json`, `gestao/actions.ts`, `resultados.tsx`, `gestao.ts`, `funcionarios.tsx`, `programa.tsx`, `salvando`?**
+  _High betweenness centrality (0.043) - this node is a cross-community bridge._
 - **Should `main.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.135632183908046 - nodes in this community are weakly interconnected._
