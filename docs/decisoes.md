@@ -676,6 +676,6 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 
 ## D-073 — Método de trabalho para duas pessoas (05/11/2026)
 - O projeto passa a ter duas pessoas, cada uma com o próprio Claude, trabalhando no mesmo repositório. Método em `docs/desenvolvimento/METODO.md`: ciclo semanal (planejamento na segunda, revisão e novidades na sexta), Issue → branch → PR → revisão cruzada → migração → merge → teste no ar; definição de pronto; arquivos e funções SQL "quentes".
-- Trabalho **por módulo** (`docs/desenvolvimento/MODULOS.md`): o dono do módulo faz o merge e roda as migrações dele; **o outro sempre revisa**. Peças compartilhadas pedem a aprovação dos dois.
+- Emmanuel (`ZPloxDr3am`) e Hugo (`CriadorHugo`) são **donos do projeto**, com acesso Admin; as tarefas são divididas **por frente** (`docs/desenvolvimento/MODULOS.md`): quem está com a frente faz o merge e roda as migrações dela; **o outro sempre revisa**. Peças compartilhadas pedem a aprovação dos dois.
 - Migrações novas com **data e hora** no nome (`AAAAMMDDHHMMSS_assunto.sql`) para duas pessoas não repetirem número.
 - Documentação em três áreas no repositório: `docs/comercial`, `docs/desenvolvimento`, `docs/qualidade` (roteiros e relatórios de teste). Modelos de Issue (funcionalidade, bug, teste) e de PR em `.github/`; etiquetas e marco da semana por `scripts/github-etiquetas.sh`.

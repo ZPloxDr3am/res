@@ -5,7 +5,7 @@ Versão 1 · 05/11/2026 · vale para tudo o que muda no repositório. Quem mudar
 ## 1. Princípios
 
 1. **Tudo passa pelo GitHub.** Ideia vira Issue, trabalho vira branch, entrega vira PR. Nada vai direto na `main`.
-2. **Cada módulo tem um dono** ([MODULOS.md](MODULOS.md)). O dono decide e publica o que é da área dele; o outro revisa.
+2. **Os dois são donos do projeto; as tarefas são divididas por frente** ([MODULOS.md](MODULOS.md)). Quem está com a frente publica o que é dela; o outro revisa.
 3. **Nada entra sem a revisão do outro.** Todo PR é revisado pela outra pessoa (revisão cruzada), mesmo que o Claude tenha feito.
 4. **Pequeno e frequente.** Um PR = uma coisa que dá para testar. Melhor 3 PRs de 1 dia do que 1 de 1 semana.
 5. **O banco é de todos.** Migração em produção é o momento mais arriscado: segue a regra da seção 6, sempre.
@@ -40,7 +40,7 @@ A fazer ──► Fazendo ──► Em revisão ──► Testando ──► No 
 5. **CI verde** — os 3 testes do GitHub (Regras, Banco, App web) precisam passar. Vermelho não se revisa.
 6. **Revisão** — a outra pessoa abre a prévia da Vercel, testa o critério de aceite e aprova ou pede ajuste.
 7. **Migração** (se houver) — regra da seção 6.
-8. **Merge** — pelo dono do módulo, **squash** (um commit por PR na `main`). A Vercel publica sozinha.
+8. **Merge** — por quem está com a frente, **squash** (um commit por PR na `main`). A Vercel publica sozinha.
 9. **Teste no ar** — quem fez o merge abre o site em produção e confere em 1 minuto. Se quebrou: reverte o PR na hora (botão "Revert" do GitHub) e investiga depois.
 
 ### Definição de pronto (vale para todo PR)
@@ -60,9 +60,9 @@ A fazer ──► Fazendo ──► Em revisão ──► Testando ──► No 
 |---|---|
 | Criar Issue, abrir PR | Qualquer um |
 | Aprovar PR | **Sempre o outro** (nunca o próprio autor) |
-| Fazer merge e publicar | **Dono do módulo** (ver MODULOS.md). Compartilhado: os dois aprovam, qualquer um faz o merge |
-| Rodar migração em produção (SQL Editor) | Dono do módulo, avisando antes no grupo |
-| Mudar plano/limite de cliente, segredos, Vercel, Supabase (configurações) | Só o titular das contas (Emmanuel) |
+| Fazer merge e publicar | **Quem está com a frente** (ver MODULOS.md). Compartilhado: os dois aprovam, qualquer um faz o merge |
+| Rodar migração em produção (SQL Editor) | Quem está com a frente, avisando antes no grupo |
+| Mudar plano/limite de cliente, segredos, Vercel, Supabase (configurações) | Qualquer um dos dois, avisando o outro; contas pagas ficam no nome de quem as contratou |
 | Senhas e chaves | **Nunca** em Issue, PR, chat ou código. Cada um usa o próprio login |
 
 ## 5. Para os dois não se atropelarem

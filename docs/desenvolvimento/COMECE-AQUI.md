@@ -3,7 +3,7 @@
 ## 1. Acessos (o Emmanuel libera)
 | Onde | Como | Para quê |
 |---|---|---|
-| GitHub `ZPloxDr3am/res` | Settings → Collaborators → convite para o seu usuário | Código, Issues, PRs, documentos |
+| GitHub `ZPloxDr3am/res` | Convite (Admin) para `CriadorHugo` → aceitar no e-mail ou em github.com/ZPloxDr3am/res/invitations | Código, Issues, PRs, documentos |
 | Supabase (organização REA BBEEFF) | Organization → Team → Invite | Rodar migrações do seu módulo no SQL Editor |
 | Painel do RES | Lojas e equipe → novo usuário (função **Gerente**) | Testar como usuário |
 | Vercel | Plano Hobby não tem equipe: você usa as **prévias** dos PRs; a publicação acontece no merge | — |
