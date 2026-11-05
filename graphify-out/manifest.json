@@ -150,8 +150,8 @@
     "semantic_hash": "c18482a4354bf190ae112d2f406c259f"
   },
   "apps/web/app/(painel)/layout.tsx": {
-    "mtime": 1793661045.880719,
-    "seen": 1793661063.9231212,
+    "mtime": 1793661180.5982277,
+    "seen": 1793909622.0113347,
     "ast_hash": "2b6033271f3974dbcaf8f921702a2cba",
     "semantic_hash": ""
   },
@@ -516,16 +516,16 @@
     "semantic_hash": "b0e09423de0639218c1cad9e20df1851"
   },
   "apps/web/components/estoque/insumos.tsx": {
-    "mtime": 1793162353.2610056,
-    "seen": 1793205238.75609,
-    "ast_hash": "69c14ec377c628ab6d9e6ac5e384d74d",
-    "semantic_hash": "69c14ec377c628ab6d9e6ac5e384d74d"
+    "mtime": 1793663539.3317869,
+    "seen": 1793909622.013154,
+    "ast_hash": "26a753389861526b16a18d198ea53277",
+    "semantic_hash": ""
   },
   "apps/web/components/estoque/meu-estoque.tsx": {
-    "mtime": 1793165321.5708876,
-    "seen": 1793205238.7560909,
-    "ast_hash": "429f478616ef69a531841b51cd8fac18",
-    "semantic_hash": "429f478616ef69a531841b51cd8fac18"
+    "mtime": 1793662937.188261,
+    "seen": 1793909622.0131562,
+    "ast_hash": "d4a94243bc3e6947f382d77b8e36d0a5",
+    "semantic_hash": ""
   },
   "apps/web/components/estoque/modo.tsx": {
     "mtime": 1793161234.039419,
@@ -642,8 +642,8 @@
     "semantic_hash": "e1a2ae124932452ed3b517ceefb9431a"
   },
   "apps/web/components/nav-painel.tsx": {
-    "mtime": 1793661045.8804195,
-    "seen": 1793661063.9232547,
+    "mtime": 1793661180.5982277,
+    "seen": 1793909622.0139744,
     "ast_hash": "0cfbd067d394b2b92a9cad94fc80c3ea",
     "semantic_hash": ""
   },
@@ -708,8 +708,8 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1793661045.881928,
-    "seen": 1793661063.923271,
+    "mtime": 1793661180.5982277,
+    "seen": 1793909622.0142412,
     "ast_hash": "aa6d5ab16448afebed2247c4e61b3941",
     "semantic_hash": ""
   },
@@ -1620,10 +1620,10 @@
     "semantic_hash": "94a1688047a50c73f4a3c65b0fcdcaf6"
   },
   "README.md": {
-    "mtime": 1792786116.8289278,
-    "seen": 1793205238.756276,
-    "ast_hash": "fbaf7cbf7dd17103de1164fed4f93096",
-    "semantic_hash": "fbaf7cbf7dd17103de1164fed4f93096"
+    "mtime": 1793909617.125413,
+    "seen": 1793909622.0189786,
+    "ast_hash": "3af1556e190fa8dda0efd8b7f1b3d2f4",
+    "semantic_hash": ""
   },
   "apps-mobile/motoboy/README.md": {
     "mtime": 1792807243.0869524,
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793661059.7825677,
-    "seen": 1793661063.9235485,
-    "ast_hash": "a5f4b9df96fcbed7988ae3ae78b3f5ab",
+    "mtime": 1793909617.125413,
+    "seen": 1793909622.0190556,
+    "ast_hash": "051cd0ce4459e162d4bfdbec7dd12240",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1716,9 +1716,9 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1793206383.016422,
-    "seen": 1793206390.6333227,
-    "ast_hash": "67491aa85644af0835a0b04ea190e25a",
+    "mtime": 1793909617.0930755,
+    "seen": 1793909622.0189767,
+    "ast_hash": "4203d9aaab3f21f754359774459167cf",
     "semantic_hash": ""
   },
   "apps/web/components/delivery/vitrine.tsx": {
@@ -2229,6 +2229,108 @@
     "mtime": 1793658714.6944983,
     "seen": 1793661063.9235775,
     "ast_hash": "204b0fad9c42b9e068fae308b252d53a",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/bug.yml": {
+    "mtime": 1793909599.055919,
+    "seen": 1793909622.010152,
+    "ast_hash": "d7c378dbcac205cf74271ae221d2be0a",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/config.yml": {
+    "mtime": 1793909599.0534427,
+    "seen": 1793909622.0101564,
+    "ast_hash": "a58b47c3d59071bcc435c6c9c86bb4d8",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/teste.yml": {
+    "mtime": 1793909599.0571404,
+    "seen": 1793909622.0101585,
+    "ast_hash": "bf83c79a01a3baa45bcb4dfd75efd117",
+    "semantic_hash": ""
+  },
+  "scripts/github-etiquetas.sh": {
+    "mtime": 1793909599.0586169,
+    "seen": 1793909622.0168216,
+    "ast_hash": "b67ae12a056f9a48b21a17dccd8933a9",
+    "semantic_hash": ""
+  },
+  ".github/pull_request_template.md": {
+    "mtime": 1793909599.0521173,
+    "seen": 1793909622.0189745,
+    "ast_hash": "5f9aaef6335887c9300d254ed908f316",
+    "semantic_hash": ""
+  },
+  "docs/README.md": {
+    "mtime": 1793909540.582534,
+    "seen": 1793909622.0190494,
+    "ast_hash": "594fda8b3ffc0403df8cd0e0adc2a8d4",
+    "semantic_hash": ""
+  },
+  "docs/comercial/FUNCIONALIDADES.md": {
+    "mtime": 1793909599.0429194,
+    "seen": 1793909622.0190513,
+    "ast_hash": "238e09b57ea94496257c9a1862ee7563",
+    "semantic_hash": ""
+  },
+  "docs/comercial/NOVIDADES.md": {
+    "mtime": 1793909599.0441053,
+    "seen": 1793909622.0190525,
+    "ast_hash": "0747da7ac2698c96157285c148428819",
+    "semantic_hash": ""
+  },
+  "docs/comercial/README.md": {
+    "mtime": 1793909599.0417206,
+    "seen": 1793909622.0190535,
+    "ast_hash": "03714382ec6f5a72a6d6b7d09002408b",
+    "semantic_hash": ""
+  },
+  "docs/desenvolvimento/COMECE-AQUI.md": {
+    "mtime": 1793909599.0403168,
+    "seen": 1793909622.0190783,
+    "ast_hash": "3ffdf6861a59222e9eb292f904ccb51b",
+    "semantic_hash": ""
+  },
+  "docs/desenvolvimento/METODO.md": {
+    "mtime": 1793909540.584914,
+    "seen": 1793909622.0190809,
+    "ast_hash": "568ac2c5fb04a034af2d6472cbf64669",
+    "semantic_hash": ""
+  },
+  "docs/desenvolvimento/MODULOS.md": {
+    "mtime": 1793909540.5860791,
+    "seen": 1793909622.0190823,
+    "ast_hash": "37f00e9572a2a619f22cfddb285ce36a",
+    "semantic_hash": ""
+  },
+  "docs/desenvolvimento/README.md": {
+    "mtime": 1793909540.5836778,
+    "seen": 1793909622.0190837,
+    "ast_hash": "784b9ad21e172d15b5355fea196d99ae",
+    "semantic_hash": ""
+  },
+  "docs/desenvolvimento/ROADMAP.md": {
+    "mtime": 1793909540.587265,
+    "seen": 1793909622.0190852,
+    "ast_hash": "e0a24be64cc0034c90f39733ccfc49be",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/README.md": {
+    "mtime": 1793909599.0454643,
+    "seen": 1793909622.019087,
+    "ast_hash": "6c37e77f38428da36e7bc56fba420151",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/MODELO.md": {
+    "mtime": 1793909599.0467448,
+    "seen": 1793909622.0190887,
+    "ast_hash": "0b07987e11ac80725baf1e7ea4d568c3",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/estoque-cmv.md": {
+    "mtime": 1793909599.047927,
+    "seen": 1793909622.0190895,
+    "ast_hash": "2a37f4d5a48d6c1526f3ee3d3407c406",
     "semantic_hash": ""
   }
 }
