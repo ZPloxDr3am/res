@@ -1,5 +1,7 @@
 # RES
 
+> **Documentação e método de trabalho:** [`docs/README.md`](docs/README.md) — áreas **Comercial**, **Desenvolvimento** (comece por [`METODO.md`](docs/desenvolvimento/METODO.md) e [`COMECE-AQUI.md`](docs/desenvolvimento/COMECE-AQUI.md)) e **Qualidade/testes**.
+
 Sistema de pedidos para restaurantes, com delivery, salão e gestão. Esta é a **etapa 1 do piloto**:
 
 - uma loja com várias marcas

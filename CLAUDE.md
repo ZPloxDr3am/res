@@ -22,3 +22,12 @@ Rules:
 - **Ponto cego conhecido:** o mapa não liga `supabase.rpc('nome_da_funcao')` do TypeScript à função SQL de mesmo nome, nem o agente de impressão ao banco. Para esses caminhos, procure o nome da função em `supabase/migrations` (vale a versão mais recente: cada migração que recria a função vira um nó separado).
 - Documentos (`README.md`, `docs/decisoes.md`) entram no mapa por leitura com IA. Quando mudarem bastante, rode `/graphify . --update` (gasta tokens); o hook de commit só atualiza o código.
 - O `graph.html` (mapa interativo) não vai para o repositório: gere com `graphify export html` quando precisar ver.
+
+## Método de trabalho (duas pessoas, 05/11/2026)
+
+O RES é construído por duas pessoas, cada uma com o próprio Claude. Antes de qualquer tarefa, siga `docs/desenvolvimento/METODO.md`:
+- Trabalhe sempre num branch `tipo/numero-assunto` ligado a uma Issue; abra PR com o modelo `.github/pull_request_template.md`. **Não faça merge na `main`, não rode migração em produção e não mexa em segredos/configurações de conta**: isso é da pessoa (METODO §4).
+- Veja em `docs/desenvolvimento/MODULOS.md` de quem é o módulo; peças compartilhadas (base do banco, `packages/core`, `globals.css`, `nav-painel.tsx`) pedem cuidado e revisão dos dois.
+- Migração nova: `supabase/migrations/AAAAMMDDHHMMSS_assunto.sql` (data e hora), pode rodar de novo, com teste em `supabase/tests/`; ao recriar uma função, parta da versão mais recente.
+- Mudou comportamento: decisão no fim de `docs/decisoes.md`; o cliente percebe: linha em `docs/comercial/NOVIDADES.md`; mudou um fluxo: atualize o roteiro em `docs/qualidade/roteiros/`.
+- Documentação do projeto: `docs/README.md` (Comercial, Desenvolvimento, Qualidade/testes).
