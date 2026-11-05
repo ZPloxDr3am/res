@@ -20,4 +20,4 @@ Fecha #
 - [ ] Tem: `supabase/migrations/…` · pode rodar de novo · **rodada em __/__ por ____** (antes do merge)
 
 ## Módulo e revisão
-Módulo: `mod:` · Dono faz o merge · Revisor: a outra pessoa
+Módulo: `mod:` · Quem está com a frente faz o merge · Revisor: o outro

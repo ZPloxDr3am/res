@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793909617.125413,
-    "seen": 1793909622.0190556,
-    "ast_hash": "051cd0ce4459e162d4bfdbec7dd12240",
+    "mtime": 1793909945.8886552,
+    "seen": 1793909948.602865,
+    "ast_hash": "aa9e5e5bf992ad9bf223e9adf51e46ba",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2286,21 +2286,21 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/COMECE-AQUI.md": {
-    "mtime": 1793909599.0403168,
-    "seen": 1793909622.0190783,
-    "ast_hash": "3ffdf6861a59222e9eb292f904ccb51b",
+    "mtime": 1793909945.888963,
+    "seen": 1793909948.6028666,
+    "ast_hash": "b7c003db6ba5ba0b3d52178053accac1",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/METODO.md": {
-    "mtime": 1793909540.584914,
-    "seen": 1793909622.0190809,
-    "ast_hash": "568ac2c5fb04a034af2d6472cbf64669",
+    "mtime": 1793909945.8876035,
+    "seen": 1793909948.6028674,
+    "ast_hash": "f3b02ccd812ae687b141f50873a53cb9",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/MODULOS.md": {
-    "mtime": 1793909540.5860791,
-    "seen": 1793909622.0190823,
-    "ast_hash": "37f00e9572a2a619f22cfddb285ce36a",
+    "mtime": 1793909945.8872304,
+    "seen": 1793909948.6028686,
+    "ast_hash": "eac36c5d073aeac6dd25f228268d4663",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/README.md": {
@@ -2331,6 +2331,12 @@
     "mtime": 1793909599.047927,
     "seen": 1793909622.0190895,
     "ast_hash": "2a37f4d5a48d6c1526f3ee3d3407c406",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
+    "mtime": 1793909599.0546756,
+    "seen": 1793909948.6024022,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   }
 }

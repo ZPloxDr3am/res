@@ -12,7 +12,7 @@ Atualizado no planejamento de segunda. O que está aqui vira Issue quando entra 
 7. Linha do tempo do pedido (quem fez o quê e quando)
 8. Atalhos (F1 novo pedido, Ctrl+K busca), quadro em Kanban/Lista, tema escuro
 
-## Próximo (salão — Dev 2)
+## Próximo (salão — Hugo)
 1. **Atendimento por tablet**: mesas, comandas, garçom com login, taxa de serviço (acréscimos), couvert
 2. Relatórios de salão: pedidos por garçom, taxa de serviço, up-sell aceito, giro de mesa, tempo de mesa, ticket por pessoa
 3. KDS (tela da cozinha) com tempo por item
