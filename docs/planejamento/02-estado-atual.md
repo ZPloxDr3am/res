@@ -26,7 +26,7 @@ Legenda: ✅ pronto · 🔧 em andamento · ⏳ não começou · ⛔ bloqueado �
 | Quadro de pedidos em tempo real, aceite automático, agendados, filtros, pausa com recado, modo movimento | ✅ | D-011, D-057, D-059, D-062, D-063 |
 | Novo pedido em janela flutuante | ✅ | |
 | Cardápio digital `/c/<slug>`: vitrine, montagem, pedido, acompanhamento, horários, bairros, raio em km | ✅ | D-045 a D-048 (entregas 1 e 2 de 3) |
-| Cardápio digital — entrega 3 de 3 | 🔧 | Confirmar com o sócio o que faltou da 3ª entrega |
+| Cardápio digital — entrega 3 de 3 | 🔧 | Confirmar com o Emmanuel o que faltou da 3ª entrega |
 | Cardápio de evento / pré-venda | ✅ | D-055, D-056 |
 | KDS (tela da cozinha) | ⏳ | README etapa 4; listado "Em breve" em Aplicativos |
 | Salão: mesas, comandas, PDV, garçom por tablet | ⏳ | README etapa 7; D-067 deixa indicadores "para o atendimento por tablet" |

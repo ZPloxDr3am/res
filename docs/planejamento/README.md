@@ -9,11 +9,12 @@ Pasta para os dois sócios acompanharem **o que falta para o projeto andar e com
 | [03-integracoes-marketplaces.md](03-integracoes-marketplaces.md) | O plano para iFood, Delivery Much, Aiqfome e os outros — a frente principal que falta |
 | [04-pendencias.md](04-pendencias.md) | Lista de tarefas com responsável e situação (a lista viva) |
 | [05-decisoes-abertas.md](05-decisoes-abertas.md) | Perguntas que os dois precisam decidir juntos |
+| [checklists/](checklists/README.md) | **O quadro do dia a dia** (estilo Monday): um checklist por área, com responsável — Hugo: CNPJ e integrações; Emmanuel: software; Hugo: tributário |
 
 ## Como usamos
 
 - **Situação** usa sempre as mesmas palavras: `✅ pronto` · `🔧 em andamento` · `⏳ não começou` · `⛔ bloqueado` (diz por quê) · `❄️ adiado`.
-- **Responsável**: `Sócio` (ZPloxDr3am) ou `Hugo` (CriadorHugo). Tarefa sem responsável não anda — toda linha de `04-pendencias.md` precisa de um nome.
+- **Responsável**: `Emmanuel` (ZPloxDr3am) ou `Hugo` (CriadorHugo). Tarefa sem responsável não anda — toda linha de `04-pendencias.md` precisa de um nome.
 - Ao terminar algo, mude a situação aqui no mesmo PR da mudança de código. Decisão de arquitetura continua indo para `docs/decisoes.md` (D-xxx); aqui fica só o acompanhamento.
 - Revisão rápida dos dois: uma vez por semana, abrir `04-pendencias.md` e `05-decisoes-abertas.md` juntos (10 min).
 
