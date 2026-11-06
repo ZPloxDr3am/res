@@ -42,10 +42,10 @@
     "semantic_hash": "6e12dc2be277b12b46eb819e8eeaa33d"
   },
   "apps/web/app/(painel)/aplicativos/page.tsx": {
-    "mtime": 1793202552.2330978,
-    "seen": 1793205238.7559962,
-    "ast_hash": "1c137e30b998c22014315c0a432c9ec7",
-    "semantic_hash": "1c137e30b998c22014315c0a432c9ec7"
+    "mtime": 1793979042.1902318,
+    "seen": 1793979351.6932406,
+    "ast_hash": "58d2ceb66034a4a569284c91c8e0ee5a",
+    "semantic_hash": ""
   },
   "apps/web/app/(painel)/caixa/[id]/page.tsx": {
     "mtime": 1792786116.8293407,
@@ -150,8 +150,8 @@
     "semantic_hash": "c18482a4354bf190ae112d2f406c259f"
   },
   "apps/web/app/(painel)/layout.tsx": {
-    "mtime": 1793661045.880719,
-    "seen": 1793661063.9231212,
+    "mtime": 1793661180.5982277,
+    "seen": 1793978536.975338,
     "ast_hash": "2b6033271f3974dbcaf8f921702a2cba",
     "semantic_hash": ""
   },
@@ -384,10 +384,10 @@
     "semantic_hash": "fee4b85454ceb23edcdedcd503a769fa"
   },
   "apps/web/components/aplicativos/aplicativos.tsx": {
-    "mtime": 1793202552.2381096,
-    "seen": 1793205238.7560666,
-    "ast_hash": "cbe4ec694852e52d2de31a771c32a81a",
-    "semantic_hash": "cbe4ec694852e52d2de31a771c32a81a"
+    "mtime": 1793979042.1899939,
+    "seen": 1793979351.693428,
+    "ast_hash": "ba432694c66820f597bc72bf399565bc",
+    "semantic_hash": ""
   },
   "apps/web/components/aplicativos/mercadopago.tsx": {
     "mtime": 1793202552.2381096,
@@ -516,16 +516,16 @@
     "semantic_hash": "b0e09423de0639218c1cad9e20df1851"
   },
   "apps/web/components/estoque/insumos.tsx": {
-    "mtime": 1793162353.2610056,
-    "seen": 1793205238.75609,
-    "ast_hash": "69c14ec377c628ab6d9e6ac5e384d74d",
-    "semantic_hash": "69c14ec377c628ab6d9e6ac5e384d74d"
+    "mtime": 1793663539.3317869,
+    "seen": 1793978536.9754875,
+    "ast_hash": "26a753389861526b16a18d198ea53277",
+    "semantic_hash": ""
   },
   "apps/web/components/estoque/meu-estoque.tsx": {
-    "mtime": 1793165321.5708876,
-    "seen": 1793205238.7560909,
-    "ast_hash": "429f478616ef69a531841b51cd8fac18",
-    "semantic_hash": "429f478616ef69a531841b51cd8fac18"
+    "mtime": 1793662937.188261,
+    "seen": 1793978536.9754891,
+    "ast_hash": "d4a94243bc3e6947f382d77b8e36d0a5",
+    "semantic_hash": ""
   },
   "apps/web/components/estoque/modo.tsx": {
     "mtime": 1793161234.039419,
@@ -642,8 +642,8 @@
     "semantic_hash": "e1a2ae124932452ed3b517ceefb9431a"
   },
   "apps/web/components/nav-painel.tsx": {
-    "mtime": 1793661045.8804195,
-    "seen": 1793661063.9232547,
+    "mtime": 1793661180.5982277,
+    "seen": 1793978536.9755495,
     "ast_hash": "0cfbd067d394b2b92a9cad94fc80c3ea",
     "semantic_hash": ""
   },
@@ -708,9 +708,9 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1793661045.881928,
-    "seen": 1793661063.923271,
-    "ast_hash": "aa6d5ab16448afebed2247c4e61b3941",
+    "mtime": 1793979094.0384266,
+    "seen": 1793979351.6935337,
+    "ast_hash": "a75e76748c248786e10e6082b8856e38",
     "semantic_hash": ""
   },
   "apps/web/components/resumo/grafico-lojas.tsx": {
@@ -738,10 +738,10 @@
     "semantic_hash": "1fa4daebb637ee6ce32fb7eac945b984"
   },
   "apps/web/lib/aplicativos.ts": {
-    "mtime": 1793202552.2381096,
-    "seen": 1793205238.7561214,
-    "ast_hash": "cd6c5a15976fb383d2523c0a19a10dfb",
-    "semantic_hash": "cd6c5a15976fb383d2523c0a19a10dfb"
+    "mtime": 1793978986.0286877,
+    "seen": 1793979351.6935408,
+    "ast_hash": "a398b072a8916a8431436ff8fc641ad3",
+    "semantic_hash": ""
   },
   "apps/web/lib/caixa.ts": {
     "mtime": 1792786116.834038,
@@ -834,9 +834,9 @@
     "semantic_hash": "001a137a606e225f972739e75fc6c7aa"
   },
   "apps/web/lib/pedidos.ts": {
-    "mtime": 1793585929.6742027,
-    "seen": 1793586147.6266615,
-    "ast_hash": "f6c77030e88af678c3225dfb0ac3a9cb",
+    "mtime": 1793979084.1469054,
+    "seen": 1793979351.6935704,
+    "ast_hash": "df2dca003075f57755c5872e66314c7f",
     "semantic_hash": ""
   },
   "apps/web/lib/publico.ts": {
@@ -990,10 +990,10 @@
     "semantic_hash": "dde8a216bee8ae88bebeeedc01573d23"
   },
   "packages/core/src/cupom.ts": {
-    "mtime": 1792896400.433016,
-    "seen": 1793205238.7561626,
-    "ast_hash": "767289beee750b6237b8a5b0a25f119a",
-    "semantic_hash": "767289beee750b6237b8a5b0a25f119a"
+    "mtime": 1793979218.7431397,
+    "seen": 1793979351.6936016,
+    "ast_hash": "206f5ff65b62b81d44b0440caeba33f7",
+    "semantic_hash": ""
   },
   "packages/core/src/entregas.ts": {
     "mtime": 1792881516.257336,
@@ -1026,10 +1026,10 @@
     "semantic_hash": "ca7ba0b48f2b641149acdba9eb74387d"
   },
   "packages/core/src/index.ts": {
-    "mtime": 1793201813.3284147,
-    "seen": 1793205238.7561696,
-    "ast_hash": "4042ff536256115dac7a18f47a9d995a",
-    "semantic_hash": "4042ff536256115dac7a18f47a9d995a"
+    "mtime": 1793978726.901939,
+    "seen": 1793979351.6936085,
+    "ast_hash": "156f8a253c666f3cc4ec1cbcbe89ff47",
+    "semantic_hash": ""
   },
   "packages/core/src/pedido.ts": {
     "mtime": 1792786116.8359847,
@@ -1122,10 +1122,10 @@
     "semantic_hash": "9089779854d74ad73d2348a0431fb921"
   },
   "packages/core/test/cupom.test.ts": {
-    "mtime": 1792896400.433016,
-    "seen": 1793205238.756187,
-    "ast_hash": "d16fa353e6c8f4b4fa3a57e69e98ce9f",
-    "semantic_hash": "d16fa353e6c8f4b4fa3a57e69e98ce9f"
+    "mtime": 1793979227.962914,
+    "seen": 1793979351.6936278,
+    "ast_hash": "e109a176aca4e2f2dd601156b3c15049",
+    "semantic_hash": ""
   },
   "packages/core/test/entregas.test.ts": {
     "mtime": 1792881516.257336,
@@ -1620,8 +1620,8 @@
     "semantic_hash": "94a1688047a50c73f4a3c65b0fcdcaf6"
   },
   "README.md": {
-    "mtime": 1792786116.8289278,
-    "seen": 1793205238.756276,
+    "mtime": 1793978528.458034,
+    "seen": 1793978536.975789,
     "ast_hash": "fbaf7cbf7dd17103de1164fed4f93096",
     "semantic_hash": "fbaf7cbf7dd17103de1164fed4f93096"
   },
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793661059.7825677,
-    "seen": 1793661063.9235485,
-    "ast_hash": "a5f4b9df96fcbed7988ae3ae78b3f5ab",
+    "mtime": 1793979345.070921,
+    "seen": 1793979351.6937828,
+    "ast_hash": "973e62bb5af682b3052b5f5c583d2736",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1716,8 +1716,8 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1793206383.016422,
-    "seen": 1793206390.6333227,
+    "mtime": 1793978528.458034,
+    "seen": 1793978536.9757879,
     "ast_hash": "67491aa85644af0835a0b04ea190e25a",
     "semantic_hash": ""
   },
@@ -2229,6 +2229,60 @@
     "mtime": 1793658714.6944983,
     "seen": 1793661063.9235775,
     "ast_hash": "204b0fad9c42b9e068fae308b252d53a",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/aplicativos/ifood-actions.ts": {
+    "mtime": 1793978986.0332108,
+    "seen": 1793979351.6932368,
+    "ast_hash": "0797a46d62b1c2b4da6a96ad4184d4c6",
+    "semantic_hash": ""
+  },
+  "apps/web/app/api/marketplace/ifood/sincronizar/route.ts": {
+    "mtime": 1793978944.7193584,
+    "seen": 1793979351.693373,
+    "ast_hash": "5df6a7c2d8d148cc8a8cc2215b48ed66",
+    "semantic_hash": ""
+  },
+  "apps/web/app/api/marketplace/ifood/webhook/route.ts": {
+    "mtime": 1793978944.7176929,
+    "seen": 1793979351.6933746,
+    "ast_hash": "ae42c790aba943eb46e9eb04bb71a4f8",
+    "semantic_hash": ""
+  },
+  "apps/web/components/aplicativos/ifood.tsx": {
+    "mtime": 1793979042.1896062,
+    "seen": 1793979351.6934292,
+    "ast_hash": "fc89153344c118344b16ca3196f606de",
+    "semantic_hash": ""
+  },
+  "apps/web/lib/marketplace/ifood.ts": {
+    "mtime": 1793978949.251935,
+    "seen": 1793979351.693562,
+    "ast_hash": "b1122bf74cf08d5480db5cf4ae4ac646",
+    "semantic_hash": ""
+  },
+  "packages/core/src/marketplace.ts": {
+    "mtime": 1793978704.442883,
+    "seen": 1793979351.6936095,
+    "ast_hash": "a413bab62a8d638f30170f713abb8a37",
+    "semantic_hash": ""
+  },
+  "packages/core/test/marketplace.test.ts": {
+    "mtime": 1793978726.9028842,
+    "seen": 1793979351.6936324,
+    "ast_hash": "08e5c6afd31c8ef1ba51b1bb8b8b1022",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261106153000_marketplace_base.sql": {
+    "mtime": 1793979262.2875333,
+    "seen": 1793979351.6937306,
+    "ast_hash": "97ebeb7d5e0b89b0a4564e4b487f6c32",
+    "semantic_hash": ""
+  },
+  "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzz_marketplace.sql": {
+    "mtime": 1793979271.3469167,
+    "seen": 1793979351.6937742,
+    "ast_hash": "c1595b525d761533bf6592cfbef09858",
     "semantic_hash": ""
   }
 }

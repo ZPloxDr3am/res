@@ -18,3 +18,4 @@ export * from './segmentos.js';
 export * from './fidelidade.js';
 export * from './estoque.js';
 export * from './aplicativos.js';
+export * from './marketplace.js';
