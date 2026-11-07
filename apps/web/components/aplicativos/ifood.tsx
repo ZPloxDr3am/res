@@ -2,11 +2,11 @@
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { formatarReais } from '@res/core';
-import { desligarLojaIfood, ligarItemIfood, salvarLojaIfood, simularEventoIfood, simularPedidoIfood } from '@/app/(painel)/aplicativos/ifood-actions';
+import { desligarLojaIfood, ligarItemIfood, salvarLojaIfood, simularEventoIfood, simularNegociacaoIfood, simularPedidoIfood } from '@/app/(painel)/aplicativos/ifood-actions';
 import { salvando } from '@/components/tempo-real';
 import type { PainelIfood } from '@/lib/aplicativos';
 
-const ACAO: Record<string, string> = { confirm: 'Confirmar', readyToPickup: 'Pronto para retirar', dispatch: 'Saiu para entrega', requestCancellation: 'Cancelar' };
+const ACAO: Record<string, string> = { confirm: 'Confirmar', readyToPickup: 'Pronto para retirar', dispatch: 'Saiu para entrega', requestCancellation: 'Cancelar', negociacao: 'Resposta da negociação' };
 const SITUACAO: Record<string, string> = { simulado: '🧪 simulado', pendente: '⏳ na fila', enviado: '✅ enviado', erro: '⚠️ erro' };
 const STATUS: Record<string, string> = { novo: 'Novo', em_preparo: 'Em preparo', pronto: 'Pronto', em_entrega: 'Saiu', concluido: 'Concluído', cancelado: 'Cancelado' };
 
@@ -84,6 +84,21 @@ export function PainelIfoodApp({ d }: { d: PainelIfood }) {
                       <strong>#{p.numero} · iFood {p.externo_codigo} · {formatarReais(Math.round(p.total * 100))}</strong>
                       <span className="dica">{STATUS[p.status] ?? p.status} · {p.tipo}</span>
                     </span>
+                    {p.status !== 'cancelado' && (
+                      <span className="linha" style={{ gap: '0.3rem', flexWrap: 'wrap' }}>
+                        {p.status === 'concluido' ? (
+                          <>
+                            <button type="button" className="mini" disabled={pendente} onClick={() => fazer(simularNegociacaoIfood(p.id, 'apos_entrega'), 'Negociação aberta: veja no topo do quadro.')}>Reclamou depois da entrega</button>
+                            <button type="button" className="mini" disabled={pendente} onClick={() => fazer(simularNegociacaoIfood(p.id, 'parcial'), 'Negociação aberta: veja no topo do quadro.')}>Faltou item</button>
+                          </>
+                        ) : (
+                          <>
+                            <button type="button" className="mini" disabled={pendente} onClick={() => fazer(simularNegociacaoIfood(p.id, 'preparo'), 'Negociação aberta: veja no topo do quadro.')}>Quer cancelar no preparo</button>
+                            <button type="button" className="mini" disabled={pendente} onClick={() => fazer(simularNegociacaoIfood(p.id, 'atraso'), 'Negociação aberta: veja no topo do quadro.')}>Reclamou do atraso</button>
+                          </>
+                        )}
+                      </span>
+                    )}
                     {p.status !== 'cancelado' && p.status !== 'concluido' && (
                       <span className="linha" style={{ gap: '0.3rem' }}>
                         <button type="button" className="mini" disabled={pendente} onClick={() => fazer(simularEventoIfood(p.id, 'CAN', 'Cliente desistiu do pedido'), 'Cancelado pelo "cliente" no iFood.')}>Cliente cancelou</button>
@@ -147,7 +162,9 @@ export function PainelIfoodApp({ d }: { d: PainelIfood }) {
           <li>✅ Cancelado pelo cliente/iFood ou mudado em outro app atualiza o RES</li>
           <li>✅ Código de retirada, bandeira do cartão, troco, cupom (quem paga), observações e CPF/CNPJ na tela e no cupom</li>
           <li>✅ Token renovado só perto de vencer; webhook com assinatura; busca a cada 30 s como reserva</li>
-          <li>⏳ Plataforma de Negociação (alterações do pedido): recebida no histórico; resposta na próxima etapa</li>
+          <li>✅ Plataforma de Negociação: cancelamento após a entrega, no preparo, por atraso e reembolso parcial aparecem no topo do quadro com prazo, e a loja aceita, recusa ou faz contraproposta (reembolso ou mais tempo)</li>
+          <li>✅ Motivos de cancelamento lidos ao vivo do iFood (lista padrão no modo teste)</li>
+          <li>✅ Busca automática a cada 30 s assim que houver loja em produção (segredo guardado no Vault do Supabase)</li>
         </ul>
       </details>
     </div>

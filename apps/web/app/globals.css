@@ -1541,3 +1541,20 @@ button.mini[data-avisado] { color: #15803d; }
 .selo-ifood { background: #ea1d2c; color: #fff; font-weight: 700; }
 .qp-mkt { display: grid; gap: 0.2rem; padding: 0.45rem 0.6rem; border-radius: 8px; font-size: 0.85rem; background: color-mix(in srgb, #ea1d2c 7%, var(--superficie)); border-left: 3px solid #ea1d2c; }
 .qp-mkt-codigo b { font-size: 1.15rem; letter-spacing: 0.08em; }
+
+/* Negociações do iFood no topo do quadro (D-075) */
+.qp-negociacoes { display: grid; gap: 0.6rem; margin-bottom: 0.8rem; }
+.qp-negociacao { display: grid; gap: 0.45rem; padding: 0.8rem 0.9rem; border: 2px solid #ea1d2c; border-radius: 12px; background: #fff1f2; color: #7f1d1d; }
+.qp-negociacao[data-situacao='respondida'] { border-width: 1px; border-color: #fca5a5; background: #fff7f7; }
+.qp-negociacao em { font-style: italic; }
+.qp-negociacao label { display: grid; gap: 0.2rem; font-size: 0.85rem; }
+.qp-negociacao button[aria-pressed='true'] { outline: 2px solid currentColor; outline-offset: 1px; }
+.qp-neg-prazo { font-variant-numeric: tabular-nums; padding: 0.15rem 0.5rem; border-radius: 999px; background: #fee2e2; }
+.qp-neg-prazo[data-urgente] { background: #ea1d2c; color: #fff; animation: qp-neg-pisca 1s ease-in-out infinite alternate; }
+@keyframes qp-neg-pisca { from { opacity: 1; } to { opacity: 0.6; } }
+@media (prefers-reduced-motion: reduce) { .qp-neg-prazo[data-urgente] { animation: none; } }
+@media (prefers-color-scheme: dark) {
+  .qp-negociacao { background: #3b0a0e; color: #fecdd3; border-color: #f43f5e; }
+  .qp-negociacao[data-situacao='respondida'] { background: #2a0d10; border-color: #9f1239; }
+  .qp-neg-prazo { background: #7f1d1d; }
+}

@@ -21,7 +21,7 @@ import {
   type StatusPedido,
 } from '@res/core';
 import type { PedidoRow } from '@/lib/pedidos';
-import { definirAceiteAutomatico, definirMovimento, definirProntoAuto, marcarAviso, marcarPago, mudarStatus, pausarLoja } from '@/app/(painel)/pedidos/actions';
+import { definirAceiteAutomatico, definirMovimento, definirProntoAuto, marcarAviso, marcarPago, motivosCancelamentoPedido, mudarStatus, pausarLoja } from '@/app/(painel)/pedidos/actions';
 import { salvando } from '@/components/tempo-real';
 import { BotaoNovoPedido } from '@/components/pedido-flutuante';
 import { useImprimir } from '@/components/impressao/usar-impressao';
@@ -99,7 +99,7 @@ function fracao(f: number | null): string {
 }
 
 /** Bipe curto com Web Audio (sem arquivo de som). Só toca depois de o usuário ativar o som. */
-function bipar() {
+export function bipar() {
   try {
     const ctx = new AudioContext();
     for (const [i, freq] of [880, 1175, 880].entries()) {
@@ -464,6 +464,16 @@ function CartaoPedido({
   };
   const [cancelando, setCancelando] = useState(false);
   const [motivo, setMotivo] = useState('');
+  // pedido do iFood: motivos ao vivo do iFood (produção) ou a lista padrão (D-075)
+  const [motivosExt, setMotivosExt] = useState(MOTIVOS_CANCELAMENTO_PADRAO);
+  useEffect(() => {
+    if (!cancelando || !p.externo_canal) return;
+    let vivo = true;
+    void motivosCancelamentoPedido(p.id).then((m) => vivo && m.length && setMotivosExt(m)).catch(() => undefined);
+    return () => {
+      vivo = false;
+    };
+  }, [cancelando, p.id, p.externo_canal]);
   const [erro, setErro] = useState<string | null>(null);
   const [pendente, iniciar] = useTransition();
   const impressao = useImprimir();
@@ -646,7 +656,7 @@ function CartaoPedido({
               Motivo (lista do iFood)
               <select value={motivo} onChange={(e) => setMotivo(e.target.value)} required autoFocus>
                 <option value="">— escolha —</option>
-                {MOTIVOS_CANCELAMENTO_PADRAO.map((m) => <option key={m.codigo} value={`${m.codigo} · ${m.descricao}`}>{m.descricao}</option>)}
+                {motivosExt.map((m) => <option key={m.codigo} value={`${m.codigo} · ${m.descricao}`}>{m.descricao}</option>)}
               </select>
             </label>
           ) : (

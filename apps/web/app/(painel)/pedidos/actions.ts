@@ -1,10 +1,11 @@
 'use server';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@supabase/supabase-js';
-import { DOMINIO_USUARIOS, normalizarUsuario, type FormaPagamento, type StatusPedido, type TipoPedido } from '@res/core';
+import { DOMINIO_USUARIOS, MOTIVOS_CANCELAMENTO_PADRAO, normalizarUsuario, type RespostaNegociacao, type FormaPagamento, type StatusPedido, type TipoPedido } from '@res/core';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import { contextoLoja } from '@/lib/loja';
 import { carregarDadosNovoPedido, type DadosNovoPedido } from '@/lib/novo-pedido';
+import { motivosCancelamento } from '@/lib/marketplace/ifood';
 
 export type Resultado = { ok: true } | { ok: false; erro: string };
 
@@ -172,4 +173,28 @@ export async function definirProntoAuto(ligado: boolean): Promise<Resultado> {
   if (error) return { ok: false, erro: mensagem(error) };
   revalidatePath('/pedidos');
   return { ok: true };
+}
+
+/** Resposta da loja numa negociação do iFood (D-075). O banco confere o que o iFood permite. */
+export async function responderNegociacao(id: string, resposta: RespostaNegociacao): Promise<{ ok: true; situacao: string } | { ok: false; erro: string }> {
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('responder_negociacao', { p_negociacao: id, p_resposta: resposta });
+  if (error) return { ok: false, erro: mensagem(error) };
+  revalidatePath('/pedidos');
+  return { ok: true, situacao: String(data) };
+}
+
+/** Motivos de cancelamento do iFood para este pedido: ao vivo com o iFood ligado; senão a lista padrão. */
+export async function motivosCancelamentoPedido(pedidoId: string): Promise<{ codigo: string; descricao: string }[]> {
+  const supabase = await criarClienteServidor();
+  const { data: p } = await supabase.from('pedidos').select('externo_id, loja_id, marca_id').eq('id', pedidoId).maybeSingle();
+  if (!p?.externo_id) return MOTIVOS_CANCELAMENTO_PADRAO;
+  const { data: ml } = await supabase.from('marketplace_lojas').select('modo').eq('loja_id', p.loja_id as string).eq('marca_id', p.marca_id as string).eq('canal', 'ifood').maybeSingle();
+  if (ml?.modo !== 'producao') return MOTIVOS_CANCELAMENTO_PADRAO;
+  try {
+    const vivos = await motivosCancelamento(p.externo_id as string);
+    return vivos?.length ? vivos : MOTIVOS_CANCELAMENTO_PADRAO;
+  } catch {
+    return MOTIVOS_CANCELAMENTO_PADRAO;
+  }
 }
