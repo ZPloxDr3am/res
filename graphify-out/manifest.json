@@ -42,8 +42,8 @@
     "semantic_hash": "6e12dc2be277b12b46eb819e8eeaa33d"
   },
   "apps/web/app/(painel)/aplicativos/page.tsx": {
-    "mtime": 1793979042.1902318,
-    "seen": 1793979351.6932406,
+    "mtime": 1794010570.495329,
+    "seen": 1794010575.820722,
     "ast_hash": "58d2ceb66034a4a569284c91c8e0ee5a",
     "semantic_hash": ""
   },
@@ -384,8 +384,8 @@
     "semantic_hash": "fee4b85454ceb23edcdedcd503a769fa"
   },
   "apps/web/components/aplicativos/aplicativos.tsx": {
-    "mtime": 1793979042.1899939,
-    "seen": 1793979351.693428,
+    "mtime": 1794010570.500055,
+    "seen": 1794010575.8208263,
     "ast_hash": "ba432694c66820f597bc72bf399565bc",
     "semantic_hash": ""
   },
@@ -708,8 +708,8 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1793979094.0384266,
-    "seen": 1793979351.6935337,
+    "mtime": 1794010570.500055,
+    "seen": 1794010575.820962,
     "ast_hash": "a75e76748c248786e10e6082b8856e38",
     "semantic_hash": ""
   },
@@ -738,8 +738,8 @@
     "semantic_hash": "1fa4daebb637ee6ce32fb7eac945b984"
   },
   "apps/web/lib/aplicativos.ts": {
-    "mtime": 1793978986.0286877,
-    "seen": 1793979351.6935408,
+    "mtime": 1794010570.500055,
+    "seen": 1794010575.8209689,
     "ast_hash": "a398b072a8916a8431436ff8fc641ad3",
     "semantic_hash": ""
   },
@@ -834,8 +834,8 @@
     "semantic_hash": "001a137a606e225f972739e75fc6c7aa"
   },
   "apps/web/lib/pedidos.ts": {
-    "mtime": 1793979084.1469054,
-    "seen": 1793979351.6935704,
+    "mtime": 1794010570.500055,
+    "seen": 1794010575.8209934,
     "ast_hash": "df2dca003075f57755c5872e66314c7f",
     "semantic_hash": ""
   },
@@ -990,8 +990,8 @@
     "semantic_hash": "dde8a216bee8ae88bebeeedc01573d23"
   },
   "packages/core/src/cupom.ts": {
-    "mtime": 1793979218.7431397,
-    "seen": 1793979351.6936016,
+    "mtime": 1794010570.5033288,
+    "seen": 1794010575.821023,
     "ast_hash": "206f5ff65b62b81d44b0440caeba33f7",
     "semantic_hash": ""
   },
@@ -1026,8 +1026,8 @@
     "semantic_hash": "ca7ba0b48f2b641149acdba9eb74387d"
   },
   "packages/core/src/index.ts": {
-    "mtime": 1793978726.901939,
-    "seen": 1793979351.6936085,
+    "mtime": 1794010570.5033288,
+    "seen": 1794010575.82103,
     "ast_hash": "156f8a253c666f3cc4ec1cbcbe89ff47",
     "semantic_hash": ""
   },
@@ -1122,8 +1122,8 @@
     "semantic_hash": "9089779854d74ad73d2348a0431fb921"
   },
   "packages/core/test/cupom.test.ts": {
-    "mtime": 1793979227.962914,
-    "seen": 1793979351.6936278,
+    "mtime": 1794010570.5033288,
+    "seen": 1794010575.8210466,
     "ast_hash": "e109a176aca4e2f2dd601156b3c15049",
     "semantic_hash": ""
   },
@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1793979345.070921,
-    "seen": 1793979351.6937828,
+    "mtime": 1794010570.500055,
+    "seen": 1794010575.8211834,
     "ast_hash": "973e62bb5af682b3052b5f5c583d2736",
     "semantic_hash": ""
   },
@@ -2229,60 +2229,6 @@
     "mtime": 1793658714.6944983,
     "seen": 1793661063.9235775,
     "ast_hash": "204b0fad9c42b9e068fae308b252d53a",
-    "semantic_hash": ""
-  },
-  "apps/web/app/(painel)/aplicativos/ifood-actions.ts": {
-    "mtime": 1793978986.0332108,
-    "seen": 1793979351.6932368,
-    "ast_hash": "0797a46d62b1c2b4da6a96ad4184d4c6",
-    "semantic_hash": ""
-  },
-  "apps/web/app/api/marketplace/ifood/sincronizar/route.ts": {
-    "mtime": 1793978944.7193584,
-    "seen": 1793979351.693373,
-    "ast_hash": "5df6a7c2d8d148cc8a8cc2215b48ed66",
-    "semantic_hash": ""
-  },
-  "apps/web/app/api/marketplace/ifood/webhook/route.ts": {
-    "mtime": 1793978944.7176929,
-    "seen": 1793979351.6933746,
-    "ast_hash": "ae42c790aba943eb46e9eb04bb71a4f8",
-    "semantic_hash": ""
-  },
-  "apps/web/components/aplicativos/ifood.tsx": {
-    "mtime": 1793979042.1896062,
-    "seen": 1793979351.6934292,
-    "ast_hash": "fc89153344c118344b16ca3196f606de",
-    "semantic_hash": ""
-  },
-  "apps/web/lib/marketplace/ifood.ts": {
-    "mtime": 1793978949.251935,
-    "seen": 1793979351.693562,
-    "ast_hash": "b1122bf74cf08d5480db5cf4ae4ac646",
-    "semantic_hash": ""
-  },
-  "packages/core/src/marketplace.ts": {
-    "mtime": 1793978704.442883,
-    "seen": 1793979351.6936095,
-    "ast_hash": "a413bab62a8d638f30170f713abb8a37",
-    "semantic_hash": ""
-  },
-  "packages/core/test/marketplace.test.ts": {
-    "mtime": 1793978726.9028842,
-    "seen": 1793979351.6936324,
-    "ast_hash": "08e5c6afd31c8ef1ba51b1bb8b8b1022",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261106153000_marketplace_base.sql": {
-    "mtime": 1793979262.2875333,
-    "seen": 1793979351.6937306,
-    "ast_hash": "97ebeb7d5e0b89b0a4564e4b487f6c32",
-    "semantic_hash": ""
-  },
-  "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzz_marketplace.sql": {
-    "mtime": 1793979271.3469167,
-    "seen": 1793979351.6937742,
-    "ast_hash": "c1595b525d761533bf6592cfbef09858",
     "semantic_hash": ""
   }
 }
