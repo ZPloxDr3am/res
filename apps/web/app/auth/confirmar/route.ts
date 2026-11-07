@@ -8,7 +8,8 @@ export async function GET(request: NextRequest) {
   if (code) {
     const supabase = await criarClienteServidor();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(new URL('/cardapio', url.origin));
+    // conta do cadastro (D-076): /comecar → sem loja vai ao /onboarding, que cria a loja com os dados guardados
+    if (!error) return NextResponse.redirect(new URL('/comecar', url.origin));
   }
   return NextResponse.redirect(new URL(`/login?erro=${encodeURIComponent('Link de confirmação inválido ou expirado.')}`, url.origin));
 }
