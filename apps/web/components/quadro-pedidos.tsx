@@ -6,6 +6,7 @@ import {
   acaoAvancar,
   faseAgendamento,
   FOLGA_AGENDADO_MIN,
+  MOTIVOS_CANCELAMENTO_PADRAO,
   formatarReais,
   paraCentavos,
   PAGAMENTO_ROTULO,
@@ -258,7 +259,7 @@ export function QuadroPedidos({
     return s;
   };
   const localDe = (p: PedidoRow) => (todas ? p.loja_id : p.marca_id);
-  const canalDe = (p: PedidoRow) => (p.origem === 'cardapio_digital' ? 'online' : 'balcao');
+  const canalDe = (p: PedidoRow) => (p.origem === 'cardapio_digital' ? 'online' : p.origem === 'ifood' ? 'ifood' : 'balcao');
   const passa = (p: PedidoRow) =>
     (!filtros.local.length || filtros.local.includes(localDe(p))) &&
     (!filtros.tipo.length || filtros.tipo.includes(p.tipo)) &&
@@ -345,6 +346,7 @@ export function QuadroPedidos({
         <span className="qp-sep" aria-hidden />
         {chip('canal', 'online', '📱 Cardápio digital', conta((p) => canalDe(p) === 'online'))}
         {chip('canal', 'balcao', '☎️ Lançado na loja', conta((p) => canalDe(p) === 'balcao'))}
+        {pedidos.some((p) => p.origem === 'ifood') && chip('canal', 'ifood', '🛵 iFood', conta((p) => canalDe(p) === 'ifood'))}
         <span className="qp-sep" aria-hidden />
         {chip('situacao', 'atrasado', '⚠️ Atrasados', conta((p) => situacoes(p).includes('atrasado')), 'erro')}
         {chip('situacao', 'sem_motoboy', '🛵 Prontos sem motoboy', conta((p) => situacoes(p).includes('sem_motoboy')), 'aviso')}
@@ -492,6 +494,7 @@ function CartaoPedido({
         <span className="pedido-numero">#{p.numero}</span>
         <span className={`selo ${p.tipo === 'entrega' ? 'selo-delivery' : 'selo-presencial'}`}>{TIPO_ROTULO[p.tipo]}</span>
         {p.origem === 'cardapio_digital' && <span className="selo selo-pizza" title="Feito pelo cliente no cardápio digital">Online</span>}
+        {p.origem === 'ifood' && <span className="selo selo-ifood" title="Pedido do iFood">iFood{p.externo_codigo ? ` #${p.externo_codigo}` : ''}</span>}
         <span className={atrasado ? 'atrasado' : 'dica'} title={atrasado ? (agendado ? 'Passou do horário agendado' : `Passou de ${tempoPreparo} min`) : undefined}>
           {aberto ? tempoDecorrido(new Date(p.criado_em)) : STATUS_ROTULO[p.status]}
         </span>
@@ -571,9 +574,11 @@ function CartaoPedido({
         ))}
       </ul>
       {p.observacao && <div className="dica">Obs. do pedido: {p.observacao}</div>}
+      {p.externo_canal && <InfoMarketplace p={p} />}
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center', gap: '0.4rem' }}>
         <span className="dica">
-          {PAGAMENTO_ROTULO[p.pagamento]}
+          {p.origem === 'ifood' && p.pagamento === 'online' ? 'Pago no iFood' : PAGAMENTO_ROTULO[p.pagamento]}
+          {p.cartao_bandeira && ` · ${p.cartao_bandeira}`}
           {p.troco_para != null && ` · troco p/ ${r$(p.troco_para)} (${r$(Number(p.troco_para) - Number(p.total))})`}
         </span>
         <strong>{r$(p.total)}</strong>
@@ -636,10 +641,20 @@ function CartaoPedido({
             mudar('cancelado', motivo);
           }}
         >
-          <label>
-            Motivo do cancelamento
-            <input type="text" value={motivo} onChange={(e) => setMotivo(e.target.value)} required maxLength={200} autoFocus />
-          </label>
+          {p.externo_canal ? (
+            <label>
+              Motivo (lista do iFood)
+              <select value={motivo} onChange={(e) => setMotivo(e.target.value)} required autoFocus>
+                <option value="">— escolha —</option>
+                {MOTIVOS_CANCELAMENTO_PADRAO.map((m) => <option key={m.codigo} value={`${m.codigo} · ${m.descricao}`}>{m.descricao}</option>)}
+              </select>
+            </label>
+          ) : (
+            <label>
+              Motivo do cancelamento
+              <input type="text" value={motivo} onChange={(e) => setMotivo(e.target.value)} required maxLength={200} autoFocus />
+            </label>
+          )}
           <div className="linha" style={{ gap: '0.4rem' }}>
             <button className="erro" disabled={pendente || !motivo.trim()}>Confirmar cancelamento</button>
             <button type="button" onClick={() => setCancelando(false)}>Voltar</button>
@@ -911,5 +926,28 @@ function MovimentoLoja({ movimento, fuso, tempoPreparo, modo }: { movimento: { m
         </div>
       )}
     </>
+  );
+}
+
+/** Dados que a homologação do iFood pede na tela (D-074): código de retirada, entrega do iFood, cupom e quem paga, CPF. */
+function InfoMarketplace({ p }: { p: PedidoRow }) {
+  const r$ = (v: number) => (v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  return (
+    <div className="qp-mkt">
+      {p.codigo_retirada && (
+        <span className="qp-mkt-codigo" title={p.tipo === 'retirada' ? 'O cliente informa este código ao retirar' : 'Código de entrega/coleta do iFood'}>
+          Código {p.tipo === 'retirada' ? 'de retirada' : 'de entrega'}: <b>{p.codigo_retirada}</b>
+        </span>
+      )}
+      {p.entrega_marketplace && <span className="selo">🛵 Entrega pelo iFood (não precisa de motoboy)</span>}
+      {p.agendado_para && <span>📅 Agendado: <b>{new Date(p.agendado_para).toLocaleString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</b></span>}
+      {(p.beneficios ?? []).map((b, i) => (
+        <span key={i}>🎟️ {b.descricao ?? 'Cupom'}: −{r$(b.valor)} <span className="dica">({b.loja ? `loja paga ${r$(b.loja)}` : ''}{b.loja && b.marketplace ? ' · ' : ''}{b.marketplace ? `iFood paga ${r$(b.marketplace)}` : ''})</span></span>
+      ))}
+      {Number(p.acrescimo ?? 0) > 0 && <span>➕ Taxas adicionais: {r$(Number(p.acrescimo))}</span>}
+      {p.documento_cliente && <span>CPF/CNPJ na nota: <b>{p.documento_cliente}</b></span>}
+      {p.localizador && <span className="dica">Contato pelo iFood · localizador {p.localizador}</span>}
+      {p.observacao_entrega && <span>📍 {p.observacao_entrega}</span>}
+    </div>
   );
 }

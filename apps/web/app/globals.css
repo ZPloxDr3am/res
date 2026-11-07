@@ -1536,3 +1536,8 @@ button.mini[data-avisado] { color: #15803d; }
 .est-valor[data-tipo='perda'] b { color: #b91c1c; }
 .est-valor[data-tipo='sobra'] { background: color-mix(in srgb, #16a34a 10%, var(--superficie)); border-left: 4px solid #16a34a; }
 @media (prefers-color-scheme: dark) { .est-valor[data-tipo='perda'] b { color: #f87171; } }
+
+/* ---------- iFood no quadro (D-074) */
+.selo-ifood { background: #ea1d2c; color: #fff; font-weight: 700; }
+.qp-mkt { display: grid; gap: 0.2rem; padding: 0.45rem 0.6rem; border-radius: 8px; font-size: 0.85rem; background: color-mix(in srgb, #ea1d2c 7%, var(--superficie)); border-left: 3px solid #ea1d2c; }
+.qp-mkt-codigo b { font-size: 1.15rem; letter-spacing: 0.08em; }

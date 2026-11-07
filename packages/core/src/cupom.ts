@@ -31,6 +31,21 @@ export interface CupomDados {
   /** já pago (online ou marcado no painel): não cobrar na entrega */
   pago?: boolean;
   itens: { quantidade: number; nome: string; total: Centavos; observacao: string | null; opcoes: OpcaoCupom[] }[];
+  // pedidos de marketplace (D-074) — todos opcionais
+  /** número curto do pedido no app (ex.: "4821") */
+  externo_codigo?: string | null;
+  /** código que o entregador/cliente informa na retirada */
+  codigo_retirada?: string | null;
+  cartao_bandeira?: string | null;
+  /** CPF/CNPJ na nota */
+  documento_cliente?: string | null;
+  acrescimo?: Centavos;
+  /** desconto dividido: quanto a loja banca e quanto o app banca (centavos) */
+  desconto_loja?: Centavos;
+  desconto_marketplace?: Centavos;
+  /** o entregador é do app (não sai motoboy da loja) */
+  entrega_marketplace?: boolean;
+  observacao_entrega?: string | null;
 }
 
 export interface CupomTeste {
@@ -161,9 +176,11 @@ export function montarCupom(tipo: TipoCupom, dados: CupomDados | CupomTeste, col
   if (tipo === 'cozinha') add(`COZINHA${d.setor ? ` · ${d.setor.toUpperCase()}` : ''}`, { centro: true });
   L.push({ sep: '=' });
   add(`#${d.numero} ${TIPO_ROTULO[d.tipo_pedido].toUpperCase()}`, { negrito: true, grande: true });
-  const origem = d.origem === 'ifood' ? 'iFood' : d.origem === 'cardapio_digital' ? 'Cardápio digital' : null;
-  add(`${dataHora(d.criado_em, d.fuso)}${origem ? ` · ${origem}` : ''}`);
+  const origem = d.origem === 'ifood' ? `iFood${d.externo_codigo ? ` #${d.externo_codigo}` : ''}` : d.origem === 'cardapio_digital' ? 'Cardápio digital' : null;
+  add(`${dataHora(d.criado_em, d.fuso)}${origem ? ` · ${origem}` : ''}`, { negrito: d.origem === 'ifood' });
   if (d.agendado_para) add(`AGENDADO: ${dataHora(d.agendado_para, d.fuso)}`, { negrito: true, grande: tipo === 'cozinha' });
+  if (d.codigo_retirada) add(`COD. RETIRADA: ${d.codigo_retirada}`, { negrito: true, grande: true });
+  if (d.entrega_marketplace) add('ENTREGA PELO IFOOD', { negrito: true, centro: true });
   if (lay.mostrar_cliente && d.cliente.nome) add(`Cliente: ${d.cliente.nome}${tipo === 'pedido' && d.cliente.telefone ? ` · ${d.cliente.telefone}` : ''}`);
   if (lay.mostrar_endereco && d.endereco) {
     const e = d.endereco;
@@ -171,6 +188,7 @@ export function montarCupom(tipo: TipoCupom, dados: CupomDados | CupomTeste, col
     add(`Bairro: ${e.bairro}`, { negrito: true });
     if (e.referencia) add(`Ref.: ${e.referencia}`);
   }
+  if (tipo === 'pedido' && d.observacao_entrega) add(`Obs. entrega: ${d.observacao_entrega}`);
   L.push({ sep: '-' });
 
   for (const it of d.itens) {
@@ -203,9 +221,15 @@ export function montarCupom(tipo: TipoCupom, dados: CupomDados | CupomTeste, col
   if (tipo === 'pedido') {
     for (const s of colunasLR('Subtotal', formatarReais(d.subtotal), w)) L.push({ t: s });
     if (d.taxa_entrega) for (const s of colunasLR('Entrega', formatarReais(d.taxa_entrega), w)) L.push({ t: s });
+    if (d.acrescimo) for (const s of colunasLR('Acréscimo', formatarReais(d.acrescimo), w)) L.push({ t: s });
     if (d.desconto) for (const s of colunasLR('Desconto', `-${formatarReais(d.desconto)}`, w)) L.push({ t: s });
+    if (d.desconto && (d.desconto_loja || d.desconto_marketplace)) {
+      add(`  (loja ${formatarReais(d.desconto_loja ?? 0)} · iFood ${formatarReais(d.desconto_marketplace ?? 0)})`);
+    }
     for (const s of colunasLR('TOTAL', formatarReais(d.total), meia)) L.push({ t: s, negrito: true, grande: true });
-    add(`Pagamento: ${PAGAMENTO_ROTULO[d.pagamento] ?? d.pagamento}`);
+    const pagoNoApp = d.origem === 'ifood' && d.pagamento === 'online';
+    add(`Pagamento: ${pagoNoApp ? 'Pago no iFood' : PAGAMENTO_ROTULO[d.pagamento] ?? d.pagamento}${d.cartao_bandeira ? ` (${d.cartao_bandeira})` : ''}`, { negrito: pagoNoApp });
+    if (d.documento_cliente) add(`CPF/CNPJ na nota: ${d.documento_cliente}`);
     // melhoria sobre o BeeFood (EV-021): troco no cupom
     if (d.pagamento === 'dinheiro' && d.troco_para) {
       add(`Troco para ${formatarReais(d.troco_para)}: levar ${formatarReais(Math.max(0, d.troco_para - d.total))}`, { negrito: true });
@@ -213,7 +237,7 @@ export function montarCupom(tipo: TipoCupom, dados: CupomDados | CupomTeste, col
     L.push({ sep: '-' });
   }
   // QR do motoboy: na via da cozinha e na via do pedido (a loja pode imprimir só uma delas)
-  if (lay.mostrar_qr && d.qr && d.tipo_pedido === 'entrega') {
+  if (lay.mostrar_qr && d.qr && d.tipo_pedido === 'entrega' && !d.entrega_marketplace) {
     add('MOTOBOY: ESCANEIE PARA SAIR', { negrito: true, centro: true });
     L.push({ qr: urlQrMotoboy(d.qr) });
     add(`Pedido #${d.numero}${d.endereco?.bairro ? ` · ${d.endereco.bairro}` : ''}`, { centro: true });

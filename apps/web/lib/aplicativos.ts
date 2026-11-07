@@ -10,7 +10,7 @@ export type PainelAplicativos = {
 };
 
 /** nativo: já faz parte do RES (abre a tela); config: liga aqui; link: link do grupo; breve: em breve; depois: combinado para mais tarde */
-export type App = { id: string; nome: string; desc: string; icone: string; tipo: 'nativo' | 'config' | 'link' | 'breve' | 'depois' | 'api' | 'mcp' | 'mp'; href?: string; nota?: string };
+export type App = { id: string; nome: string; desc: string; icone: string; tipo: 'nativo' | 'config' | 'link' | 'breve' | 'depois' | 'api' | 'mcp' | 'mp' | 'ifood'; href?: string; nota?: string };
 
 export const CATALOGO: { titulo: string; apps: App[] }[] = [
   {
@@ -46,7 +46,7 @@ export const CATALOGO: { titulo: string; apps: App[] }[] = [
     apps: [
       { id: 'cardapio', nome: 'Cardápio digital', desc: 'Link e QR do seu cardápio, sem taxa por pedido', icone: '📱', tipo: 'nativo', href: '/delivery' },
       { id: 'link', nome: 'Link único do grupo', desc: 'Um link com todos os cardápios das suas lojas', icone: '🔗', tipo: 'link' },
-      { id: 'ifood', nome: 'iFood', desc: 'Pedidos do iFood direto no quadro', icone: '🛵', tipo: 'depois', nota: 'Combinado para quando o sistema estiver mais avançado. Exige homologação no portal de parceiros do iFood.' },
+      { id: 'ifood', nome: 'iFood', desc: 'Pedidos do iFood direto no quadro', icone: '🛵', tipo: 'ifood' },
       { id: 'marketplaces', nome: '99Food, Keeta, Rappi, Aiqfome', desc: 'Outros aplicativos de delivery', icone: '🧩', tipo: 'breve' },
     ],
   },
@@ -97,4 +97,15 @@ export type StatusMp = {
   aceitar_ao_pagar?: boolean;
   pix_pela_loja: boolean;
   recebidos_30d: { quantidade: number; valor: number };
+};
+
+/** iFood (D-074): lojas conectadas, simulador e fila de volta. */
+export type PainelIfood = {
+  configurado: boolean;
+  marcas: { id: string; nome: string }[];
+  lojas: { id: string; marca_id: string; merchant_id: string; modo: 'teste' | 'producao'; ativo: boolean; ultimo_evento_em: string | null }[];
+  itens: { chave: string; nome: string; tipo: 'item' | 'opcao'; produto_id: string | null; vezes: number }[];
+  produtos: { id: string; nome: string }[];
+  pedidos: { id: string; numero: number; externo_codigo: string | null; status: string; tipo: string; total: number; criado_em: string }[];
+  saida: { id: number; acao: string; situacao: string; erro: string | null; criado_em: string; pedido_numero: number | null }[];
 };
