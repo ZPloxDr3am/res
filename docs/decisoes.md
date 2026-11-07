@@ -684,3 +684,15 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **Cupom**: "iFood #4821", código de retirada grande, "ENTREGA PELO IFOOD" (sem QR do motoboy da loja), acréscimo, desconto dividido (loja × iFood), "Pago no iFood (VISA)", CPF/CNPJ e observação de entrega.
 - **Falta para ir ao ar** (depende do CNPJ/conta): cadastrar o app no Portal do Desenvolvedor, credenciais no servidor, agendar a busca a cada 30 s, homologação e trocar a loja para produção. Próxima etapa: responder a Plataforma de Negociação e ler os motivos de cancelamento ao vivo.
 - **Roteiro de teste**: (1) ligar o cardápio em modo teste; (2) criar pedido de entrega pago no app com cupom → conferir quadro, selo iFood, cupom dividido, impressão; (3) aceitar, pronto, saiu → fila mostra "simulado" em cada um; (4) pedido em dinheiro com troco → troco no cupom; (5) retirada agendada → data/hora e código de retirada; (6) "Cliente cancelou" → cancela no RES sem item na fila; (7) cancelar pelo RES → pede motivo do iFood; (8) item sem ligação → ligar em Aplicativos e conferir baixa de estoque no próximo pedido.
+
+## D-075 — iFood: Plataforma de Negociação, motivos ao vivo e busca automática (06/11/2026)
+- **Negociação** (eventos HSD/HSS do iFood): quando o cliente pede cancelamento ou reembolso depois de confirmado, aparece uma faixa vermelha **no topo do quadro de pedidos**, com bipe (se o som estiver ligado), o pedido, a mensagem do cliente, o **prazo correndo** e o que o iFood faz se ninguém responder.
+- A loja responde ali mesmo, só com o que o iFood permite em cada caso:
+  - **depois da entrega**: aceitar, recusar (motivo que o cliente lê) ou **oferecer reembolso** até o teto do iFood;
+  - **no preparo**: aceitar ou recusar;
+  - **por atraso**: aceitar (com motivo) ou **pedir mais tempo** (10/20/30 min…); recusar não é permitido;
+  - **reembolso parcial** (item faltando etc.): aceitar, recusar ou contraproposta.
+- Cancelamento aceito (ou vencido com "aceitar cancelamento") **cancela o pedido no RES**, inclusive já concluído, sem pedir cancelamento de novo ao iFood. Reembolso/mais tempo não cancela. Cada negociação é respondida uma vez; o banco confere tudo (permissão, prazo, teto, minutos) e o servidor monta a chamada ao iFood a partir da resposta conferida.
+- **Modo teste**: em Aplicativos → iFood, botões "Quer cancelar no preparo", "Reclamou do atraso", "Reclamou depois da entrega" e "Faltou item"; a resposta é aceita na hora (fila "simulado") e a negociação vencida fecha sozinha.
+- **Motivos de cancelamento ao vivo**: com a loja em produção, o cancelamento de pedido do iFood mostra a lista que o iFood devolve para aquele pedido; no modo teste (ou se a consulta falhar), a lista padrão 501–513.
+- **Busca automática**: o banco roda `private.marketplace_tique()` a cada 30 s (pg_cron). Vence negociações sem resposta e, **só se houver loja em produção**, chama `/api/marketplace/ifood/sincronizar` (cabeçalho X-RES-Chave) para buscar eventos e enviar a fila. O segredo fica no **Vault do Supabase** (`marketplace_cron_segredo`, o mesmo `MARKETPLACE_CRON_SEGREDO` da Vercel) e quem cadastra é o dono, no dia de ligar o iFood.

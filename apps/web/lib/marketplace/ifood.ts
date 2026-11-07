@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { acaoDoEvento, normalizarPedidoIfood, type IfoodPedido } from '@res/core';
+import { acaoDoEvento, chamadaRespostaIfood, normalizarNegociacaoIfood, normalizarPedidoIfood, type IfoodDisputa, type IfoodPedido, type RespostaNegociacao } from '@res/core';
 import { clienteAdmin } from '@/lib/supabase/admin';
 
 /**
@@ -73,7 +73,22 @@ export async function processarEvento(ev: EventoIfood): Promise<string> {
     if (e3) throw new Error(e3.message);
     return String(data);
   }
-  return acao.acao; // negociação: aparece no histórico; resposta pela tela do pedido (próxima etapa)
+  // Plataforma de Negociação (D-075): HSD abre, HSS fecha
+  if (ev.code === 'HSD' || ev.code === 'HANDSHAKE_DISPUTE') {
+    const d = (ev.metadata ?? {}) as unknown as IfoodDisputa;
+    if (!d.disputeId) throw new Error('negociação sem disputeId');
+    const { error: e4 } = await db.rpc('marketplace_receber_negociacao', { p: normalizarNegociacaoIfood(ev.orderId, d) });
+    if (e4) throw new Error(e4.message);
+    return 'negociacao_aberta';
+  }
+  if (ev.code === 'HSS' || ev.code === 'HANDSHAKE_SETTLEMENT') {
+    const m = (ev.metadata ?? {}) as { disputeId?: string; status?: string };
+    if (!m.disputeId || !m.status) throw new Error('acordo sem disputeId/status');
+    const { data, error: e5 } = await db.rpc('marketplace_resolver_negociacao', { p_canal: 'ifood', p_disputa: m.disputeId, p_status: m.status, p_resultado: ev.metadata ?? null });
+    if (e5) throw new Error(e5.message);
+    return String(data);
+  }
+  return acao.acao;
 }
 
 /** Busca eventos (polling a cada 30 s) e confirma o recebimento de todos. */
@@ -112,10 +127,18 @@ export async function enviarSaida(): Promise<{ enviados: number; erros: number }
   let erros = 0;
   for (const s of data ?? []) {
     try {
-      const r = await chamar(`/order/v1.0/orders/${encodeURIComponent(s.externo_id as string)}/${CAMINHO_ACAO[s.acao as string]}`, {
-        method: 'POST',
-        body: s.acao === 'requestCancellation' ? JSON.stringify(s.payload) : undefined,
-      });
+      let r: Response;
+      if (s.acao === 'negociacao') {
+        // resposta da negociação: o caminho é montado aqui (disputa + resposta já conferidas no banco)
+        const p = s.payload as { disputa_id: string; resposta: RespostaNegociacao };
+        const c = chamadaRespostaIfood(p.disputa_id, p.resposta);
+        r = await chamar(c.caminho, { method: 'POST', body: c.corpo ? JSON.stringify(c.corpo) : undefined });
+      } else {
+        r = await chamar(`/order/v1.0/orders/${encodeURIComponent(s.externo_id as string)}/${CAMINHO_ACAO[s.acao as string]}`, {
+          method: 'POST',
+          body: s.acao === 'requestCancellation' ? JSON.stringify(s.payload) : undefined,
+        });
+      }
       await db.rpc('marketplace_marcar_saida', { p_id: s.id, p_ok: r.ok, p_erro: r.ok ? null : `HTTP ${r.status}` });
       if (r.ok) enviados++;
       else erros++;

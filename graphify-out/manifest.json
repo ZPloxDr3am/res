@@ -174,9 +174,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/pedidos/actions.ts": {
-    "mtime": 1793585929.6742027,
-    "seen": 1793586147.626395,
-    "ast_hash": "b1084edc0892425e4b13cbe9f896859e",
+    "mtime": 1794014169.8356857,
+    "seen": 1794014272.2762973,
+    "ast_hash": "5a64ccba4e5e2dcec3448d8dccd4323b",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/pedidos/expedicao.ts": {
@@ -192,9 +192,9 @@
     "semantic_hash": "bc67b9f2cf82302b066ee476aca08cb5"
   },
   "apps/web/app/(painel)/pedidos/page.tsx": {
-    "mtime": 1793585929.6742027,
-    "seen": 1793586147.6264005,
-    "ast_hash": "763d5964c882284da32bef87a0d37306",
+    "mtime": 1794014223.5049522,
+    "seen": 1794014272.276301,
+    "ast_hash": "86e416038795d4db9ca367fdc269a706",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/promocoes/actions.ts": {
@@ -708,9 +708,9 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1794010570.500055,
-    "seen": 1794010575.820962,
-    "ast_hash": "a75e76748c248786e10e6082b8856e38",
+    "mtime": 1794014181.3059342,
+    "seen": 1794014272.2764335,
+    "ast_hash": "90d5ed526edde3a780ecc245ebdce06f",
     "semantic_hash": ""
   },
   "apps/web/components/resumo/grafico-lojas.tsx": {
@@ -1026,9 +1026,9 @@
     "semantic_hash": "ca7ba0b48f2b641149acdba9eb74387d"
   },
   "packages/core/src/index.ts": {
-    "mtime": 1794010570.5033288,
-    "seen": 1794010575.82103,
-    "ast_hash": "156f8a253c666f3cc4ec1cbcbe89ff47",
+    "mtime": 1794013965.252813,
+    "seen": 1794014272.2764976,
+    "ast_hash": "0aa6cc32948c4a28e7ab0457a5927611",
     "semantic_hash": ""
   },
   "packages/core/src/pedido.ts": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794010570.500055,
-    "seen": 1794010575.8211834,
-    "ast_hash": "973e62bb5af682b3052b5f5c583d2736",
+    "mtime": 1794014266.2525415,
+    "seen": 1794014272.2766569,
+    "ast_hash": "856a6f422c4f74d5ab3dc1d2ecb4c8a1",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2229,6 +2229,150 @@
     "mtime": 1793658714.6944983,
     "seen": 1793661063.9235775,
     "ast_hash": "204b0fad9c42b9e068fae308b252d53a",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/aplicativos/ifood-actions.ts": {
+    "mtime": 1794014169.8353403,
+    "seen": 1794014272.2762573,
+    "ast_hash": "5911463adb0d620e44cfbbad9df36bb0",
+    "semantic_hash": ""
+  },
+  "apps/web/app/api/marketplace/ifood/sincronizar/route.ts": {
+    "mtime": 1794014147.567155,
+    "seen": 1794014272.276309,
+    "ast_hash": "0f675574325f2dc0ddcb23b5beee519c",
+    "semantic_hash": ""
+  },
+  "apps/web/app/api/marketplace/ifood/webhook/route.ts": {
+    "mtime": 1794010570.500055,
+    "seen": 1794014272.27631,
+    "ast_hash": "ae42c790aba943eb46e9eb04bb71a4f8",
+    "semantic_hash": ""
+  },
+  "apps/web/components/aplicativos/ifood.tsx": {
+    "mtime": 1794014251.4255235,
+    "seen": 1794014272.2763503,
+    "ast_hash": "dad50d07a36a0363d601081ad4fd41a5",
+    "semantic_hash": ""
+  },
+  "apps/web/components/negociacoes-ifood.tsx": {
+    "mtime": 1794014223.504511,
+    "seen": 1794014272.2764199,
+    "ast_hash": "2feb0bcb783a36414617f0720e2ad6b4",
+    "semantic_hash": ""
+  },
+  "apps/web/lib/marketplace/ifood.ts": {
+    "mtime": 1794014147.5668325,
+    "seen": 1794014272.276457,
+    "ast_hash": "d380f3ae54df83ebb811442782dce3db",
+    "semantic_hash": ""
+  },
+  "packages/core/src/marketplace.ts": {
+    "mtime": 1794010570.5033288,
+    "seen": 1794014272.276499,
+    "ast_hash": "a413bab62a8d638f30170f713abb8a37",
+    "semantic_hash": ""
+  },
+  "packages/core/src/negociacao.ts": {
+    "mtime": 1794013949.6186345,
+    "seen": 1794014272.2765,
+    "ast_hash": "32651a59878a6b5bd610efe003b9c3f6",
+    "semantic_hash": ""
+  },
+  "packages/core/test/marketplace.test.ts": {
+    "mtime": 1794010570.5033288,
+    "seen": 1794014272.2765198,
+    "ast_hash": "08e5c6afd31c8ef1ba51b1bb8b8b1022",
+    "semantic_hash": ""
+  },
+  "packages/core/test/negociacao.test.ts": {
+    "mtime": 1794013965.2545173,
+    "seen": 1794014272.2765207,
+    "ast_hash": "3a75f79a1c553bed00d61168fb029aec",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261106153000_marketplace_base.sql": {
+    "mtime": 1794010570.5033288,
+    "seen": 1794014272.276608,
+    "ast_hash": "97ebeb7d5e0b89b0a4564e4b487f6c32",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261106230000_marketplace_negociacao.sql": {
+    "mtime": 1794014101.1813347,
+    "seen": 1794014272.276609,
+    "ast_hash": "a9c697758246f7ebd0c40c0cf50b142e",
+    "semantic_hash": ""
+  },
+  "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzz_marketplace.sql": {
+    "mtime": 1794010570.5033288,
+    "seen": 1794014272.2766488,
+    "ast_hash": "c1595b525d761533bf6592cfbef09858",
+    "semantic_hash": ""
+  },
+  "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzz_negociacao.sql": {
+    "mtime": 1794014122.8299496,
+    "seen": 1794014272.2766497,
+    "ast_hash": "74abb4df01a0d7e6cd5adaccb9251d3f",
+    "semantic_hash": ""
+  },
+  "docs/planejamento/01-objetivo.md": {
+    "mtime": 1794010570.500055,
+    "seen": 1794014272.2766578,
+    "ast_hash": "9df631ae417d7837959dae8c4de1996b",
+    "semantic_hash": ""
+  },
+  "docs/planejamento/02-estado-atual.md": {
+    "mtime": 1794010570.5024307,
+    "seen": 1794014272.276659,
+    "ast_hash": "985a774df6f677b8208f0f65b5fe7f9a",
+    "semantic_hash": ""
+  },
+  "docs/planejamento/03-integracoes-marketplaces.md": {
+    "mtime": 1794010570.5024307,
+    "seen": 1794014272.2766597,
+    "ast_hash": "864a899fbddd00cf92bb182780125bda",
+    "semantic_hash": ""
+  },
+  "docs/planejamento/04-pendencias.md": {
+    "mtime": 1794010570.5024307,
+    "seen": 1794014272.2766607,
+    "ast_hash": "5fff0f9156f8b371d865160fca0e816d",
+    "semantic_hash": ""
+  },
+  "docs/planejamento/05-decisoes-abertas.md": {
+    "mtime": 1794010570.5024307,
+    "seen": 1794014272.2766614,
+    "ast_hash": "cfdf98acf05f06d375433f90df7c185c",
+    "semantic_hash": ""
+  },
+  "docs/planejamento/README.md": {
+    "mtime": 1794010570.5024307,
+    "seen": 1794014272.2766626,
+    "ast_hash": "12cd54f12255aa6c63c3ad4b43f99881",
+    "semantic_hash": ""
+  },
+  "docs/planejamento/checklists/README.md": {
+    "mtime": 1794010570.5024307,
+    "seen": 1794014272.2766635,
+    "ast_hash": "f8615d3a570312cd8552120186fda7c7",
+    "semantic_hash": ""
+  },
+  "docs/planejamento/checklists/emmanuel-software.md": {
+    "mtime": 1794010570.5027137,
+    "seen": 1794014272.2766643,
+    "ast_hash": "13ab1c205906b26a00053fbe3eb362aa",
+    "semantic_hash": ""
+  },
+  "docs/planejamento/checklists/hugo-cnpj-e-integracoes.md": {
+    "mtime": 1794010570.5027137,
+    "seen": 1794014272.2766657,
+    "ast_hash": "1f7e8ff176ff3dcad12c8397c8933530",
+    "semantic_hash": ""
+  },
+  "docs/planejamento/checklists/hugo-tributario.md": {
+    "mtime": 1794010570.5027137,
+    "seen": 1794014272.2766664,
+    "ast_hash": "02894220214fe4716cc5ca3aa12cf248",
     "semantic_hash": ""
   }
 }

@@ -1,6 +1,6 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { normalizarPedidoIfood, pedidoIfoodExemplo } from '@res/core';
+import { disputaIfoodExemplo, normalizarNegociacaoIfood, normalizarPedidoIfood, pedidoIfoodExemplo } from '@res/core';
 import { contextoLoja } from '@/lib/loja';
 import { criarClienteServidor } from '@/lib/supabase/server';
 
@@ -72,6 +72,18 @@ export async function ligarItemIfood(chave: string, tipo: 'item' | 'opcao', prod
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
   const { error } = await supabase.from('marketplace_itens').update({ produto_id: tipo === 'item' ? produtoId : null }).eq('loja_id', ctx.lojaId).eq('canal', 'ifood').eq('tipo', tipo).eq('chave', chave);
+  if (error) return { ok: false, erro: error.message };
+  fim();
+  return { ok: true };
+}
+
+/** Negociação como se o cliente pedisse no iFood (D-075): cancelar após a entrega, no preparo, por atraso ou reembolso parcial. */
+export async function simularNegociacaoIfood(pedidoId: string, tipo: 'apos_entrega' | 'preparo' | 'atraso' | 'parcial'): Promise<R> {
+  const supabase = await criarClienteServidor();
+  const { data: ped } = await supabase.from('pedidos').select('externo_id, total').eq('id', pedidoId).maybeSingle();
+  if (!ped?.externo_id) return { ok: false, erro: 'Pedido do iFood não encontrado.' };
+  const n = normalizarNegociacaoIfood(ped.externo_id as string, disputaIfoodExemplo(tipo, Number(ped.total)));
+  const { error } = await supabase.rpc('simular_negociacao_marketplace', { p_pedido: pedidoId, p: n });
   if (error) return { ok: false, erro: error.message };
   fim();
   return { ok: true };

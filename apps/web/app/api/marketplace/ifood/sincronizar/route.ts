@@ -5,11 +5,16 @@ import { enviarSaida, ifoodConfigurado, sincronizarEventos } from '@/lib/marketp
 export const dynamic = 'force-dynamic';
 
 /**
- * Chamada pelo agendador (pg_cron + pg_net, a cada 30 s) com ?chave=MARKETPLACE_CRON_SEGREDO (D-074):
- * busca eventos (reserva do webhook), confirma o recebimento e envia a fila de volta para o iFood.
+ * Chamada pelo agendador do banco (private.marketplace_tique, a cada 30 s, D-075) com o cabeçalho
+ * X-RES-Chave = MARKETPLACE_CRON_SEGREDO (ou ?chave= para teste manual): busca eventos (reserva do
+ * webhook), confirma o recebimento e envia a fila de volta para o iFood.
  */
+export async function POST(req: Request) {
+  return GET(req);
+}
+
 export async function GET(req: Request) {
-  const chave = new URL(req.url).searchParams.get('chave');
+  const chave = req.headers.get('x-res-chave') ?? new URL(req.url).searchParams.get('chave');
   if (!process.env.MARKETPLACE_CRON_SEGREDO || chave !== process.env.MARKETPLACE_CRON_SEGREDO) {
     return NextResponse.json({ erro: 'não autorizado' }, { status: 401 });
   }
