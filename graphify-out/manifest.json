@@ -174,8 +174,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/pedidos/actions.ts": {
-    "mtime": 1794014169.8356857,
-    "seen": 1794014272.2762973,
+    "mtime": 1794014419.422902,
+    "seen": 1794014424.162413,
     "ast_hash": "5a64ccba4e5e2dcec3448d8dccd4323b",
     "semantic_hash": ""
   },
@@ -192,8 +192,8 @@
     "semantic_hash": "bc67b9f2cf82302b066ee476aca08cb5"
   },
   "apps/web/app/(painel)/pedidos/page.tsx": {
-    "mtime": 1794014223.5049522,
-    "seen": 1794014272.276301,
+    "mtime": 1794014419.422902,
+    "seen": 1794014424.1624167,
     "ast_hash": "86e416038795d4db9ca367fdc269a706",
     "semantic_hash": ""
   },
@@ -708,8 +708,8 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1794014181.3059342,
-    "seen": 1794014272.2764335,
+    "mtime": 1794014419.422902,
+    "seen": 1794014424.162588,
     "ast_hash": "90d5ed526edde3a780ecc245ebdce06f",
     "semantic_hash": ""
   },
@@ -1026,8 +1026,8 @@
     "semantic_hash": "ca7ba0b48f2b641149acdba9eb74387d"
   },
   "packages/core/src/index.ts": {
-    "mtime": 1794013965.252813,
-    "seen": 1794014272.2764976,
+    "mtime": 1794014419.4389021,
+    "seen": 1794014424.1626585,
     "ast_hash": "0aa6cc32948c4a28e7ab0457a5927611",
     "semantic_hash": ""
   },
@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794014266.2525415,
-    "seen": 1794014272.2766569,
+    "mtime": 1794014419.426902,
+    "seen": 1794014424.1628296,
     "ast_hash": "856a6f422c4f74d5ab3dc1d2ecb4c8a1",
     "semantic_hash": ""
   },
@@ -2232,14 +2232,14 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/aplicativos/ifood-actions.ts": {
-    "mtime": 1794014169.8353403,
-    "seen": 1794014272.2762573,
+    "mtime": 1794014419.422902,
+    "seen": 1794014424.1623626,
     "ast_hash": "5911463adb0d620e44cfbbad9df36bb0",
     "semantic_hash": ""
   },
   "apps/web/app/api/marketplace/ifood/sincronizar/route.ts": {
-    "mtime": 1794014147.567155,
-    "seen": 1794014272.276309,
+    "mtime": 1794014419.422902,
+    "seen": 1794014424.1624303,
     "ast_hash": "0f675574325f2dc0ddcb23b5beee519c",
     "semantic_hash": ""
   },
@@ -2250,20 +2250,14 @@
     "semantic_hash": ""
   },
   "apps/web/components/aplicativos/ifood.tsx": {
-    "mtime": 1794014251.4255235,
-    "seen": 1794014272.2763503,
+    "mtime": 1794014419.422902,
+    "seen": 1794014424.1624856,
     "ast_hash": "dad50d07a36a0363d601081ad4fd41a5",
     "semantic_hash": ""
   },
-  "apps/web/components/negociacoes-ifood.tsx": {
-    "mtime": 1794014223.504511,
-    "seen": 1794014272.2764199,
-    "ast_hash": "2feb0bcb783a36414617f0720e2ad6b4",
-    "semantic_hash": ""
-  },
   "apps/web/lib/marketplace/ifood.ts": {
-    "mtime": 1794014147.5668325,
-    "seen": 1794014272.276457,
+    "mtime": 1794014419.422902,
+    "seen": 1794014424.1626134,
     "ast_hash": "d380f3ae54df83ebb811442782dce3db",
     "semantic_hash": ""
   },
@@ -2273,22 +2267,10 @@
     "ast_hash": "a413bab62a8d638f30170f713abb8a37",
     "semantic_hash": ""
   },
-  "packages/core/src/negociacao.ts": {
-    "mtime": 1794013949.6186345,
-    "seen": 1794014272.2765,
-    "ast_hash": "32651a59878a6b5bd610efe003b9c3f6",
-    "semantic_hash": ""
-  },
   "packages/core/test/marketplace.test.ts": {
     "mtime": 1794010570.5033288,
     "seen": 1794014272.2765198,
     "ast_hash": "08e5c6afd31c8ef1ba51b1bb8b8b1022",
-    "semantic_hash": ""
-  },
-  "packages/core/test/negociacao.test.ts": {
-    "mtime": 1794013965.2545173,
-    "seen": 1794014272.2765207,
-    "ast_hash": "3a75f79a1c553bed00d61168fb029aec",
     "semantic_hash": ""
   },
   "supabase/migrations/20261106153000_marketplace_base.sql": {
@@ -2297,22 +2279,10 @@
     "ast_hash": "97ebeb7d5e0b89b0a4564e4b487f6c32",
     "semantic_hash": ""
   },
-  "supabase/migrations/20261106230000_marketplace_negociacao.sql": {
-    "mtime": 1794014101.1813347,
-    "seen": 1794014272.276609,
-    "ast_hash": "a9c697758246f7ebd0c40c0cf50b142e",
-    "semantic_hash": ""
-  },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzz_marketplace.sql": {
     "mtime": 1794010570.5033288,
     "seen": 1794014272.2766488,
     "ast_hash": "c1595b525d761533bf6592cfbef09858",
-    "semantic_hash": ""
-  },
-  "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzz_negociacao.sql": {
-    "mtime": 1794014122.8299496,
-    "seen": 1794014272.2766497,
-    "ast_hash": "74abb4df01a0d7e6cd5adaccb9251d3f",
     "semantic_hash": ""
   },
   "docs/planejamento/01-objetivo.md": {
