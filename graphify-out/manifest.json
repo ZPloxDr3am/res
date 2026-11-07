@@ -150,9 +150,9 @@
     "semantic_hash": "c18482a4354bf190ae112d2f406c259f"
   },
   "apps/web/app/(painel)/layout.tsx": {
-    "mtime": 1793661180.5982277,
-    "seen": 1793978536.975338,
-    "ast_hash": "2b6033271f3974dbcaf8f921702a2cba",
+    "mtime": 1794014972.5191514,
+    "seen": 1794015186.7926996,
+    "ast_hash": "7796e243c1a1d2eeeba6e571b06703e9",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/loading.tsx": {
@@ -276,10 +276,10 @@
     "semantic_hash": "87969ce0445ceec09f8262b773c39618"
   },
   "apps/web/app/auth/confirmar/route.ts": {
-    "mtime": 1792786116.830893,
-    "seen": 1793205238.7560468,
-    "ast_hash": "087e8e13e6ead8b29394ce6dbe5d0bd5",
-    "semantic_hash": "087e8e13e6ead8b29394ce6dbe5d0bd5"
+    "mtime": 1794015031.0073695,
+    "seen": 1794015186.7927434,
+    "ast_hash": "f779b202307f3175709fd2b2f2f323a4",
+    "semantic_hash": ""
   },
   "apps/web/app/auth/sair/route.ts": {
     "mtime": 1792786116.830893,
@@ -324,10 +324,10 @@
     "semantic_hash": "863bf5dde154fe10b8e75777f6c971dc"
   },
   "apps/web/app/login/page.tsx": {
-    "mtime": 1792786116.8316028,
-    "seen": 1793205238.7560558,
-    "ast_hash": "a9565b29207e3a76ffd8142a8d23ed2a",
-    "semantic_hash": "a9565b29207e3a76ffd8142a8d23ed2a"
+    "mtime": 1794015031.0079453,
+    "seen": 1794015186.792759,
+    "ast_hash": "1ad864005eb60c11966fc67a674c0bdd",
+    "semantic_hash": ""
   },
   "apps/web/app/m/actions.ts": {
     "mtime": 1793122772.0516028,
@@ -366,10 +366,10 @@
     "semantic_hash": "592e54b91b837468d80f8be9fba1f699"
   },
   "apps/web/app/onboarding/page.tsx": {
-    "mtime": 1792786116.8316658,
-    "seen": 1793205238.7560632,
-    "ast_hash": "6a48795a9e5a33c366737588afa95d5f",
-    "semantic_hash": "6a48795a9e5a33c366737588afa95d5f"
+    "mtime": 1794015051.7711,
+    "seen": 1794015186.7927685,
+    "ast_hash": "517c258b8d3faa50bc909e8068e99062",
+    "semantic_hash": ""
   },
   "apps/web/app/page.tsx": {
     "mtime": 1792786116.8316658,
@@ -642,9 +642,9 @@
     "semantic_hash": "e1a2ae124932452ed3b517ceefb9431a"
   },
   "apps/web/components/nav-painel.tsx": {
-    "mtime": 1793661180.5982277,
-    "seen": 1793978536.9755495,
-    "ast_hash": "0cfbd067d394b2b92a9cad94fc80c3ea",
+    "mtime": 1794014972.518168,
+    "seen": 1794015186.7928607,
+    "ast_hash": "2ba0c3401c238d079cf50510dfdb29a9",
     "semantic_hash": ""
   },
   "apps/web/components/novo-pedido.tsx": {
@@ -870,10 +870,10 @@
     "semantic_hash": "dbeef416075d74e3b6c91519aa686f04"
   },
   "apps/web/middleware.ts": {
-    "mtime": 1793202552.2381096,
-    "seen": 1793205238.7561395,
-    "ast_hash": "d34be09887296e059ecb71c2c058ccf4",
-    "semantic_hash": "d34be09887296e059ecb71c2c058ccf4"
+    "mtime": 1794015044.553767,
+    "seen": 1794015186.7929208,
+    "ast_hash": "029165b1d587ae892eade4c8c0b27bbe",
+    "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
     "mtime": 1792786116.8350735,
@@ -1026,9 +1026,9 @@
     "semantic_hash": "ca7ba0b48f2b641149acdba9eb74387d"
   },
   "packages/core/src/index.ts": {
-    "mtime": 1794014419.4389021,
-    "seen": 1794014424.1626585,
-    "ast_hash": "0aa6cc32948c4a28e7ab0457a5927611",
+    "mtime": 1794014858.750746,
+    "seen": 1794015186.7929828,
+    "ast_hash": "7e8bc011e9c3d1c89faf0e6f0de0674a",
     "semantic_hash": ""
   },
   "packages/core/src/pedido.ts": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794014419.426902,
-    "seen": 1794014424.1628296,
-    "ast_hash": "856a6f422c4f74d5ab3dc1d2ecb4c8a1",
+    "mtime": 1794015181.1749294,
+    "seen": 1794015186.7932196,
+    "ast_hash": "a6ce22089fc7deb1388a0e8e7b668c57",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2343,6 +2343,114 @@
     "mtime": 1794010570.5027137,
     "seen": 1794014272.2766664,
     "ast_hash": "02894220214fe4716cc5ca3aa12cf248",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/comecar/actions.ts": {
+    "mtime": 1794015063.162925,
+    "seen": 1794015186.7926614,
+    "ast_hash": "9a32bb02cfb3468e681ff45fc1263e4d",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/comecar/page.tsx": {
+    "mtime": 1794015115.214927,
+    "seen": 1794015186.7926645,
+    "ast_hash": "9270ce87498bc89cc67cdeaed12f1df3",
+    "semantic_hash": ""
+  },
+  "apps/web/app/cadastro/actions.ts": {
+    "mtime": 1794014995.518598,
+    "seen": 1794015186.7927516,
+    "ast_hash": "1e67470adf4b1964c6245943392ef41e",
+    "semantic_hash": ""
+  },
+  "apps/web/app/cadastro/confirme/page.tsx": {
+    "mtime": 1794015030.9974155,
+    "seen": 1794015186.792753,
+    "ast_hash": "3f49d09545e7fa5133f1c7c2f1ad7767",
+    "semantic_hash": ""
+  },
+  "apps/web/app/cadastro/page.tsx": {
+    "mtime": 1794015030.9961324,
+    "seen": 1794015186.792754,
+    "ast_hash": "41af72e1c73d996b2f4ead0d5f8593f7",
+    "semantic_hash": ""
+  },
+  "apps/web/app/privacidade/page.tsx": {
+    "mtime": 1794015162.4949286,
+    "seen": 1794015186.7927709,
+    "ast_hash": "196b37e10f702ab1c84d457405851053",
+    "semantic_hash": ""
+  },
+  "apps/web/app/termos/page.tsx": {
+    "mtime": 1794015149.632744,
+    "seen": 1794015186.7927716,
+    "ast_hash": "f4dc9dde0874e3dfe2dc62ef917e6a76",
+    "semantic_hash": ""
+  },
+  "apps/web/components/cadastro/form-cadastro.tsx": {
+    "mtime": 1794015082.4977515,
+    "seen": 1794015186.7927787,
+    "ast_hash": "196a270b944c767b25b70f1460090de6",
+    "semantic_hash": ""
+  },
+  "apps/web/components/cadastro/primeiros-passos.tsx": {
+    "mtime": 1794015115.2207117,
+    "seen": 1794015186.79278,
+    "ast_hash": "5b5eb2940d3f52f0ab1317a815145df7",
+    "semantic_hash": ""
+  },
+  "apps/web/components/negociacoes-ifood.tsx": {
+    "mtime": 1794014419.422902,
+    "seen": 1794015186.792862,
+    "ast_hash": "2feb0bcb783a36414617f0720e2ad6b4",
+    "semantic_hash": ""
+  },
+  "packages/core/src/cadastro.ts": {
+    "mtime": 1794015082.4973,
+    "seen": 1794015186.7929707,
+    "ast_hash": "8b7f04df738fe11b28022ec81a363350",
+    "semantic_hash": ""
+  },
+  "packages/core/src/negociacao.ts": {
+    "mtime": 1794014419.4389021,
+    "seen": 1794015186.792986,
+    "ast_hash": "32651a59878a6b5bd610efe003b9c3f6",
+    "semantic_hash": ""
+  },
+  "packages/core/test/cadastro.test.ts": {
+    "mtime": 1794014937.5810409,
+    "seen": 1794015186.7930026,
+    "ast_hash": "0af3ca7cc896894bb745ebb50bcfc0f3",
+    "semantic_hash": ""
+  },
+  "packages/core/test/negociacao.test.ts": {
+    "mtime": 1794014419.4389021,
+    "seen": 1794015186.7930155,
+    "ast_hash": "3a75f79a1c553bed00d61168fb029aec",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261106230000_marketplace_negociacao.sql": {
+    "mtime": 1794014419.4389021,
+    "seen": 1794015186.7931387,
+    "ast_hash": "a9c697758246f7ebd0c40c0cf50b142e",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261107000000_cadastro_proprio.sql": {
+    "mtime": 1794014972.5194724,
+    "seen": 1794015186.7931418,
+    "ast_hash": "5dba4bca00b16820c4a7693c301cf960",
+    "semantic_hash": ""
+  },
+  "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzz_negociacao.sql": {
+    "mtime": 1794014419.4389021,
+    "seen": 1794015186.79321,
+    "ast_hash": "74abb4df01a0d7e6cd5adaccb9251d3f",
+    "semantic_hash": ""
+  },
+  "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzz_cadastro.sql": {
+    "mtime": 1794014913.0450764,
+    "seen": 1794015186.7932117,
+    "ast_hash": "c01ec3bfb44f545fc9c3d1e51c9d0a09",
     "semantic_hash": ""
   }
 }

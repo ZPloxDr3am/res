@@ -20,3 +20,4 @@ export * from './estoque.js';
 export * from './aplicativos.js';
 export * from './marketplace.js';
 export * from './negociacao.js';
+export * from './cadastro.js';
