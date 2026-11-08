@@ -21,3 +21,4 @@ export * from './aplicativos.js';
 export * from './marketplace.js';
 export * from './negociacao.js';
 export * from './cadastro.js';
+export * from './empresa.js';

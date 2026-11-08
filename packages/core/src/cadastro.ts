@@ -107,7 +107,7 @@ export interface Passo {
 export function primeirosPassos(e: EstadoPrimeirosPassos): { passos: Passo[]; feitos: number; obrigatorios: number; obrigatoriosFeitos: number; pronto: boolean } {
   const reais = e.produtos - e.produtos_exemplo;
   const passos: Passo[] = [
-    { id: 'dados', titulo: 'Dados do restaurante', explicacao: 'Cidade e WhatsApp: aparecem no cardápio e no cupom.', feito: e.cidade && e.whatsapp, opcional: false, href: '/delivery', botao: 'Preencher' },
+    { id: 'dados', titulo: 'Dados da empresa', explicacao: 'CNPJ, endereço e telefone: aparecem no cardápio e no cupom.', feito: e.cidade && e.whatsapp, opcional: false, href: '/lojas?aba=empresa', botao: 'Preencher' },
     {
       id: 'cardapio', titulo: 'Cardápio com seus produtos', explicacao: 'Pelo menos 3 produtos seus, com preço (os de exemplo só contam depois de editados).',
       feito: reais >= 3, opcional: false, href: '/cardapio', botao: 'Montar cardápio',

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { GestaoLojas, type LojaInfo } from '@/components/gestao-lojas';
 import { Equipe, type LojaEquipe } from '@/components/equipe/equipe';
 import { Funcoes } from '@/components/equipe/funcoes';
+import { DadosEmpresa } from '@/components/cadastro/dados-empresa';
+import { formatarCep, formatarCnpj, formatarCpf, formatarTelefone } from '@res/core';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +14,7 @@ const ABAS = [
   ['lojas', 'Lojas e cardápios'],
   ['equipe', 'Equipe'],
   ['funcoes', 'Funções e permissões'],
+  ['empresa', 'Dados da empresa'],
 ] as const;
 
 export default async function Lojas({ searchParams }: { searchParams: Promise<{ aba?: string; loja?: string; funcionario?: string }> }) {
@@ -34,7 +37,10 @@ export default async function Lojas({ searchParams }: { searchParams: Promise<{ 
   const usuarioDe = new Map((logins ?? []).map((u) => [u.user_id as string, u.usuario as string]));
   const h = await headers();
   const origem = `${h.get('x-forwarded-proto') ?? 'https'}://${h.get('x-forwarded-host') ?? h.get('host')}`;
-  const { data: cidades } = await supabase.from('lojas').select('id, cidade').in('id', ids);
+  const { data: cidades } = await supabase
+    .from('lojas')
+    .select('id, nome, cidade, cnpj, cpf, razao_social, nome_fantasia, inscricao_estadual, telefone, email_contato, cep, logradouro, numero, complemento, bairro, uf, lat, lng')
+    .in('id', ids);
   const { data: titularDe } = await supabase.from('contas_titulares').select('conta_id').eq('user_id', titular.data.user?.id ?? '');
 
   const lojas: LojaInfo[] = ctx.lojas.map((l) => ({
@@ -81,6 +87,39 @@ export default async function Lojas({ searchParams }: { searchParams: Promise<{ 
       {aba === 'lojas' && <GestaoLojas contas={listaContas} lojas={lojas} />}
       {aba === 'equipe' && <Equipe key={`${inicial}-${fichaInicial ?? ''}`} lojas={comEquipe} inicial={inicial} fichaInicial={fichaInicial} />}
       {aba === 'funcoes' && <Funcoes lojas={comEquipe} inicial={inicial} />}
+      {aba === 'empresa' && (
+        <DadosEmpresa
+          inicial={ctx.lojaId}
+          lojas={(cidades ?? []).map((l) => {
+            const tel = String(l.telefone ?? '');
+            return {
+              id: l.id as string,
+              nome: l.nome as string,
+              pode: lojas.find((x) => x.id === l.id)?.equipe.some((m) => m.eu && (m.papel === 'dono' || m.papel === 'gerente')) ?? false,
+              valor: {
+                semCnpj: !l.cnpj && !!l.cpf,
+                documento: l.cnpj ? formatarCnpj(l.cnpj as string) : l.cpf ? formatarCpf(l.cpf as string) : '',
+                razaoSocial: (l.razao_social as string | null) ?? '',
+                nomeFantasia: (l.nome_fantasia as string | null) ?? '',
+                inscricaoEstadual: (l.inscricao_estadual as string | null) ?? '',
+                telefoneLoja: tel ? formatarTelefone(tel) : '',
+                emailLoja: (l.email_contato as string | null) ?? '',
+                endereco: {
+                  cep: l.cep ? formatarCep(l.cep as string) : '',
+                  logradouro: (l.logradouro as string | null) ?? '',
+                  numero: (l.numero as string | null) ?? '',
+                  complemento: (l.complemento as string | null) ?? '',
+                  bairro: (l.bairro as string | null) ?? '',
+                  cidade: (l.cidade as string | null) ?? '',
+                  uf: (l.uf as string | null) ?? '',
+                  lat: null,
+                  lng: null,
+                },
+              },
+            };
+          })}
+        />
+      )}
     </div>
   );
 }

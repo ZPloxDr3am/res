@@ -162,15 +162,15 @@
     "semantic_hash": "37a083e8e04f109eef39ff287cee7496"
   },
   "apps/web/app/(painel)/lojas/actions.ts": {
-    "mtime": 1793227748.7561707,
-    "seen": 1793228088.2830079,
-    "ast_hash": "7027763379e6cdfe0c3103d624436314",
+    "mtime": 1794165503.623387,
+    "seen": 1794165538.5405018,
+    "ast_hash": "ba0cacafd237a0e289a26f1a186c03ba",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/lojas/page.tsx": {
-    "mtime": 1793233266.4307935,
-    "seen": 1793399385.422112,
-    "ast_hash": "2c8136de9ccd5e1dd4423d07d2b21563",
+    "mtime": 1794165514.134786,
+    "seen": 1794165538.540503,
+    "ast_hash": "6a499742356687b5d190b09a3c1ef4e5",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/pedidos/actions.ts": {
@@ -1026,9 +1026,9 @@
     "semantic_hash": "ca7ba0b48f2b641149acdba9eb74387d"
   },
   "packages/core/src/index.ts": {
-    "mtime": 1794101518.8361762,
-    "seen": 1794101525.1187613,
-    "ast_hash": "7e8bc011e9c3d1c89faf0e6f0de0674a",
+    "mtime": 1794165201.7627232,
+    "seen": 1794165538.5408087,
+    "ast_hash": "e03e6dcf03b59c7a31f1ddf0d50e1da2",
     "semantic_hash": ""
   },
   "packages/core/src/pedido.ts": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794101518.8302953,
-    "seen": 1794101525.1189847,
-    "ast_hash": "a6ce22089fc7deb1388a0e8e7b668c57",
+    "mtime": 1794165530.9993882,
+    "seen": 1794165538.541091,
+    "ast_hash": "e6ca3ae58798c8e2c94ce5f25bfa580a",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2373,6 +2373,114 @@
     "mtime": 1794014419.4389021,
     "seen": 1794015186.79321,
     "ast_hash": "74abb4df01a0d7e6cd5adaccb9251d3f",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/comecar/actions.ts": {
+    "mtime": 1794101518.8201761,
+    "seen": 1794165538.540464,
+    "ast_hash": "9a32bb02cfb3468e681ff45fc1263e4d",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/comecar/page.tsx": {
+    "mtime": 1794101518.8253195,
+    "seen": 1794165538.540467,
+    "ast_hash": "9270ce87498bc89cc67cdeaed12f1df3",
+    "semantic_hash": ""
+  },
+  "apps/web/app/cadastro/actions.ts": {
+    "mtime": 1794165320.7093537,
+    "seen": 1794165538.5405457,
+    "ast_hash": "e415fa82f2ef03eef10a4c1e2010eca6",
+    "semantic_hash": ""
+  },
+  "apps/web/app/cadastro/confirme/page.tsx": {
+    "mtime": 1794101518.825778,
+    "seen": 1794165538.540547,
+    "ast_hash": "3f49d09545e7fa5133f1c7c2f1ad7767",
+    "semantic_hash": ""
+  },
+  "apps/web/app/cadastro/page.tsx": {
+    "mtime": 1794101518.825778,
+    "seen": 1794165538.5405478,
+    "ast_hash": "41af72e1c73d996b2f4ead0d5f8593f7",
+    "semantic_hash": ""
+  },
+  "apps/web/app/privacidade/page.tsx": {
+    "mtime": 1794101518.825778,
+    "seen": 1794165538.5405788,
+    "ast_hash": "196b37e10f702ab1c84d457405851053",
+    "semantic_hash": ""
+  },
+  "apps/web/app/termos/page.tsx": {
+    "mtime": 1794101518.825778,
+    "seen": 1794165538.5405805,
+    "ast_hash": "f4dc9dde0874e3dfe2dc62ef917e6a76",
+    "semantic_hash": ""
+  },
+  "apps/web/components/cadastro/campos-empresa.tsx": {
+    "mtime": 1794165422.8153844,
+    "seen": 1794165538.5405903,
+    "ast_hash": "b857bfa307a87feaf3e1a3083b886490",
+    "semantic_hash": ""
+  },
+  "apps/web/components/cadastro/dados-empresa.tsx": {
+    "mtime": 1794165503.6324759,
+    "seen": 1794165538.5405917,
+    "ast_hash": "0c69e141d9bde6dd28951310ae109197",
+    "semantic_hash": ""
+  },
+  "apps/web/components/cadastro/form-cadastro.tsx": {
+    "mtime": 1794165436.412938,
+    "seen": 1794165538.5405927,
+    "ast_hash": "051bfc55c49b9332c85a9a3415124416",
+    "semantic_hash": ""
+  },
+  "apps/web/components/cadastro/primeiros-passos.tsx": {
+    "mtime": 1794101518.8302953,
+    "seen": 1794165538.5405936,
+    "ast_hash": "5b5eb2940d3f52f0ab1317a815145df7",
+    "semantic_hash": ""
+  },
+  "packages/core/src/cadastro.ts": {
+    "mtime": 1794165514.1353269,
+    "seen": 1794165538.5407917,
+    "ast_hash": "e990afa85444588d6bfe8e8a34a16b65",
+    "semantic_hash": ""
+  },
+  "packages/core/src/empresa.ts": {
+    "mtime": 1794165209.231504,
+    "seen": 1794165538.5407984,
+    "ast_hash": "31b66031896700a4a66c3135dbb9061a",
+    "semantic_hash": ""
+  },
+  "packages/core/test/cadastro.test.ts": {
+    "mtime": 1794101518.8361762,
+    "seen": 1794165538.5408335,
+    "ast_hash": "0af3ca7cc896894bb745ebb50bcfc0f3",
+    "semantic_hash": ""
+  },
+  "packages/core/test/empresa.test.ts": {
+    "mtime": 1794165209.2316115,
+    "seen": 1794165538.5408418,
+    "ast_hash": "6c4e3e6a2df07087070c7bfbd71b6cde",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261107000000_cadastro_proprio.sql": {
+    "mtime": 1794101518.8361762,
+    "seen": 1794165538.5410051,
+    "ast_hash": "5dba4bca00b16820c4a7693c301cf960",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261108170000_cadastro_empresa.sql": {
+    "mtime": 1794165467.7033858,
+    "seen": 1794165538.5410066,
+    "ast_hash": "376ae9a5a05177faba58e8059770245b",
+    "semantic_hash": ""
+  },
+  "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzz_cadastro.sql": {
+    "mtime": 1794165467.7033858,
+    "seen": 1794165538.541078,
+    "ast_hash": "8e61efcd7c934f3f3cf72552b07863fd",
     "semantic_hash": ""
   }
 }
