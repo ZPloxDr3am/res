@@ -2454,15 +2454,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/cadastro/campos-empresa.tsx": {
-    "mtime": 1794166105.2616425,
-    "seen": 1794166125.0622046,
+    "mtime": 1794166221.6415043,
+    "seen": 1794166226.5623803,
     "ast_hash": "1a3d0497ce21e188fc8e96ca3b2e93cb",
-    "semantic_hash": ""
-  },
-  "apps/web/components/cadastro/consultas.ts": {
-    "mtime": 1794166105.2488568,
-    "seen": 1794166125.0622072,
-    "ast_hash": "ab1ba7684affcc001a0a4a94f0a3b008",
     "semantic_hash": ""
   },
   "apps/web/components/cadastro/dados-empresa.tsx": {
