@@ -174,9 +174,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/pedidos/actions.ts": {
-    "mtime": 1794014419.422902,
-    "seen": 1794014424.162413,
-    "ast_hash": "5a64ccba4e5e2dcec3448d8dccd4323b",
+    "mtime": 1794167110.085375,
+    "seen": 1794167133.8332913,
+    "ast_hash": "93526e96417af1a09a860658de6980bb",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/pedidos/expedicao.ts": {
@@ -192,9 +192,9 @@
     "semantic_hash": "bc67b9f2cf82302b066ee476aca08cb5"
   },
   "apps/web/app/(painel)/pedidos/page.tsx": {
-    "mtime": 1794014419.422902,
-    "seen": 1794014424.1624167,
-    "ast_hash": "86e416038795d4db9ca367fdc269a706",
+    "mtime": 1794167110.0855427,
+    "seen": 1794167133.8333008,
+    "ast_hash": "85928edae4cd9354c997f8eb0548d9a9",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/promocoes/actions.ts": {
@@ -708,9 +708,9 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1794014419.422902,
-    "seen": 1794014424.162588,
-    "ast_hash": "90d5ed526edde3a780ecc245ebdce06f",
+    "mtime": 1794167127.9110668,
+    "seen": 1794167133.8336732,
+    "ast_hash": "9be8f5937f203b89c046c63009f9204c",
     "semantic_hash": ""
   },
   "apps/web/components/resumo/grafico-lojas.tsx": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794165950.3334947,
-    "seen": 1794165955.2250118,
-    "ast_hash": "e6ca3ae58798c8e2c94ce5f25bfa580a",
+    "mtime": 1794167127.9135365,
+    "seen": 1794167133.8341413,
+    "ast_hash": "cbb283cbabac6c4464d2eaa81ebe7668",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2481,6 +2481,12 @@
     "mtime": 1794165950.3454945,
     "seen": 1794166125.0625017,
     "ast_hash": "376ae9a5a05177faba58e8059770245b",
+    "semantic_hash": ""
+  },
+  "apps/web/components/cadastro/consultas.ts": {
+    "mtime": 1794166221.6415043,
+    "seen": 1794167133.833423,
+    "ast_hash": "ab1ba7684affcc001a0a4a94f0a3b008",
     "semantic_hash": ""
   }
 }

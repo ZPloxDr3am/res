@@ -198,3 +198,10 @@ export async function motivosCancelamentoPedido(pedidoId: string): Promise<{ cod
     return MOTIVOS_CANCELAMENTO_PADRAO;
   }
 }
+
+/** Quadro de pedidos com todas as lojas do grupo (D-078): preferência de cada usuário, salva na conta dele. */
+export async function definirQuadroTodas(todas: boolean): Promise<{ ok: boolean }> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.auth.updateUser({ data: { quadro_todas: todas } });
+  return { ok: !error };
+}

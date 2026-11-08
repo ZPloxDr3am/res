@@ -1,26 +1,26 @@
 # Graph Report - res  (2026-11-08)
 
 ## Corpus Check
-- 390 files · ~355,542 words
+- 391 files · ~356,071 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 5 file(s) not represented in the graph (top: (none) 2, .example 1, .css 1)
 
 ## Summary
-- 3228 nodes · 8370 edges · 160 communities (137 shown, 23 thin omitted)
+- 3223 nodes · 8384 edges · 170 communities (145 shown, 25 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 54 edges (avg confidence: 0.9)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `eddc38dd`
+- Built from commit: `46abb7b0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- importar-nfe.tsx
+- equipe.tsx
 - 20261020000001_base.sql
-- cardapio-cliente.tsx
+- resultados.tsx
 - main.ts
-- criarClienteServidor
+- server.ts
 - 20261021000014_caixa.sql
 - Banco: impressão
 - public.produtos
@@ -33,10 +33,11 @@
 - web/package.json
 - CI (testes automáticos)
 - app-motoboy.tsx
-- public.clientes
-- conta-cliente.tsx
+- pg_temp.como
+- editor-cardapio.tsx
 - Decisões de arquitetura — RES
-- rota.ts
+- 20261028000040_api_webhooks.sql
+- 20261028000052_gestao_empresarial.sql
 - contextoLoja
 - salvando
 - novo-pedido.tsx
@@ -46,18 +47,20 @@
 - financeiro/page.tsx
 - Workflow do APK do motoboy
 - evento.tsx
-- salvando
-- publico.ts
+- criarClienteServidor
+- cardapio-cliente.tsx
 - next
 - Workflow do agente de impressão
 - cupom.ts
-- [slug]/page.tsx
+- form-grupo.tsx
+- cardapio-dados.ts
 - preco.ts
 - painel-caixa.tsx
 - Configuração TypeScript
 - ifood.ts
 - Banco: Mercado Pago
 - motoboy/package.json
+- mcp.ts
 - Grupo 45: package.json
 - Grupo 46: package.json
 - motoboy/scripts/ajustar-android.mjs
@@ -66,11 +69,13 @@
 - 99zzzzzzzz_entregas_cliente.sql
 - public.produtos
 - negociacoes-ifood.tsx
+- tempo-real.tsx
 - beefood_para_res.py
 - resumo/page.tsx
 - anon
 - graphify
-- src/caixa.ts
+- lojas/actions.ts
+- gestao/actions.ts
 - 20261027000032_fidelidade.sql
 - app/layout.tsx
 - Grupo 62: package.json
@@ -83,22 +88,25 @@
 - 99zzzzzzzzzzzzzzzzzz_importar.sql
 - 20261028000049_la_pizza_cardapio.sql
 - Grupo 72: decisoes.md
-- equipe.tsx
+- gestao/page.tsx
 - painel/package.json
 - Grupo 75: 99z_entregas_km.sql
 - Grupo 76: 99zzzzzzzzzzzz_estoque.sql
 - Grupo 77: 99zzzzzzzzzzzzzz_api.sql
-- 20261028000056_evento.sql
+- api.tsx
 - Grupo 79: 99zzzzzzzzz_segmentos.sql
 - Grupo 80: 90_agente.sql
 - Grupo 81: 95_impressora_grupo.sql
 - Grupo 82: 99zzzzzz_rastreio.sql
+- contextoLoja
+- painel/scripts/ajustar-android.mjs
 - Grupo 85: 99zzzzzzzzzzzzz_aplicativos.sql
 - Grupo 86: README.md
 - Grupo 87: decisoes.md
 - 99zzzzzzzzzzzzzzzz_vitrine.sql
 - Grupo 89: 30_cardapio_digital.sql
 - Grupo 90: 60_agendamento.sql
+- 20261101000067_cupom_area_frete.sql
 - Grupo 93: 99zzzzzzzzzzzzzzz_mercadopago.sql
 - lancamentos.tsx
 - 99zzzzzzzzzzzzzzzzzzz_gestao.sql
@@ -109,7 +117,7 @@
 - Grupo 100: tempos_ajuste.sql
 - public.combo_passos
 - entregas/page.tsx
-- cardapio.test.ts
+- form-setor.tsx
 - meta-mes.tsx
 - Grupo 105: next.config.mjs
 - Grupo 106: vercel.json
@@ -118,9 +126,10 @@
 - ifood.tsx
 - marketplace.ts
 - mercadopago.ts
-- sabores-pizza.tsx
+- custos.tsx
 - index.ts
 - 99zzzzzzzzzzzzzzzzzzzzz_evento.sql
+- grafico-lojas.tsx
 - nav-painel.tsx
 - grafico-dias.tsx
 - 99zzzzzzzzzzzzzzzzzzzz_equipe.sql
@@ -140,34 +149,35 @@
 - pg_temp.como
 - auth.users
 - promocao.test.ts
-- normalizarTelefone
-- public.lojas
-- pg_temp.como
+- funcoes.tsx
+- public.marcas
+- middleware.ts
 - public.importar_cardapio
+- scripts
+- @supabase/supabase-js
 - planejamento/README.md
 - 99zzzzzzzzzzzzzzzzzzzzzzzzz_marketplace.sql
+- private.importar_cardapio
 - 99zzzzzzzzzzzzzzzzzzzzzzzzzzz_cadastro.sql
 - pedido.ts
 - Estado atual por área
 - pixCopiaECola
 - Integrações com marketplaces
 - Pendências
-- anon
+- pg_temp.como
+- public.lojas
 - 99zzzzzzzzzzzzzzzzzzzzzzzzzz_negociacao.sql
 - Checklist 2 — Implementação e atualizações do software · Responsável: Emmanuel
 - Checklist 1 — CNPJ e integrações · Responsável: Hugo
 - Checklist 3 — Planejamento tributário e operação no CNPJ · Responsável: Hugo
 - Objetivo
 - 05-decisoes-abertas.md
-- impressoras.ts
 - 99zzzzz_clientes.sql
-- [link]/page.tsx
 - 20261021000004_cardapio_edicao.sql
-- 20261021000007_cardapio_biblioteca.sql
 - 40_cardapio_biblioteca.sql
 
 ## God Nodes (most connected - your core abstractions)
-1. `criarClienteServidor()` - 253 edges
+1. `criarClienteServidor()` - 254 edges
 2. `public.lojas` - 169 edges
 3. `public.pedidos` - 142 edges
 4. `contextoLoja` - 130 edges
@@ -183,12 +193,12 @@
   docs/planejamento/checklists/emmanuel-software.md → packages/agente/src/main.ts
 - `D-022 Combos com escolhas e categoria de up-sell` --references--> `calcularCombo()`  [INFERRED]
   docs/decisoes.md → packages/core/src/combo.ts
+- `D-036 · Estoque: entrada por NF-e e baixa pela ficha técnica` --references--> `lerNFe()`  [INFERRED]
+  docs/decisoes.md → packages/core/src/estoque.ts
 - `D-023 % por categoria, cupons e desconto no balcão com limite` --references--> `precoBase()`  [INFERRED]
   docs/decisoes.md → packages/core/src/preco.ts
 - `Ambiente no ar (piloto)` --references--> `main()`  [INFERRED]
   README.md → packages/agente/src/main.ts
-- `D-011 Pedido agendado e taxa por bairro no painel` --references--> `taxaDoBairro()`  [INFERRED]
-  docs/decisoes.md → packages/core/src/agendamento.ts
 
 ## Import Cycles
 - None detected.
@@ -198,67 +208,67 @@
 - **Motoboy delivery flow (QR dispatch, app, tracking, routing)** — docs_decisoes_d_017_app_motoboy_qr, docs_decisoes_d_018_comanda_motoboy_pago, docs_decisoes_d_019_app_android_leitor_qr, docs_decisoes_d_026_rastreio_motoboys, docs_decisoes_d_027_rota_sugerida, apps_mobile_motoboy_readme_res_motoboy_android [INFERRED 0.85]
 - **Stock management module (NF-e, recipes, counts, CMV)** — docs_decisoes_d_036_estoque_nfe_ficha, docs_decisoes_d_037_movimentacoes_estoque, docs_decisoes_d_038_meu_estoque_contagem, docs_decisoes_d_039_fechamento_cmv, docs_decisoes_d_040_ficha_sabor_pizza [INFERRED 0.85]
 
-## Communities (160 total, 23 thin omitted)
+## Communities (170 total, 25 thin omitted)
 
-### Community 0 - "importar-nfe.tsx"
-Cohesion: 0.16
-Nodes (25): importarNFe(), vinculosFornecedor(), cnpjTexto(), dataTexto(), ImportarNFe(), lerFator(), Linha, D-036 · Estoque: entrada por NF-e e baixa pela ficha técnica (+17 more)
+### Community 0 - "equipe.tsx"
+Cohesion: 0.17
+Nodes (27): ligarFicha(), alterarFuncao(), cancelarConvite(), definirAtivo(), trocarSenhaUsuario(), Assistente(), Cartao, CartaoAcesso() (+19 more)
 
 ### Community 1 - "20261020000001_base.sql"
-Cohesion: 0.08
-Nodes (29): grupos_acesso_atualizado, grupos_acesso_auditar, grupos_acesso_validar, lojas_atualizado, lojas_auditar, marcas_atualizado, marcas_auditar, marcas_loja_idx (+21 more)
+Cohesion: 0.11
+Nodes (25): grupos_acesso_atualizado, grupos_acesso_auditar, grupos_acesso_validar, lojas_atualizado, lojas_auditar, marcas_atualizado, marcas_auditar, marcas_loja_idx (+17 more)
 
-### Community 2 - "cardapio-cliente.tsx"
-Cohesion: 0.15
-Nodes (24): calcularEntregaKm(), conferirCupom(), EntregaKm, enviarPedido(), FaixaKm, programaFidelidade(), saldoFidelidade(), FidelidadeCliente() (+16 more)
+### Community 2 - "resultados.tsx"
+Cohesion: 0.10
+Nodes (31): programaFidelidade(), saldoFidelidade(), saldoDoCliente(), FidelidadeBalcao(), UsoFidelidade, FidelidadeCliente(), lembrarPedidoFidelidade(), ler() (+23 more)
 
 ### Community 3 - "main.ts"
 Cohesion: 0.13
-Nodes (29): acharWindows(), alcance(), argumento(), ARQ_CONFIG, ARQ_LOG, atualizarSePrecisar(), atualizarWindows(), Config (+21 more)
+Nodes (28): acharWindows(), alcance(), argumento(), ARQ_CONFIG, ARQ_LOG, atualizarSePrecisar(), Config, Cupom (+20 more)
 
-### Community 4 - "criarClienteServidor"
-Cohesion: 0.08
-Nodes (41): GET(), POST(), cadastrar(), credenciais(), entrar(), LayoutMotoboy(), metadata, viewport (+33 more)
+### Community 4 - "server.ts"
+Cohesion: 0.12
+Nodes (15): carregar(), dynamic, generateMetadata(), Grupo, PaginaGrupo(), cadastrar(), credenciais(), entrar() (+7 more)
 
 ### Community 5 - "20261021000014_caixa.sql"
-Cohesion: 0.06
-Nodes (47): caixa_movimentos_sessao_idx, caixa_sessoes_auditar, caixa_sessoes_loja_idx, caixa_sessoes_uma_aberta_idx, caixas_auditar, caixas_nome_idx, lojas_caixa_inicial, pedidos_caixa_idx (+39 more)
+Cohesion: 0.13
+Nodes (24): caixa_movimentos_sessao_idx, caixa_sessoes_auditar, caixa_sessoes_loja_idx, caixa_sessoes_uma_aberta_idx, caixas_auditar, caixas_nome_idx, lojas_caixa_inicial, pedidos_caixa_idx (+16 more)
 
 ### Community 6 - "Banco: impressão"
 Cohesion: 0.06
 Nodes (48): impressao_config_auditar, impressao_destinos_loja_idx, impressoes_loja_idx, impressoes_pedido_idx, impressoes_pendentes_idx, impressoras_auditar, impressoras_nome_idx, pedidos_imprimir_ao_aceitar (+40 more)
 
 ### Community 7 - "public.produtos"
-Cohesion: 0.14
-Nodes (28): public.produtos, public.setor_marcas, public.setores, areas_entrega_auditar, marca_horarios_auditar, public.areas_entrega, public.cardapio_publico(), public.criar_pedido_publico() (+20 more)
+Cohesion: 0.17
+Nodes (21): public.setor_marcas, public.setores, areas_entrega_auditar, marca_horarios_auditar, private.marca_aberta(), public.areas_entrega, public.cardapio_publico(), public.criar_pedido_publico() (+13 more)
 
 ### Community 8 - "Banco: estoque"
-Cohesion: 0.09
-Nodes (28): estoque_mov_estoque_idx, estoque_mov_insumo_idx, estoque_mov_pedido_idx, fichas_opcao_idx, fichas_produto_idx, insumos_estoque_idx, pedidos_estoque, private.mover_estoque() (+20 more)
+Cohesion: 0.08
+Nodes (36): private.cupom_da_loja(), estoque_mov_estoque_idx, estoque_mov_insumo_idx, estoque_mov_pedido_idx, fichas_opcao_idx, fichas_produto_idx, insumos_estoque_idx, pedidos_estoque (+28 more)
 
 ### Community 9 - "API aberta e MCP (rotas)"
-Cohesion: 0.08
-Nodes (33): DELETE, POST(), DELETE, POST(), GET(), OPTIONS, GET(), OPTIONS (+25 more)
+Cohesion: 0.16
+Nodes (18): GET(), OPTIONS, GET(), OPTIONS, GET(), OPTIONS, GET(), OPTIONS (+10 more)
 
 ### Community 10 - "salvando"
-Cohesion: 0.09
-Nodes (43): ConfigImpressao, cuponsPendentes(), DadosImpressora, excluirImpressora(), gerarCodigoAgente(), imprimirPedido(), imprimirTeste(), marcarImpressao() (+35 more)
+Cohesion: 0.08
+Nodes (44): ConfigImpressao, DadosImpressora, excluirImpressora(), gerarCodigoAgente(), imprimirPedido(), imprimirTeste(), msg(), R (+36 more)
 
 ### Community 11 - "relatorios/page.tsx"
 Cohesion: 0.09
 Nodes (29): Aba, ABAS, Cancelado, Cor, CORES_BARRA, corTempo(), dataBR(), dynamic (+21 more)
 
 ### Community 12 - "saida.ts"
-Cohesion: 0.24
-Nodes (8): caminhoScript(), hostPorta(), imprimirRede(), imprimirWindows(), listarImpressorasWindows(), powershell(), PS_RAW, testarRede()
+Cohesion: 0.20
+Nodes (9): atualizarWindows(), caminhoScript(), hostPorta(), imprimirRede(), imprimirWindows(), listarImpressorasWindows(), powershell(), PS_RAW (+1 more)
 
 ### Community 13 - "index.ts"
-Cohesion: 0.06
-Nodes (60): ajustarSaldo(), buscarSaldos(), copiarPrograma(), excluirRecompensa(), extratoCliente(), R, saldoDoCliente(), salvarConfigFidelidade() (+52 more)
+Cohesion: 0.11
+Nodes (35): ajustarSaldo(), buscarSaldos(), copiarPrograma(), excluirRecompensa(), extratoCliente(), R, salvarConfigFidelidade(), salvarRecompensa() (+27 more)
 
 ### Community 14 - "web/package.json"
-Cohesion: 0.06
-Nodes (35): config, PUBLICAS, dependencies, jsqr@1.4.0, next@^15.5.9, qrcode@^1.5.4, react@^19.2.1, react-dom@^19.2.1 (+27 more)
+Cohesion: 0.10
+Nodes (25): dependencies, jsqr@1.4.0, next@^15.5.9, qrcode@^1.5.4, react@^19.2.1, react-dom@^19.2.1, @res/core@*, devDependencies (+17 more)
 
 ### Community 15 - "CI (testes automáticos)"
 Cohesion: 0.07
@@ -268,65 +278,69 @@ Nodes (34): name, runs-on, services, steps, DATABASE_URL, NEXT_PUBLIC_SUPABASE_A
 Cohesion: 0.14
 Nodes (28): despachar(), entregar(), PlanoRota, dynamic, metadata, PaginaDespacho(), Acerto(), AppMotoboy() (+20 more)
 
-### Community 17 - "public.clientes"
-Cohesion: 0.09
-Nodes (19): clientes_auditar, clientes_grupo_nome_idx, pedidos_cliente_idx, pedidos_registra_cliente, private.grupo_da_loja(), private.pedido_registra_cliente(), public.buscar_clientes(), public.cliente_enderecos (+11 more)
+### Community 17 - "pg_temp.como"
+Cohesion: 0.48
+Nodes (5): ids, pg_temp.como(), pg_temp.id(), pg_temp.v(), saida
 
-### Community 18 - "conta-cliente.tsx"
-Cohesion: 0.27
-Nodes (9): situacaoPedidos(), Dados, guardarPedido(), lerPedidos(), MeusPedidos(), NavCliente(), PedidoGuardado, PerfilCliente() (+1 more)
+### Community 18 - "editor-cardapio.tsx"
+Cohesion: 0.17
+Nodes (24): PassoForm, Resultado, AplicarGrupo(), EditorCardapio(), Marca, Painel, EditorCombo(), lerCentavos() (+16 more)
 
 ### Community 19 - "Decisões de arquitetura — RES"
 Cohesion: 0.06
-Nodes (33): D-002 Modelo multiloja: Loja → Marcas, D-003 Regras de cadastro valem no banco e no formulário, D-004 Auditoria calculada no servidor, D-005 Operações compostas são atômicas, D-006 Gravar só em ação explícita, D-007 Texto em UTF-8 completo, D-008 Nenhum segredo de integração no navegador, D-009 Preço de itens com grupos (decisão provisória, Q-009) (+25 more)
+Nodes (34): D-002 Modelo multiloja: Loja → Marcas, D-003 Regras de cadastro valem no banco e no formulário, D-004 Auditoria calculada no servidor, D-005 Operações compostas são atômicas, D-006 Gravar só em ação explícita, D-007 Texto em UTF-8 completo, D-008 Nenhum segredo de integração no navegador, D-009 Preço de itens com grupos (decisão provisória, Q-009) (+26 more)
 
-### Community 20 - "rota.ts"
-Cohesion: 0.22
-Nodes (6): Ponto, OpcoesRota, Parada, ResultadoRota, agora, M
+### Community 20 - "20261028000040_api_webhooks.sql"
+Cohesion: 0.14
+Nodes (20): private.total_contagem(), pedidos_webhooks, private.disparar_webhook(), private.loja_da_chave(), private.processar_webhooks(), public.api_chaves, public.api_estoque(), public.api_painel() (+12 more)
+
+### Community 21 - "20261028000052_gestao_empresarial.sql"
+Cohesion: 0.14
+Nodes (21): custos_auditar, custos_loja_idx, funcionario_registros_idx, funcionario_registros_numero, funcionarios_loja_idx, gestao_empresa_auditar, private.contadores_registro, private.numerar_registro() (+13 more)
 
 ### Community 22 - "contextoLoja"
-Cohesion: 0.11
-Nodes (33): dynamic, PaginaAplicativos(), copiar(), ENDPOINTS, FormWebhook(), LinhaWebhook(), ListaChaves(), NovaChave() (+25 more)
+Cohesion: 0.13
+Nodes (24): removerIntegracao(), salvarIntegracao(), salvarLinkGrupo(), dynamic, PaginaAplicativos(), AJUDA, Aplicativos(), Config() (+16 more)
 
 ### Community 23 - "salvando"
-Cohesion: 0.21
-Nodes (13): ajustarEntrega(), CartaoMotoboy(), FechamentoMotoboys(), FONTE, hora(), LinhaEntrega(), Numero(), Total (+5 more)
+Cohesion: 0.20
+Nodes (14): ajustarEntrega(), CartaoMotoboy(), FechamentoMotoboys(), FONTE, hora(), LinhaEntrega(), Numero(), Total (+6 more)
 
 ### Community 24 - "novo-pedido.tsx"
-Cohesion: 0.18
-Nodes (25): buscarClientes(), autorizarDesconto(), dynamic, PaginaNovoPedido(), GruposBalcao(), ItemCarrinho, lerCentavos(), Montador() (+17 more)
+Cohesion: 0.24
+Nodes (18): buscarClientes(), autorizarDesconto(), GruposBalcao(), ItemCarrinho, lerCentavos(), Montador(), MontadorCombo(), NovoPedido() (+10 more)
 
 ### Community 25 - "Promoções e cupons (tela)"
 Cohesion: 0.10
 Nodes (44): agenda(), alternarCupom(), alternarFreteGratis(), CupomForm, excluirCupom(), excluirFreteGratis(), excluirPromoCategoria(), fim() (+36 more)
 
 ### Community 26 - "quadro-pedidos.tsx"
-Cohesion: 0.09
-Nodes (42): criarPedido(), definirAceiteAutomatico(), definirMovimento(), definirProntoAuto(), marcarAviso(), marcarPago(), mensagem(), motivosCancelamentoPedido() (+34 more)
+Cohesion: 0.10
+Nodes (40): cuponsPendentes(), criarPedido(), definirAceiteAutomatico(), definirMovimento(), definirProntoAuto(), definirQuadroTodas(), marcarAviso(), marcarPago() (+32 more)
 
 ### Community 27 - "steps"
 Cohesion: 0.08
 Nodes (24): runs-on, steps, GH_TOKEN, KS_B64, KS_PASS, jobs, apk, name (+16 more)
 
 ### Community 28 - "financeiro/page.tsx"
-Cohesion: 0.08
-Nodes (73): configCustos(), criarLancamento(), donoFin(), editarLancamento(), excluirLancamento(), gerarContasCustos(), lancarNfe(), marcarPago() (+65 more)
+Cohesion: 0.07
+Nodes (75): configCustos(), criarLancamento(), donoFin(), editarLancamento(), excluirLancamento(), gerarContasCustos(), lancarNfe(), marcarPago() (+67 more)
 
 ### Community 29 - "Workflow do APK do motoboy"
 Cohesion: 0.08
 Nodes (24): runs-on, steps, GH_TOKEN, KS_B64, KS_PASS, jobs, apk, name (+16 more)
 
 ### Community 30 - "evento.tsx"
-Cohesion: 0.13
-Nodes (32): AjusteProduto, copiarParaEvento(), criarEvento(), msg(), R, refrescar(), removerProdutoEvento(), salvarEvento() (+24 more)
+Cohesion: 0.15
+Nodes (29): AjusteProduto, copiarParaEvento(), criarEvento(), msg(), R, refrescar(), removerProdutoEvento(), salvarEvento() (+21 more)
 
-### Community 31 - "salvando"
-Cohesion: 0.05
-Nodes (96): alterarDisponibilidade(), CategoriaOrigem, criarProduto(), DadosGrupo, definirFoto(), definirFotoOpcao(), definirGruposDoProduto(), definirProdutosDoGrupo() (+88 more)
+### Community 31 - "criarClienteServidor"
+Cohesion: 0.18
+Nodes (29): GET(), POST(), alterarDisponibilidade(), CategoriaOrigem, criarProduto(), definirFoto(), definirFotoOpcao(), definirGruposDoProduto() (+21 more)
 
-### Community 32 - "publico.ts"
-Cohesion: 0.14
-Nodes (26): CardapioCliente(), Extras(), MaisInformacoes(), MontadorCombo(), useEsc(), acrescimo(), cheio(), completo() (+18 more)
+### Community 32 - "cardapio-cliente.tsx"
+Cohesion: 0.07
+Nodes (64): calcularEntregaKm(), conferirCupom(), enviarPedido(), FaixaKm, situacaoPedidos(), carregar(), dynamic, generateMetadata() (+56 more)
 
 ### Community 33 - "next"
 Cohesion: 0.16
@@ -337,20 +351,24 @@ Cohesion: 0.09
 Nodes (21): GH_TOKEN, runs-on, steps, jobs, exe, name, on, push (+13 more)
 
 ### Community 35 - "cupom.ts"
-Cohesion: 0.15
-Nodes (21): NovoPedido, D-014 Impressão: fila no banco, regras como no BeeFood, navegador até o agente chegar, D-015 Agente de impressão do Windows (RES Impressão), blocosCombo(), colunasLR(), CupomDados, cupomTexto(), dataHora() (+13 more)
+Cohesion: 0.13
+Nodes (24): NovoPedido, D-014 Impressão: fila no banco, regras como no BeeFood, navegador até o agente chegar, D-015 Agente de impressão do Windows (RES Impressão), blocosCombo(), colunasLR(), CupomDados, CupomTeste, cupomTexto() (+16 more)
 
-### Community 36 - "[slug]/page.tsx"
+### Community 36 - "form-grupo.tsx"
+Cohesion: 0.16
+Nodes (20): DadosGrupo, salvarDetalheOpcao(), salvarGrupo(), DetalheOpcao(), FotoOpcao(), FORMACOES, FormGrupo(), GrupoInicial (+12 more)
+
+### Community 37 - "cardapio-dados.ts"
 Cohesion: 0.17
-Nodes (16): carregar(), dynamic, generateMetadata(), PaginaCardapio(), FreteGratisPublico, carregar(), enviar(), Janela (+8 more)
+Nodes (16): dynamic, Evento(), dynamic, PaginaNovoPedido(), EventoInfo, ProdutoEvento, ProdutoPrincipal, carregarCardapio() (+8 more)
 
 ### Community 38 - "preco.ts"
-Cohesion: 0.16
-Nodes (21): calcularCombo(), EscolhaPasso, PassoCombo, precoSeparado(), calcularItem(), ErroEscolha, grupoVisivel(), opcaoVisivel() (+13 more)
+Cohesion: 0.11
+Nodes (29): calcularCombo(), EscolhaPasso, PassoCombo, precoSeparado(), Papel, Recurso, RECURSOS, temPermissao() (+21 more)
 
 ### Community 39 - "painel-caixa.tsx"
-Cohesion: 0.10
-Nodes (38): abrirCaixa(), fecharCaixa(), movimentar(), msg(), R, salvarCaixa(), vincularSemCaixa(), dynamic (+30 more)
+Cohesion: 0.09
+Nodes (45): abrirCaixa(), fecharCaixa(), movimentar(), msg(), R, salvarCaixa(), vincularSemCaixa(), dynamic (+37 more)
 
 ### Community 40 - "Configuração TypeScript"
 Cohesion: 0.11
@@ -368,6 +386,10 @@ Nodes (13): mp_pagamentos_pedido_idx, public.desconectar_mp(), public.mp_contas,
 Cohesion: 0.14
 Nodes (17): dependencies, @capacitor/android@6.2.0, @capacitor/app@6.0.2, @capacitor/cli@6.2.0, @capacitor-community/background-geolocation@1.2.26, @capacitor/core@6.2.0, description, @capacitor/android (+9 more)
 
+### Community 44 - "mcp.ts"
+Cohesion: 0.14
+Nodes (15): DELETE, POST(), DELETE, POST(), chaveDe(), clienteApi(), DATA, Escopo (+7 more)
+
 ### Community 45 - "Grupo 45: package.json"
 Cohesion: 0.14
 Nodes (17): description, devDependencies, esbuild@0.24.0, tsx@4.19.2, @types/node@22.10.2, typescript@5.6.3, tsx, @types/node (+9 more)
@@ -377,12 +399,12 @@ Cohesion: 0.13
 Nodes (17): description, devDependencies, tsx@4.19.2, @types/node@22.10.2, typescript@5.6.3, exports, tsx, @types/node (+9 more)
 
 ### Community 47 - "motoboy/scripts/ajustar-android.mjs"
-Cohesion: 0.09
-Nodes (19): adapt, app, g, gradle, m, man, permissoes, res (+11 more)
+Cohesion: 0.17
+Nodes (11): adapt, app, g, gradle, m, man, permissoes, res (+3 more)
 
 ### Community 48 - "estoque/page.tsx"
-Cohesion: 0.08
-Nodes (62): ajustarEstoque(), buscarMovimentos(), copiarFicha(), definirModoEstoque(), excluirInsumo(), feito(), FiltroMovimentos, ItemImportar (+54 more)
+Cohesion: 0.05
+Nodes (100): ajustarEstoque(), buscarMovimentos(), copiarFicha(), definirModoEstoque(), excluirInsumo(), feito(), FiltroMovimentos, importarNFe() (+92 more)
 
 ### Community 49 - "escpos.ts"
 Cohesion: 0.29
@@ -393,32 +415,40 @@ Cohesion: 0.43
 Nodes (6): ids, pg_temp.como(), pg_temp.id(), pg_temp.v(), saida, tok
 
 ### Community 51 - "public.produtos"
-Cohesion: 0.19
-Nodes (28): public.complementos, public.grupos_opcoes, public.opcoes, public.produto_grupos, public.produto_marcas, public.vincular_grupo(), private.preco_item(), private.produto_publico() (+20 more)
+Cohesion: 0.15
+Nodes (35): public.complementos, public.criar_grupo_vinculado(), public.grupos_opcoes, public.opcoes, public.produto_grupos, public.produto_marcas, public.produtos, public.criar_grupo_vinculado() (+27 more)
 
 ### Community 52 - "negociacoes-ifood.tsx"
 Cohesion: 0.13
-Nodes (23): responderNegociacao(), CartaoNegociacao(), NegociacaoAberta, Prazo(), reais(), AcaoNegociacao, Alternativa, centavos() (+15 more)
+Nodes (24): responderNegociacao(), CartaoNegociacao(), NegociacaoAberta, NegociacoesIfood(), Prazo(), reais(), bipar(), AcaoNegociacao (+16 more)
+
+### Community 53 - "tempo-real.tsx"
+Cohesion: 0.19
+Nodes (12): Cardapio(), dynamic, TIPOS, cap(), Capacitor, EstadoRastreio, FaixaRastreio(), useRastreio() (+4 more)
 
 ### Community 54 - "beefood_para_res.py"
 Cohesion: 0.33
 Nodes (3): converter(), limpa(), L()
 
 ### Community 55 - "resumo/page.tsx"
-Cohesion: 0.15
-Nodes (28): Composicao, ComposicaoVendas(), dataBR(), dynamic, Kpi(), Metricas, PRESETS, Resumo (+20 more)
+Cohesion: 0.20
+Nodes (19): Composicao, ComposicaoVendas(), dataBR(), dynamic, Kpi(), Metricas, PRESETS, Resumo (+11 more)
 
 ### Community 56 - "anon"
-Cohesion: 0.06
-Nodes (53): custos_auditar, custos_loja_idx, funcionario_registros_idx, funcionario_registros_numero, funcionarios_loja_idx, gestao_empresa_auditar, private.contadores_registro, private.numerar_registro() (+45 more)
+Cohesion: 0.09
+Nodes (34): fin_fornecedores_doc, fin_lanc_comp, fin_lanc_origem, fin_lanc_serie, fin_lanc_venc, fin_lancamentos_auditar, fin_lancamentos_loja, private.fin_mesma_loja() (+26 more)
 
-### Community 58 - "src/caixa.ts"
-Cohesion: 0.40
-Nodes (7): Calculadora(), CEDULAS, Contagem, ehMoeda(), rotuloCedula(), situacaoDiferenca, totalContagem()
+### Community 58 - "lojas/actions.ts"
+Cohesion: 0.16
+Nodes (22): convidar(), criarCardapio(), criarLoja(), criarUsuarioCaixa(), definirCidade(), msg(), R, CartaoLoja() (+14 more)
+
+### Community 59 - "gestao/actions.ts"
+Cohesion: 0.29
+Nodes (15): excluirRegistro(), FuncionarioForm, lojaGestor(), R, RegistroForm, salvarCustos(), salvarEmpresa(), salvarFuncionario() (+7 more)
 
 ### Community 60 - "20261027000032_fidelidade.sql"
-Cohesion: 0.07
-Nodes (44): public.clientes, fidelidade_mov_cliente_idx, fidelidade_mov_grupo_idx, fidelidade_mov_pedido_idx, fidelidade_recompensas_grupo_idx, pedidos_fidelidade, private.aplicar_fidelidade(), private.expirar_fidelidade() (+36 more)
+Cohesion: 0.05
+Nodes (56): clientes_auditar, clientes_grupo_nome_idx, pedidos_cliente_idx, pedidos_registra_cliente, private.grupo_da_loja(), private.pedido_registra_cliente(), public.cliente_enderecos, public.clientes (+48 more)
 
 ### Community 62 - "Grupo 62: package.json"
 Cohesion: 0.17
@@ -456,9 +486,9 @@ Nodes (4): ids, pg_temp.id(), pg_temp.v(), saida
 Cohesion: 0.28
 Nodes (4): agruparEntregas (core), OSRM / Nominatim (OpenStreetMap services), otimizarRota (core), Shift window 05:00→05:00
 
-### Community 73 - "equipe.tsx"
-Cohesion: 0.05
-Nodes (99): EscopoCustos, excluirRegistro(), FuncionarioForm, ligarFicha(), lojaGestor(), R, RegistroForm, salvarCustos() (+91 more)
+### Community 73 - "gestao/page.tsx"
+Cohesion: 0.12
+Nodes (27): salvarModoGrupo(), dias(), Documento(), dynamic, Aba, ABAS, dynamic, Gestao() (+19 more)
 
 ### Community 74 - "painel/package.json"
 Cohesion: 0.16
@@ -476,9 +506,9 @@ Nodes (7): ids, pg_temp.como(), pg_temp.id(), pg_temp.v(), s1, s2, saida
 Cohesion: 0.39
 Nodes (7): chaves, ids, pg_temp.como(), pg_temp.id(), pg_temp.k(), pg_temp.v(), saida
 
-### Community 78 - "20261028000056_evento.sql"
-Cohesion: 0.22
-Nodes (8): pedidos_a_evento_periodo, private.limite_cardapios(), private.pedido_no_periodo_do_evento(), private.produto_de_evento(), public.criar_evento(), public.evento_publico(), public.remover_produto_evento(), public.salvar_evento()
+### Community 78 - "api.tsx"
+Cohesion: 0.28
+Nodes (14): revogarChaveApi(), testarWebhook(), copiar(), ENDPOINTS, FormWebhook(), LinhaWebhook(), ListaChaves(), NovaChave() (+6 more)
 
 ### Community 79 - "Grupo 79: 99zzzzzzzzz_segmentos.sql"
 Cohesion: 0.39
@@ -495,6 +525,14 @@ Nodes (4): ids, pg_temp.id(), pg_temp.v(), saida
 ### Community 82 - "Grupo 82: 99zzzzzz_rastreio.sql"
 Cohesion: 0.39
 Nodes (6): ids, pg_temp.como(), pg_temp.id(), pg_temp.v(), saida, tok
+
+### Community 83 - "contextoLoja"
+Cohesion: 0.40
+Nodes (9): conectarMercadoPago(), criarChaveApi(), desconectarMercadoPago(), excluirWebhook(), mpAceitarAoPagar(), R, salvarWebhook(), PainelMercadoPago() (+1 more)
+
+### Community 84 - "painel/scripts/ajustar-android.mjs"
+Cohesion: 0.20
+Nodes (8): adapt, app, g, gradle, m, man, res, run
 
 ### Community 85 - "Grupo 85: 99zzzzzzzzzzzzz_aplicativos.sql"
 Cohesion: 0.32
@@ -515,6 +553,10 @@ Nodes (3): ids, pg_temp.id(), saida
 ### Community 90 - "Grupo 90: 60_agendamento.sql"
 Cohesion: 0.33
 Nodes (3): ids, pg_temp.id(), saida
+
+### Community 91 - "20261101000067_cupom_area_frete.sql"
+Cohesion: 0.29
+Nodes (7): frete_gratis_auditar, frete_gratis_loja_idx, private.base_cupom(), private.regra_frete_gratis(), public.frete_gratis, public.frete_gratis_publico(), public.validar_cupom()
 
 ### Community 93 - "Grupo 93: 99zzzzzzzzzzzzzzz_mercadopago.sql"
 Cohesion: 0.48
@@ -537,32 +579,32 @@ Cohesion: 0.38
 Nodes (4): ids, pg_temp.id(), pg_temp.v(), saida
 
 ### Community 98 - "lista-clientes.tsx"
-Cohesion: 0.25
-Nodes (15): exportarClientes(), listarClientes(), salvarCliente(), Clientes(), dynamic, FichaCliente(), ListaClientes(), SEG (+7 more)
+Cohesion: 0.17
+Nodes (23): exportarClientes(), listarClientes(), salvarCliente(), Clientes(), dynamic, baixarCsv(), FichaCliente(), ListaClientes() (+15 more)
 
 ### Community 99 - "20261024000023_descontos_cupons.sql"
 Cohesion: 0.17
-Nodes (14): cupons_auditar, cupons_codigo_idx, pedidos_cupom_idx, private.agenda_vale(), private.aplicar_cupom(), private.cupom_da_loja(), private.desconto_categoria_pct(), private.desconto_cupom() (+6 more)
+Nodes (13): cupons_auditar, cupons_codigo_idx, pedidos_cupom_idx, private.agenda_vale(), private.aplicar_cupom(), private.desconto_categoria_pct(), private.desconto_cupom(), private.preco_combo() (+5 more)
 
 ### Community 101 - "public.combo_passos"
 Cohesion: 0.17
-Nodes (7): private.preco_item(), combo_passos_auditar, combo_passos_combo_idx, private.preco_combo(), public.combo_passos, public.duplicar_produto(), public.salvar_combo()
+Nodes (11): combo_passos_auditar, combo_passos_combo_idx, private.preco_combo(), public.combo_passos, public.duplicar_produto(), public.salvar_combo(), ids, pg_temp.como() (+3 more)
 
 ### Community 102 - "entregas/page.tsx"
 Cohesion: 0.14
 Nodes (20): rastreioAoVivo(), diaDoTurno(), dynamic, Entregas(), CORES, haQuanto(), iniciais(), MapaAoVivo() (+12 more)
 
-### Community 103 - "cardapio.test.ts"
-Cohesion: 0.22
-Nodes (8): Papel, Recurso, RECURSOS, temPermissao(), grupo(), grupoBase, opc(), produto
+### Community 103 - "form-setor.tsx"
+Cohesion: 0.39
+Nodes (7): salvarSetor(), FormSetor(), Marca, novoSetor(), SetorForm, setorVisivel(), validarSetor()
 
 ### Community 104 - "meta-mes.tsx"
 Cohesion: 0.27
 Nodes (10): salvarMeta(), ler(), MESES, MetaMes(), pct(), calcularMeta(), DadosMeta, diaUTC() (+2 more)
 
 ### Community 107 - "funcionarios.tsx"
-Cohesion: 0.15
-Nodes (23): chegadas(), espera(), medirEntrega(), montar(), painelMotoboy(), planejarRota(), dynamic, maxDuration (+15 more)
+Cohesion: 0.18
+Nodes (20): chegadas(), espera(), medirEntrega(), montar(), painelMotoboy(), planejarRota(), dynamic, maxDuration (+12 more)
 
 ### Community 116 - "ifood.tsx"
 Cohesion: 0.29
@@ -573,24 +615,28 @@ Cohesion: 0.14
 Nodes (17): acaoParaIfood(), CanalExterno, EVENTOS_IFOOD, formaDoIfood(), FormaRes, IfoodBeneficio, IfoodItem, IfoodOpcao (+9 more)
 
 ### Community 118 - "mercadopago.ts"
-Cohesion: 0.16
-Nodes (19): POST(), conferirPixMercadoPago(), pixMercadoPago(), dynamic, metadata, PaginaAcompanhar(), AcompanharPedido(), ExtrasPedido (+11 more)
+Cohesion: 0.10
+Nodes (30): POST(), conferirPixMercadoPago(), EntregaKm, pixMercadoPago(), dynamic, metadata, PaginaAcompanhar(), AcompanharPedido() (+22 more)
 
-### Community 119 - "sabores-pizza.tsx"
-Cohesion: 0.27
-Nodes (13): amigavel(), Como(), diametro(), EditorSabor(), fmt(), Linha, num(), pctTexto() (+5 more)
+### Community 119 - "custos.tsx"
+Cohesion: 0.36
+Nodes (8): EscopoCustos, brl(), ler(), Linha, pct(), PlanilhaCustos(), texto(), resumirCustos()
 
 ### Community 120 - "index.ts"
-Cohesion: 0.05
+Cohesion: 0.07
 Nodes (72): cadastrarRestaurante(), conferirEtapa(), consultarCep(), consultarCnpj(), DadosCadastro, montarLojaDoCadastro(), PedidoDeLoja, verificarSlug() (+64 more)
 
 ### Community 121 - "99zzzzzzzzzzzzzzzzzzzzz_evento.sql"
 Cohesion: 0.32
 Nodes (5): ids, pg_temp.id(), pg_temp.v(), quando, saida
 
+### Community 122 - "grafico-lojas.tsx"
+Cohesion: 0.33
+Nodes (8): curto(), formatar(), GraficoLojas(), LojaDesempenho, Metrica, METRICAS, valor(), formatarVariacao()
+
 ### Community 123 - "nav-painel.tsx"
-Cohesion: 0.14
-Nodes (21): PainelLayout(), trocarLoja(), dadosNovoPedido(), BARRA, COMECO, COR_SECAO, Icone(), Link_ (+13 more)
+Cohesion: 0.11
+Nodes (22): PainelLayout(), trocarLoja(), dadosNovoPedido(), BARRA, COMECO, COR_SECAO, Icone(), Link_ (+14 more)
 
 ### Community 125 - "grafico-dias.tsx"
 Cohesion: 0.33
@@ -601,28 +647,28 @@ Cohesion: 0.38
 Nodes (4): ids, pg_temp.id(), pg_temp.v(), saida
 
 ### Community 127 - "form-delivery.tsx"
-Cohesion: 0.29
-Nodes (11): PedidoCliente, ConfigDelivery, definirStatus(), replicarHorarios(), salvarConfig(), centavos(), DIAS, FORMAS (+3 more)
+Cohesion: 0.16
+Nodes (20): PedidoCliente, ConfigDelivery, definirStatus(), replicarHorarios(), salvarConfig(), salvarVitrine(), Vitrine, Delivery() (+12 more)
 
 ### Community 129 - "20261020000002_cardapio.sql"
 Cohesion: 0.12
-Nodes (19): complementos_loja_idx, grupos_opcoes_loja_idx, opcoes_grupo_idx, private.setor_exige_marca(), produto_grupos_grupo_idx, produtos_loja_setor_idx, public.criar_grupo_vinculado(), public.criar_produto() (+11 more)
+Nodes (18): complementos_loja_idx, grupos_opcoes_loja_idx, opcoes_grupo_idx, private.setor_exige_marca(), produto_grupos_grupo_idx, produtos_loja_setor_idx, public.criar_produto(), public.salvar_setor() (+10 more)
 
 ### Community 130 - "public.pedidos"
 Cohesion: 0.05
-Nodes (49): pedido_eventos_pedido_idx, pedido_item_opcoes_item_idx, pedido_itens_pedido_idx, pedidos_atualizado, pedidos_loja_status_idx, public.mudar_status_pedido(), public.pedido_eventos, public.pedidos (+41 more)
+Nodes (69): pedido_eventos_pedido_idx, pedido_item_opcoes_item_idx, pedido_itens_pedido_idx, pedidos_atualizado, pedidos_loja_status_idx, public.criar_pedido(), public.mudar_status_pedido(), public.pedido_eventos (+61 more)
 
 ### Community 131 - "expedicao.ts"
-Cohesion: 0.17
-Nodes (14): espera(), LoteSugerido, sugerirLotes(), SugestaoLoja, SugestaoLotes(), D-028 · Cliente acompanha a entrega, prazo por loja, alerta e lotes na expedição, tempos e atrasos, agruparEntregas(), Lote (+6 more)
+Cohesion: 0.10
+Nodes (22): espera(), LoteSugerido, sugerirLotes(), SugestaoLoja, SugestaoLotes(), D-027 · Rota sugerida quando o motoboy sai com várias entregas, D-028 · Cliente acompanha a entrega, prazo por loja, alerta e lotes na expedição, tempos e atrasos, Ponto (+14 more)
 
 ### Community 132 - "99zzzzzzzzzzzzzzzzzzzzzzz_financeiro.sql"
 Cohesion: 0.38
 Nodes (4): ids, pg_temp.id(), pg_temp.v(), saida
 
 ### Community 133 - "impressao.ts"
-Cohesion: 0.24
-Nodes (11): colunasNavegador(), CSS_CUPOM, CupomFila, cupomHtml(), esc(), imprimirNoNavegador(), linhasDoCupom(), qrsDosCupons() (+3 more)
+Cohesion: 0.26
+Nodes (11): marcarImpressao(), RC, useImprimir(), colunasNavegador(), CSS_CUPOM, CupomFila, cupomHtml(), esc() (+3 more)
 
 ### Community 134 - "20261021000008_multilojas.sql"
 Cohesion: 0.07
@@ -641,8 +687,8 @@ Cohesion: 0.39
 Nodes (7): ids, pg_temp.como(), pg_temp.id(), pg_temp.token(), pg_temp.v(), saida, tokens
 
 ### Community 138 - "agendamento.ts"
-Cohesion: 0.30
-Nodes (10): D-011 Pedido agendado e taxa por bairro no painel, chaveBairro(), dataNoFuso(), DIAS_CURTOS, faseAgendamento, FOLGA_AGENDADO_MIN, horaNoFuso(), partes() (+2 more)
+Cohesion: 0.27
+Nodes (6): D-011 Pedido agendado e taxa por bairro no painel, chaveBairro(), DIAS_CURTOS, faseAgendamento, FOLGA_AGENDADO_MIN, taxaDoBairro()
 
 ### Community 139 - "99zzzzzzz_rota.sql"
 Cohesion: 0.43
@@ -650,31 +696,35 @@ Nodes (6): ids, pg_temp.como(), pg_temp.id(), pg_temp.v(), saida, tok
 
 ### Community 140 - "20261106153000_marketplace_base.sql"
 Cohesion: 0.08
-Nodes (26): private.contador_pedidos, private.inserir_pedido(), public.ajustar_estoque(), public.salvar_contagem(), pedidos_externo_idx, pedidos_marketplace, private.enfileirar_marketplace(), private.marketplace_eventos (+18 more)
+Nodes (24): private.contador_pedidos, private.inserir_pedido(), pedidos_externo_idx, pedidos_marketplace, private.enfileirar_marketplace(), private.marketplace_eventos, private.pedido_para_marketplace(), private.produto_do_marketplace() (+16 more)
 
 ### Community 141 - "pg_temp.como"
 Cohesion: 0.60
 Nodes (3): ids, pg_temp.como(), pg_temp.id()
 
 ### Community 142 - "auth.users"
-Cohesion: 0.20
-Nodes (5): lojas_cnpj_idx, lojas_cpf_idx, public.criar_loja_cadastro(), public.salvar_dados_empresa(), auth.users
+Cohesion: 0.25
+Nodes (5): public.pode_gerir_usuario(), public.registrar_usuario_caixa(), public.usuarios_login, public.criar_loja_cadastro(), auth.users
 
 ### Community 143 - "promocao.test.ts"
-Cohesion: 0.22
+Cohesion: 0.24
 Nodes (11): D-021 Cardápio novo: cards com foto e promoção De/Por com agenda, AgendaPromo, diaAnterior(), diaDaSemana(), DIAS_CURTOS, partesLocais(), promoEncerrada(), promoVale() (+3 more)
 
-### Community 144 - "normalizarTelefone"
-Cohesion: 0.40
-Nodes (8): baixarCsv(), D-030 · Telefone sempre com o 9 do celular, CASOS_SEGMENTO, CASOS_TELEFONE, eCelular(), normalizarTelefone(), SEGMENTOS, telefoneInternacional()
+### Community 144 - "funcoes.tsx"
+Cohesion: 0.53
+Nodes (5): salvarPermissoesEquipe(), LojaEquipe, AjusteCaixa(), Funcoes(), QuadroFuncoes()
 
-### Community 145 - "public.lojas"
+### Community 145 - "public.marcas"
 Cohesion: 0.07
-Nodes (61): public.lojas, public.marcas, public.criar_pedido(), public.pedido_item_opcoes, public.pedido_itens, private.marca_aberta(), public.acompanhar_pedido(), private.limite_lojas() (+53 more)
+Nodes (33): public.marcas, public.replicar_horarios(), public.compartilhar_catalogo(), private.dentro_do_horario(), private.horarios_agendamento(), private.marca_aberta(), private.taxa_bairro(), private.validar_agendamento() (+25 more)
 
-### Community 146 - "pg_temp.como"
-Cohesion: 0.48
-Nodes (5): ids, pg_temp.como(), pg_temp.id(), pg_temp.v(), saida
+### Community 146 - "middleware.ts"
+Cohesion: 0.33
+Nodes (4): config, PUBLICAS, @supabase/ssr@0.5.2, @supabase/ssr
+
+### Community 148 - "scripts"
+Cohesion: 0.40
+Nodes (5): scripts, build, dev, start, typecheck
 
 ### Community 150 - "planejamento/README.md"
 Cohesion: 0.22
@@ -684,17 +734,21 @@ Nodes (4): Checklists por área (nosso "Monday"), Regras do quadro, Como usamos,
 Cohesion: 0.38
 Nodes (4): ids, pg_temp.id(), pg_temp.v(), saida
 
+### Community 152 - "private.importar_cardapio"
+Cohesion: 0.67
+Nodes (3): private.importacoes, private.importar_cardapio(), pg_temp.k()
+
 ### Community 154 - "pedido.ts"
-Cohesion: 0.29
-Nodes (11): acaoAvancar(), ErroPedido, LinhaTotal, proximosStatus(), tempoDecorrido(), Totais, totalizar(), transicaoValida() (+3 more)
+Cohesion: 0.26
+Nodes (11): acaoAvancar(), LinhaTotal, proximosStatus(), STATUS_ROTULO, StatusPedido, tempoDecorrido(), TIPO_ROTULO, Totais (+3 more)
 
 ### Community 155 - "Estado atual por área"
 Cohesion: 0.22
 Nodes (9): Base e infraestrutura, Cardápio e pedidos, Clientes e marketing, Documentação e processo, Estado atual por área, Gestão e relatórios, Integrações e API, Operação (+1 more)
 
 ### Community 156 - "pixCopiaECola"
-Cohesion: 0.31
-Nodes (8): PagarPix(), campo(), crc16Pix(), FORMATOS_RASTREAMENTO, normalizarChavePix(), pixCopiaECola(), semAcento(), TipoChavePix
+Cohesion: 0.39
+Nodes (7): campo(), crc16Pix(), FORMATOS_RASTREAMENTO, normalizarChavePix(), pixCopiaECola(), semAcento(), TipoChavePix
 
 ### Community 157 - "Integrações com marketplaces"
 Cohesion: 0.29
@@ -704,9 +758,9 @@ Nodes (7): 1. O que o RES precisa ter antes de qualquer marketplace, 2. iFood, 3
 Cohesion: 0.29
 Nodes (7): Agora (próximas 2 semanas), Concluídas, Empresa (CNPJ e tributário) — detalhe em checklists/hugo-cnpj-e-integracoes.md e checklists/hugo-tributario.md, Frentes já previstas no README (fora dos marketplaces), Integrações (detalhe em 03-integracoes-marketplaces.md), Pendências, Piloto com restaurante real
 
-### Community 160 - "anon"
-Cohesion: 0.08
-Nodes (24): public.resumo_vendas(), public.autorizacoes_desconto, public.criar_pedido(), public.relatorio_entregas(), public.salvar_prazo_entrega(), private.aplicar_cupom(), public.relatorio_fidelidade(), private.periodo_api() (+16 more)
+### Community 160 - "public.lojas"
+Cohesion: 0.06
+Nodes (35): public.lojas, public.resumo_vendas(), pedidos_saiu_idx, private.area_do_pedido(), private.entrega_json(), public.ajustar_entrega(), public.fechamento_motoboys(), public.motoboy_despachar() (+27 more)
 
 ### Community 161 - "99zzzzzzzzzzzzzzzzzzzzzzzzzz_negociacao.sql"
 Cohesion: 0.38
@@ -728,45 +782,33 @@ Nodes (5): A. Regime tributário, B. Como o dinheiro entra, C. Como o dinheiro s
 Cohesion: 0.40
 Nodes (4): O que já temos (resumo), Objetivo, Onde queremos chegar, Ordem sugerida das frentes
 
-### Community 169 - "impressoras.ts"
-Cohesion: 0.29
-Nodes (5): ModeloImpressora, MODELOS_IMPRESSORA, PaginaCodigo, PAGINAS_CODIGO, Protocolo
-
 ### Community 170 - "99zzzzz_clientes.sql"
 Cohesion: 0.48
 Nodes (5): ids, pg_temp.como(), pg_temp.id(), pg_temp.v(), saida
-
-### Community 171 - "[link]/page.tsx"
-Cohesion: 0.47
-Nodes (5): carregar(), dynamic, generateMetadata(), Grupo, PaginaGrupo()
-
-### Community 172 - "20261021000004_cardapio_edicao.sql"
-Cohesion: 0.33
-Nodes (3): public.criar_grupo_vinculado(), public.desvincular_grupo(), public.reordenar()
 
 ### Community 174 - "40_cardapio_biblioteca.sql"
 Cohesion: 0.60
 Nodes (3): ids, pg_temp.como(), pg_temp.id()
 
 ## Knowledge Gaps
-- **9 isolated node(s):** `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `pedidos.qr_token (/m/d/<código>)`, `GitHub Actions CI (rules, db, build)`, `Roadmap stages 3c-7 and integrations`, `supabase/migrations (Postgres RLS, audit, atomic ops)` (+4 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 795 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **9 isolated node(s):** `pedidos.qr_token (/m/d/<código>)`, `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `GitHub Actions CI (rules, db, build)`, `Roadmap stages 3c-7 and integrations`, `supabase/migrations (Postgres RLS, audit, atomic ops)` (+4 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 788 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **25 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `next` connect `criarClienteServidor` to `cardapio-cliente.tsx`, `API aberta e MCP (rotas)`, `salvando`, `relatorios/page.tsx`, `index.ts`, `web/package.json`, `app-motoboy.tsx`, `conta-cliente.tsx`, `contextoLoja`, `novo-pedido.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `financeiro/page.tsx`, `evento.tsx`, `salvando`, `next`, `[slug]/page.tsx`, `painel-caixa.tsx`, `ifood.ts`, `[link]/page.tsx`, `estoque/page.tsx`, `resumo/page.tsx`, `app/layout.tsx`, `equipe.tsx`, `lista-clientes.tsx`, `entregas/page.tsx`, `meta-mes.tsx`, `ifood.tsx`, `mercadopago.ts`, `sabores-pizza.tsx`, `index.ts`, `nav-painel.tsx`, `form-delivery.tsx`?**
-  _High betweenness centrality (0.063) - this node is a cross-community bridge._
-- **What connects `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `pedidos.qr_token (/m/d/<código>)`, `GitHub Actions CI (rules, db, build)` to the rest of the system?**
+- **Why does `next` connect `nav-painel.tsx` to `equipe.tsx`, `resultados.tsx`, `server.ts`, `API aberta e MCP (rotas)`, `salvando`, `relatorios/page.tsx`, `index.ts`, `web/package.json`, `app-motoboy.tsx`, `middleware.ts`, `@supabase/supabase-js`, `contextoLoja`, `novo-pedido.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `financeiro/page.tsx`, `evento.tsx`, `criarClienteServidor`, `cardapio-cliente.tsx`, `next`, `cardapio-dados.ts`, `painel-caixa.tsx`, `ifood.ts`, `mcp.ts`, `estoque/page.tsx`, `tempo-real.tsx`, `resumo/page.tsx`, `lojas/actions.ts`, `gestao/actions.ts`, `app/layout.tsx`, `gestao/page.tsx`, `api.tsx`, `contextoLoja`, `lista-clientes.tsx`, `entregas/page.tsx`, `meta-mes.tsx`, `ifood.tsx`, `mercadopago.ts`, `custos.tsx`, `index.ts`, `form-delivery.tsx`?**
+  _High betweenness centrality (0.068) - this node is a cross-community bridge._
+- **What connects `pedidos.qr_token (/m/d/<código>)`, `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `GitHub Actions CI (rules, db, build)` to the rest of the system?**
   _9 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `20261020000001_base.sql` be split into smaller, more focused modules?**
-  _Cohesion score 0.08250355618776671 - nodes in this community are weakly interconnected._
-- **Why does `criarClienteServidor()` connect `criarClienteServidor` to `importar-nfe.tsx`, `cardapio-cliente.tsx`, `expedicao.ts`, `salvando`, `relatorios/page.tsx`, `index.ts`, `app-motoboy.tsx`, `conta-cliente.tsx`, `contextoLoja`, `salvando`, `novo-pedido.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `financeiro/page.tsx`, `evento.tsx`, `salvando`, `next`, `[slug]/page.tsx`, `painel-caixa.tsx`, `[link]/page.tsx`, `estoque/page.tsx`, `negociacoes-ifood.tsx`, `resumo/page.tsx`, `equipe.tsx`, `lista-clientes.tsx`, `entregas/page.tsx`, `meta-mes.tsx`, `funcionarios.tsx`, `ifood.tsx`, `mercadopago.ts`, `index.ts`, `nav-painel.tsx`, `form-delivery.tsx`?**
-  _High betweenness centrality (0.043) - this node is a cross-community bridge._
-- **Should `main.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.12903225806451613 - nodes in this community are weakly interconnected._
-- **Why does `formatarReais()` connect `resumo/page.tsx` to `importar-nfe.tsx`, `cardapio-cliente.tsx`, `criarClienteServidor`, `relatorios/page.tsx`, `index.ts`, `app-motoboy.tsx`, `conta-cliente.tsx`, `salvando`, `novo-pedido.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `pixCopiaECola`, `salvando`, `publico.ts`, `next`, `cupom.ts`, `preco.ts`, `painel-caixa.tsx`, `estoque/page.tsx`, `negociacoes-ifood.tsx`, `src/caixa.ts`, `lista-clientes.tsx`, `cardapio.test.ts`, `meta-mes.tsx`, `ifood.tsx`, `mercadopago.ts`, `sabores-pizza.tsx`, `nav-painel.tsx`, `grafico-dias.tsx`, `form-delivery.tsx`?**
+  _Cohesion score 0.10752688172043011 - nodes in this community are weakly interconnected._
+- **Why does `criarClienteServidor()` connect `criarClienteServidor` to `equipe.tsx`, `resultados.tsx`, `expedicao.ts`, `server.ts`, `impressao.ts`, `salvando`, `relatorios/page.tsx`, `index.ts`, `app-motoboy.tsx`, `funcoes.tsx`, `contextoLoja`, `salvando`, `novo-pedido.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `financeiro/page.tsx`, `evento.tsx`, `cardapio-cliente.tsx`, `next`, `form-grupo.tsx`, `cardapio-dados.ts`, `painel-caixa.tsx`, `estoque/page.tsx`, `negociacoes-ifood.tsx`, `resumo/page.tsx`, `lojas/actions.ts`, `gestao/actions.ts`, `gestao/page.tsx`, `api.tsx`, `contextoLoja`, `lista-clientes.tsx`, `entregas/page.tsx`, `form-setor.tsx`, `meta-mes.tsx`, `funcionarios.tsx`, `ifood.tsx`, `mercadopago.ts`, `index.ts`, `nav-painel.tsx`, `form-delivery.tsx`?**
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
+- **Should `resultados.tsx` be split into smaller, more focused modules?**
+  _Cohesion score 0.10317460317460317 - nodes in this community are weakly interconnected._
+- **Why does `formatarReais()` connect `mercadopago.ts` to `resultados.tsx`, `relatorios/page.tsx`, `index.ts`, `app-motoboy.tsx`, `editor-cardapio.tsx`, `salvando`, `novo-pedido.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `cardapio-cliente.tsx`, `next`, `cupom.ts`, `form-grupo.tsx`, `preco.ts`, `painel-caixa.tsx`, `estoque/page.tsx`, `negociacoes-ifood.tsx`, `resumo/page.tsx`, `contextoLoja`, `lista-clientes.tsx`, `meta-mes.tsx`, `ifood.tsx`, `grafico-lojas.tsx`, `nav-painel.tsx`, `grafico-dias.tsx`, `form-delivery.tsx`?**
   _High betweenness centrality (0.039) - this node is a cross-community bridge._
-- **Should `criarClienteServidor` be split into smaller, more focused modules?**
-  _Cohesion score 0.08418079096045197 - nodes in this community are weakly interconnected._
+- **Should `main.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.1310344827586207 - nodes in this community are weakly interconnected._

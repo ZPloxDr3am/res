@@ -1604,3 +1604,8 @@ button.mini[data-avisado] { color: #15803d; }
   .cad-etapas li[data-atual] button { background: #431407; }
   .cad-etapa-num { background: #334155; }
 }
+/* Quadro: esta loja × todas as lojas (D-078) */
+.qp-visao { display: inline-flex; border: 1px solid #e5e7eb; border-radius: 999px; padding: 2px; gap: 2px; margin-top: 0.2rem; max-width: 100%; }
+.qp-visao button { border: 0; border-radius: 999px; padding: 0.3rem 0.8rem; background: transparent; color: inherit; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qp-visao button[aria-checked='true'] { background: #ea580c; color: #fff; font-weight: 600; }
+@media (prefers-color-scheme: dark) { .qp-visao { border-color: #334155; } }

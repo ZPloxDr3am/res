@@ -9,7 +9,16 @@ export const dynamic = 'force-dynamic';
 
 export default async function Pedidos({ searchParams }: { searchParams: Promise<{ todas?: string }> }) {
   const ctx = await contextoLoja();
-  const todas = ctx.lojas.length > 1 && (await searchParams).todas === '1';
+  const sp = await searchParams;
+  // "todas as lojas" (D-078): ?todas=1/0 manda; sem isso, vale a escolha salva do usuário
+  let todas = false;
+  if (ctx.lojas.length > 1) {
+    if (sp.todas === '1' || sp.todas === '0') todas = sp.todas === '1';
+    else {
+      const { data } = await (await criarClienteServidor()).auth.getUser();
+      todas = (data.user?.user_metadata as { quadro_todas?: boolean } | undefined)?.quadro_todas === true;
+    }
+  }
   const ids = todas ? ctx.lojas.map((l) => l.id) : [ctx.lojaId];
   const { pedidos, aceiteAutomatico, prontoAutoRetirada, tempoPreparo, fuso, filaImpressao, prazoEntrega, movimento } = await carregarQuadro(ids, ctx.lojaId);
   // histórico de cada cliente no grupo, para o selo do cartão (D-057)

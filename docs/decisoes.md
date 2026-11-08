@@ -713,3 +713,8 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Gravado: na **loja** CNPJ ou CPF, razão social, fantasia, IE, telefone, e-mail, endereço estruturado (e o endereço de uma linha que as entregas já usam); na **conta** razão social como nome, responsável (nome, celular, e-mail) e as respostas comerciais (`info_comercial`).
 - **Lojas e equipe → Dados da empresa**: mesmos campos para editar (trocar CPF por CNPJ, mudar endereço). Vale também para as lojas que já existiam. "Primeiros passos" aponta para cá.
 - Se a Receita ou o CEP não responderem, a pessoa preenche à mão; nada trava.
+
+## D-078 — Quadro de pedidos com todas as lojas (08/11/2026)
+- No topo do quadro, **"[loja atual] | 🏪 Todas as lojas (N)"** (só aparece para quem tem mais de uma loja). Em "todas", cada cartão mostra a loja e os filtros separam por loja; tempo real e negociações do iFood valem para todas.
+- A escolha fica **salva no usuário** (metadado `quadro_todas` da conta de login): cada dono/gerente/caixa decide se abre o quadro numa loja ou na operação inteira, em qualquer aparelho. `?todas=1` / `?todas=0` no endereço manda na hora.
+- Aceite automático, pausa, modo movimento e fila de impressão continuam por loja (aparecem quando uma loja está escolhida).
