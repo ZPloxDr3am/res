@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   blocosCombo,
   acaoAvancar,
@@ -21,7 +22,7 @@ import {
   type StatusPedido,
 } from '@res/core';
 import type { PedidoRow } from '@/lib/pedidos';
-import { definirAceiteAutomatico, definirMovimento, definirProntoAuto, marcarAviso, marcarPago, motivosCancelamentoPedido, mudarStatus, pausarLoja } from '@/app/(painel)/pedidos/actions';
+import { definirAceiteAutomatico, definirMovimento, definirProntoAuto, definirQuadroTodas, marcarAviso, marcarPago, motivosCancelamentoPedido, mudarStatus, pausarLoja } from '@/app/(painel)/pedidos/actions';
 import { salvando } from '@/components/tempo-real';
 import { BotaoNovoPedido } from '@/components/pedido-flutuante';
 import { useImprimir } from '@/components/impressao/usar-impressao';
@@ -285,12 +286,7 @@ export function QuadroPedidos({
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <div className="grade" style={{ gap: '0.1rem' }}>
           <h1 style={{ margin: 0 }}>Pedidos</h1>
-          {lojas.length > 1 && (
-            <span className="dica">
-              {todas ? `Todas as lojas (${lojas.length})` : lojaAtual} ·{' '}
-              <Link href={todas ? '/pedidos' : '/pedidos?todas=1'}>{todas ? `só ${lojaAtual}` : 'ver todas as lojas'}</Link>
-            </span>
-          )}
+          {lojas.length > 1 && <VisaoLojas todas={todas} lojaAtual={lojaAtual} total={lojas.length} />}
         </div>
         <div className="linha qp-controles" style={{ alignItems: 'center' }}>
           <button type="button" onClick={alternarSom} aria-pressed={som}>
@@ -332,6 +328,7 @@ export function QuadroPedidos({
           <BotaoNovoPedido />
         </div>
       </div>
+      {todas && <p className="dica" style={{ margin: 0 }}>Vendo a operação inteira: cada cartão mostra a loja. Aceite automático, pausa e modo movimento são de cada loja (escolha a loja acima para mudar).</p>}
       {!todas && <PausaLoja pausa={pausa} fuso={fuso} lojaNome={lojaAtual} modo="faixa" />}
       {!todas && <MovimentoLoja movimento={movimento} fuso={fuso} tempoPreparo={tempoPreparo} modo="faixa" />}
       {erro && <p className="erro" role="alert">{erro}</p>}
@@ -958,6 +955,25 @@ function InfoMarketplace({ p }: { p: PedidoRow }) {
       {p.documento_cliente && <span>CPF/CNPJ na nota: <b>{p.documento_cliente}</b></span>}
       {p.localizador && <span className="dica">Contato pelo iFood · localizador {p.localizador}</span>}
       {p.observacao_entrega && <span>📍 {p.observacao_entrega}</span>}
+    </div>
+  );
+}
+
+/** "Esta loja | Todas as lojas" (D-078): a escolha fica salva no usuário e vale em qualquer aparelho. */
+function VisaoLojas({ todas, lojaAtual, total }: { todas: boolean; lojaAtual: string; total: number }) {
+  const router = useRouter();
+  const [pendente, iniciar] = useTransition();
+  const escolher = (v: boolean) => {
+    if (v === todas) return;
+    iniciar(async () => {
+      await definirQuadroTodas(v);
+      router.push(v ? '/pedidos?todas=1' : '/pedidos?todas=0');
+    });
+  };
+  return (
+    <div className="qp-visao" role="radiogroup" aria-label="Quais pedidos mostrar">
+      <button type="button" role="radio" aria-checked={!todas} disabled={pendente} onClick={() => escolher(false)}>{lojaAtual}</button>
+      <button type="button" role="radio" aria-checked={todas} disabled={pendente} onClick={() => escolher(true)}>🏪 Todas as lojas ({total})</button>
     </div>
   );
 }
