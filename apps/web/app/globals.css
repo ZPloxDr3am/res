@@ -1585,3 +1585,22 @@ button.mini[data-avisado] { color: #15803d; }
 }
 .legal h2 { font-size: 1.05rem; margin: 1.2rem 0 0.3rem; }
 .legal p, .legal li { line-height: 1.55; }
+/* Cadastro em etapas (D-077) */
+.cad-etapas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.4rem; }
+.cad-etapas button { width: 100%; display: flex; align-items: center; gap: 0.4rem; justify-content: center; padding: 0.45rem 0.3rem; border-radius: 10px; font-size: 0.85rem; background: transparent; border: 1px solid #e5e7eb; color: inherit; cursor: default; }
+.cad-etapas li[data-feita] button { cursor: pointer; border-color: #bbf7d0; background: #f0fdf4; }
+.cad-etapas li[data-atual] button { border-color: #ea580c; background: #fff7ed; font-weight: 600; }
+.cad-etapa-num { display: inline-grid; place-items: center; width: 1.4rem; height: 1.4rem; border-radius: 50%; background: #e5e7eb; font-size: 0.75rem; flex: none; }
+.cad-etapas li[data-atual] .cad-etapa-num { background: #ea580c; color: #fff; }
+.cad-etapas li[data-feita] .cad-etapa-num { background: #16a34a; color: #fff; }
+.cad-form .qp-chip[aria-checked='true'] { background: #ea580c; border-color: #ea580c; color: #fff; }
+.cad-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; }
+.cad-3 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 0.6rem; }
+.cad-cep { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 0.6rem; }
+@media (max-width: 520px) { .cad-2 { grid-template-columns: minmax(0, 1fr); } .cad-etapas button { font-size: 0.75rem; } }
+@media (prefers-color-scheme: dark) {
+  .cad-etapas button { border-color: #334155; }
+  .cad-etapas li[data-feita] button { background: #052e16; border-color: #166534; }
+  .cad-etapas li[data-atual] button { background: #431407; }
+  .cad-etapa-num { background: #334155; }
+}
