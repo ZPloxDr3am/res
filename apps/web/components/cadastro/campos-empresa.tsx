@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { UFS, cepValido, cnpjValido, formatarCep, formatarCnpj, formatarCpf, formatarTelefone, soDigitos, type DadosReceita, type EnderecoEmpresa } from '@res/core';
-import { consultarCep, consultarCnpj } from '@/app/cadastro/actions';
+import { buscarCep as cepNaRede, buscarCnpj } from '@/components/cadastro/consultas';
 
 export type CamposEmpresaValor = {
   semCnpj: boolean;
@@ -25,7 +25,7 @@ export function CamposEmpresa({ v, onChange, onReceita, dicaCpf }: { v: CamposEm
     if (v.semCnpj || !cnpjValido(v.documento)) return;
     let vivo = true;
     setReceita('buscando');
-    void consultarCnpj(v.documento).then((r) => {
+    void buscarCnpj(v.documento).then((r) => {
       if (!vivo) return;
       if (!r) return setReceita('nao');
       setReceita({ situacao: r.situacao, ativa: r.ativa, atividade: r.atividade });
@@ -47,7 +47,7 @@ export function CamposEmpresa({ v, onChange, onReceita, dicaCpf }: { v: CamposEm
 
   const buscarCep = (cep: string) => {
     setCepSit('buscando');
-    void consultarCep(cep).then((e) => {
+    void cepNaRede(cep).then((e) => {
       if (!e) return setCepSit('nao');
       setCepSit(null);
       onChange((x) => ({ ...x, endereco: { ...x.endereco, ...e, logradouro: e.logradouro || x.endereco.logradouro, bairro: e.bairro || x.endereco.bairro, cep: formatarCep(cep) } }));

@@ -2452,5 +2452,41 @@
     "seen": 1794165955.2250051,
     "ast_hash": "8e61efcd7c934f3f3cf72552b07863fd",
     "semantic_hash": ""
+  },
+  "apps/web/components/cadastro/campos-empresa.tsx": {
+    "mtime": 1794166105.2616425,
+    "seen": 1794166125.0622046,
+    "ast_hash": "1a3d0497ce21e188fc8e96ca3b2e93cb",
+    "semantic_hash": ""
+  },
+  "apps/web/components/cadastro/consultas.ts": {
+    "mtime": 1794166105.2488568,
+    "seen": 1794166125.0622072,
+    "ast_hash": "ab1ba7684affcc001a0a4a94f0a3b008",
+    "semantic_hash": ""
+  },
+  "apps/web/components/cadastro/dados-empresa.tsx": {
+    "mtime": 1794165950.3334947,
+    "seen": 1794166125.0622082,
+    "ast_hash": "0c69e141d9bde6dd28951310ae109197",
+    "semantic_hash": ""
+  },
+  "packages/core/src/empresa.ts": {
+    "mtime": 1794165950.3454945,
+    "seen": 1794166125.0623703,
+    "ast_hash": "31b66031896700a4a66c3135dbb9061a",
+    "semantic_hash": ""
+  },
+  "packages/core/test/empresa.test.ts": {
+    "mtime": 1794165950.3454945,
+    "seen": 1794166125.0624003,
+    "ast_hash": "6c4e3e6a2df07087070c7bfbd71b6cde",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261108170000_cadastro_empresa.sql": {
+    "mtime": 1794165950.3454945,
+    "seen": 1794166125.0625017,
+    "ast_hash": "376ae9a5a05177faba58e8059770245b",
+    "semantic_hash": ""
   }
 }
