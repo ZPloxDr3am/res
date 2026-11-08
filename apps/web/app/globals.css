@@ -1558,3 +1558,30 @@ button.mini[data-avisado] { color: #15803d; }
   .qp-negociacao[data-situacao='respondida'] { background: #2a0d10; border-color: #9f1239; }
   .qp-neg-prazo { background: #7f1d1d; }
 }
+
+/* Cadastro e primeiros passos (D-076) */
+.cad-form fieldset { border: 1px solid var(--borda, #e5e7eb); border-radius: 12px; padding: 0.8rem; margin: 0; }
+.cad-form legend { padding: 0 0.3rem; font-weight: 600; }
+.cad-tipos { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.cad-tipo { border-radius: 999px; padding: 0.4rem 0.75rem; }
+.cad-tipo[aria-checked='true'] { background: #ea580c; border-color: #ea580c; color: #fff; }
+.cad-slug { display: flex; align-items: center; gap: 0.25rem; }
+.cad-slug input { flex: 1; min-width: 0; }
+.cad-slug .dica { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%; }
+.pp-barra { height: 10px; border-radius: 999px; background: #e5e7eb; overflow: hidden; }
+.pp-barra span { display: block; height: 100%; background: linear-gradient(90deg, #ea580c, #16a34a); transition: width 0.4s; }
+.pp-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
+.pp-passo { display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); gap: 0.7rem; align-items: start; padding: 0.8rem; border: 1px solid #e5e7eb; border-radius: 12px; }
+.pp-passo[data-feito] { background: #f0fdf4; border-color: #bbf7d0; }
+.pp-num { display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border-radius: 50%; background: #ffedd5; color: #9a3412; font-weight: 700; }
+.pp-passo[data-feito] .pp-num { background: #16a34a; color: #fff; }
+.pp-link { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: flex-start; }
+.pp-qr svg { width: 140px; height: 140px; background: #fff; border-radius: 8px; }
+@media (prefers-color-scheme: dark) {
+  .pp-barra { background: #334155; }
+  .pp-passo { border-color: #334155; }
+  .pp-passo[data-feito] { background: #052e16; border-color: #166534; }
+  .pp-num { background: #431407; color: #fed7aa; }
+}
+.legal h2 { font-size: 1.05rem; margin: 1.2rem 0 0.3rem; }
+.legal p, .legal li { line-height: 1.55; }

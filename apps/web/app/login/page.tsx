@@ -1,4 +1,5 @@
-import { entrar, cadastrar } from './actions';
+import Link from 'next/link';
+import { entrar } from './actions';
 
 export default async function Login({ searchParams }: { searchParams: Promise<{ erro?: string; aviso?: string; voltar?: string }> }) {
   const { erro, aviso, voltar } = await searchParams;
@@ -25,7 +26,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
           </label>
           <div className="linha">
             <button className="botao-primario" formAction={entrar}>Entrar</button>
-            <button formAction={cadastrar}>Criar conta</button>
+            <Link className="botao" href="/cadastro">Criar conta</Link>
           </div>
         </form>
       </div>

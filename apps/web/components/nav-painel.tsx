@@ -59,13 +59,16 @@ const SECOES: { titulo: string; links: Link_[] }[] = [
     ],
   },
 ];
-const LINKS = SECOES.flatMap((s) => s.links);
+// loja nova (D-076): "Primeiros passos" no topo até o dono concluir
+const COMECO = { titulo: 'Começo', links: [{ href: '/comecar', rotulo: 'Primeiros passos', icone: 'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11' }] };
+const LINKS = [...COMECO.links, ...SECOES.flatMap((s) => s.links)];
 
 // celular (D-070): barra de baixo com os 4 mais usados + "Mais" (todas as telas, por seção e com cor)
 const BARRA = ['/pedidos', '/pedidos/novo', '/estoque', '/resumo'];
-const COR_SECAO: Record<string, string> = { Operação: '#2563eb', Vendas: '#16a34a', Clientes: '#9333ea', Gestão: '#d97706', Ajustes: '#64748b' };
+const COR_SECAO: Record<string, string> = { Começo: '#ea580c', Operação: '#2563eb', Vendas: '#16a34a', Clientes: '#9333ea', Gestão: '#d97706', Ajustes: '#64748b' };
 
-export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '' }: { lojas?: { id: string; nome: string }[]; lojaAtual?: string; lojaNome?: string }) {
+export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeirosPassos = false }: { lojas?: { id: string; nome: string }[]; lojaAtual?: string; lojaNome?: string; primeirosPassos?: boolean }) {
+  const secoes = primeirosPassos ? [COMECO, ...SECOES] : SECOES;
   const atual = usePathname();
   const [mais, setMais] = useState(false);
   useEffect(() => setMais(false), [atual]);
@@ -93,7 +96,7 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '' }: { lojas
   return (
     <>
       <div className="menu-secoes">
-        {SECOES.map((s) => (
+        {secoes.map((s) => (
           <section key={s.titulo} className="menu-secao" aria-label={s.titulo}>
             <h2 className="menu-secao-titulo">{s.titulo}</h2>
             <ul className="menu-lista">{s.links.map(item)}</ul>
@@ -117,7 +120,7 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '' }: { lojas
               {lojas.length > 1 ? <SeletorLoja lojas={lojas} atual={lojaAtual} /> : <strong>{lojaNome}</strong>}
               <button type="button" className="mini" onClick={() => setMais(false)} aria-label="Fechar">✕</button>
             </div>
-            {SECOES.map((s) => (
+            {secoes.map((s) => (
               <section key={s.titulo} className="menu-folha-secao" style={{ ['--cor' as string]: COR_SECAO[s.titulo] ?? '#64748b' }}>
                 <h2>{s.titulo}</h2>
                 <div className="menu-folha-grade">
