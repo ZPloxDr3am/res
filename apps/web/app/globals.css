@@ -1764,10 +1764,15 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
 .tabela-rolagem.cartao .tabela th:last-child { border-top-right-radius: var(--raio); }
 
 /* ---- menu lateral */
-.menu { padding: var(--e5) var(--e3) var(--e4); }
-.menu-item { min-height: 36px; padding: 0 var(--e3); font-size: 0.93rem; }
-.menu-secao-titulo { font-size: var(--t-xs); padding: 0 var(--e3) var(--e1); }
-.menu-secoes { gap: var(--e5); }
+.menu { padding: var(--e4) var(--e3) var(--e3); gap: var(--e3); }
+/* menu denso: itens de 32px colados, grupos separados só pelo título (D-080) */
+.menu-lista { gap: 0; }
+.menu-item { min-height: 32px; padding: 0 var(--e3); font-size: 0.9rem; gap: 10px; }
+.menu-item svg { width: 17px; height: 17px; }
+.menu-secao { gap: 0; }
+.menu-secao-titulo { font-size: 0.72rem; padding: 0 var(--e3) 2px; line-height: 1.4; }
+.menu-secoes { gap: var(--e3); }
+.menu-item[aria-current='page']::before { top: 7px; bottom: 7px; }
 
 /* ---- quadro compacto: título das colunas em caixa normal */
 .qk-coluna > h2 { text-transform: none; letter-spacing: 0; font-size: 0.9rem; font-weight: 650; }
@@ -1780,7 +1785,8 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
   h1 { font-size: var(--t-xl); }
   .kpi-valor { font-size: var(--t-2xl); }
   .cartao { padding: var(--e4); }
-  .menu-item { min-height: 0; padding: var(--e1) 2px; font-size: 0.68rem; }
+  .menu-item { min-height: 0; padding: var(--e1) 2px; font-size: 0.68rem; gap: 2px; }
+  .menu-secoes { gap: 0; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 .fin-auto { display: grid; gap: var(--e1); }
