@@ -708,9 +708,9 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1794187357.6355612,
-    "seen": 1794187365.4531012,
-    "ast_hash": "cdd2b04a0229afe82cbb753c60fe788c",
+    "mtime": 1794187460.883938,
+    "seen": 1794187465.1633224,
+    "ast_hash": "beb899545ef95202ad287f0de4aa2ad1",
     "semantic_hash": ""
   },
   "apps/web/components/resumo/grafico-lojas.tsx": {
