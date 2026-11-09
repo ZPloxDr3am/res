@@ -718,3 +718,9 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - No topo do quadro, **"[loja atual] | 🏪 Todas as lojas (N)"** (só aparece para quem tem mais de uma loja). Em "todas", cada cartão mostra a loja e os filtros separam por loja; tempo real e negociações do iFood valem para todas.
 - A escolha fica **salva no usuário** (metadado `quadro_todas` da conta de login): cada dono/gerente/caixa decide se abre o quadro numa loja ou na operação inteira, em qualquer aparelho. `?todas=1` / `?todas=0` no endereço manda na hora.
 - Aceite automático, pausa, modo movimento e fila de impressão continuam por loja (aparecem quando uma loja está escolhida).
+
+## D-079 — Quadro compacto tipo kanban (08/11/2026)
+- Novo jeito de ver o quadro, **padrão**: "▦ Compacto | ☰ Detalhado" no topo (lembrado no aparelho). Inspirado no quadro do BeeFood, sem copiar.
+- **6 colunas** lado a lado com cor no topo e contador: Aguardando · Em preparo · Pronto · Saiu para entrega · Concluídos · Cancelados (últimas 12 h). Cada coluna rola sozinha; no celular as colunas deslizam para o lado.
+- **Cartão curto**: tipo (🛵/🏪/🍽️), número, selo iFood/Online, agendado, atraso em vermelho, cliente e telefone, bairro e rua, tempo desde o pedido, pagamento (✓ pago / 💰 cobrar), total e, embaixo, **a loja com a cor dela** (em "todas as lojas"; numa loja com várias marcas, a marca). Botão da próxima etapa (Aceitar, Marcar pronto, Saiu, Entregue) direto no cartão.
+- Tocar no cartão abre o **pedido completo** por cima (itens, combo, iFood, cobrança, WhatsApp, impressão, cancelar). Os filtros por loja ganham a mesma cor.
