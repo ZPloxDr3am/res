@@ -312,10 +312,10 @@
     "semantic_hash": "5ce35a0029a0309d36b7f0e9152f6067"
   },
   "apps/web/app/layout.tsx": {
-    "mtime": 1793138900.102518,
-    "seen": 1793205238.7560534,
-    "ast_hash": "27bf0904cb969dc45cc245a3c12db92e",
-    "semantic_hash": "27bf0904cb969dc45cc245a3c12db92e"
+    "mtime": 1794188474.1811035,
+    "seen": 1794188508.1969953,
+    "ast_hash": "2cee3507610183bcc2701d8866750e6e",
+    "semantic_hash": ""
   },
   "apps/web/app/login/actions.ts": {
     "mtime": 1792786116.8311484,
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794187990.8974879,
-    "seen": 1794187998.737904,
-    "ast_hash": "69217754574cfa0c44bbab9fc2789097",
+    "mtime": 1794188499.7455182,
+    "seen": 1794188508.197476,
+    "ast_hash": "53feb2d2c6c3811603105ba1cebd141d",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
