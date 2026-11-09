@@ -720,7 +720,7 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Aceite automático, pausa, modo movimento e fila de impressão continuam por loja (aparecem quando uma loja está escolhida).
 
 ## D-079 — Quadro compacto tipo kanban (08/11/2026)
-- Novo jeito de ver o quadro, **padrão**: "▦ Compacto | ☰ Detalhado" no topo (lembrado no aparelho). Inspirado no quadro do BeeFood, sem copiar.
+- O quadro passa a ser **só compacto** (a visão detalhada antiga saiu a pedido do dono). Inspirado no quadro do BeeFood, sem copiar. Agendados e "aguardando Pix" também usam o cartão curto.
 - **6 colunas** lado a lado com cor no topo e contador: Aguardando · Em preparo · Pronto · Saiu para entrega · Concluídos · Cancelados (últimas 12 h). Cada coluna rola sozinha; no celular as colunas deslizam para o lado.
 - **Cartão curto**: tipo (🛵/🏪/🍽️), número, selo iFood/Online, agendado, atraso em vermelho, cliente e telefone, bairro e rua, tempo desde o pedido, pagamento (✓ pago / 💰 cobrar), total e, embaixo, **a loja com a cor dela** (em "todas as lojas"; numa loja com várias marcas, a marca). Botão da próxima etapa (Aceitar, Marcar pronto, Saiu, Entregue) direto no cartão.
 - Tocar no cartão abre o **pedido completo** por cima (itens, combo, iFood, cobrança, WhatsApp, impressão, cancelar). Os filtros por loja ganham a mesma cor.

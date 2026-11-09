@@ -180,25 +180,9 @@ export function QuadroPedidos({
     }
   };
   const [som, setSom] = useState(false);
-  // visão compacta tipo kanban (D-079): cartão curto, detalhe ao tocar; lembrada neste aparelho
-  const [vista, setVista] = useState<'compacto' | 'detalhado'>('compacto');
+  // quadro compacto tipo kanban (D-079): cartão curto, detalhe completo ao tocar
   const [abertoId, setAbertoId] = useState<string | null>(null);
-  useEffect(() => {
-    try {
-      const v = localStorage.getItem('res_quadro_vista');
-      if (v === 'detalhado' || v === 'compacto') setVista(v);
-    } catch {
-      /* sem armazenamento */
-    }
-  }, []);
-  const mudarVista = (v: 'compacto' | 'detalhado') => {
-    setVista(v);
-    try {
-      localStorage.setItem('res_quadro_vista', v);
-    } catch {
-      /* ignora */
-    }
-  };
+
   const [, setTique] = useState(0);
   const conhecidos = useRef<Set<string> | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -310,10 +294,6 @@ export function QuadroPedidos({
           {lojas.length > 1 && <VisaoLojas todas={todas} lojaAtual={lojaAtual} total={lojas.length} />}
         </div>
         <div className="linha qp-controles" style={{ alignItems: 'center' }}>
-          <div className="qp-visao" role="radiogroup" aria-label="Como mostrar os cartões">
-            <button type="button" role="radio" aria-checked={vista === 'compacto'} onClick={() => mudarVista('compacto')} title="Colunas com cartões curtos; toque para ver tudo">▦ Compacto</button>
-            <button type="button" role="radio" aria-checked={vista === 'detalhado'} onClick={() => mudarVista('detalhado')} title="Cartões completos, com itens e botões">☰ Detalhado</button>
-          </div>
           <button type="button" onClick={alternarSom} aria-pressed={som}>
             {som ? '🔔 Som ligado' : '🔕 Ligar som'}
           </button>
@@ -392,9 +372,9 @@ export function QuadroPedidos({
           <summary>
             <strong>⏳ Aguardando Pix</strong> <span className="dica">{pixPendentes.length} · entram sozinhos quando o Mercado Pago confirmar; sem pagamento em 40 min, são cancelados</span>
           </summary>
-          <div className="quadro" style={{ paddingTop: '0.5rem' }}>
+          <div className="qk-faixa">
             {pixPendentes.map((p) => (
-              <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} fuso={fuso} marca={etiqueta(p)} nomeMarca={nomeMarca(p)} selo={seloCliente(p, historico)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} />
+              <CartaoCompacto key={p.id} p={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} fuso={fuso} local={etiqueta(p)} cor={corDe(p)} onAbrir={() => setAbertoId(p.id)} />
             ))}
           </div>
         </details>
@@ -403,11 +383,11 @@ export function QuadroPedidos({
       {agendados.length > 0 && (
         <details open className="agendados">
           <summary>
-            <strong>Agendados</strong> <span className="dica">{agendados.length} · entram em "Novo", com alerta, {tempoPreparo + FOLGA_AGENDADO_MIN} min antes do horário</span>
+            <strong>Agendados</strong> <span className="dica">{agendados.length} · entram em "Aguardando", com alerta, {tempoPreparo + FOLGA_AGENDADO_MIN} min antes do horário</span>
           </summary>
-          <div className="quadro" style={{ paddingTop: '0.5rem' }}>
+          <div className="qk-faixa">
             {agendados.map((p) => (
-              <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} fuso={fuso} marca={etiqueta(p)} nomeMarca={nomeMarca(p)} selo={seloCliente(p, historico)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} />
+              <CartaoCompacto key={p.id} p={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} fuso={fuso} local={etiqueta(p)} cor={corDe(p)} onAbrir={() => setAbertoId(p.id)} />
             ))}
           </div>
         </details>
@@ -415,8 +395,7 @@ export function QuadroPedidos({
 
       <SugestaoLotes prontos={abertos.filter((p) => p.status === 'pronto' && p.tipo === 'entrega').map((p) => ({ id: p.id, loja_id: p.loja_id }))} />
 
-      {vista === 'compacto' ? (
-        <div className="qk" role="region" aria-label="Quadro de pedidos">
+      <div className="qk" role="region" aria-label="Quadro de pedidos">
           {[...COLUNAS, 'concluido' as StatusPedido, 'cancelado' as StatusPedido].map((status) => {
             const lista = COLUNAS.includes(status) ? abertos.filter((p) => p.status === status) : encerrados.filter((p) => p.status === status);
             return (
@@ -435,24 +414,6 @@ export function QuadroPedidos({
             );
           })}
         </div>
-      ) : (
-      <div className="quadro">
-        {COLUNAS.map((status) => {
-          const lista = abertos.filter((p) => p.status === status);
-          return (
-            <section key={status} className="coluna" aria-label={STATUS_ROTULO[status]}>
-              <h2>
-                {STATUS_ROTULO[status]} <span className="dica">{lista.length}</span>
-              </h2>
-              {lista.map((p) => (
-                <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} fuso={fuso} marca={etiqueta(p)} nomeMarca={nomeMarca(p)} selo={seloCliente(p, historico)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} />
-              ))}
-              {lista.length === 0 && <p className="dica" style={{ margin: 0 }}>Nenhum.</p>}
-            </section>
-          );
-        })}
-      </div>
-      )}
 
       {(() => {
         const p = abertoId ? pedidos.find((x) => x.id === abertoId) : null;
@@ -467,14 +428,6 @@ export function QuadroPedidos({
         );
       })()}
 
-      {vista === 'detalhado' && <details>
-        <summary className="dica">Concluídos e cancelados nas últimas 12 horas ({encerrados.length})</summary>
-        <div className="quadro" style={{ paddingTop: '0.5rem' }}>
-          {encerrados.map((p) => (
-            <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} fuso={fuso} marca={etiqueta(p)} nomeMarca={nomeMarca(p)} selo={seloCliente(p, historico)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} />
-          ))}
-        </div>
-      </details>}
     </div>
   );
 }
