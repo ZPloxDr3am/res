@@ -312,8 +312,8 @@
     "semantic_hash": "5ce35a0029a0309d36b7f0e9152f6067"
   },
   "apps/web/app/layout.tsx": {
-    "mtime": 1794188474.1811035,
-    "seen": 1794188508.1969953,
+    "mtime": 1794188589.9575233,
+    "seen": 1794188596.0446472,
     "ast_hash": "2cee3507610183bcc2701d8866750e6e",
     "semantic_hash": ""
   },
@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794188499.7455182,
-    "seen": 1794188508.197476,
+    "mtime": 1794188589.9575233,
+    "seen": 1794188596.0452995,
     "ast_hash": "53feb2d2c6c3811603105ba1cebd141d",
     "semantic_hash": ""
   },
