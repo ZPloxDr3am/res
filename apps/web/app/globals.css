@@ -1609,3 +1609,53 @@ button.mini[data-avisado] { color: #15803d; }
 .qp-visao button { border: 0; border-radius: 999px; padding: 0.3rem 0.8rem; background: transparent; color: inherit; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .qp-visao button[aria-checked='true'] { background: #ea580c; color: #fff; font-weight: 600; }
 @media (prefers-color-scheme: dark) { .qp-visao { border-color: #334155; } }
+
+/* Quadro compacto tipo kanban (D-079) */
+.qk { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 1fr); gap: 0.75rem; overflow-x: auto; padding-bottom: 0.4rem; align-items: start; }
+.qk-coluna { --cor-col: var(--borda); background: var(--superficie-2); border: 1px solid var(--borda); border-top: 3px solid var(--cor-col); border-radius: 12px; display: grid; grid-template-rows: auto 1fr; min-height: 8rem; }
+.qk-coluna[data-status='novo'] { --cor-col: var(--erro); }
+.qk-coluna[data-status='em_preparo'] { --cor-col: var(--destaque); }
+.qk-coluna[data-status='pronto'] { --cor-col: var(--primaria); }
+.qk-coluna[data-status='em_entrega'] { --cor-col: var(--delivery); }
+.qk-coluna[data-status='concluido'] { --cor-col: #2563eb; }
+.qk-coluna[data-status='cancelado'] { --cor-col: #94a3b8; }
+.qk-coluna > h2 { display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 0.55rem 0.7rem; font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; border-bottom: 1px solid var(--borda); }
+.qk-n { min-width: 1.6rem; text-align: center; padding: 0.05rem 0.45rem; border-radius: 999px; font-size: 0.78rem; background: color-mix(in srgb, var(--cor-col) 18%, transparent); color: inherit; font-weight: 700; }
+.qk-lista { display: grid; gap: 0.5rem; padding: 0.55rem; align-content: start; max-height: calc(100vh - 240px); overflow-y: auto; }
+.qk-vazio { margin: 1.2rem 0; text-align: center; color: var(--texto-suave, #64748b); font-size: 0.85rem; }
+.qk-cartao { background: var(--superficie); border: 1px solid var(--borda); border-radius: 10px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); display: grid; overflow: hidden; }
+.qk-cartao[data-status='novo'] { border-color: color-mix(in srgb, var(--erro) 55%, var(--borda)); animation: piscar 1.6s ease-in-out infinite; }
+.qk-cartao[data-atrasado] { border-color: var(--erro); box-shadow: 0 0 0 1px var(--erro); }
+.qk-cartao[data-status='cancelado'] { opacity: 0.6; }
+.qk-corpo { all: unset; box-sizing: border-box; cursor: pointer; display: grid; gap: 0.3rem; padding: 0.55rem 0.65rem 0.5rem; font-size: 0.85rem; min-width: 0; }
+.qk-corpo:focus-visible { outline: 2px solid var(--primaria); outline-offset: -2px; }
+.qk-corpo:hover { background: color-mix(in srgb, var(--borda) 25%, transparent); }
+.qk-topo { display: flex; align-items: center; gap: 0.35rem; min-width: 0; }
+.qk-topo strong { font-size: 0.98rem; }
+.qk-icone { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; border: 1px solid var(--borda); font-size: 0.85rem; flex: none; }
+.qk-tag { font-size: 0.7rem; padding: 0.05rem 0.4rem; border-radius: 999px; background: color-mix(in srgb, var(--primaria) 15%, transparent); }
+.qk-mais { margin-left: auto; color: var(--texto-suave, #64748b); font-weight: 700; }
+.qk-linha { display: flex; gap: 0.4rem; align-items: baseline; min-width: 0; }
+.qk-linha > * { min-width: 0; }
+.qk-cliente strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qk-cliente .dica { white-space: nowrap; margin-left: auto; font-size: 0.78rem; }
+.qk-end { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.78rem; }
+.qk-agendado { color: #2563eb; font-size: 0.78rem; font-weight: 600; }
+.qk-atraso { color: var(--erro); font-size: 0.78rem; font-weight: 700; }
+.qk-rodape { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.15rem; }
+.qk-tempo { font-size: 0.75rem; padding: 0.1rem 0.45rem; border-radius: 999px; border: 1px solid var(--borda); white-space: nowrap; }
+.qk-pag { font-size: 0.72rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--primaria); }
+.qk-cobrar { color: #b45309; font-weight: 600; }
+.qk-total { margin-left: auto; font-size: 0.98rem; white-space: nowrap; }
+.qk-loja { display: flex; align-items: center; gap: 0.35rem; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--cor-loja); border-top: 1px dashed var(--borda); padding-top: 0.35rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.qk-loja i { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--cor-loja); flex: none; }
+.qk-acao { border: 0; border-top: 1px solid var(--borda); border-radius: 0; padding: 0.45rem; font-weight: 700; font-size: 0.85rem; background: color-mix(in srgb, var(--primaria) 10%, transparent); color: var(--primaria); cursor: pointer; }
+.qk-acao:hover { background: var(--primaria); color: #fff; }
+.qk-cartao[data-status='novo'] .qk-acao { background: var(--primaria); color: #fff; }
+.qp-chip-loja .qp-chip { border-left: 4px solid var(--cor-loja); }
+.qk-modal { position: fixed; inset: 0; z-index: 60; background: rgb(15 23 42 / 0.45); display: grid; place-items: center; padding: 16px; }
+.qk-modal-caixa { position: relative; width: min(520px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; border-radius: 14px; background: var(--superficie); box-shadow: 0 20px 50px rgb(0 0 0 / 0.3); }
+.qk-modal-caixa > .pedido { border: 0; border-radius: 14px; padding: 1rem 1.1rem; animation: none; }
+.qk-fechar { position: absolute; top: 0.5rem; right: 0.5rem; z-index: 1; width: 2rem; height: 2rem; border-radius: 50%; padding: 0; }
+@media (prefers-reduced-motion: reduce) { .qk-cartao[data-status='novo'] { animation: none; } }
+@media (max-width: 700px) { .qk { grid-auto-columns: 85vw; scroll-snap-type: x mandatory; } .qk-coluna { scroll-snap-align: start; } .qk-lista { max-height: none; } }

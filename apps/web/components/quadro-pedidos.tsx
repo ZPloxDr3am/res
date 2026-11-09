@@ -180,6 +180,25 @@ export function QuadroPedidos({
     }
   };
   const [som, setSom] = useState(false);
+  // visão compacta tipo kanban (D-079): cartão curto, detalhe ao tocar; lembrada neste aparelho
+  const [vista, setVista] = useState<'compacto' | 'detalhado'>('compacto');
+  const [abertoId, setAbertoId] = useState<string | null>(null);
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem('res_quadro_vista');
+      if (v === 'detalhado' || v === 'compacto') setVista(v);
+    } catch {
+      /* sem armazenamento */
+    }
+  }, []);
+  const mudarVista = (v: 'compacto' | 'detalhado') => {
+    setVista(v);
+    try {
+      localStorage.setItem('res_quadro_vista', v);
+    } catch {
+      /* ignora */
+    }
+  };
   const [, setTique] = useState(0);
   const conhecidos = useRef<Set<string> | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -275,6 +294,8 @@ export function QuadroPedidos({
   const pixPendentes = pedidos.filter((p) => aguardandoPix(p) && passa(p));
   const encerrados = pedidos.filter((p) => !COLUNAS.includes(p.status) && passa(p)).reverse();
   const locais = todas ? lojas.map((l) => ({ id: l.id, nome: l.nome })) : marcas.length > 1 ? marcas.map((m) => ({ id: m.id, nome: m.nome })) : [];
+  // cor de cada loja/marca no quadro (mesma ordem sempre)
+  const corDe = (p: PedidoRow) => corLocal(locais.findIndex((l) => l.id === localDe(p)));
   const chip = (grupo: keyof Filtros, valor: string, rotulo: string, n: number, cor?: string) => (
     <button key={`${grupo}-${valor}`} type="button" className="qp-chip" aria-pressed={filtros[grupo].includes(valor)} data-cor={cor} onClick={() => mudarFiltro(grupo, valor)} disabled={n === 0 && !filtros[grupo].includes(valor)}>
       {rotulo} <span className="qp-chip-n">{n}</span>
@@ -289,6 +310,10 @@ export function QuadroPedidos({
           {lojas.length > 1 && <VisaoLojas todas={todas} lojaAtual={lojaAtual} total={lojas.length} />}
         </div>
         <div className="linha qp-controles" style={{ alignItems: 'center' }}>
+          <div className="qp-visao" role="radiogroup" aria-label="Como mostrar os cartões">
+            <button type="button" role="radio" aria-checked={vista === 'compacto'} onClick={() => mudarVista('compacto')} title="Colunas com cartões curtos; toque para ver tudo">▦ Compacto</button>
+            <button type="button" role="radio" aria-checked={vista === 'detalhado'} onClick={() => mudarVista('detalhado')} title="Cartões completos, com itens e botões">☰ Detalhado</button>
+          </div>
           <button type="button" onClick={alternarSom} aria-pressed={som}>
             {som ? '🔔 Som ligado' : '🔕 Ligar som'}
           </button>
@@ -335,7 +360,11 @@ export function QuadroPedidos({
       {!todas && <FilaImpressao n={filaImpressao} />}
 
       <div className="qp-filtros qp-filtros-quadro" role="toolbar" aria-label="Filtrar pedidos">
-        {locais.map((l) => chip('local', l.id, l.nome, conta((p) => localDe(p) === l.id)))}
+        {locais.map((l, i) => (
+          <span key={l.id} className="qp-chip-loja" style={{ '--cor-loja': corLocal(i) } as React.CSSProperties}>
+            {chip('local', l.id, l.nome, conta((p) => localDe(p) === l.id))}
+          </span>
+        ))}
         {locais.length > 0 && <span className="qp-sep" aria-hidden />}
         {chip('tipo', 'entrega', '🛵 Entrega', conta((p) => p.tipo === 'entrega'))}
         {chip('tipo', 'retirada', '🏪 Retirada', conta((p) => p.tipo === 'retirada'))}
@@ -386,6 +415,27 @@ export function QuadroPedidos({
 
       <SugestaoLotes prontos={abertos.filter((p) => p.status === 'pronto' && p.tipo === 'entrega').map((p) => ({ id: p.id, loja_id: p.loja_id }))} />
 
+      {vista === 'compacto' ? (
+        <div className="qk" role="region" aria-label="Quadro de pedidos">
+          {[...COLUNAS, 'concluido' as StatusPedido, 'cancelado' as StatusPedido].map((status) => {
+            const lista = COLUNAS.includes(status) ? abertos.filter((p) => p.status === status) : encerrados.filter((p) => p.status === status);
+            return (
+              <section key={status} className="qk-coluna" data-status={status} aria-label={STATUS_ROTULO[status]}>
+                <h2>
+                  <span>{status === 'novo' ? 'Aguardando' : status === 'concluido' ? 'Concluídos' : status === 'cancelado' ? 'Cancelados' : STATUS_ROTULO[status]}</span>
+                  <span className="qk-n">{lista.length}</span>
+                </h2>
+                <div className="qk-lista">
+                  {lista.map((p) => (
+                    <CartaoCompacto key={p.id} p={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} fuso={fuso} local={etiqueta(p)} cor={corDe(p)} onAbrir={() => setAbertoId(p.id)} />
+                  ))}
+                  {lista.length === 0 && <p className="qk-vazio">Nenhum pedido</p>}
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      ) : (
       <div className="quadro">
         {COLUNAS.map((status) => {
           const lista = abertos.filter((p) => p.status === status);
@@ -402,16 +452,95 @@ export function QuadroPedidos({
           );
         })}
       </div>
+      )}
 
-      <details>
+      {(() => {
+        const p = abertoId ? pedidos.find((x) => x.id === abertoId) : null;
+        if (!p) return null;
+        return (
+          <div className="qk-modal" role="dialog" aria-modal="true" aria-label={`Pedido #${p.numero}`} onClick={(e) => e.target === e.currentTarget && setAbertoId(null)} onKeyDown={(e) => e.key === 'Escape' && setAbertoId(null)}>
+            <div className="qk-modal-caixa">
+              <button type="button" className="qk-fechar" onClick={() => setAbertoId(null)} aria-label="Fechar" autoFocus>✕</button>
+              <CartaoPedido pedido={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} fuso={fuso} marca={etiqueta(p)} nomeMarca={nomeMarca(p)} selo={seloCliente(p, historico)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} />
+            </div>
+          </div>
+        );
+      })()}
+
+      {vista === 'detalhado' && <details>
         <summary className="dica">Concluídos e cancelados nas últimas 12 horas ({encerrados.length})</summary>
         <div className="quadro" style={{ paddingTop: '0.5rem' }}>
           {encerrados.map((p) => (
             <CartaoPedido key={p.id} pedido={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} fuso={fuso} marca={etiqueta(p)} nomeMarca={nomeMarca(p)} selo={seloCliente(p, historico)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} />
           ))}
         </div>
-      </details>
+      </details>}
     </div>
+  );
+}
+
+const CORES_LOCAL = ['#ea1d2c', '#16a34a', '#2563eb', '#9333ea', '#ea580c', '#0891b2', '#ca8a04', '#db2777'];
+const corLocal = (i: number) => (i < 0 ? '#64748b' : CORES_LOCAL[i % CORES_LOCAL.length]!);
+
+/** Cartão curto do quadro compacto (D-079): o essencial para a cozinha bater o olho; toque abre o pedido inteiro. */
+function CartaoCompacto({ p, tempoPreparo, prazoMin, fuso, local, cor, onAbrir }: { p: PedidoRow; tempoPreparo: number; prazoMin: number; fuso: string; local: string | null | undefined; cor: string; onAbrir: () => void }) {
+  const [pendente, iniciar] = useTransition();
+  const [erro, setErro] = useState<string | null>(null);
+  const aberto = !['concluido', 'cancelado'].includes(p.status);
+  const avancar = aberto ? acaoAvancar(p.status, p.tipo) : null;
+  const agendado = p.agendado_para ? new Date(p.agendado_para) : null;
+  const atrasadoPreparo = (p.status === 'em_preparo' || p.status === 'novo') &&
+    (agendado ? Date.now() > agendado.getTime() : (Date.now() - new Date(p.aceito_em ?? p.criado_em).getTime()) / 60000 > tempoPreparo);
+  const prazo = p.tipo === 'entrega' && aberto ? calcularPrazo(Date.parse(p.criado_em), agendado ? agendado.getTime() : null, prazoMin) : null;
+  const sit = prazo != null ? situacaoPrazo(prazo, Date.now()) : null;
+  const atrasado = atrasadoPreparo || sit?.estado === 'atrasado';
+  const cobrar = p.pagamento !== 'online' && !p.pago_em;
+  const e = p.endereco;
+  const icone = p.tipo === 'entrega' ? '🛵' : p.tipo === 'retirada' ? '🏪' : '🍽️';
+  return (
+    <article className="qk-cartao" data-status={p.status} data-atrasado={atrasado || undefined} style={{ '--cor-loja': cor } as React.CSSProperties}>
+      <button type="button" className="qk-corpo" onClick={onAbrir} aria-label={`Abrir pedido #${p.numero} de ${p.cliente_nome}`}>
+        <span className="qk-topo">
+          <span className="qk-icone" title={TIPO_ROTULO[p.tipo]} aria-hidden>{icone}</span>
+          <strong>#{p.numero}</strong>
+          {p.origem === 'ifood' && <span className="selo selo-ifood">iFood{p.externo_codigo ? ` ${p.externo_codigo}` : ''}</span>}
+          {p.origem === 'cardapio_digital' && <span className="qk-tag">Online</span>}
+          <span className="qk-mais" aria-hidden>⋮</span>
+        </span>
+        {agendado && <span className="qk-linha qk-agendado">📅 {rotuloHorario(agendado, fuso)}</span>}
+        {atrasado && aberto && <span className="qk-linha qk-atraso">⚠ Atrasado{sit?.estado === 'atrasado' ? ` ${sit.minutos} min` : ''}</span>}
+        <span className="qk-linha qk-cliente">
+          <strong>{p.cliente_nome}</strong>
+          {p.cliente_telefone && <span className="dica">{telefone(p.cliente_telefone)}</span>}
+        </span>
+        {e && <span className="qk-linha dica qk-end">📍 {e.bairro}{e.logradouro ? ` · ${e.logradouro}${e.numero ? `, ${e.numero}` : ''}` : ''}</span>}
+        {p.entregador_nome && p.status === 'em_entrega' && <span className="qk-linha dica">🛵 {p.entregador_nome}</span>}
+        <span className="qk-rodape">
+          <span className="qk-tempo" title={`Pedido às ${new Date(p.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: fuso })}`}>⏱ {tempoDecorrido(new Date(p.criado_em)).replace(/^há /, '')}</span>
+          <span className={cobrar ? 'qk-pag qk-cobrar' : 'qk-pag'} title={cobrar ? `Cobrar na entrega · ${PAGAMENTO_ROTULO[p.pagamento]}` : p.origem === 'ifood' && p.pagamento === 'online' ? 'Pago no iFood' : 'Pago'}>
+            {cobrar ? '💰' : '✓'} {p.origem === 'ifood' && p.pagamento === 'online' ? 'iFood' : PAGAMENTO_ROTULO[p.pagamento]}
+          </span>
+          <strong className="qk-total">{r$(p.total)}</strong>
+        </span>
+        {local && <span className="qk-loja"><i aria-hidden />{local}</span>}
+      </button>
+      {avancar && (
+        <button
+          type="button"
+          className="qk-acao"
+          disabled={pendente}
+          onClick={() =>
+            iniciar(async () => {
+              const r = await salvando(mudarStatus(p.id, avancar.para));
+              setErro(r.ok ? null : r.erro);
+            })
+          }
+        >
+          {pendente ? '…' : avancar.rotulo}
+        </button>
+      )}
+      {erro && <span className="erro" role="alert">{erro}</span>}
+    </article>
   );
 }
 
