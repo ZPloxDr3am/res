@@ -1790,3 +1790,14 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 .fin-auto { display: grid; gap: var(--e1); }
+/* Rodapé fixo do menu: Meus links, Suporte, Sair, versão (D-081) */
+.menu-rodape { position: relative; display: grid; gap: 0; border-top: 1px solid var(--borda); padding-top: var(--e2); }
+.menu-rodape form { margin: 0; }
+.menu-rodape .menu-item[aria-expanded='true'] { background: var(--superficie-2); color: var(--texto); }
+.menu-versao { display: block; padding: var(--e2) var(--e3) 0; font-size: 0.7rem; color: var(--texto-fraco); }
+.menu-pop { position: absolute; left: 0; bottom: calc(100% + var(--e2)); width: 300px; max-width: calc(100vw - 32px); z-index: 30; display: grid; gap: var(--e2); padding: var(--e4); background: var(--superficie); border-radius: var(--raio); box-shadow: var(--sombra-alta); }
+.menu-pop-linha { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--e2); align-items: center; }
+.menu-pop-nome { display: grid; font-weight: 600; font-size: 0.9rem; min-width: 0; }
+.menu-pop-nome .dica { font-weight: 400; font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 1000px) and (min-width: 701px) { .menu-versao { display: none; } .menu-pop { left: 100%; bottom: 0; margin-left: var(--e2); } }
+@media (max-width: 700px) { .menu-rodape { display: none; } }
