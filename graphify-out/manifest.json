@@ -708,8 +708,8 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1794187203.2460487,
-    "seen": 1794187258.3324091,
+    "mtime": 1794187357.6355612,
+    "seen": 1794187365.4531012,
     "ast_hash": "cdd2b04a0229afe82cbb753c60fe788c",
     "semantic_hash": ""
   },
@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794187248.0075548,
-    "seen": 1794187258.3331046,
+    "mtime": 1794187357.6435611,
+    "seen": 1794187365.4534388,
     "ast_hash": "9c990f651e76ca2700c1f8a77db8a16b",
     "semantic_hash": ""
   },
