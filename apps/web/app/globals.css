@@ -1659,3 +1659,4 @@ button.mini[data-avisado] { color: #15803d; }
 .qk-fechar { position: absolute; top: 0.5rem; right: 0.5rem; z-index: 1; width: 2rem; height: 2rem; border-radius: 50%; padding: 0; }
 @media (prefers-reduced-motion: reduce) { .qk-cartao[data-status='novo'] { animation: none; } }
 @media (max-width: 700px) { .qk { grid-auto-columns: 85vw; scroll-snap-type: x mandatory; } .qk-coluna { scroll-snap-align: start; } .qk-lista { max-height: none; } }
+.qk-faixa { display: grid; grid-template-columns: repeat(auto-fill, minmax(205px, 260px)); gap: 0.5rem; padding-top: 0.5rem; }
