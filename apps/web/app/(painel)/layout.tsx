@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { contextoLoja } from '@/lib/loja';
 import { PedidoFlutuanteProvider } from '@/components/pedido-flutuante';
 import { criarClienteServidor } from '@/lib/supabase/server';
+import { MenuRodape } from '@/components/menu-rodape';
 
 export default async function PainelLayout({ children }: { children: React.ReactNode }) {
   const ctx = await contextoLoja();
@@ -31,14 +32,11 @@ export default async function PainelLayout({ children }: { children: React.React
         <nav>
           <NavPainel lojas={ctx.lojas.map((l) => ({ id: l.id, nome: l.nome }))} lojaAtual={ctx.lojaId} lojaNome={ctx.lojaNome} primeirosPassos={primeirosPassos} />
         </nav>
-        <form action="/auth/sair" method="post" className="menu-rodape">
-          <button className="menu-item">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10" />
-            </svg>
-            <span>Sair</span>
-          </button>
-        </form>
+        <MenuRodape
+          marcas={ctx.marcas.filter((m) => !m.evento).map((m) => ({ nome: m.nome, slug: m.slug }))}
+          lojaNome={ctx.lojaNome}
+          versao={process.env.VERCEL_GIT_COMMIT_SHA ? process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 7) : null}
+        />
       </aside>
       <main className="conteudo">{children}</main>
     </div>

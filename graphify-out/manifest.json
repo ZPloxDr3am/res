@@ -150,9 +150,9 @@
     "semantic_hash": "c18482a4354bf190ae112d2f406c259f"
   },
   "apps/web/app/(painel)/layout.tsx": {
-    "mtime": 1794101518.8253195,
-    "seen": 1794101525.1185308,
-    "ast_hash": "7796e243c1a1d2eeeba6e571b06703e9",
+    "mtime": 1794191924.5925467,
+    "seen": 1794191949.964625,
+    "ast_hash": "5c0e4a981058ee428550a9f425445fa0",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/loading.tsx": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794188589.9575233,
-    "seen": 1794188596.0452995,
-    "ast_hash": "53feb2d2c6c3811603105ba1cebd141d",
+    "mtime": 1794191940.4874668,
+    "seen": 1794191949.9653473,
+    "ast_hash": "9ed969c85eddeef51a63fd969a015c42",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2487,6 +2487,12 @@
     "mtime": 1794166221.6415043,
     "seen": 1794167133.833423,
     "ast_hash": "ab1ba7684affcc001a0a4a94f0a3b008",
+    "semantic_hash": ""
+  },
+  "apps/web/components/menu-rodape.tsx": {
+    "mtime": 1794191924.5634658,
+    "seen": 1794191949.9648523,
+    "ast_hash": "e9ff2a3a81efa44a1ba08d8a6ffaecda",
     "semantic_hash": ""
   }
 }

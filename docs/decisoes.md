@@ -730,3 +730,7 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **Escalas**: espaço em múltiplos de 4px (`--e1`…`--e9`); tipo com base 15px (`--t-xs`…`--t-3xl`). Controles de **40px** (tablet e dedo de cozinha), compactos de 32px, abas de 36px, linhas de tabela de 44px com cabeçalho fixo.
 - **Tipografia**: Onest para ler e operar; **Bricolage Grotesque só para números e títulos** (títulos de página, indicadores, preço, total, nº do pedido) — é a "voz de comanda" do RES. Números tabulares em todo o sistema.
 - Página mais larga (até 1360px) e ritmo fixo entre blocos (24px), cartões com 20/24px de respiro.
+
+## D-081 — Rodapé fixo do menu (08/11/2026)
+- Embaixo do menu lateral, sempre visível (o resto do menu rola por cima): **Meus links** (link de cada cardápio da loja, com Copiar e Abrir), **Suporte** (WhatsApp do time RES com a mensagem já começada com o nome da loja), **Sair** e a **versão** publicada.
+- O número do suporte vem de `NEXT_PUBLIC_SUPORTE_WHATSAPP` (Vercel); sem ele, o Suporte avisa que o canal está sendo configurado.
