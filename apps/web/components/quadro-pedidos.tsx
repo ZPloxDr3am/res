@@ -479,6 +479,7 @@ export function QuadroPedidos({
   );
 }
 
+const PAG_CURTO: Record<string, string> = { dinheiro: 'Dinheiro', pix: 'Pix', cartao_credito: 'Crédito', cartao_debito: 'Débito', vale_refeicao: 'VR', online: 'Online' };
 const CORES_LOCAL = ['#ea1d2c', '#16a34a', '#2563eb', '#9333ea', '#ea580c', '#0891b2', '#ca8a04', '#db2777'];
 const corLocal = (i: number) => (i < 0 ? '#64748b' : CORES_LOCAL[i % CORES_LOCAL.length]!);
 
@@ -518,7 +519,7 @@ function CartaoCompacto({ p, tempoPreparo, prazoMin, fuso, local, cor, onAbrir }
         <span className="qk-rodape">
           <span className="qk-tempo" title={`Pedido às ${new Date(p.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: fuso })}`}>⏱ {tempoDecorrido(new Date(p.criado_em)).replace(/^há /, '')}</span>
           <span className={cobrar ? 'qk-pag qk-cobrar' : 'qk-pag'} title={cobrar ? `Cobrar na entrega · ${PAGAMENTO_ROTULO[p.pagamento]}` : p.origem === 'ifood' && p.pagamento === 'online' ? 'Pago no iFood' : 'Pago'}>
-            {cobrar ? '💰' : '✓'} {p.origem === 'ifood' && p.pagamento === 'online' ? 'iFood' : PAGAMENTO_ROTULO[p.pagamento]}
+            {cobrar ? '💰' : '✓'} {p.origem === 'ifood' && p.pagamento === 'online' ? 'iFood' : PAG_CURTO[p.pagamento] ?? PAGAMENTO_ROTULO[p.pagamento]}
           </span>
           <strong className="qk-total">{r$(p.total)}</strong>
         </span>
