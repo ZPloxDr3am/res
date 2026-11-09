@@ -724,3 +724,9 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **6 colunas** lado a lado com cor no topo e contador: Aguardando · Em preparo · Pronto · Saiu para entrega · Concluídos · Cancelados (últimas 12 h). Cada coluna rola sozinha; no celular as colunas deslizam para o lado.
 - **Cartão curto**: tipo (🛵/🏪/🍽️), número, selo iFood/Online, agendado, atraso em vermelho, cliente e telefone, bairro e rua, tempo desde o pedido, pagamento (✓ pago / 💰 cobrar), total e, embaixo, **a loja com a cor dela** (em "todas as lojas"; numa loja com várias marcas, a marca). Botão da próxima etapa (Aceitar, Marcar pronto, Saiu, Entregue) direto no cartão.
 - Tocar no cartão abre o **pedido completo** por cima (itens, combo, iFood, cobrança, WhatsApp, impressão, cancelar). Os filtros por loja ganham a mesma cor.
+
+## D-080 — Repaginação: sistema de design (08/11/2026)
+- Mantém a identidade da D-034 (verde-manjericão, mel, tomate, Onest) e sobe o acabamento com um **sistema único** aplicado nas peças que todas as telas usam (cartão, botão, campo, abas, filtros, tabelas, indicadores, menu, quadro).
+- **Escalas**: espaço em múltiplos de 4px (`--e1`…`--e9`); tipo com base 15px (`--t-xs`…`--t-3xl`). Controles de **40px** (tablet e dedo de cozinha), compactos de 32px, abas de 36px, linhas de tabela de 44px com cabeçalho fixo.
+- **Tipografia**: Onest para ler e operar; **Bricolage Grotesque só para números e títulos** (títulos de página, indicadores, preço, total, nº do pedido) — é a "voz de comanda" do RES. Números tabulares em todo o sistema.
+- Página mais larga (até 1360px) e ritmo fixo entre blocos (24px), cartões com 20/24px de respiro.

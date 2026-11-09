@@ -1660,3 +1660,127 @@ button.mini[data-avisado] { color: #15803d; }
 @media (prefers-reduced-motion: reduce) { .qk-cartao[data-status='novo'] { animation: none; } }
 @media (max-width: 700px) { .qk { grid-auto-columns: 85vw; scroll-snap-type: x mandatory; } .qk-coluna { scroll-snap-align: start; } .qk-lista { max-height: none; } }
 .qk-faixa { display: grid; grid-template-columns: repeat(auto-fill, minmax(205px, 260px)); gap: 0.5rem; padding-top: 0.5rem; }
+
+/* =====================================================================
+   D-080 · Repaginação: sistema de design do RES
+   - Uma escala de espaço (múltiplos de 4px) e uma de tipo (base 15px).
+   - Onest para ler e operar; Bricolage Grotesque só para números e títulos
+     (preço, total, nº do pedido, indicadores): é a "voz de comanda" do RES.
+   - Controles de 40px (tablet e dedo de cozinha); compactos de 32px.
+   - Hierarquia por peso e espaço, não por enfeite: uma borda, uma sombra suave.
+   ===================================================================== */
+:root {
+  --e1: 4px; --e2: 8px; --e3: 12px; --e4: 16px; --e5: 20px; --e6: 24px; --e7: 32px; --e8: 40px; --e9: 56px;
+  --t-xs: 0.78rem; --t-sm: 0.87rem; --t-md: 1rem; --t-lg: 1.13rem; --t-xl: 1.33rem; --t-2xl: 1.73rem; --t-3xl: 2.13rem;
+  --fundo: #f2f4f0;
+  --superficie-2: #f7f8f5;
+  --texto: #131b17;
+  --borda: #e3e7e1;
+  --borda-forte: #cfd5cd;
+  --primaria: #1b6b4f;
+  --primaria-forte: #13543d;
+  --primaria-fundo: #e5f1eb;
+  --controle-altura: 40px;
+  --raio-controle: 10px;
+  --raio: 14px;
+  --sombra: 0 1px 2px rgb(19 27 23 / 0.05);
+  --sombra-cartao: 0 1px 2px rgb(19 27 23 / 0.04), 0 0 0 1px var(--borda);
+  --sombra-alta: 0 18px 40px -16px rgb(19 27 23 / 0.28), 0 0 0 1px var(--borda);
+  --foco: 0 0 0 3px color-mix(in srgb, var(--primaria) 30%, transparent);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #0f1311; --superficie: #171c1a; --superficie-2: #1c2220; --texto: #ebf0ed;
+    --borda: #262d2a; --borda-forte: #37403c;
+    --primaria: #52c29b; --primaria-forte: #74d4b1; --primaria-fundo: #163027;
+    --sombra-cartao: 0 0 0 1px var(--borda);
+  }
+}
+
+html, body { font-size: 15px; line-height: 1.5; font-feature-settings: 'tnum' 1, 'cv11' 1; }
+body { text-rendering: optimizeLegibility; }
+
+/* ---- tipo */
+h1 { font-family: var(--fonte-display), var(--fonte), system-ui, sans-serif; font-size: var(--t-2xl); font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin: 0 0 var(--e1); }
+h1 + .dica, h1 + p.dica { margin: 0 0 var(--e2); font-size: var(--t-sm); }
+h2 { font-size: var(--t-lg); font-weight: 650; letter-spacing: -0.012em; line-height: 1.3; }
+h3 { font-size: var(--t-md); font-weight: 620; }
+.dica { font-size: var(--t-sm); }
+label { font-size: var(--t-sm); font-weight: 500; color: var(--texto-suave); }
+.kpi-valor, .tp-kpis strong, .pedido-numero, .qk-topo strong, .qk-total, .total, .cd-preco, .fin-valor, .marca-res {
+  font-family: var(--fonte-display), var(--fonte), system-ui, sans-serif; font-variant-numeric: tabular-nums;
+}
+.kpi-valor { font-size: var(--t-3xl); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
+.tp-kpis strong { font-size: var(--t-2xl); font-weight: 700; letter-spacing: -0.025em; }
+.marca-res { font-weight: 800; letter-spacing: -0.03em; }
+
+/* ---- página */
+.painel > .conteudo { max-width: 1360px; padding: var(--e7) var(--e8) var(--e9); }
+.painel > .conteudo > .grade, .conteudo > .grade, .conteudo > div > .grade { gap: var(--e6); }
+.grade { gap: var(--e4); }
+.linha { gap: var(--e3); }
+
+/* ---- superfícies: uma borda, uma sombra */
+.cartao { border-radius: var(--raio); padding: var(--e5) var(--e6); }
+.cartao > h2:first-child, .cartao > h3:first-child { margin-bottom: var(--e1); }
+fieldset { padding: var(--e4) var(--e5); border-radius: var(--raio); }
+.item { padding: var(--e3) var(--e4); }
+.aviso { padding: var(--e3) var(--e4); font-size: var(--t-sm); line-height: 1.5; }
+
+/* ---- controles */
+input[type='text'], input[type='email'], input[type='password'], input[type='number'], input[type='search'], input[type='tel'], input[type='date'], input[type='time'], input[type='datetime-local'], input:not([type]), select, textarea {
+  min-height: var(--controle-altura); padding: 0 var(--e3); font-size: var(--t-md);
+}
+textarea { padding: var(--e2) var(--e3); }
+select { padding-right: var(--e7); }
+button, .botao { min-height: var(--controle-altura); padding: 0 var(--e4); font-size: 0.95rem; font-weight: 560; justify-content: center; white-space: nowrap; }
+.botao-primario, button.botao-primario { box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.12), 0 1px 2px rgb(19 27 23 / 0.12); }
+.botao-primario:active:not(:disabled) { transform: translateY(1px); }
+.mini, button.mini, .botao.mini { min-height: 32px; padding: 0 var(--e3); font-size: var(--t-sm); }
+button.dica { border-color: transparent; background: none; }
+button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superficie-2); }
+
+/* ---- abas: trilho único, alvos de 36px */
+.abas, .segmentos, .abas-metrica { padding: 3px; border-radius: 12px; gap: 2px; }
+.abas button, .abas .aba-link, .segmentos a, .abas-metrica button { min-height: 36px; padding: 0 var(--e4); font-size: 0.93rem; }
+
+/* ---- chips de filtro */
+.qp-chip { min-height: 32px; padding: 0 var(--e3); border-radius: 999px; font-size: var(--t-sm); }
+.qp-chip-n { font-variant-numeric: tabular-nums; }
+
+/* ---- indicadores */
+.kpis { gap: var(--e4); grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.kpi { gap: var(--e1); }
+.kpi-titulo strong { font-size: var(--t-sm); font-weight: 560; color: var(--texto-suave); }
+.kpi-frase { font-size: var(--t-sm); line-height: 1.45; }
+.kpi-ajuda { font-size: var(--t-xs); border-top-style: solid; padding-top: var(--e2); margin-top: var(--e1); }
+
+/* ---- tabelas */
+.tabela { font-size: 0.93rem; }
+.tabela th { position: sticky; top: 0; z-index: 1; background: var(--superficie-2); font-size: var(--t-xs); font-weight: 600; padding: var(--e3) var(--e4); border-bottom: 1px solid var(--borda); }
+.tabela td { padding: var(--e3) var(--e4); height: 44px; }
+.tabela-rolagem.cartao { padding: 0; overflow: auto; }
+.tabela-rolagem.cartao .tabela th:first-child { border-top-left-radius: var(--raio); }
+.tabela-rolagem.cartao .tabela th:last-child { border-top-right-radius: var(--raio); }
+
+/* ---- menu lateral */
+.menu { padding: var(--e5) var(--e3) var(--e4); }
+.menu-item { min-height: 36px; padding: 0 var(--e3); font-size: 0.93rem; }
+.menu-secao-titulo { font-size: var(--t-xs); padding: 0 var(--e3) var(--e1); }
+.menu-secoes { gap: var(--e5); }
+
+/* ---- quadro compacto: título das colunas em caixa normal */
+.qk-coluna > h2 { text-transform: none; letter-spacing: 0; font-size: 0.9rem; font-weight: 650; }
+.qk-topo strong { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
+.qk-total { font-size: 1.02rem; font-weight: 700; }
+
+@media (max-width: 1000px) and (min-width: 701px) { .painel > .conteudo { padding: var(--e6) var(--e6) var(--e8); } }
+@media (max-width: 700px) {
+  .painel > .conteudo { padding: var(--e5) var(--e4) 5.5rem; }
+  h1 { font-size: var(--t-xl); }
+  .kpi-valor { font-size: var(--t-2xl); }
+  .cartao { padding: var(--e4); }
+  .menu-item { min-height: 0; padding: var(--e1) 2px; font-size: 0.68rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+.fin-auto { display: grid; gap: var(--e1); }
