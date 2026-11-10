@@ -23,7 +23,9 @@ async function pedidoECConta(codigo: string) {
   const { data: p } = await db.from('pedidos').select('id, numero, total, status, pagamento, pago_em, loja_id, marca_id, cliente_nome').eq('codigo', codigo).maybeSingle();
   if (!p) return null;
   const { data: c } = await db.from('mp_contas').select('access_token, email').eq('loja_id', p.loja_id).maybeSingle();
-  return { db, p: p as Ped, conta: c as { access_token: string; email: string | null } | null };
+  // D-085: Pix automático é módulo do plano; fora dele o pedido segue como Pix comum (chave da loja)
+  const { data: tem } = await db.rpc('loja_tem_modulo', { p_loja: p.loja_id, p_modulo: 'pix_online' });
+  return { db, p: p as Ped, conta: tem === false ? null : (c as { access_token: string; email: string | null } | null) };
 }
 
 /** A loja do pedido tem Mercado Pago ligado e o pedido é Pix? */

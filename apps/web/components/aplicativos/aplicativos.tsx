@@ -9,11 +9,14 @@ import { CATALOGO, type App, type PainelAplicativos, type PainelApi, type Painel
 import { PainelMercadoPago } from '@/components/aplicativos/mercadopago';
 import { PainelApiAberta, PainelMcp } from '@/components/aplicativos/api';
 import { PainelIfoodApp } from '@/components/aplicativos/ifood';
+import { ModuloTravado } from '@/components/modulo-travado';
 
 type Filtro = 'todos' | 'ligados' | 'disponiveis' | 'breve';
 
 /** Tela Aplicativos (D-042): o que já vem no RES, o que liga aqui e o que vem por aí. */
-export function Aplicativos({ dados, origem, api, mp, ifood = null }: { dados: PainelAplicativos; origem: string; api: PainelApi | null; mp: StatusMp | null; ifood?: PainelIfood | null }) {
+export function Aplicativos({ dados, origem, api, mp, ifood = null, modulos = null }: { dados: PainelAplicativos; origem: string; api: PainelApi | null; mp: StatusMp | null; ifood?: PainelIfood | null; modulos?: string[] | null }) {
+  // D-085: iFood e Pix automático dependem do plano
+  const travado = (m: string) => !!modulos && !modulos.includes(m);
   const [filtro, setFiltro] = useState<Filtro>('todos');
   const [aberto, setAberto] = useState<App | null>(null);
   const ligado = (a: App) =>
@@ -87,8 +90,8 @@ export function Aplicativos({ dados, origem, api, mp, ifood = null }: { dados: P
             <div className="ap-folha-corpo">
               {aberto.tipo === 'config' && <Config app={aberto} dados={dados} aoFechar={() => setAberto(null)} />}
               {aberto.tipo === 'link' && <LinkGrupo dados={dados} origem={origem} />}
-              {aberto.tipo === 'mp' && <PainelMercadoPago mp={mp} />}
-              {aberto.tipo === 'ifood' && (ifood ? <PainelIfoodApp d={ifood} /> : <p className="dica">Só o dono ou o gerente da loja ligam o iFood (ou falta a atualização do banco: migração 20261106153000).</p>)}
+              {aberto.tipo === 'mp' && (travado('pix_online') ? <ModuloTravado modulo="pix_online" /> : <PainelMercadoPago mp={mp} />)}
+              {aberto.tipo === 'ifood' && (travado('ifood') ? <ModuloTravado modulo="ifood" /> : ifood ? <PainelIfoodApp d={ifood} /> : <p className="dica">Só o dono ou o gerente da loja ligam o iFood (ou falta a atualização do banco: migração 20261106153000).</p>)}
               {(aberto.tipo === 'api' || aberto.tipo === 'mcp') &&
                 (api ? (aberto.tipo === 'api' ? <PainelApiAberta api={api} origem={origem} /> : <PainelMcp api={api} origem={origem} />) : <p className="dica">Só gestores da loja mexem nas chaves de API.</p>)}
               {(aberto.tipo === 'breve' || aberto.tipo === 'depois') && (

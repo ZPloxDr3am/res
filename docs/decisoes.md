@@ -755,3 +755,14 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - A tela de erro do RES agora diz que o erro foi registrado e oferece "Tentar de novo" e "Recarregar".
 - **Sem conexão**: no quadro de pedidos, se a internet cai (ou o tempo real fica fora mais de 8 s), aparece uma faixa vermelha fixa no topo, "Sem conexão desde 20:14. Pedidos novos podem não estar aparecendo." Quando volta, "Conexão de volta. Quadro atualizado." e a tela se atualiza sozinha.
 - Alerta ativo (WhatsApp/e-mail para a equipe quando um erro dispara) fica para quando o número do suporte existir.
+
+## D-085 — Planos, módulos e cobrança (10/11/2026)
+- **3 planos por loja + adicionais** (escolha do dono). Preços iniciais: **Essencial R$ 199,99**, **Profissional R$ 299,99**, **Completo R$ 399,99** por loja/mês. Todos editáveis no painel da empresa → **Planos e preços** (nome, preço, descrição, quais módulos entram, se aparece para cliente novo).
+- **Básico em todo plano**: cardápio digital, quadro de pedidos, delivery (bairros/km), impressão, caixa, lojas e equipe.
+- **Módulos** (liga/desliga): iFood, Pix automático, Entregas e motoboy, Clientes, Promoções, Fidelidade, Relatórios (Profissional); + Estoque/CMV, Financeiro, Gestão, Eventos e Vários cardápios (Completo). Cada um também vendido como **adicional** (R$ 39 a 59 por loja; cardápio extra R$ 99 cada, além do 1º de cada loja).
+- **Por cliente** (painel da empresa → Restaurantes → Plano): trocar o plano e ajustar cada módulo: segue o plano / adicional (cobra) / liberado sem cobrar / desligado.
+- **Teste grátis e contas do piloto: tudo liberado.** Cliente novo entra no Profissional; o piloto ficou no Completo e sem cobrança.
+- **No painel do restaurante**: tela fora do plano mostra "não está no seu plano" com "Ver planos"; no menu aparece com cadeado. Nova tela **Ajustes → Assinatura** (só o dono): valor do mês com detalhe, fatura e Pix, troca de plano (vale na hora), contratar/remover adicional, histórico. iFood e Pix automático também param no servidor quando o módulo está fora.
+- **Fatura**: gerada sozinha todo dia às 09:07 para quem vence em até 5 dias (fim do teste ou do mês pago); valor = plano × lojas + adicionais × lojas + cardápios extras. Pagou: conta ativa por mais 1 mês a partir do vencimento. Mudou plano/adicional: a fatura em aberto (sem Pix gerado) acompanha.
+- **Pix**: pela conta Mercado Pago da empresa RES (`MP_RES_ACCESS_TOKEN`, só no servidor; aviso em `/api/mercadopago/res`, que sempre confere o pagamento na API e o valor). Sem o token, a fatura fica para a equipe **marcar como paga** em **Cobrança** (recebido 30 dias, previsto por mês, contas pagantes, vencidas).
+- Brecha fechada: o dono não altera mais situação, prazos, plano ou limites da conta direto na tabela (só pelas funções).

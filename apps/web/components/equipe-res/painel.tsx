@@ -1,6 +1,7 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { cancelarConvite, criarConvite, definirModo, mudarSituacao } from '@/app/empresa/actions';
+import { ajustarContaPlano, cancelarConvite, criarConvite, definirModo, mudarSituacao } from '@/app/empresa/actions';
+import { reais, type ModuloRes, type PlanoRes } from '@res/core';
 import { salvando } from '@/components/tempo-real';
 
 export type Convite = { codigo: string; nota: string | null; dias_teste: number; criado_em: string; expira_em: string; usado_em: string | null; conta_id: string | null };
@@ -9,6 +10,7 @@ export type ContaPlataforma = {
   criado_em: string; responsavel: string | null; telefone: string | null; email: string | null; nota: string | null;
   comercial: { lojas?: string; sistema?: string; pedidos_dia?: string; como_conheceu?: string } | null;
   lojas: { nome: string; cidade: string | null; uf: string | null; pedidos_7d: number; cardapio_aberto: boolean }[] | null;
+  plano?: string; valor_mes?: number; modulos?: string[]; ajustes?: Record<string, 'adicional' | 'cortesia' | 'desligado'>;
 };
 
 const data = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('pt-BR') : '—');
@@ -119,7 +121,7 @@ export function ConvitesRes({ convites, modo, origem }: { convites: Convite[]; m
 }
 
 /** Restaurantes da plataforma: situação e ações (painel da empresa, D-083). */
-export function RestaurantesRes({ contas }: { contas: ContaPlataforma[] }) {
+export function RestaurantesRes({ contas, planos = [], catalogo = [] }: { contas: ContaPlataforma[]; planos?: PlanoRes[]; catalogo?: ModuloRes[] }) {
   const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null);
   const [pendente, iniciar] = useTransition();
   const fazer = (p: Promise<{ ok: boolean; erro?: string }>, ok: string) =>
@@ -170,6 +172,44 @@ export function RestaurantesRes({ contas }: { contas: ContaPlataforma[] }) {
                 )}
                 {c.nota && <span><b>Anotação</b>{c.nota}</span>}
               </div>
+              {planos.length > 0 && (
+                <details className="eq-plano">
+                  <summary>
+                    Plano <b>{planos.find((p) => p.id === c.plano)?.nome ?? c.plano}</b>
+                    {c.situacao === 'ativa' && !c.pago_ate ? ' · sem cobrança (tudo liberado)' : c.valor_mes != null ? ` · ${reais(Number(c.valor_mes))}/mês` : ''}
+                    {c.ajustes && Object.keys(c.ajustes).length > 0 ? ` · ${Object.keys(c.ajustes).length} ajuste(s)` : ''}
+                  </summary>
+                  <div className="grade" style={{ gap: 'var(--e2)', marginTop: 'var(--e2)' }}>
+                    <label className="linha" style={{ gap: 'var(--e2)' }}>Plano
+                      <select value={c.plano} disabled={pendente} onChange={(e) => fazer(ajustarContaPlano(c.id, e.target.value, null, null), `${c.nome}: plano ${e.target.value}.`)}>
+                        {planos.map((p) => <option key={p.id} value={p.id}>{p.nome} · {reais(Number(p.preco_loja))}/loja</option>)}
+                      </select>
+                    </label>
+                    <table className="mod-matriz">
+                      <thead><tr><th>Módulo</th><th>No plano?</th><th>Ajuste desta conta</th></tr></thead>
+                      <tbody>
+                        {catalogo.map((m) => {
+                          const noPlano = !!planos.find((p) => p.id === c.plano)?.modulos.includes(m.id);
+                          return (
+                            <tr key={m.id}>
+                              <td>{m.nome}</td>
+                              <td>{noPlano ? '✓' : '—'}</td>
+                              <td>
+                                <select value={c.ajustes?.[m.id] ?? 'plano'} disabled={pendente} onChange={(e) => fazer(ajustarContaPlano(c.id, null, m.id, e.target.value), `${c.nome}: ${m.nome} atualizado.`)}>
+                                  <option value="plano">Segue o plano</option>
+                                  {!noPlano && <option value="adicional">Adicional (cobra {reais(Number(m.preco))})</option>}
+                                  <option value="cortesia">Liberado sem cobrar</option>
+                                  <option value="desligado">Desligado</option>
+                                </select>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </details>
+              )}
               <div className="linha" style={{ gap: 'var(--e2)', flexWrap: 'wrap' }}>
                 <button type="button" className="mini botao-primario" disabled={pendente} onClick={() => { const n = prompt('Ativar por 30 dias. Anotação do pagamento (opcional), ex.: Pix de novembro', ''); if (n === null) return; fazer(mudarSituacao(c.id, 'ativar', 30, n || null), `${c.nome}: ativa por 30 dias.`); }}>Ativar 30 dias</button>
                 <button type="button" className="mini" disabled={pendente} onClick={() => fazer(mudarSituacao(c.id, 'ativar', null, null), `${c.nome}: ativa sem prazo.`)}>Ativar sem prazo</button>

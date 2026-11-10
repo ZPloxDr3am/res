@@ -5,6 +5,9 @@ import { contextoLoja } from '@/lib/loja';
 import { PedidoFlutuanteProvider } from '@/components/pedido-flutuante';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import { MenuRodape } from '@/components/menu-rodape';
+import { headers } from 'next/headers';
+import { moduloDaRota } from '@res/core';
+import { ModuloTravado } from '@/components/modulo-travado';
 
 export default async function PainelLayout({ children }: { children: React.ReactNode }) {
   const ctx = await contextoLoja();
@@ -13,6 +16,11 @@ export default async function PainelLayout({ children }: { children: React.React
   const supa = await criarClienteServidor();
   // D-082: situação da conta (teste com prazo, vencida)
   const { data: sitConta } = await supa.rpc('situacao_conta', { p_loja: ctx.lojaId });
+  // D-085: módulos do plano (menu marca com cadeado; a tela fora do plano mostra como liberar)
+  const { data: mods } = await supa.rpc('meus_modulos', { p_loja: ctx.lojaId });
+  const modulos = (mods as { modulos?: string[] } | null)?.modulos ?? null;
+  const travado = modulos ? moduloDaRota((await headers()).get('x-res-caminho') ?? '') : null;
+  const telaTravada = travado && !modulos!.includes(travado) ? travado : null;
   const situacao = sitConta as { situacao: string; teste_ate: string | null; pago_ate: string | null; liberada: boolean } | null;
   // loja nova do cadastro (D-076): mostra "Primeiros passos" no menu até o dono concluir
   let primeirosPassos = false;
@@ -34,7 +42,7 @@ export default async function PainelLayout({ children }: { children: React.React
           {ctx.marcas.length > 1 && <span className="dica menu-marcas">{ctx.marcas.map((m) => m.nome).join(' · ')}</span>}
         </div>
         <nav>
-          <NavPainel lojas={ctx.lojas.map((l) => ({ id: l.id, nome: l.nome }))} lojaAtual={ctx.lojaId} lojaNome={ctx.lojaNome} primeirosPassos={primeirosPassos} />
+          <NavPainel lojas={ctx.lojas.map((l) => ({ id: l.id, nome: l.nome }))} lojaAtual={ctx.lojaId} lojaNome={ctx.lojaNome} primeirosPassos={primeirosPassos} modulos={modulos} dono={ctx.papel === 'dono'} />
         </nav>
         <MenuRodape
           marcas={ctx.marcas.filter((m) => !m.evento).map((m) => ({ nome: m.nome, slug: m.slug }))}
@@ -44,7 +52,7 @@ export default async function PainelLayout({ children }: { children: React.React
       </aside>
       <main className="conteudo">
         {situacao && <FaixaConta s={situacao} />}
-        {children}
+        {telaTravada ? <ModuloTravado modulo={telaTravada} dono={ctx.papel === 'dono'} /> : children}
       </main>
     </div>
     </PedidoFlutuanteProvider>
@@ -57,7 +65,7 @@ function FaixaConta({ s }: { s: { situacao: string; teste_ate: string | null; pa
   if (!s.liberada) {
     return (
       <div className="faixa-conta" data-tipo="pausada" role="alert">
-        <strong>Novos pedidos pausados.</strong> {s.situacao === 'teste' ? 'O teste grátis terminou.' : s.situacao === 'suspensa' ? 'A conta está suspensa.' : 'A assinatura venceu.'} Seus dados continuam aqui. Fale com o time do RES (Suporte, no menu) para reativar.
+        <strong>Novos pedidos pausados.</strong> {s.situacao === 'teste' ? 'O teste grátis terminou.' : s.situacao === 'suspensa' ? 'A conta está suspensa.' : 'A assinatura venceu.'} Seus dados continuam aqui. {s.situacao === 'suspensa' ? 'Fale com o time do RES (Suporte, no menu) para reativar.' : <>Pague em <a href="/assinatura">Assinatura</a> e tudo volta na hora.</>}
       </div>
     );
   }
@@ -66,8 +74,8 @@ function FaixaConta({ s }: { s: { situacao: string; teste_ate: string | null; pa
   return (
     <div className="faixa-conta" data-tipo={d <= 3 ? 'fim' : 'teste'} role="status">
       {s.situacao === 'teste'
-        ? <><strong>Teste grátis: {d <= 0 ? 'último dia' : `${d} dia${d === 1 ? '' : 's'} restante${d === 1 ? '' : 's'}`}.</strong> Para continuar depois do teste, fale com o time do RES (Suporte, no menu).</>
-        : <><strong>A assinatura vence em {d <= 0 ? 'hoje' : `${d} dia${d === 1 ? '' : 's'}`}.</strong> Fale com o time do RES para renovar e não pausar os pedidos.</>}
+        ? <><strong>Teste grátis: {d <= 0 ? 'último dia' : `${d} dia${d === 1 ? '' : 's'} restante${d === 1 ? '' : 's'}`}.</strong> Escolha seu plano em <a href="/assinatura">Assinatura</a> para continuar depois do teste.</>
+        : <><strong>A assinatura vence em {d <= 0 ? 'hoje' : `${d} dia${d === 1 ? '' : 's'}`}.</strong> <a href="/assinatura">Pague a fatura</a> para não pausar os pedidos.</>}
     </div>
   );
 }

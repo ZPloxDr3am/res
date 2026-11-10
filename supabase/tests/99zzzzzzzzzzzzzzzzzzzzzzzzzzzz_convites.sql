@@ -20,7 +20,7 @@ begin
   raise exception 'Deveria ter falhado: %', p_sql;
 end; $$;
 create temp table r (chave text primary key, v jsonb);
-grant all on r to authenticated, anon;
+grant all on r to authenticated, anon, service_role;
 create or replace function pg_temp.v(p text) returns jsonb language sql as $$ select v from r where chave = p $$;
 
 -- quem não é da equipe não cria convite
@@ -105,3 +105,53 @@ reset role;
 \o
 select case when jsonb_array_length(pg_temp.v('erros')) = 1 and (pg_temp.v('erros') -> 0 ->> 'vezes')::int = 2 and pg_temp.v('e24') = '2'
             then 'ok erros: mesmo erro agrupado, só a equipe lê' else 'FALHOU erros ' || coalesce(pg_temp.v('erros')::text, '-') end;
+-- Cobrança (D-085): brecha fechada, fatura com preço × lojas, quitar estende 1 mês
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select from pg_temp.esperar_erro(format($q$update public.contas set pago_ate = now() + interval '5 years' where id = '%s'$q$, pg_temp.v('conta') #>> '{}'), 'só pela equipe RES');
+select from pg_temp.esperar_erro(format($q$update public.contas set limite_lojas = 50 where id = '%s'$q$, pg_temp.v('conta') #>> '{}'), 'só pela equipe RES');
+insert into r values ('fat', to_jsonb(public.gerar_minha_fatura((pg_temp.v('loja') #>> '{}')::uuid)));
+insert into r values ('fat2', to_jsonb(public.gerar_minha_fatura((pg_temp.v('loja') #>> '{}')::uuid)));
+insert into r values ('ass', public.minha_assinatura((pg_temp.v('loja') #>> '{}')::uuid));
+reset role;
+insert into r values ('pago_antes', to_jsonb((select pago_ate from public.contas where id = (pg_temp.v('conta') #>> '{}')::uuid)));
+set role service_role;
+insert into r values ('menor', to_jsonb(public.fatura_quitar_mp((pg_temp.v('fat') #>> '{}')::uuid, 123, 10)));
+insert into r values ('quit', to_jsonb(public.fatura_quitar_mp((pg_temp.v('fat') #>> '{}')::uuid, 123, 299.99)));
+insert into r values ('quit2', to_jsonb(public.fatura_quitar_mp((pg_temp.v('fat') #>> '{}')::uuid, 123, 299.99)));
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a1');
+insert into r values ('cob', public.cobranca_plataforma());
+reset role;
+\o
+select case when pg_temp.v('fat') = pg_temp.v('fat2')
+             and (pg_temp.v('ass') -> 'faturas' -> 0 ->> 'valor')::numeric = 299.99 and (pg_temp.v('ass') -> 'faturas' -> 0 ->> 'lojas')::int = 1
+             and pg_temp.v('menor') = '"valor_menor"' and pg_temp.v('quit') = '"paga"' and pg_temp.v('quit2') = '"ja_paga"'
+             and (select pago_ate from public.contas where id = (pg_temp.v('conta') #>> '{}')::uuid) = (pg_temp.v('pago_antes') #>> '{}')::timestamptz + interval '1 month'
+             and (pg_temp.v('cob') ->> 'mrr')::numeric = 299.99
+            then 'ok cobrança: fatura única por vez, valor por loja, Pix confere valor e estende 1 mês, titular não mexe no prazo'
+            else 'FALHOU cobrança ' || coalesce(pg_temp.v('ass')::text, '-') end;
+-- Planos e módulos (D-085): pago = só o plano; adicional soma; equipe desliga; dono não troca plano na tabela
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('m_pago', public.meus_modulos((pg_temp.v('loja') #>> '{}')::uuid));
+select from pg_temp.esperar_erro(format($q$update public.contas set plano_res = 'completo' where id = '%s'$q$, pg_temp.v('conta') #>> '{}'), 'só pela equipe RES');
+select public.contratar_adicional((pg_temp.v('loja') #>> '{}')::uuid, 'estoque', true);
+insert into r values ('m_add', public.meus_modulos((pg_temp.v('loja') #>> '{}')::uuid));
+select public.escolher_plano((pg_temp.v('loja') #>> '{}')::uuid, 'essencial');
+insert into r values ('ass2', public.minha_assinatura((pg_temp.v('loja') #>> '{}')::uuid));
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a1');
+select public.ajustar_conta_plano((pg_temp.v('conta') #>> '{}')::uuid, null, 'estoque', 'desligado');
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('m_off', public.meus_modulos((pg_temp.v('loja') #>> '{}')::uuid));
+select from pg_temp.esperar_erro(format($q$select public.contratar_adicional('%s', 'estoque', true)$q$, pg_temp.v('loja') #>> '{}'), 'time do RES');
+reset role;
+\o
+select case when pg_temp.v('m_pago') -> 'modulos' ? 'ifood' and not (pg_temp.v('m_pago') -> 'modulos' ? 'estoque') and pg_temp.v('m_pago') ->> 'liberado_por' is null
+             and pg_temp.v('m_add') -> 'modulos' ? 'estoque'
+             and (pg_temp.v('ass2') -> 'valor' ->> 'total')::numeric = 258.99 and not (pg_temp.v('ass2') -> 'modulos_ativos' ? 'ifood')
+             and not (pg_temp.v('m_off') -> 'modulos' ? 'estoque')
+            then 'ok planos: módulos pelo plano, adicional soma na fatura, equipe desliga, dono não mexe direto'
+            else 'FALHOU planos ' || coalesce(pg_temp.v('m_pago')::text, '-') || coalesce(pg_temp.v('ass2') -> 'valor', '"-"'::jsonb)::text end;

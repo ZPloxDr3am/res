@@ -51,3 +51,19 @@ export async function removerEquipe(userId: string): Promise<R> {
   revalidatePath('/empresa', 'layout');
   return { ok: true };
 }
+
+// D-085: planos, módulos e faturas
+async function rpc(nome: string, args: Record<string, unknown>): Promise<R> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc(nome, args);
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/empresa', 'layout');
+  return { ok: true };
+}
+export const ajustarContaPlano = async (conta: string, plano: string | null, modulo: string | null, estado: string | null) =>
+  rpc('ajustar_conta_plano', { p_conta: conta, p_plano: plano, p_modulo: modulo, p_estado: estado });
+export const salvarPlano = async (p: { id: string; nome: string; descricao: string; preco: number; modulos: string[]; ativo: boolean }) =>
+  rpc('salvar_plano', { p_id: p.id, p_nome: p.nome, p_descricao: p.descricao, p_preco: p.preco, p_modulos: p.modulos, p_ativo: p.ativo });
+export const salvarPrecoModulo = async (modulo: string, preco: number) => rpc('salvar_preco_modulo', { p_modulo: modulo, p_preco: preco });
+export const acaoFatura = async (fatura: string, acao: 'pagar' | 'cancelar', nota: string | null) => rpc('fatura_acao', { p_fatura: fatura, p_acao: acao, p_nota: nota });
+export const gerarFaturaPara = async (conta: string) => rpc('fatura_gerar_para', { p_conta: conta });
