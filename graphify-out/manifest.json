@@ -726,9 +726,9 @@
     "semantic_hash": "21bc4e0bde195f62181c3d641e37df21"
   },
   "apps/web/components/tempo-real.tsx": {
-    "mtime": 1794331576.3463726,
-    "seen": 1794331602.805297,
-    "ast_hash": "e714ce03ba7ca40fd8cc795033f26cdd",
+    "mtime": 1794331663.9986665,
+    "seen": 1794331666.3455899,
+    "ast_hash": "b2b474e0a5a4d23e0711b89511491333",
     "semantic_hash": ""
   },
   "apps/web/lib/api-publica.ts": {
