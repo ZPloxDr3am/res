@@ -150,8 +150,8 @@
     "semantic_hash": "c18482a4354bf190ae112d2f406c259f"
   },
   "apps/web/app/(painel)/layout.tsx": {
-    "mtime": 1794329983.5846725,
-    "seen": 1794330002.1458437,
+    "mtime": 1794330332.9204483,
+    "seen": 1794330339.429371,
     "ast_hash": "19beb4ad9cf7b11696792f4d26f7de6c",
     "semantic_hash": ""
   },
@@ -870,8 +870,8 @@
     "semantic_hash": "dbeef416075d74e3b6c91519aa686f04"
   },
   "apps/web/middleware.ts": {
-    "mtime": 1794329995.13494,
-    "seen": 1794330002.146123,
+    "mtime": 1794330332.9263668,
+    "seen": 1794330339.4339454,
     "ast_hash": "1a460221ac077bfea872f03bbf9f881e",
     "semantic_hash": ""
   },
@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794329995.1362076,
-    "seen": 1794330002.1463704,
+    "mtime": 1794330332.9263668,
+    "seen": 1794330339.4387972,
     "ast_hash": "fb3fa9a3c1204a6fd2e927f564e6d683",
     "semantic_hash": ""
   },
@@ -2490,68 +2490,20 @@
     "semantic_hash": ""
   },
   "apps/web/components/menu-rodape.tsx": {
-    "mtime": 1794329983.584318,
-    "seen": 1794330002.1460285,
+    "mtime": 1794330332.9263668,
+    "seen": 1794330339.4325154,
     "ast_hash": "e9ff2a3a81efa44a1ba08d8a6ffaecda",
     "semantic_hash": ""
   },
-  "apps/web/app/empresa/actions.ts": {
-    "mtime": 1794329690.5436733,
-    "seen": 1794329761.0551972,
-    "ast_hash": "498371326217d2f50aa7666ba2eb7f2e",
-    "semantic_hash": ""
-  },
-  "apps/web/app/empresa/configuracoes/page.tsx": {
-    "mtime": 1794329735.8698225,
-    "seen": 1794329761.0551999,
-    "ast_hash": "98274c9e9a53d1399d130b63325d5da1",
-    "semantic_hash": ""
-  },
-  "apps/web/app/empresa/convites/page.tsx": {
-    "mtime": 1794329690.5483668,
-    "seen": 1794329761.055201,
-    "ast_hash": "3d0c5d4e426e45770eb2b7a8bbe9560c",
-    "semantic_hash": ""
-  },
-  "apps/web/app/empresa/layout.tsx": {
-    "mtime": 1794329983.584948,
-    "seen": 1794330002.1459024,
-    "ast_hash": "ff0cc936ab44f6fb036d1f53daf4dc3a",
-    "semantic_hash": ""
-  },
-  "apps/web/app/empresa/page.tsx": {
-    "mtime": 1794329735.8684127,
-    "seen": 1794329761.0552034,
-    "ast_hash": "c7fe5a95dde04bfee06538d922dfd60b",
-    "semantic_hash": ""
-  },
-  "apps/web/app/empresa/restaurantes/page.tsx": {
-    "mtime": 1794329690.5495586,
-    "seen": 1794329761.0552044,
-    "ast_hash": "2603521fc1aaa33bdb549de6d42e182c",
-    "semantic_hash": ""
-  },
   "apps/web/app/equipe-res/page.tsx": {
-    "mtime": 1794329690.5389175,
-    "seen": 1794329761.0552056,
+    "mtime": 1794330332.9244483,
+    "seen": 1794330339.4303298,
     "ast_hash": "248f404c05cebce0809dc23fab4295da",
     "semantic_hash": ""
   },
-  "apps/web/components/empresa/config.tsx": {
-    "mtime": 1794329735.8713639,
-    "seen": 1794329761.0552583,
-    "ast_hash": "f99c3162a97298968a6c80a22cd8a960",
-    "semantic_hash": ""
-  },
-  "apps/web/components/empresa/nav.tsx": {
-    "mtime": 1794329690.5472293,
-    "seen": 1794329761.0552597,
-    "ast_hash": "5a0758728ce105e1f92a3be9f2cf35e0",
-    "semantic_hash": ""
-  },
   "apps/web/components/equipe-res/painel.tsx": {
-    "mtime": 1794329690.5402887,
-    "seen": 1794329761.0552666,
+    "mtime": 1794330332.9263668,
+    "seen": 1794330339.4315202,
     "ast_hash": "394a4d454f79f24ba18fd79c94c232a2",
     "semantic_hash": ""
   },
@@ -2561,12 +2513,6 @@
     "ast_hash": "9ee64237a2274c4fd20e39c47927fab7",
     "semantic_hash": ""
   },
-  "supabase/migrations/20261110190000_painel_empresa.sql": {
-    "mtime": 1794329634.540229,
-    "seen": 1794329761.0555682,
-    "ast_hash": "bbecf60f92538f1d4963d41bda1db542",
-    "semantic_hash": ""
-  },
   "supabase/tests/10_0_plataforma.sql": {
     "mtime": 1794329223.2725062,
     "seen": 1794329761.055572,
@@ -2574,8 +2520,8 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794329634.5404067,
-    "seen": 1794329761.055646,
+    "mtime": 1794330332.936448,
+    "seen": 1794330339.4386497,
     "ast_hash": "03f1c734ec834a26bfc8f706be0a76ad",
     "semantic_hash": ""
   }
