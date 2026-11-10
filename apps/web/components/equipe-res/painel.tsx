@@ -1,7 +1,6 @@
 'use client';
 import { useState, useTransition } from 'react';
-import Link from 'next/link';
-import { cancelarConvite, criarConvite, definirModo, mudarSituacao } from '@/app/equipe-res/actions';
+import { cancelarConvite, criarConvite, definirModo, mudarSituacao } from '@/app/empresa/actions';
 import { salvando } from '@/components/tempo-real';
 
 export type Convite = { codigo: string; nota: string | null; dias_teste: number; criado_em: string; expira_em: string; usado_em: string | null; conta_id: string | null };
@@ -29,18 +28,19 @@ function situacaoTexto(c: ContaPlataforma) {
   return { t: c.pago_ate ? `Ativa até ${data(c.pago_ate)}` : 'Ativa (sem prazo)', tipo: 'ativa' };
 }
 
-export function PainelEquipeRes({ contas, convites, modo, origem }: { contas: ContaPlataforma[]; convites: Convite[]; modo: 'convite' | 'aberto'; origem: string }) {
+/** Convites de cadastro (painel da empresa, D-083). */
+export function ConvitesRes({ convites, modo, origem }: { convites: Convite[]; modo: 'convite' | 'aberto'; origem: string }) {
   const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null);
   const [pendente, iniciar] = useTransition();
-  const [nota, setNota] = useState('');
-  const [diasTeste, setDiasTeste] = useState(14);
-  const [copiado, setCopiado] = useState<string | null>(null);
-  const [filtro, setFiltro] = useState<'todas' | 'teste' | 'pausadas' | 'ativas'>('todas');
   const fazer = (p: Promise<{ ok: boolean; erro?: string }>, ok: string) =>
     iniciar(async () => {
       const r = await salvando(p as Promise<{ ok: true } | { ok: false; erro: string }>);
       setMsg(r.ok ? { ok: true, t: ok } : { ok: false, t: r.erro });
     });
+  const aviso = msg && <p className={msg.ok ? 'dica' : 'erro'} role="status" style={{ margin: 0 }}>{msg.t}</p>;
+  const [nota, setNota] = useState('');
+  const [diasTeste, setDiasTeste] = useState(14);
+  const [copiado, setCopiado] = useState<string | null>(null);
   const copiar = async (t: string) => {
     try {
       await navigator.clipboard.writeText(t);
@@ -51,27 +51,12 @@ export function PainelEquipeRes({ contas, convites, modo, origem }: { contas: Co
     }
   };
   const linkConvite = (c: string) => `${origem}/cadastro?convite=${c}`;
-  const lista = contas.filter((c) =>
-    filtro === 'todas' ? true : filtro === 'teste' ? c.situacao === 'teste' && c.liberada : filtro === 'pausadas' ? !c.liberada : c.situacao === 'ativa' && c.liberada,
-  );
-  const n = { teste: contas.filter((c) => c.situacao === 'teste' && c.liberada).length, pausadas: contas.filter((c) => !c.liberada).length, ativas: contas.filter((c) => c.situacao === 'ativa' && c.liberada).length };
-
   return (
-    <div className="grade" style={{ gap: 'var(--e6)' }}>
-      <header className="linha" style={{ justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-        <div>
-          <div className="marca-res" style={{ fontSize: '1.3rem' }}>RES</div>
-          <h1 style={{ margin: 'var(--e2) 0 0' }}>Equipe RES</h1>
-          <p className="dica" style={{ margin: 0 }}>Convites de cadastro e a situação de cada restaurante.</p>
-        </div>
-        <Link className="botao" href="/pedidos">Voltar ao painel</Link>
-      </header>
-
-      {msg && <p className={msg.ok ? 'dica' : 'erro'} role="status" style={{ margin: 0 }}>{msg.t}</p>}
-
+    <div className="grade">
+      {aviso}
       <section className="cartao grade">
         <div className="linha" style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
-          <h2 style={{ margin: 0 }}>Convites</h2>
+          <h2 style={{ margin: 0 }}>Novo convite</h2>
           <div className="qp-visao" role="radiogroup" aria-label="Quem pode se cadastrar">
             <button type="button" role="radio" aria-checked={modo === 'convite'} disabled={pendente} onClick={() => fazer(definirModo('convite'), 'Cadastro só com convite.')}>Só com convite</button>
             <button type="button" role="radio" aria-checked={modo === 'aberto'} disabled={pendente} onClick={() => fazer(definirModo('aberto'), 'Cadastro aberto para todos.')}>Aberto para todos</button>
@@ -129,10 +114,31 @@ export function PainelEquipeRes({ contas, convites, modo, origem }: { contas: Co
           </div>
         )}
       </section>
+    </div>
+  );
+}
 
+/** Restaurantes da plataforma: situação e ações (painel da empresa, D-083). */
+export function RestaurantesRes({ contas }: { contas: ContaPlataforma[] }) {
+  const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null);
+  const [pendente, iniciar] = useTransition();
+  const fazer = (p: Promise<{ ok: boolean; erro?: string }>, ok: string) =>
+    iniciar(async () => {
+      const r = await salvando(p as Promise<{ ok: true } | { ok: false; erro: string }>);
+      setMsg(r.ok ? { ok: true, t: ok } : { ok: false, t: r.erro });
+    });
+  const aviso = msg && <p className={msg.ok ? 'dica' : 'erro'} role="status" style={{ margin: 0 }}>{msg.t}</p>;
+  const [filtro, setFiltro] = useState<'todas' | 'teste' | 'pausadas' | 'ativas'>('todas');
+  const lista = contas.filter((c) =>
+    filtro === 'todas' ? true : filtro === 'teste' ? c.situacao === 'teste' && c.liberada : filtro === 'pausadas' ? !c.liberada : c.situacao === 'ativa' && c.liberada,
+  );
+  const n = { teste: contas.filter((c) => c.situacao === 'teste' && c.liberada).length, pausadas: contas.filter((c) => !c.liberada).length, ativas: contas.filter((c) => c.situacao === 'ativa' && c.liberada).length };
+  return (
+    <div className="grade">
+      {aviso}
       <section className="grade">
         <div className="linha" style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
-          <h2 style={{ margin: 0 }}>Restaurantes ({contas.length})</h2>
+          <span className="dica">{contas.length} restaurante(s) na plataforma</span>
           <div className="abas" role="tablist">
             {([['todas', `Todas`], ['teste', `Em teste (${n.teste})`], ['pausadas', `Pausadas (${n.pausadas})`], ['ativas', `Ativas (${n.ativas})`]] as const).map(([k, r]) => (
               <button key={k} type="button" role="tab" aria-selected={filtro === k} onClick={() => setFiltro(k)}>{r}</button>

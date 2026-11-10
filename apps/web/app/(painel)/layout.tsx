@@ -11,8 +11,8 @@ export default async function PainelLayout({ children }: { children: React.React
   // motoboy usa o app do celular, não o painel
   if (ctx.papel === 'entregador' && ctx.lojas.length >= 1) redirect('/m');
   const supa = await criarClienteServidor();
-  // D-082: situação da conta (teste com prazo, vencida) e se o usuário é do time RES
-  const [{ data: sitConta }, { data: equipeRes }] = await Promise.all([supa.rpc('situacao_conta', { p_loja: ctx.lojaId }), supa.rpc('sou_equipe_res')]);
+  // D-082: situação da conta (teste com prazo, vencida)
+  const { data: sitConta } = await supa.rpc('situacao_conta', { p_loja: ctx.lojaId });
   const situacao = sitConta as { situacao: string; teste_ate: string | null; pago_ate: string | null; liberada: boolean } | null;
   // loja nova do cadastro (D-076): mostra "Primeiros passos" no menu até o dono concluir
   let primeirosPassos = false;
@@ -40,7 +40,6 @@ export default async function PainelLayout({ children }: { children: React.React
           marcas={ctx.marcas.filter((m) => !m.evento).map((m) => ({ nome: m.nome, slug: m.slug }))}
           lojaNome={ctx.lojaNome}
           versao={process.env.VERCEL_GIT_COMMIT_SHA ? process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 7) : null}
-          equipeRes={equipeRes === true}
         />
       </aside>
       <main className="conteudo">
