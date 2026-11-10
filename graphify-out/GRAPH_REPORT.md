@@ -1,7 +1,7 @@
 # Graph Report - res  (2026-11-10)
 
 ## Corpus Check
-- 398 files · ~363,300 words
+- 406 files · ~366,084 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 5 file(s) not represented in the graph (top: (none) 2, .example 1, .css 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `25f8a97d`
+- Built from commit: `6faef00d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -196,16 +196,16 @@
 10. `public.produtos` - 81 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `D-030 · Telefone sempre com o 9 do celular` --references--> `normalizarTelefone()`  [INFERRED]
+  docs/decisoes.md → packages/core/src/segmentos.ts
+- `D-027 · Rota sugerida quando o motoboy sai com várias entregas` --references--> `otimizarRota()`  [INFERRED]
+  docs/decisoes.md → packages/core/src/rota.ts
 - `A. Processo e base` --references--> `main()`  [INFERRED]
   docs/planejamento/checklists/emmanuel-software.md → packages/agente/src/main.ts
-- `D-022 Combos com escolhas e categoria de up-sell` --references--> `calcularCombo()`  [INFERRED]
-  docs/decisoes.md → packages/core/src/combo.ts
 - `D-014 Impressão: fila no banco, regras como no BeeFood, navegador até o agente chegar` --references--> `montarCupom()`  [INFERRED]
   docs/decisoes.md → packages/core/src/cupom.ts
 - `D-015 Agente de impressão do Windows (RES Impressão)` --references--> `montarCupom()`  [INFERRED]
   docs/decisoes.md → packages/core/src/cupom.ts
-- `D-023 % por categoria, cupons e desconto no balcão com limite` --references--> `precoBase()`  [INFERRED]
-  docs/decisoes.md → packages/core/src/preco.ts
 
 ## Import Cycles
 - None detected.
@@ -844,10 +844,10 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `20261020000001_base.sql` be split into smaller, more focused modules?**
   _Cohesion score 0.08412698412698413 - nodes in this community are weakly interconnected._
 - **Why does `criarClienteServidor()` connect `criarClienteServidor` to `equipe.tsx`, `cardapio-cliente.tsx`, `expedicao.ts`, `form-delivery.tsx`, `gestao/actions.ts`, `[codigo]/page.tsx`, `painel-impressoras.tsx`, `relatorios/page.tsx`, `next`, `index.ts`, `app-motoboy.tsx`, `fichas.tsx`, `ao-vivo.tsx`, `criarClienteServidor`, `aplicativos.tsx`, `salvando`, `novo-pedido.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `financeiro/page.tsx`, `evento.tsx`, `entregas/page.tsx`, `bairros.tsx`, `negociacoes-ifood.tsx`, `form-grupo.tsx`, `form-setor.tsx`, `painel-caixa.tsx`, `empresa/layout.tsx`, `evento/page.tsx`, `[link]/page.tsx`, `negociacoes-ifood.tsx`, `react`, `cadastro/actions.ts`, `resumo/page.tsx`, `lojas/actions.ts`, `ifood.ts`, `gestao/page.tsx`, `api.tsx`, `react`, `lista-clientes.tsx`, `meta-mes.tsx`, `funcionarios.tsx`, `pedido-flutuante.tsx`, `cliente.tsx`, `aplicativos/actions.ts`, `ifood.tsx`, `gestao.ts`, `funcionarios.tsx`?**
-  _High betweenness centrality (0.052) - this node is a cross-community bridge._
+  _High betweenness centrality (0.050) - this node is a cross-community bridge._
 - **Should `cardapio-cliente.tsx` be split into smaller, more focused modules?**
   _Cohesion score 0.11932773109243698 - nodes in this community are weakly interconnected._
 - **Why does `formatarReais()` connect `formatarReais` to `cardapio-cliente.tsx`, `form-delivery.tsx`, `relatorios/page.tsx`, `index.ts`, `promocao.test.ts`, `app-motoboy.tsx`, `fichas.tsx`, `salvando`, `novo-pedido.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `publico.ts`, `bairros.tsx`, `cupom.ts`, `form-grupo.tsx`, `preco.ts`, `painel-caixa.tsx`, `criarClienteServidor`, `negociacoes-ifood.tsx`, `react`, `resumo/page.tsx`, `react`, `lista-clientes.tsx`, `meta-mes.tsx`, `pedido-flutuante.tsx`, `cliente.tsx`, `aplicativos/actions.ts`, `ifood.tsx`, `grafico-lojas.tsx`, `grafico-dias.tsx`?**
-  _High betweenness centrality (0.046) - this node is a cross-community bridge._
+  _High betweenness centrality (0.047) - this node is a cross-community bridge._
 - **Should `main.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.09408033826638477 - nodes in this community are weakly interconnected._
