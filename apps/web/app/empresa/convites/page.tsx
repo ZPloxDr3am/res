@@ -10,8 +10,10 @@ export default async function Convites() {
     supabase.from('convites_cadastro').select('codigo, nota, dias_teste, criado_em, expira_em, usado_em, conta_id').order('criado_em', { ascending: false }).limit(200),
     supabase.rpc('cadastro_modo'),
   ]);
+  // o convite abre no endereço dos restaurantes, nunca no da empresa (D-083)
   const h = await headers();
-  const origem = `${h.get('x-forwarded-proto') ?? 'https'}://${h.get('x-forwarded-host') ?? h.get('host')}`;
+  const aqui = `${h.get('x-forwarded-proto') ?? 'https'}://${h.get('x-forwarded-host') ?? h.get('host')}`;
+  const origem = (process.env.RES_URL ?? (process.env.EMPRESA_HOST ? 'https://res-iqzs.vercel.app' : aqui)).replace(/\/$/, '');
   return (
     <div className="grade">
       <div>
