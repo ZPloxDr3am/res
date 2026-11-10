@@ -324,8 +324,8 @@
     "semantic_hash": "863bf5dde154fe10b8e75777f6c971dc"
   },
   "apps/web/app/login/page.tsx": {
-    "mtime": 1794330849.0668454,
-    "seen": 1794330863.132955,
+    "mtime": 1794330936.768484,
+    "seen": 1794330943.406454,
     "ast_hash": "b389045059399b6cfd5a22435486e67a",
     "semantic_hash": ""
   },
@@ -2538,8 +2538,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/empresa/convites/page.tsx": {
-    "mtime": 1794330849.067233,
-    "seen": 1794330863.1329436,
+    "mtime": 1794330936.768484,
+    "seen": 1794330943.406433,
     "ast_hash": "f7c8d3486cf3c5ab49d055b954c1d6b3",
     "semantic_hash": ""
   },
