@@ -4,13 +4,9 @@ export const metadata = { title: 'Erros' };
 
 type ErroAgrupado = { hash: string; origem: 'navegador' | 'servidor'; mensagem: string; caminho: string | null; pilha: string | null; digest: string | null; vezes: number; primeiro_em: string; ultimo_em: string; pessoas: number; lojas: string | null };
 
-const quando = (iso: string) => {
-  const min = Math.round((Date.now() - Date.parse(iso)) / 60000);
-  if (min < 1) return 'agora';
-  if (min < 60) return `há ${min} min`;
-  if (min < 48 * 60) return `há ${Math.round(min / 60)} h`;
-  return new Date(iso).toLocaleDateString('pt-BR');
-};
+// hora exata no horário de Brasília (o servidor roda em UTC)
+const quando = (iso: string) =>
+  new Date(iso).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 
 /** Erros da plataforma (D-084): o que quebrou, onde, quantas vezes e para quantas pessoas. */
 export default async function Erros({ searchParams }: { searchParams: Promise<{ dias?: string }> }) {
@@ -37,7 +33,7 @@ export default async function Erros({ searchParams }: { searchParams: Promise<{ 
           <summary>
             <span className="emp-erro-msg">{e.mensagem}</span>
             <span className="dica">
-              {e.origem === 'servidor' ? 'Servidor' : 'Navegador'} · {e.caminho ?? '—'} · {e.vezes}× · {e.pessoas} pessoa(s){e.lojas ? ` · ${e.lojas}` : ''} · último {quando(e.ultimo_em)}
+              {e.origem === 'servidor' ? 'Servidor' : 'Navegador'} · {e.caminho ?? '—'} · {e.vezes}× · {e.pessoas} pessoa(s){e.lojas ? ` · ${e.lojas}` : ''} · última vez {quando(e.ultimo_em)}
             </span>
           </summary>
           {e.digest && <p className="dica" style={{ margin: 'var(--e2) 0 0' }}>Código: {e.digest}</p>}
