@@ -150,9 +150,9 @@
     "semantic_hash": "c18482a4354bf190ae112d2f406c259f"
   },
   "apps/web/app/(painel)/layout.tsx": {
-    "mtime": 1794192046.9234731,
-    "seen": 1794192055.0153527,
-    "ast_hash": "5c0e4a981058ee428550a9f425445fa0",
+    "mtime": 1794328549.2162552,
+    "seen": 1794328625.1299195,
+    "ast_hash": "1b620c12f27776b7e787d0d988ba355d",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/loading.tsx": {
@@ -366,9 +366,9 @@
     "semantic_hash": "592e54b91b837468d80f8be9fba1f699"
   },
   "apps/web/app/onboarding/page.tsx": {
-    "mtime": 1794101518.825778,
-    "seen": 1794101525.1185882,
-    "ast_hash": "517c258b8d3faa50bc909e8068e99062",
+    "mtime": 1794328530.6935048,
+    "seen": 1794328625.1299956,
+    "ast_hash": "4f5d47b342e3ff5bd8fc71154efd2109",
     "semantic_hash": ""
   },
   "apps/web/app/page.tsx": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794192046.927473,
-    "seen": 1794192055.015916,
-    "ast_hash": "9ed969c85eddeef51a63fd969a015c42",
+    "mtime": 1794328616.7364702,
+    "seen": 1794328625.1304674,
+    "ast_hash": "8227957e53195c588650b05e0a3d8af9",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2388,9 +2388,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/cadastro/actions.ts": {
-    "mtime": 1794165950.3334947,
-    "seen": 1794165955.2246811,
-    "ast_hash": "e415fa82f2ef03eef10a4c1e2010eca6",
+    "mtime": 1794328530.692494,
+    "seen": 1794328625.1299694,
+    "ast_hash": "f205560c8d30699afb8d3caf40d6fe47",
     "semantic_hash": ""
   },
   "apps/web/app/cadastro/confirme/page.tsx": {
@@ -2400,9 +2400,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/cadastro/page.tsx": {
-    "mtime": 1794101518.825778,
-    "seen": 1794165538.5405478,
-    "ast_hash": "41af72e1c73d996b2f4ead0d5f8593f7",
+    "mtime": 1794328530.6933203,
+    "seen": 1794328625.129973,
+    "ast_hash": "f602b62b8c836c842754b989f3e497c1",
     "semantic_hash": ""
   },
   "apps/web/app/privacidade/page.tsx": {
@@ -2418,9 +2418,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/cadastro/form-cadastro.tsx": {
-    "mtime": 1794165950.3334947,
-    "seen": 1794165955.2247071,
-    "ast_hash": "051bfc55c49b9332c85a9a3415124416",
+    "mtime": 1794328530.6930141,
+    "seen": 1794328625.1300414,
+    "ast_hash": "7af98d5f6dda7263d419478c1becc498",
     "semantic_hash": ""
   },
   "apps/web/components/cadastro/primeiros-passos.tsx": {
@@ -2448,9 +2448,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzz_cadastro.sql": {
-    "mtime": 1794165950.3454945,
-    "seen": 1794165955.2250051,
-    "ast_hash": "8e61efcd7c934f3f3cf72552b07863fd",
+    "mtime": 1794328408.6267984,
+    "seen": 1794328625.1304572,
+    "ast_hash": "cfbc866291feb0a5cda8abc5a82b0950",
     "semantic_hash": ""
   },
   "apps/web/components/cadastro/campos-empresa.tsx": {
@@ -2487,6 +2487,48 @@
     "mtime": 1794166221.6415043,
     "seen": 1794167133.833423,
     "ast_hash": "ab1ba7684affcc001a0a4a94f0a3b008",
+    "semantic_hash": ""
+  },
+  "apps/web/app/equipe-res/actions.ts": {
+    "mtime": 1794328600.6739109,
+    "seen": 1794328625.1299758,
+    "ast_hash": "1ec4733ba29d06dfc441b2e5baaacf0e",
+    "semantic_hash": ""
+  },
+  "apps/web/app/equipe-res/page.tsx": {
+    "mtime": 1794328600.6751082,
+    "seen": 1794328625.1299777,
+    "ast_hash": "b87c5098ea25a233c843c2421e23d9c0",
+    "semantic_hash": ""
+  },
+  "apps/web/components/equipe-res/painel.tsx": {
+    "mtime": 1794328616.7351687,
+    "seen": 1794328625.130076,
+    "ast_hash": "b371f0b533cae51b67950dcac3dac40d",
+    "semantic_hash": ""
+  },
+  "apps/web/components/menu-rodape.tsx": {
+    "mtime": 1794328549.2165604,
+    "seen": 1794328625.1301322,
+    "ast_hash": "b0e1534a12acf94658b4a30cc671cc15",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261110170000_convites_e_teste.sql": {
+    "mtime": 1794328473.4556212,
+    "seen": 1794328625.1304033,
+    "ast_hash": "9ee64237a2274c4fd20e39c47927fab7",
+    "semantic_hash": ""
+  },
+  "supabase/tests/10_0_plataforma.sql": {
+    "mtime": 1794328481.5156863,
+    "seen": 1794328625.1304064,
+    "ast_hash": "39fc281afae6604ea713f5d1465ea1fb",
+    "semantic_hash": ""
+  },
+  "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
+    "mtime": 1794328473.4564617,
+    "seen": 1794328625.1304584,
+    "ast_hash": "374c76dbac8bf57a1cb5783b7b5b6472",
     "semantic_hash": ""
   }
 }

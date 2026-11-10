@@ -10,6 +10,10 @@ export default async function PainelLayout({ children }: { children: React.React
   const ctx = await contextoLoja();
   // motoboy usa o app do celular, não o painel
   if (ctx.papel === 'entregador' && ctx.lojas.length >= 1) redirect('/m');
+  const supa = await criarClienteServidor();
+  // D-082: situação da conta (teste com prazo, vencida) e se o usuário é do time RES
+  const [{ data: sitConta }, { data: equipeRes }] = await Promise.all([supa.rpc('situacao_conta', { p_loja: ctx.lojaId }), supa.rpc('sou_equipe_res')]);
+  const situacao = sitConta as { situacao: string; teste_ate: string | null; pago_ate: string | null; liberada: boolean } | null;
   // loja nova do cadastro (D-076): mostra "Primeiros passos" no menu até o dono concluir
   let primeirosPassos = false;
   if (ctx.papel === 'dono' || ctx.papel === 'gerente') {
@@ -36,10 +40,35 @@ export default async function PainelLayout({ children }: { children: React.React
           marcas={ctx.marcas.filter((m) => !m.evento).map((m) => ({ nome: m.nome, slug: m.slug }))}
           lojaNome={ctx.lojaNome}
           versao={process.env.VERCEL_GIT_COMMIT_SHA ? process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 7) : null}
+          equipeRes={equipeRes === true}
         />
       </aside>
-      <main className="conteudo">{children}</main>
+      <main className="conteudo">
+        {situacao && <FaixaConta s={situacao} />}
+        {children}
+      </main>
     </div>
     </PedidoFlutuanteProvider>
+  );
+}
+
+/** Faixa da assinatura (D-082): dias de teste no fim do prazo, ou conta pausada. */
+function FaixaConta({ s }: { s: { situacao: string; teste_ate: string | null; pago_ate: string | null; liberada: boolean } }) {
+  const dias = (iso: string | null) => (iso ? Math.ceil((Date.parse(iso) - Date.now()) / 86_400_000) : null);
+  if (!s.liberada) {
+    return (
+      <div className="faixa-conta" data-tipo="pausada" role="alert">
+        <strong>Novos pedidos pausados.</strong> {s.situacao === 'teste' ? 'O teste grátis terminou.' : s.situacao === 'suspensa' ? 'A conta está suspensa.' : 'A assinatura venceu.'} Seus dados continuam aqui. Fale com o time do RES (Suporte, no menu) para reativar.
+      </div>
+    );
+  }
+  const d = s.situacao === 'teste' ? dias(s.teste_ate) : dias(s.pago_ate);
+  if (d == null || (s.situacao !== 'teste' && d > 5)) return null;
+  return (
+    <div className="faixa-conta" data-tipo={d <= 3 ? 'fim' : 'teste'} role="status">
+      {s.situacao === 'teste'
+        ? <><strong>Teste grátis: {d <= 0 ? 'último dia' : `${d} dia${d === 1 ? '' : 's'} restante${d === 1 ? '' : 's'}`}.</strong> Para continuar depois do teste, fale com o time do RES (Suporte, no menu).</>
+        : <><strong>A assinatura vence em {d <= 0 ? 'hoje' : `${d} dia${d === 1 ? '' : 's'}`}.</strong> Fale com o time do RES para renovar e não pausar os pedidos.</>}
+    </div>
   );
 }

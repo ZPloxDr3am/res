@@ -7,6 +7,7 @@ import { CamposEmpresa, type CamposEmpresaValor } from '@/components/cadastro/ca
 
 const ETAPAS = ['Responsável', 'Empresa', 'Restaurante'] as const;
 const VAZIO: DadosCadastro = {
+  convite: '',
   nome: '', email: '', senha: '', whatsapp: '',
   semCnpj: false, documento: '', razaoSocial: '', nomeFantasia: '', inscricaoEstadual: '', telefoneLoja: '', emailLoja: '',
   endereco: { cep: '', logradouro: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '', lat: null, lng: null },
@@ -14,8 +15,8 @@ const VAZIO: DadosCadastro = {
 };
 
 /** Cadastro completo do restaurante (D-076/D-077): responsável → empresa (CNPJ preenche sozinho) → restaurante. */
-export function FormCadastro({ dominio }: { dominio: string }) {
-  const [d, setD] = useState<DadosCadastro>(VAZIO);
+export function FormCadastro({ dominio, convite }: { dominio: string; convite: string }) {
+  const [d, setD] = useState<DadosCadastro>({ ...VAZIO, convite });
   const [etapa, setEtapa] = useState<1 | 2 | 3>(1);
   const [slugEditado, setSlugEditado] = useState(false);
   const [livre, setLivre] = useState<boolean | null>(null);
