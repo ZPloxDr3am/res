@@ -57,7 +57,7 @@ export async function pixDaFatura(id: string): Promise<PixFatura> {
     headers: { Authorization: `Bearer ${token()}`, 'Content-Type': 'application/json', 'X-Idempotency-Key': `res-fatura-${f.id}-${Number(f.valor).toFixed(2)}-${Math.floor(Date.now() / 3600_000)}` },
     body: JSON.stringify({
       transaction_amount: Number(f.valor),
-      description: `RES · mensalidade a partir de ${f.inicio.split('-').reverse().join('/')}`,
+      description: `RES · assinatura a partir de ${f.inicio.split('-').reverse().join('/')}`,
       payment_method_id: 'pix',
       external_reference: `res-fatura:${f.id}`,
       notification_url: `${BASE}/api/mercadopago/res`,

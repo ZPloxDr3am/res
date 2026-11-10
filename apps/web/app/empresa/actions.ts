@@ -62,8 +62,9 @@ async function rpc(nome: string, args: Record<string, unknown>): Promise<R> {
 }
 export const ajustarContaPlano = async (conta: string, plano: string | null, modulo: string | null, estado: string | null) =>
   rpc('ajustar_conta_plano', { p_conta: conta, p_plano: plano, p_modulo: modulo, p_estado: estado });
-export const salvarPlano = async (p: { id: string; nome: string; descricao: string; preco: number; modulos: string[]; ativo: boolean }) =>
-  rpc('salvar_plano', { p_id: p.id, p_nome: p.nome, p_descricao: p.descricao, p_preco: p.preco, p_modulos: p.modulos, p_ativo: p.ativo });
+export const salvarPlano = async (p: { id: string; nome: string; descricao: string; preco: number; modulos: string[]; ativo: boolean; incluidos: Record<string, number> }) =>
+  rpc('salvar_plano', { p_id: p.id, p_nome: p.nome, p_descricao: p.descricao, p_preco: p.preco, p_modulos: p.modulos, p_ativo: p.ativo, p_incluidos: p.incluidos });
+export const salvarDescontoAnual = async (pct: number) => rpc('definir_desconto_anual', { p_pct: pct });
 export const salvarPrecoModulo = async (modulo: string, preco: number) => rpc('salvar_preco_modulo', { p_modulo: modulo, p_preco: preco });
 export const acaoFatura = async (fatura: string, acao: 'pagar' | 'cancelar', nota: string | null) => rpc('fatura_acao', { p_fatura: fatura, p_acao: acao, p_nota: nota });
 export const gerarFaturaPara = async (conta: string) => rpc('fatura_gerar_para', { p_conta: conta });

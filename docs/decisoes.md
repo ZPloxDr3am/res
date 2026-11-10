@@ -781,3 +781,12 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 
 ## D-089 — Fontes guardadas no projeto (10/11/2026)
 - Onest e Bricolage Grotesque agora vêm de `apps/web/app/fontes` (recortadas para o alfabeto latino; licença OFL junto). O build não baixa mais nada do Google Fonts, o que acaba com a falha falsa do CI.
+
+## D-090 — Precificação no formato do mercado (inspirada no BeeFood) (10/11/2026)
+- Olhamos o "Meu plano" do BeeFood (conta do dono): planos por **tipo de operação**, preço **por conta**, cardápio extra barato, adicionais por conta/cardápio/aparelho, aparelhos grátis no plano e anual com desconto. Eles cobram R$ 530 pelas 3 lojas do piloto; no nosso modelo de D-085 (por loja) seriam uns R$ 900 — caro demais para trocar de sistema.
+- **Planos (por conta, cobre 1 loja e 1 cardápio)**: **Delivery R$ 149,90** (entregas + app do motoboy, Pix automático, clientes, promoções, relatórios; 5 App Entregador grátis) · **Salão R$ 149,90** (salão/garçom, Pix automático, clientes, promoções, relatórios; 5 App Garçom grátis) · **Completo R$ 239,90** (tudo menos iFood; 5 + 5 aparelhos). Essencial e Profissional saíram de venda; quem estava neles foi para Delivery.
+- **Loja ou cardápio extra: R$ 49,90** cada (em todo plano). **Adicionais por conta**: iFood/marketplaces 49,90 · Entregas 49,90 · Salão 49,90 · Pix automático, Promoções, Fidelidade, Estoque, Financeiro, Gestão 29,90 · Clientes, Relatórios, Eventos 19,90. **Aparelho extra** (App Entregador / App Garçom): 19,90 cada.
+- **Anual: 20% de desconto** em tudo (plano, extras, adicionais, aparelhos); a fatura anual cobre 12 meses. O dono escolhe Mensal/Anual em Assinatura.
+- **Aparelhos**: com a conta paga, a equipe só ganha mais motoboys/garçons ativos até o limite (grátis + extras); acima disso, o RES pede para contratar em Assinatura. Teste grátis e piloto: sem limite. Não deixa reduzir extras abaixo do que está em uso.
+- Exemplo: as 3 lojas do piloto no Completo + iFood = 239,90 + 2 × 49,90 + 49,90 = **R$ 389,50/mês** (R$ 311,60/mês no anual).
+- Tudo editável no painel da empresa → Planos e preços (preço, módulos, aparelhos grátis, preço dos adicionais, desconto anual).

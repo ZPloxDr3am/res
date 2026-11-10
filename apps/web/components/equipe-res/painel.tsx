@@ -182,13 +182,13 @@ export function RestaurantesRes({ contas, planos = [], catalogo = [] }: { contas
                   <div className="grade" style={{ gap: 'var(--e2)', marginTop: 'var(--e2)' }}>
                     <label className="linha" style={{ gap: 'var(--e2)' }}>Plano
                       <select value={c.plano} disabled={pendente} onChange={(e) => fazer(ajustarContaPlano(c.id, e.target.value, null, null), `${c.nome}: plano ${e.target.value}.`)}>
-                        {planos.map((p) => <option key={p.id} value={p.id}>{p.nome} · {reais(Number(p.preco_loja))}/loja</option>)}
+                        {planos.map((p) => <option key={p.id} value={p.id}>{p.nome} · {reais(Number(p.preco_loja))}/mês{p.ativo ? '' : ' (antigo)'}</option>)}
                       </select>
                     </label>
                     <table className="mod-matriz">
                       <thead><tr><th>Módulo</th><th>No plano?</th><th>Ajuste desta conta</th></tr></thead>
                       <tbody>
-                        {catalogo.map((m) => {
+                        {catalogo.filter((m) => m.cobranca !== 'aparelho').map((m) => {
                           const noPlano = !!planos.find((p) => p.id === c.plano)?.modulos.includes(m.id);
                           return (
                             <tr key={m.id}>

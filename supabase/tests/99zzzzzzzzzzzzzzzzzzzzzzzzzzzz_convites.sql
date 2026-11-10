@@ -117,18 +117,18 @@ reset role;
 insert into r values ('pago_antes', to_jsonb((select pago_ate from public.contas where id = (pg_temp.v('conta') #>> '{}')::uuid)));
 set role service_role;
 insert into r values ('menor', to_jsonb(public.fatura_quitar_mp((pg_temp.v('fat') #>> '{}')::uuid, 123, 10)));
-insert into r values ('quit', to_jsonb(public.fatura_quitar_mp((pg_temp.v('fat') #>> '{}')::uuid, 123, 299.99)));
-insert into r values ('quit2', to_jsonb(public.fatura_quitar_mp((pg_temp.v('fat') #>> '{}')::uuid, 123, 299.99)));
+insert into r values ('quit', to_jsonb(public.fatura_quitar_mp((pg_temp.v('fat') #>> '{}')::uuid, 123, 149.90)));
+insert into r values ('quit2', to_jsonb(public.fatura_quitar_mp((pg_temp.v('fat') #>> '{}')::uuid, 123, 149.90)));
 reset role;
 select from pg_temp.como('00000000-0000-0000-0000-0000000005a1');
 insert into r values ('cob', public.cobranca_plataforma());
 reset role;
 \o
 select case when pg_temp.v('fat') = pg_temp.v('fat2')
-             and (pg_temp.v('ass') -> 'faturas' -> 0 ->> 'valor')::numeric = 299.99 and (pg_temp.v('ass') -> 'faturas' -> 0 ->> 'lojas')::int = 1
+             and (pg_temp.v('ass') -> 'faturas' -> 0 ->> 'valor')::numeric = 149.90 and (pg_temp.v('ass') -> 'faturas' -> 0 ->> 'lojas')::int = 1
              and pg_temp.v('menor') = '"valor_menor"' and pg_temp.v('quit') = '"paga"' and pg_temp.v('quit2') = '"ja_paga"'
              and (select pago_ate from public.contas where id = (pg_temp.v('conta') #>> '{}')::uuid) = (pg_temp.v('pago_antes') #>> '{}')::timestamptz + interval '1 month'
-             and (pg_temp.v('cob') ->> 'mrr')::numeric = 299.99
+             and (pg_temp.v('cob') ->> 'mrr')::numeric = 149.90
             then 'ok cobrança: fatura única por vez, valor por loja, Pix confere valor e estende 1 mês, titular não mexe no prazo'
             else 'FALHOU cobrança ' || coalesce(pg_temp.v('ass')::text, '-') end;
 -- Planos e módulos (D-085): pago = só o plano; adicional soma; equipe desliga; dono não troca plano na tabela
@@ -138,7 +138,7 @@ insert into r values ('m_pago', public.meus_modulos((pg_temp.v('loja') #>> '{}')
 select from pg_temp.esperar_erro(format($q$update public.contas set plano_res = 'completo' where id = '%s'$q$, pg_temp.v('conta') #>> '{}'), 'só pela equipe RES');
 select public.contratar_adicional((pg_temp.v('loja') #>> '{}')::uuid, 'estoque', true);
 insert into r values ('m_add', public.meus_modulos((pg_temp.v('loja') #>> '{}')::uuid));
-select public.escolher_plano((pg_temp.v('loja') #>> '{}')::uuid, 'essencial');
+select public.escolher_plano((pg_temp.v('loja') #>> '{}')::uuid, 'salao');
 insert into r values ('ass2', public.minha_assinatura((pg_temp.v('loja') #>> '{}')::uuid));
 reset role;
 select from pg_temp.como('00000000-0000-0000-0000-0000000005a1');
@@ -149,9 +149,9 @@ insert into r values ('m_off', public.meus_modulos((pg_temp.v('loja') #>> '{}'):
 select from pg_temp.esperar_erro(format($q$select public.contratar_adicional('%s', 'estoque', true)$q$, pg_temp.v('loja') #>> '{}'), 'time do RES');
 reset role;
 \o
-select case when pg_temp.v('m_pago') -> 'modulos' ? 'ifood' and not (pg_temp.v('m_pago') -> 'modulos' ? 'estoque') and pg_temp.v('m_pago') ->> 'liberado_por' is null
+select case when pg_temp.v('m_pago') -> 'modulos' ? 'entregas' and not (pg_temp.v('m_pago') -> 'modulos' ? 'estoque') and pg_temp.v('m_pago') ->> 'liberado_por' is null
              and pg_temp.v('m_add') -> 'modulos' ? 'estoque'
-             and (pg_temp.v('ass2') -> 'valor' ->> 'total')::numeric = 258.99 and not (pg_temp.v('ass2') -> 'modulos_ativos' ? 'ifood')
+             and (pg_temp.v('ass2') -> 'valor' ->> 'total')::numeric = 179.80 and not (pg_temp.v('ass2') -> 'modulos_ativos' ? 'entregas')
              and not (pg_temp.v('m_off') -> 'modulos' ? 'estoque')
             then 'ok planos: módulos pelo plano, adicional soma na fatura, equipe desliga, dono não mexe direto'
             else 'FALHOU planos ' || coalesce(pg_temp.v('m_pago')::text, '-') || coalesce(pg_temp.v('ass2') -> 'valor', '"-"'::jsonb)::text end;
@@ -174,3 +174,22 @@ select case when coalesce(pg_temp.v('cpf_caixa'), 'null'::jsonb) = 'null'::jsonb
                               and not has_column_privilege('authenticated', 'public.lojas', c.column_name, 'select'))
             then 'ok cpf: só o dono lê; demais colunas da loja liberadas (coluna nova pede private.liberar_colunas_lojas())'
             else 'FALHOU cpf ' || coalesce(pg_temp.v('cpf_caixa')::text, '-') || ' ' || coalesce(pg_temp.v('cpf_dono')::text, '-') end;
+-- Formato novo (D-090): aparelhos inclusos/extras e plano anual com desconto (conta já paga, no plano Salão + estoque)
+\o /dev/null
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000005a5', 'moto2@example.com'), ('00000000-0000-0000-0000-0000000005a6', 'moto3@example.com');
+select from pg_temp.esperar_erro(format($q$insert into public.membros (loja_id, user_id, papel, nome) values ('%s', '00000000-0000-0000-0000-0000000005a5', 'entregador', 'Moto')$q$, pg_temp.v('loja') #>> '{}'), 'App Entregador');
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select public.contratar_aparelhos((pg_temp.v('loja') #>> '{}')::uuid, 'app_entregador', 1);
+reset role;
+insert into public.membros (loja_id, user_id, papel, nome) values ((pg_temp.v('loja') #>> '{}')::uuid, '00000000-0000-0000-0000-0000000005a5', 'entregador', 'Moto');
+select from pg_temp.esperar_erro(format($q$insert into public.membros (loja_id, user_id, papel, nome) values ('%s', '00000000-0000-0000-0000-0000000005a6', 'entregador', 'Moto 2')$q$, pg_temp.v('loja') #>> '{}'), 'permite 1');
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select from pg_temp.esperar_erro(format($q$select public.contratar_aparelhos('%s', 'app_entregador', 0)$q$, pg_temp.v('loja') #>> '{}'), 'em uso');
+select public.definir_ciclo((pg_temp.v('loja') #>> '{}')::uuid, 'anual');
+insert into r values ('anual', public.minha_assinatura((pg_temp.v('loja') #>> '{}')::uuid) -> 'valor');
+reset role;
+\o
+select case when (pg_temp.v('anual') ->> 'total')::numeric = round((149.90 + 19.90) * 0.8, 2)
+             and (pg_temp.v('anual') ->> 'total_periodo')::numeric = round(round((149.90 + 19.90) * 0.8, 2) * 12, 2)
+            then 'ok formato novo: aparelho além do plano pede extra, não reduz abaixo do uso, anual com 20%'
+            else 'FALHOU formato novo ' || coalesce(pg_temp.v('anual')::text, '-') end;
