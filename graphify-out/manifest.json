@@ -90,14 +90,14 @@
     "semantic_hash": "e4e858c9fc5938864c379263bdb7338d"
   },
   "apps/web/app/(painel)/delivery/actions.ts": {
-    "mtime": 1794351708.699673,
-    "seen": 1794352017.5346496,
+    "mtime": 1794352198.3278365,
+    "seen": 1794352204.4956124,
     "ast_hash": "453eac7fcee8b5a6a1697dc5b3747de8",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/delivery/page.tsx": {
-    "mtime": 1794351708.7002673,
-    "seen": 1794352017.5346518,
+    "mtime": 1794352198.3278365,
+    "seen": 1794352204.4956152,
     "ast_hash": "c430cac0b9f06785a470aed152f8f271",
     "semantic_hash": ""
   },
@@ -168,14 +168,14 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/lojas/page.tsx": {
-    "mtime": 1794351925.784092,
-    "seen": 1794352017.5347385,
+    "mtime": 1794352198.3278365,
+    "seen": 1794352204.4956508,
     "ast_hash": "edd3c6d82fd646ef1290ea4b48d3661d",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/pedidos/actions.ts": {
-    "mtime": 1794351790.0425863,
-    "seen": 1794352017.5347402,
+    "mtime": 1794352198.3278365,
+    "seen": 1794352204.4956527,
     "ast_hash": "0a5238909a926bfcb18ed80453a393fe",
     "semantic_hash": ""
   },
@@ -192,8 +192,8 @@
     "semantic_hash": "bc67b9f2cf82302b066ee476aca08cb5"
   },
   "apps/web/app/(painel)/pedidos/page.tsx": {
-    "mtime": 1794351760.7960098,
-    "seen": 1794352017.5347455,
+    "mtime": 1794352198.3278365,
+    "seen": 1794352204.495658,
     "ast_hash": "8e1a83a5e9a252dc769ed7832a62d731",
     "semantic_hash": ""
   },
@@ -312,8 +312,8 @@
     "semantic_hash": "5ce35a0029a0309d36b7f0e9152f6067"
   },
   "apps/web/app/layout.tsx": {
-    "mtime": 1794351994.1919172,
-    "seen": 1794352017.5348086,
+    "mtime": 1794352198.3318367,
+    "seen": 1794352204.4957252,
     "ast_hash": "f7b3e388a877dc45a5c65ea52bad2f9a",
     "semantic_hash": ""
   },
@@ -576,8 +576,8 @@
     "semantic_hash": "4b3e9265f6fb8504c4345a915e126a30"
   },
   "apps/web/components/form-delivery.tsx": {
-    "mtime": 1794351708.700783,
-    "seen": 1794352017.5349085,
+    "mtime": 1794352198.3318367,
+    "seen": 1794352204.4958365,
     "ast_hash": "5f5d28f41a62951db5297a37a2d62cb6",
     "semantic_hash": ""
   },
@@ -678,8 +678,8 @@
     "semantic_hash": "d472090f7948a1f67e4266a37eecb2ad"
   },
   "apps/web/components/publico/cardapio-cliente.tsx": {
-    "mtime": 1794351712.2846317,
-    "seen": 1794352017.5349462,
+    "mtime": 1794352198.3318367,
+    "seen": 1794352204.495871,
     "ast_hash": "f425d32f0d04d2a22db7504f0b24ef69",
     "semantic_hash": ""
   },
@@ -708,8 +708,8 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1794351798.7362022,
-    "seen": 1794352017.5349565,
+    "mtime": 1794352198.3318367,
+    "seen": 1794352204.49588,
     "ast_hash": "15cd7ed261aaf76c2755c9f3ff02e2d4",
     "semantic_hash": ""
   },
@@ -1026,8 +1026,8 @@
     "semantic_hash": "ca7ba0b48f2b641149acdba9eb74387d"
   },
   "packages/core/src/index.ts": {
-    "mtime": 1794351748.0878098,
-    "seen": 1794352017.5350614,
+    "mtime": 1794352198.3398366,
+    "seen": 1794352204.4959972,
     "ast_hash": "a83656b5f7a1b88b083576b0a4187a4c",
     "semantic_hash": ""
   },
@@ -1494,8 +1494,8 @@
     "semantic_hash": "c171677933af2485af9a42d60c4441e3"
   },
   "supabase/tests/60_agendamento.sql": {
-    "mtime": 1794351684.1203952,
-    "seen": 1794352017.5352318,
+    "mtime": 1794352198.3398366,
+    "seen": 1794352204.4961512,
     "ast_hash": "13bcecd37e50ee9578a860651c15ec9e",
     "semantic_hash": ""
   },
@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794352010.8398254,
-    "seen": 1794352017.5352876,
+    "mtime": 1794352198.3318367,
+    "seen": 1794352204.496203,
     "ast_hash": "8a1e329c9dbac0964a3092db85b7e7b3",
     "semantic_hash": ""
   },
@@ -2520,8 +2520,8 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794351895.3846514,
-    "seen": 1794352017.5352767,
+    "mtime": 1794352198.3398366,
+    "seen": 1794352204.4961946,
     "ast_hash": "3619976d084f48ad5b2ff9a36f6719b5",
     "semantic_hash": ""
   },
@@ -2687,52 +2687,16 @@
     "ast_hash": "299267ff92830cfb875c01777cb6a40c",
     "semantic_hash": ""
   },
-  "packages/core/src/resumo-quadro.ts": {
-    "mtime": 1794351748.0878098,
-    "seen": 1794352017.535076,
-    "ast_hash": "9ff9753793381b44e2ae5501bb823d52",
-    "semantic_hash": ""
-  },
   "packages/core/test/planos.test.ts": {
     "mtime": 1794351120.7628953,
     "seen": 1794352017.5351014,
     "ast_hash": "726423264c2edda218d31179d33456b3",
     "semantic_hash": ""
   },
-  "packages/core/test/resumo-quadro.test.ts": {
-    "mtime": 1794351748.0894322,
-    "seen": 1794352017.5351052,
-    "ast_hash": "a724448a04af41ab17ea33a8618a0563",
-    "semantic_hash": ""
-  },
   "supabase/migrations/20261110230000_cobranca.sql": {
     "mtime": 1794351120.7628953,
     "seen": 1794352017.5352178,
     "ast_hash": "ae8c77f7aef6cdd6c8d27ca4d0a8457d",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261111000000_agendar_fechado.sql": {
-    "mtime": 1794351684.119806,
-    "seen": 1794352017.535219,
-    "ast_hash": "4f8ef9eeae230cb4e9d158567c71d441",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261111010000_cpf_restrito.sql": {
-    "mtime": 1794351925.7678204,
-    "seen": 1794352017.5352201,
-    "ast_hash": "57824fbbcd9e20d9f727a25b40ab9494",
-    "semantic_hash": ""
-  },
-  "apps/web/app/fontes/OFL-BricolageGrotesque.txt": {
-    "mtime": 1794351975.049061,
-    "seen": 1794352017.535285,
-    "ast_hash": "ca124d9da1494f1d3c650b05144c8ceb",
-    "semantic_hash": ""
-  },
-  "apps/web/app/fontes/OFL-Onest.txt": {
-    "mtime": 1794351974.7434356,
-    "seen": 1794352017.5352862,
-    "ast_hash": "5665311666de96f24323e61b4fab9eb6",
     "semantic_hash": ""
   }
 }
