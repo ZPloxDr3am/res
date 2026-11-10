@@ -42,8 +42,8 @@
     "semantic_hash": "6e12dc2be277b12b46eb819e8eeaa33d"
   },
   "apps/web/app/(painel)/aplicativos/page.tsx": {
-    "mtime": 1794350626.203739,
-    "seen": 1794350875.1657338,
+    "mtime": 1794351120.7548952,
+    "seen": 1794351126.0285926,
     "ast_hash": "459f110229f61cbb948b7f915e3b6227",
     "semantic_hash": ""
   },
@@ -150,8 +150,8 @@
     "semantic_hash": "c18482a4354bf190ae112d2f406c259f"
   },
   "apps/web/app/(painel)/layout.tsx": {
-    "mtime": 1794350661.0341973,
-    "seen": 1794350875.16578,
+    "mtime": 1794351120.7599552,
+    "seen": 1794351126.0286403,
     "ast_hash": "305601d07334cc37b14994f55b1a5a90",
     "semantic_hash": ""
   },
@@ -384,8 +384,8 @@
     "semantic_hash": "fee4b85454ceb23edcdedcd503a769fa"
   },
   "apps/web/components/aplicativos/aplicativos.tsx": {
-    "mtime": 1794350626.2034786,
-    "seen": 1794350875.1659071,
+    "mtime": 1794351120.7599552,
+    "seen": 1794351126.0287242,
     "ast_hash": "47520b02ae2f521f8fc0da5ea9dc2813",
     "semantic_hash": ""
   },
@@ -642,8 +642,8 @@
     "semantic_hash": "e1a2ae124932452ed3b517ceefb9431a"
   },
   "apps/web/components/nav-painel.tsx": {
-    "mtime": 1794350661.0351176,
-    "seen": 1794350875.1660125,
+    "mtime": 1794351120.7599552,
+    "seen": 1794351126.0288208,
     "ast_hash": "97bbc050e754c07ecea9f6d2999d6019",
     "semantic_hash": ""
   },
@@ -816,8 +816,8 @@
     "semantic_hash": "8c2acf542931d0348fe69793f4a07364"
   },
   "apps/web/lib/mercadopago.ts": {
-    "mtime": 1794350689.0501435,
-    "seen": 1794350875.1660697,
+    "mtime": 1794351120.7599552,
+    "seen": 1794351126.028912,
     "ast_hash": "beb4970eb48e98a943b555151379005d",
     "semantic_hash": ""
   },
@@ -870,8 +870,8 @@
     "semantic_hash": "dbeef416075d74e3b6c91519aa686f04"
   },
   "apps/web/middleware.ts": {
-    "mtime": 1794350626.2040815,
-    "seen": 1794350875.166084,
+    "mtime": 1794351120.7599552,
+    "seen": 1794351126.029041,
     "ast_hash": "ec3aa3928f1b0586d2356a85a27278d7",
     "semantic_hash": ""
   },
@@ -1026,8 +1026,8 @@
     "semantic_hash": "ca7ba0b48f2b641149acdba9eb74387d"
   },
   "packages/core/src/index.ts": {
-    "mtime": 1794350598.1428642,
-    "seen": 1794350875.166122,
+    "mtime": 1794351120.7628953,
+    "seen": 1794351126.029094,
     "ast_hash": "3c7a0c0a8eb64aa00142248260151252",
     "semantic_hash": ""
   },
@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794350868.2868803,
-    "seen": 1794350875.1663332,
+    "mtime": 1794351120.7599552,
+    "seen": 1794351126.029371,
     "ast_hash": "433950095269b46d73086b9e07830cda",
     "semantic_hash": ""
   },
@@ -2238,8 +2238,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/api/marketplace/ifood/sincronizar/route.ts": {
-    "mtime": 1794350842.0252988,
-    "seen": 1794350875.165799,
+    "mtime": 1794351120.7599552,
+    "seen": 1794351126.0286627,
     "ast_hash": "4e500f3f3f9c0135c263d71d57e73c83",
     "semantic_hash": ""
   },
@@ -2502,8 +2502,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/equipe-res/painel.tsx": {
-    "mtime": 1794350778.7347314,
-    "seen": 1794350875.165953,
+    "mtime": 1794351120.7599552,
+    "seen": 1794351126.028764,
     "ast_hash": "563917ad8cccfe44a893682582355d3e",
     "semantic_hash": ""
   },
@@ -2520,14 +2520,14 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794350564.1403155,
-    "seen": 1794350875.1663241,
+    "mtime": 1794351120.7628953,
+    "seen": 1794351126.0293627,
     "ast_hash": "c007ccd24f8dcafc49f3341f6347c524",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/actions.ts": {
-    "mtime": 1794350778.735062,
-    "seen": 1794350875.1658685,
+    "mtime": 1794351120.7599552,
+    "seen": 1794351126.0286891,
     "ast_hash": "40664dbbae98efb3123174562213089e",
     "semantic_hash": ""
   },
@@ -2556,8 +2556,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/empresa/restaurantes/page.tsx": {
-    "mtime": 1794350778.7359653,
-    "seen": 1794350875.1658797,
+    "mtime": 1794351120.7599552,
+    "seen": 1794351126.028697,
     "ast_hash": "3ee41dbe4e5ff2ba401a040db9af8007",
     "semantic_hash": ""
   },
@@ -2568,8 +2568,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/empresa/nav.tsx": {
-    "mtime": 1794350778.736243,
-    "seen": 1794350875.1659446,
+    "mtime": 1794351120.7599552,
+    "seen": 1794351126.0287578,
     "ast_hash": "36af6bbe1282290dcc45e325c12a1144",
     "semantic_hash": ""
   },
@@ -2619,84 +2619,6 @@
     "mtime": 1794331820.5045366,
     "seen": 1794348870.811239,
     "ast_hash": "d8460d8f562ae4b72ad96bc11d2379dc",
-    "semantic_hash": ""
-  },
-  "apps/web/app/(painel)/assinatura/actions.ts": {
-    "mtime": 1794350702.936959,
-    "seen": 1794350875.1657367,
-    "ast_hash": "55c62ead21e9d9ba8c4d884412ca94b4",
-    "semantic_hash": ""
-  },
-  "apps/web/app/(painel)/assinatura/page.tsx": {
-    "mtime": 1794350702.938713,
-    "seen": 1794350875.1657386,
-    "ast_hash": "4256bd942d2501e3b6c7a2ec609164c9",
-    "semantic_hash": ""
-  },
-  "apps/web/app/api/mercadopago/res/route.ts": {
-    "mtime": 1794350689.0568676,
-    "seen": 1794350875.1658425,
-    "ast_hash": "365b57318edaefcdd3da9b063ba8b3e3",
-    "semantic_hash": ""
-  },
-  "apps/web/app/empresa/cobranca/page.tsx": {
-    "mtime": 1794350804.080886,
-    "seen": 1794350875.1658702,
-    "ast_hash": "b9762f77aa89f3bb50bb4e214721f0af",
-    "semantic_hash": ""
-  },
-  "apps/web/app/empresa/planos/page.tsx": {
-    "mtime": 1794350833.7315092,
-    "seen": 1794350875.1658785,
-    "ast_hash": "9395f79e4d99d15fe889b0b2a187ac92",
-    "semantic_hash": ""
-  },
-  "apps/web/components/assinatura/assinatura.tsx": {
-    "mtime": 1794350855.1548276,
-    "seen": 1794350875.1659112,
-    "ast_hash": "02bfd10c83f5b6351e990fad5a1b4da2",
-    "semantic_hash": ""
-  },
-  "apps/web/components/empresa/cobranca.tsx": {
-    "mtime": 1794350814.4600217,
-    "seen": 1794350875.1659417,
-    "ast_hash": "3a4d8f257827e929641c436bc145023b",
-    "semantic_hash": ""
-  },
-  "apps/web/components/empresa/planos.tsx": {
-    "mtime": 1794350833.7330136,
-    "seen": 1794350875.1659455,
-    "ast_hash": "e71b1e5686e545b4b6677aa28096f4c3",
-    "semantic_hash": ""
-  },
-  "apps/web/components/modulo-travado.tsx": {
-    "mtime": 1794350646.0040936,
-    "seen": 1794350875.1660056,
-    "ast_hash": "fa5a94e82da3adf5b584f5937ce89bde",
-    "semantic_hash": ""
-  },
-  "apps/web/lib/cobranca.ts": {
-    "mtime": 1794350689.0538142,
-    "seen": 1794350875.1660492,
-    "ast_hash": "ef235068106187a20b3f7629f8909fe9",
-    "semantic_hash": ""
-  },
-  "packages/core/src/planos.ts": {
-    "mtime": 1794350646.000458,
-    "seen": 1794350875.16613,
-    "ast_hash": "299267ff92830cfb875c01777cb6a40c",
-    "semantic_hash": ""
-  },
-  "packages/core/test/planos.test.ts": {
-    "mtime": 1794350605.8041282,
-    "seen": 1794350875.1661603,
-    "ast_hash": "726423264c2edda218d31179d33456b3",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261110230000_cobranca.sql": {
-    "mtime": 1794350532.5841522,
-    "seen": 1794350875.1662717,
-    "ast_hash": "ae8c77f7aef6cdd6c8d27ca4d0a8457d",
     "semantic_hash": ""
   }
 }
