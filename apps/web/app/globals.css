@@ -1813,3 +1813,23 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
 .eq-conta-dados { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--e2) var(--e5); font-size: var(--t-sm); }
 .eq-conta-dados > span { display: grid; gap: 2px; }
 .eq-conta-dados b { font-size: var(--t-xs); font-weight: 600; color: var(--texto-suave); }
+/* Painel da empresa RES (D-083): menu escuro para nunca confundir com o painel do restaurante */
+.painel-empresa .menu { background: #13201b; border-right-color: #13201b; color: #dfe7e2; }
+.painel-empresa .marca-res { color: #fff; }
+.painel-empresa .menu-item { color: #b7c4bd; }
+.painel-empresa .menu-item:hover { background: rgb(255 255 255 / 0.07); color: #fff; }
+.painel-empresa .menu-item[aria-current='page'] { background: rgb(255 255 255 / 0.12); color: #fff; }
+.painel-empresa .menu-item[aria-current='page']::before { background: #6fd3ae; }
+.painel-empresa .menu-rodape { border-top-color: rgb(255 255 255 / 0.12); }
+.empresa-selo { display: inline-block; justify-self: start; padding: 2px var(--e2); border-radius: 999px; font-size: var(--t-xs); font-weight: 650; background: #6fd3ae; color: #0d1a15; }
+.emp-funil { display: grid; gap: var(--e2); }
+.emp-funil-linha { display: grid; grid-template-columns: 11rem minmax(0, 1fr) 3rem 3rem; gap: var(--e3); align-items: center; font-size: var(--t-sm); }
+.emp-funil-trilho { height: 12px; border-radius: 999px; background: var(--superficie-2); box-shadow: inset 0 0 0 1px var(--borda); overflow: hidden; }
+.emp-funil-trilho > span { display: block; height: 100%; border-radius: 999px; background: var(--primaria); }
+.emp-funil-linha strong { text-align: right; font-family: var(--fonte-display), var(--fonte), sans-serif; }
+.emp-alerta { display: grid; gap: 2px; padding: var(--e3) var(--e4); box-shadow: inset 3px 0 0 var(--destaque), var(--sombra-cartao); }
+.emp-alerta[data-tipo='pausada'] { box-shadow: inset 3px 0 0 var(--erro), var(--sombra-cartao); }
+.emp-equipe { list-style: none; margin: 0; padding: 0; display: grid; }
+.emp-equipe li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--e3); align-items: center; padding: var(--e2) 0; border-bottom: 1px solid var(--borda); }
+.emp-equipe li:last-child { border-bottom: 0; }
+@media (max-width: 700px) { .emp-funil-linha { grid-template-columns: 7rem minmax(0, 1fr) 2.5rem; } .emp-funil-linha > .dica { display: none; } }

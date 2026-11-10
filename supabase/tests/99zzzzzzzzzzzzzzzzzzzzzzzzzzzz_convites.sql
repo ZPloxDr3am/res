@@ -74,3 +74,18 @@ select from pg_temp.esperar_erro($q$select public.criar_loja('Loja X', 'Marca X'
 reset role;
 \o
 select 'ok sem convite não abre conta pelo caminho antigo';
+-- Painel da empresa (D-083): equipe se administra; números só para a equipe
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a1');
+select public.equipe_res_adicionar('NOVO2@example.com');
+insert into r values ('equipe', to_jsonb((select count(*) from public.equipe_res_listar())));
+select from pg_temp.esperar_erro($q$select public.equipe_res_adicionar('ninguem@example.com')$q$, 'Ninguém entrou');
+select from pg_temp.esperar_erro($q$select public.equipe_res_remover('00000000-0000-0000-0000-0000000005a1')$q$, 'a si mesmo');
+insert into r values ('num', public.numeros_plataforma());
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a3');
+select from pg_temp.esperar_erro($q$select public.numeros_plataforma()$q$, 'Só o time do RES');
+reset role;
+\o
+select case when pg_temp.v('equipe') = '2' and (pg_temp.v('num') ->> 'cadastros')::int >= 1 and (pg_temp.v('num') ->> 'convites_usados_30d')::int >= 1
+            then 'ok painel da empresa: equipe pelo e-mail e números da plataforma' else 'FALHOU painel empresa ' || coalesce(pg_temp.v('num')::text, '-') end;

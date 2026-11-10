@@ -84,9 +84,9 @@ export function MenuRodape({ marcas, lojaNome, versao, equipeRes = false }: { ma
         <span>Suporte</span>
       </button>
       {equipeRes && (
-        <a className="menu-item" href="/equipe-res">
+        <a className="menu-item" href="/empresa">
           <Icone d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z" />
-          <span>Equipe RES</span>
+          <span>Painel da empresa</span>
         </a>
       )}
       <form action="/auth/sair" method="post">
