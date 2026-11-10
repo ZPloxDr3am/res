@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState, useTransition } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -22,6 +22,7 @@ import {
   type StatusPedido,
 } from '@res/core';
 import type { PedidoRow } from '@/lib/pedidos';
+import { resumoQuadro } from '@res/core';
 import { definirAceiteAutomatico, definirMovimento, definirProntoAuto, definirQuadroTodas, marcarAviso, marcarPago, motivosCancelamentoPedido, mudarStatus, pausarLoja } from '@/app/(painel)/pedidos/actions';
 import { salvando } from '@/components/tempo-real';
 import { BotaoNovoPedido } from '@/components/pedido-flutuante';
@@ -120,6 +121,9 @@ export function bipar() {
   }
 }
 
+/** Estado de cada loja no modo "todas as lojas" (D-087). */
+export type EstadoLoja = { id: string; aceite_automatico: boolean; pausa_ate: string | null; pausa_recado: string | null; movimento_min: number | null; movimento_ate: string | null; tempo_preparo_min: number | null };
+
 export function QuadroPedidos({
   pedidos,
   aceiteAutomatico,
@@ -135,6 +139,7 @@ export function QuadroPedidos({
   historico = {},
   pausa = null,
   movimento = null,
+  estadosLojas = null,
 }: {
   pedidos: PedidoRow[];
   aceiteAutomatico: boolean;
@@ -150,6 +155,7 @@ export function QuadroPedidos({
   historico?: Record<string, string[]>;
   pausa?: { ate: string; recado: string | null } | null;
   movimento?: { min: number; ate: string } | null;
+  estadosLojas?: EstadoLoja[] | null;
 }) {
   const [filtros, setFiltros] = useState<Filtros>(SEM_FILTRO);
   useEffect(() => {
@@ -333,7 +339,7 @@ export function QuadroPedidos({
           <BotaoNovoPedido />
         </div>
       </div>
-      {todas && <p className="dica" style={{ margin: 0 }}>Vendo a operação inteira: cada cartão mostra a loja. Aceite automático, pausa e modo movimento são de cada loja (escolha a loja acima para mudar).</p>}
+      <ResumoTopo pedidos={pedidos} lojas={todas ? lojas : []} estados={estadosLojas} prazoEntrega={prazoEntrega} tempoPreparo={tempoPreparo} fuso={fuso} />
       {!todas && <PausaLoja pausa={pausa} fuso={fuso} lojaNome={lojaAtual} modo="faixa" />}
       {!todas && <MovimentoLoja movimento={movimento} fuso={fuso} tempoPreparo={tempoPreparo} modo="faixa" />}
       {erro && <p className="erro" role="alert">{erro}</p>}
@@ -853,7 +859,7 @@ const RECADOS_PAUSA = [
   'Faltou entregador por um instante. Voltamos em breve!',
 ];
 
-function PausaLoja({ pausa, fuso, lojaNome, modo }: { pausa: { ate: string; recado: string | null } | null; fuso: string; lojaNome: string; modo: 'botao' | 'faixa' }) {
+function PausaLoja({ pausa, fuso, lojaNome, modo, lojaId }: { pausa: { ate: string; recado: string | null } | null; fuso: string; lojaNome: string; modo: 'botao' | 'faixa'; lojaId?: string }) {
   const [aberto, setAberto] = useState(false);
   const [minutos, setMinutos] = useState(30);
   const [recado, setRecado] = useState(RECADOS_PAUSA[0]!);
@@ -870,7 +876,7 @@ function PausaLoja({ pausa, fuso, lojaNome, modo }: { pausa: { ate: string; reca
   const faltam = Math.max(1, Math.ceil((ate - agora) / 60000));
   const agir = (min: number, texto?: string) =>
     iniciar(async () => {
-      const r = await salvando(pausarLoja(min, texto));
+      const r = await salvando(pausarLoja(min, texto, lojaId));
       setErro(r.ok ? null : r.erro);
       if (r.ok) setAberto(false);
     });
@@ -938,7 +944,7 @@ function PausaLoja({ pausa, fuso, lojaNome, modo }: { pausa: { ate: string; reca
 const MIN_MOVIMENTO = [10, 20, 30, 45];
 const HORAS_MOVIMENTO: [number | null, string][] = [[1, '1 hora'], [2, '2 horas'], [null, 'Até eu desligar']];
 
-function MovimentoLoja({ movimento, fuso, tempoPreparo, modo }: { movimento: { min: number; ate: string } | null; fuso: string; tempoPreparo: number; modo: 'botao' | 'faixa' }) {
+function MovimentoLoja({ movimento, fuso, tempoPreparo, modo, lojaId }: { movimento: { min: number; ate: string } | null; fuso: string; tempoPreparo: number; modo: 'botao' | 'faixa'; lojaId?: string }) {
   const [aberto, setAberto] = useState(false);
   const [min, setMin] = useState(20);
   const [horas, setHoras] = useState<number | null>(2);
@@ -955,7 +961,7 @@ function MovimentoLoja({ movimento, fuso, tempoPreparo, modo }: { movimento: { m
   const ateTexto = ativo ? (ate - agora > 11 * 3600_000 ? 'até você desligar' : `até ${hora(ate)}`) : '';
   const agir = (m: number, h: number | null) =>
     iniciar(async () => {
-      const r = await salvando(definirMovimento(m, h));
+      const r = await salvando(definirMovimento(m, h, lojaId));
       setErro(r.ok ? null : r.erro);
       if (r.ok) setAberto(false);
     });
@@ -1058,5 +1064,86 @@ function VisaoLojas({ todas, lojaAtual, total }: { todas: boolean; lojaAtual: st
       <button type="button" role="radio" aria-checked={!todas} disabled={pendente} onClick={() => escolher(false)}>{lojaAtual}</button>
       <button type="button" role="radio" aria-checked={todas} disabled={pendente} onClick={() => escolher(true)}>🏪 Todas as lojas ({total})</button>
     </div>
+  );
+}
+
+// ---- Resumo no topo (D-087) e controles de cada loja no modo "todas as lojas"
+const minTxt = (m: number | null) => (m == null ? '—' : m >= 60 ? `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}` : `${m} min`);
+
+function ResumoTopo({ pedidos, lojas, estados, prazoEntrega, tempoPreparo, fuso }: { pedidos: PedidoRow[]; lojas: { id: string; nome: string }[]; estados: EstadoLoja[] | null; prazoEntrega: Record<string, number>; tempoPreparo: number; fuso: string }) {
+  const [agora, setAgora] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setAgora(Date.now()), 30000);
+    return () => clearInterval(t);
+  }, []);
+  const preparoDe = (id: string) => estados?.find((e) => e.id === id)?.tempo_preparo_min ?? tempoPreparo;
+  const r = useMemo(
+    () => resumoQuadro(pedidos, { agora, prazoMin: (l, tipo) => (tipo === 'entrega' ? (prazoEntrega[l] ?? 35) + preparoDe(l) : preparoDe(l)) }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pedidos, agora, prazoEntrega, estados, tempoPreparo],
+  );
+  const t = r.total;
+  return (
+    <div className="grade" style={{ gap: 'var(--e2)' }}>
+      <div className="qp-resumo" role="status" aria-label="Resumo das últimas 12 horas">
+        <span><b>{t.ativos}</b> ativos{t.novos ? <em> · {t.novos} novo{t.novos === 1 ? '' : 's'}</em> : null}</span>
+        <span title="Média de aceito até pronto, últimas 12 h"><b>{minTxt(t.preparoMin)}</b> preparo médio</span>
+        <span title="Média de saiu até entregue, últimas 12 h"><b>{minTxt(t.entregaMin)}</b> entrega média</span>
+        <span data-alerta={t.atrasados > 0 || undefined}><b>{t.atrasados}</b> passando do prazo</span>
+      </div>
+      {lojas.length > 0 && (
+        <div className="qp-lojas">
+          {lojas.map((l, i) => {
+            const e = estados?.find((x) => x.id === l.id);
+            const rl = r.porLoja[l.id];
+            const pausa = e?.pausa_ate && Date.parse(e.pausa_ate) > agora ? { ate: e.pausa_ate, recado: e.pausa_recado } : null;
+            const mov = e?.movimento_ate && Date.parse(e.movimento_ate) > agora && Number(e.movimento_min) > 0 ? { min: Number(e.movimento_min), ate: e.movimento_ate } : null;
+            return (
+              <div key={l.id} className="qp-loja" style={{ '--cor-loja': corLocal(i) } as React.CSSProperties}>
+                <div className="qp-loja-topo">
+                  <strong>{l.nome}</strong>
+                  <span className="dica">{rl?.ativos ?? 0} ativos · preparo {minTxt(rl?.preparoMin ?? null)}{rl?.atrasados ? <span className="erro"> · {rl.atrasados} atrasado{rl.atrasados === 1 ? '' : 's'}</span> : null}</span>
+                </div>
+                {e && (
+                  <div className="linha qp-loja-acoes">
+                    <AceiteLoja lojaId={l.id} valor={e.aceite_automatico} />
+                    <MovimentoLoja movimento={mov} fuso={fuso} tempoPreparo={e.tempo_preparo_min ?? tempoPreparo} modo="botao" lojaId={l.id} />
+                    <PausaLoja pausa={pausa} fuso={fuso} lojaNome={l.nome} modo="botao" lojaId={l.id} />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AceiteLoja({ lojaId, valor }: { lojaId: string; valor: boolean }) {
+  const [v, setV] = useState(valor);
+  const [erro, setErro] = useState<string | null>(null);
+  const [pendente, iniciar] = useTransition();
+  useEffect(() => setV(valor), [valor]);
+  return (
+    <label className="check" title={erro ?? 'Pedidos novos desta loja já entram em preparo'}>
+      <input
+        type="checkbox"
+        checked={v}
+        disabled={pendente}
+        onChange={(ev) => {
+          const novo = ev.target.checked;
+          setV(novo);
+          iniciar(async () => {
+            const r = await salvando(definirAceiteAutomatico(novo, lojaId));
+            if (!r.ok) {
+              setV(!novo);
+              setErro(r.erro);
+            } else setErro(null);
+          });
+        }}
+      />
+      Aceite automático{erro ? ' ⚠️' : ''}
+    </label>
   );
 }

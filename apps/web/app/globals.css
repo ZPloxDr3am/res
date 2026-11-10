@@ -1871,3 +1871,16 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
 .mod-matriz th:first-child, .mod-matriz td:first-child { text-align: left; }
 .mod-matriz input[type='number'] { width: 6.5rem; }
 .eq-plano summary { cursor: pointer; font-size: var(--t-sm, 0.9rem); }
+
+/* D-087: resumo no topo do quadro e controles de cada loja */
+.qp-resumo { display: flex; flex-wrap: wrap; gap: var(--e2, 0.5rem); }
+.qp-resumo > span { background: var(--fundo-cartao, #fff); border: 1px solid var(--borda); border-radius: 999px; padding: 0.25rem 0.75rem; font-size: var(--t-sm, 0.85rem); color: var(--texto-suave); }
+.qp-resumo b { color: var(--texto, inherit); font-variant-numeric: tabular-nums; margin-right: 0.15rem; }
+.qp-resumo em { font-style: normal; color: var(--primaria); font-weight: 600; }
+.qp-resumo > span[data-alerta] { border-color: #f59e0b; background: #fffbeb; color: #92400e; }
+.qp-lojas { display: grid; gap: var(--e2, 0.5rem); grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.qp-loja { border: 1px solid var(--borda); border-left: 4px solid var(--cor-loja, var(--primaria)); border-radius: 10px; padding: 0.5rem 0.75rem; display: grid; gap: 0.35rem; background: var(--fundo-cartao, #fff); }
+.qp-loja-topo { display: grid; gap: 0.1rem; }
+.qp-loja-acoes { gap: 0.4rem; flex-wrap: wrap; align-items: center; font-size: var(--t-sm, 0.85rem); }
+.qp-loja-acoes .qp-pausar { padding: 0.2rem 0.55rem; font-size: var(--t-sm, 0.85rem); min-height: 32px; }
+@media (prefers-color-scheme: dark) { .qp-resumo > span[data-alerta] { background: #422006; color: #fde68a; } }

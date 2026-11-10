@@ -1,7 +1,7 @@
 import { contextoLoja } from '@/lib/loja';
 import { carregarQuadro } from '@/lib/pedidos';
 import { criarClienteServidor } from '@/lib/supabase/server';
-import { QuadroPedidos } from '@/components/quadro-pedidos';
+import { QuadroPedidos, type EstadoLoja } from '@/components/quadro-pedidos';
 import { TempoReal } from '@/components/tempo-real';
 import { NegociacoesIfood, type NegociacaoAberta } from '@/components/negociacoes-ifood';
 
@@ -24,9 +24,11 @@ export default async function Pedidos({ searchParams }: { searchParams: Promise<
   // histórico de cada cliente no grupo, para o selo do cartão (D-057)
   const telefones = [...new Set(pedidos.map((p) => p.cliente_telefone).filter((t): t is string => !!t))];
   const supabase = await criarClienteServidor();
-  const [{ data: hist }, { data: lj }, { data: negs }] = await Promise.all([
+  const [{ data: hist }, { data: lj }, { data: estados }, { data: negs }] = await Promise.all([
     telefones.length ? supabase.rpc('historico_clientes', { p_lojas: ids, p_telefones: telefones }) : Promise.resolve({ data: {} }),
     supabase.from('lojas').select('pausa_ate, pausa_recado').eq('id', ctx.lojaId).maybeSingle(),
+    // "todas as lojas" (D-087): estado de cada loja para os controles rápidos
+    todas ? supabase.from('lojas').select('id, aceite_automatico, pausa_ate, pausa_recado, movimento_min, movimento_ate, tempo_preparo_min').in('id', ids) : Promise.resolve({ data: null }),
     // negociações do iFood esperando resposta (D-075); sem a migração a consulta falha e a faixa some
     supabase
       .from('marketplace_negociacoes')
@@ -57,6 +59,7 @@ export default async function Pedidos({ searchParams }: { searchParams: Promise<
         historico={(hist as Record<string, string[]> | null) ?? {}}
         pausa={pausa}
         movimento={movimento}
+        estadosLojas={(estados ?? null) as EstadoLoja[] | null}
       />
     </>
   );
