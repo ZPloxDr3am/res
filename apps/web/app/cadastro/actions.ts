@@ -8,6 +8,8 @@ import {
 import { criarClienteServidor } from '@/lib/supabase/server';
 
 export type DadosCadastro = {
+  /** código do convite (D-082) */
+  convite: string;
   // responsável
   nome: string;
   email: string;
@@ -66,6 +68,15 @@ export async function consultarCep(cep: string): Promise<Omit<EnderecoEmpresa, '
   return null;
 }
 
+/** Convite ainda vale (ou o cadastro está aberto para todos)? D-082 */
+export async function conviteLiberado(codigo: string): Promise<boolean> {
+  const supabase = await criarClienteServidor();
+  const { data: modo } = await supabase.rpc('cadastro_modo');
+  if (modo === 'aberto') return true;
+  const { data } = await supabase.rpc('convite_valido', { p_codigo: codigo });
+  return data === true;
+}
+
 /** Endereço do cardápio livre? (confere enquanto a pessoa digita) */
 export async function verificarSlug(slug: string): Promise<boolean> {
   if (!slugValido(slug)) return false;
@@ -112,6 +123,7 @@ const pedidoDeLoja = (d: DadosCadastro) => ({
   tipo: d.tipo,
   exemplo: d.exemplo,
   aceite_versao: VERSAO_TERMOS,
+  convite: d.convite.trim().toUpperCase(),
   empresa: {
     documento: soDigitos(d.documento),
     razao_social: d.semCnpj ? '' : d.razaoSocial.trim(),
@@ -152,6 +164,7 @@ export async function cadastrarRestaurante(d: DadosCadastro): Promise<{ ok: fals
     if (erro) return { ok: false, erro };
   }
   if (!(await verificarSlug(d.slug))) return { ok: false, erro: 'Esse endereço do cardápio já está em uso. Escolha outro.' };
+  if (!(await conviteLiberado(d.convite))) return { ok: false, erro: 'Convite inválido, já usado ou vencido. Peça um novo ao time do RES.' };
 
   const supabase = await criarClienteServidor();
   const origem = (await headers()).get('origin') ?? process.env.NEXT_PUBLIC_SITE_URL ?? '';

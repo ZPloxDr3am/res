@@ -1801,3 +1801,15 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
 .menu-pop-nome .dica { font-weight: 400; font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (max-width: 1000px) and (min-width: 701px) { .menu-versao { display: none; } .menu-pop { left: 100%; bottom: 0; margin-left: var(--e2); } }
 @media (max-width: 700px) { .menu-rodape { display: none; } }
+/* Faixa da assinatura (D-082) */
+.faixa-conta { margin: 0 0 var(--e5); padding: var(--e3) var(--e4); border-radius: var(--raio-controle); font-size: var(--t-sm); line-height: 1.5; background: color-mix(in srgb, var(--destaque) 14%, var(--superficie)); box-shadow: inset 3px 0 0 var(--destaque); }
+.faixa-conta[data-tipo='fim'] { background: color-mix(in srgb, #e08a00 18%, var(--superficie)); box-shadow: inset 3px 0 0 #e08a00; }
+.faixa-conta[data-tipo='pausada'] { background: color-mix(in srgb, var(--erro) 12%, var(--superficie)); box-shadow: inset 3px 0 0 var(--erro); }
+/* Painel da equipe RES (D-082) */
+.eq-conta { display: grid; gap: var(--e3); }
+.eq-conta-topo { display: flex; justify-content: space-between; gap: var(--e3); align-items: flex-start; flex-wrap: wrap; }
+.eq-situacao { margin: 0; padding: var(--e1) var(--e3); font-weight: 600; white-space: nowrap; }
+.faixa-conta[data-tipo='ativa'] { background: var(--primaria-fundo); box-shadow: inset 3px 0 0 var(--primaria); }
+.eq-conta-dados { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--e2) var(--e5); font-size: var(--t-sm); }
+.eq-conta-dados > span { display: grid; gap: 2px; }
+.eq-conta-dados b { font-size: var(--t-xs); font-weight: 600; color: var(--texto-suave); }

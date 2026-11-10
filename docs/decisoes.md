@@ -734,3 +734,11 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 ## D-081 — Rodapé fixo do menu (08/11/2026)
 - Embaixo do menu lateral, sempre visível (o resto do menu rola por cima): **Meus links** (link de cada cardápio da loja, com Copiar e Abrir), **Suporte** (WhatsApp do time RES com a mensagem já começada com o nome da loja), **Sair** e a **versão** publicada.
 - O número do suporte vem de `NEXT_PUBLIC_SUPORTE_WHATSAPP` (Vercel); sem ele, o Suporte avisa que o canal está sendo configurado.
+
+## D-082 — Cadastro por convite, teste grátis e bloqueio (10/11/2026)
+- Etapa 1 da análise de 08/11 (sem nota fiscal e sem mexer no repositório, que ficam para depois).
+- **Cadastro só com convite** (padrão): `/cadastro` pede o código; o link `…/cadastro?convite=K7M2Q9XA` já abre o formulário. Convite é de **uso único**, vale 30 dias e diz quantos dias de teste dá (7, 14, 21 ou 30). O modo "aberto para todos" existe para quando a cobrança estiver pronta.
+- Conta nova só nasce pelo cadastro com convite ou pela equipe RES — o caminho antigo de criar loja (onboarding) deixou de abrir conta grátis sem prazo.
+- **Teste grátis**: a conta do cadastro começa em `teste` com prazo. Situações: teste · ativa (paga até uma data, ou sem prazo — as lojas do piloto) · suspensa.
+- **Bloqueio**: com o teste ou a assinatura vencidos (ou suspensa), **pedido novo não entra** por nenhum canal (cardápio digital, painel, iFood, API); os dados continuam. Faixa no topo do painel: dias de teste nos últimos dias, aviso 5 dias antes de vencer, e "novos pedidos pausados".
+- **Equipe RES** (`/equipe-res`, só para quem está em `private.equipe_res`, liberado à mão no editor SQL — nenhum e-mail no código): criar convite (copia o link, manda no WhatsApp), cancelar, ver se foi usado; lista dos restaurantes com situação, responsável e WhatsApp, pedidos em 7 dias, cardápio aberto ou não, perfil comercial do cadastro; botões Ativar 30 dias, Ativar sem prazo, +7 dias de teste, Suspender. Enquanto não há cobrança automática, é aqui que o pagamento (Pix) é registrado.

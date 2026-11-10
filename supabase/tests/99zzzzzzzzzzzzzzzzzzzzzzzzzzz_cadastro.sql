@@ -17,6 +17,8 @@ begin
   end;
   raise exception 'Deveria ter falhado: %', p_sql;
 end; $$;
+-- estes testes são do cadastro em si: modo aberto (o convite é testado em 99…_convites)
+insert into private.config_plataforma (chave, valor) values ('cadastro_modo', 'aberto') on conflict (chave) do update set valor = 'aberto';
 create temp table r (chave text primary key, v jsonb);
 grant all on r to authenticated, anon;
 create or replace function pg_temp.v(p text) returns jsonb language sql as $$ select v from r where chave = p $$;
