@@ -12,7 +12,8 @@ type Numeros = Record<
 /** Visão geral da plataforma (D-083): quantos restaurantes, em que situação, e o caminho do convite ao primeiro pedido. */
 export default async function VisaoGeral() {
   const supabase = await criarClienteServidor();
-  const [{ data: n }, { data: contas }] = await Promise.all([supabase.rpc('numeros_plataforma'), supabase.rpc('contas_da_plataforma')]);
+  const [{ data: n }, { data: contas }, { data: e24 }] = await Promise.all([supabase.rpc('numeros_plataforma'), supabase.rpc('contas_da_plataforma'), supabase.rpc('erros_24h')]);
+  const erros24 = Number(e24 ?? 0);
   const x = (n ?? {}) as Numeros;
   const lista = (contas ?? []) as ContaPlataforma[];
   const vencendo = lista.filter((c) => c.situacao === 'teste' && c.liberada && c.teste_ate && Date.parse(c.teste_ate) - Date.now() < 3 * 86_400_000);
@@ -56,7 +57,13 @@ export default async function VisaoGeral() {
 
       <section className="grade" style={{ gap: 'var(--e3)' }}>
         <h2 style={{ margin: 0 }}>Precisa de atenção</h2>
-        {vencendo.length === 0 && pausadas.length === 0 && <p className="dica" style={{ margin: 0 }}>Nada urgente agora.</p>}
+        {vencendo.length === 0 && pausadas.length === 0 && erros24 === 0 && <p className="dica" style={{ margin: 0 }}>Nada urgente agora.</p>}
+        {erros24 > 0 && (
+          <Link href="/empresa/erros?dias=1" className="cartao emp-alerta" data-tipo="pausada" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <strong>{erros24} erro(s) nas últimas 24 horas</strong>
+            <span>Veja o que quebrou, onde e para quantas pessoas.</span>
+          </Link>
+        )}
         {vencendo.map((c) => (
           <div key={c.id} className="cartao emp-alerta" data-tipo="fim">
             <strong>{c.nome}</strong>
