@@ -85,7 +85,7 @@ export function TempoReal({ lojaId, tabelas = CARDAPIO, todasAsLojas = false, re
     };
     let canal = supabase.channel(`${chave}:${todasAsLojas ? 'todas' : lojaId}`);
     for (const t of chave.split(',')) canal = canal.on('postgres_changes', todasAsLojas ? { event: '*', schema: 'public', table: t } : { event: '*', schema: 'public', table: t, filter: `loja_id=eq.${lojaId}` }, agendar);
-    canal.subscribe((status) => {
+    canal.subscribe((status: string) => {
       if (reservaMs) window.dispatchEvent(new CustomEvent('res-canal', { detail: status === 'SUBSCRIBED' }));
     });
     const visivel = () => document.visibilityState === 'visible';
