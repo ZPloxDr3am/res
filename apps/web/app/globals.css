@@ -1884,3 +1884,14 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
 .qp-loja-acoes { gap: 0.4rem; flex-wrap: wrap; align-items: center; font-size: var(--t-sm, 0.85rem); }
 .qp-loja-acoes .qp-pausar { padding: 0.2rem 0.55rem; font-size: var(--t-sm, 0.85rem); min-height: 32px; }
 @media (prefers-color-scheme: dark) { .qp-resumo > span[data-alerta] { background: #422006; color: #fde68a; } }
+
+/* D-091: arrastar o cartão entre colunas */
+.qk-cartao[draggable='true'] { cursor: grab; }
+.qk-cartao[draggable='true']:active { cursor: grabbing; }
+.qk-coluna[data-solta='pode'] { outline: 2px dashed var(--cor-col); outline-offset: -2px; }
+.qk-coluna[data-solta='alvo'] { outline: 3px solid var(--cor-col); outline-offset: -3px; background: color-mix(in srgb, var(--cor-col) 10%, var(--superficie-2)); }
+.qk-coluna[data-solta='nao'] { opacity: 0.55; }
+.menu-folha-links { display: grid; gap: var(--e2, 0.5rem); }
+.menu-link-linha { display: grid; grid-template-columns: 1fr auto auto; gap: 0.4rem; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid var(--borda); }
+.menu-link-linha:last-of-type { border-bottom: 0; }
+.cl-lgpd summary { cursor: pointer; font-size: var(--t-sm, 0.85rem); color: var(--texto-suave); }

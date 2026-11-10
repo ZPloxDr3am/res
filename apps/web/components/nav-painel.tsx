@@ -69,7 +69,7 @@ const LINKS = [...COMECO.links, ...SECOES.flatMap((s) => s.links)];
 const BARRA = ['/pedidos', '/pedidos/novo', '/estoque', '/resumo'];
 const COR_SECAO: Record<string, string> = { Começo: '#ea580c', Operação: '#2563eb', Vendas: '#16a34a', Clientes: '#9333ea', Gestão: '#d97706', Ajustes: '#64748b' };
 
-export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeirosPassos = false, modulos = null, dono = false }: { lojas?: { id: string; nome: string }[]; lojaAtual?: string; lojaNome?: string; primeirosPassos?: boolean; modulos?: string[] | null; dono?: boolean }) {
+export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeirosPassos = false, modulos = null, dono = false, marcas = [], versao = null }: { lojas?: { id: string; nome: string }[]; lojaAtual?: string; lojaNome?: string; primeirosPassos?: boolean; modulos?: string[] | null; dono?: boolean; marcas?: { nome: string; slug: string }[]; versao?: string | null }) {
   // Assinatura só para o dono; telas fora do plano aparecem com cadeado (D-085)
   const secoes = (primeirosPassos ? [COMECO, ...SECOES] : SECOES).map((s) => ({ ...s, links: s.links.filter((l) => l.href !== '/assinatura' || dono) }));
   const travado = (href: string) => (modulos && !rotaLiberada(href, modulos) ? true : undefined);
@@ -144,12 +144,53 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeiros
                 </div>
               </section>
             ))}
+            <LinksESuporte marcas={marcas} lojaNome={lojaNome} />
             <form action="/auth/sair" method="post">
               <button className="menu-bloco menu-sair">Sair</button>
             </form>
+            {versao && <p className="dica" style={{ margin: 0, textAlign: 'center' }}>RES · versão {versao}</p>}
           </div>
         </div>
       )}
     </>
+  );
+}
+
+// Celular (D-091): Meus links e Suporte também na folha "Mais" (no computador ficam no rodapé do menu)
+const SUPORTE_WHATSAPP = (process.env.NEXT_PUBLIC_SUPORTE_WHATSAPP ?? '').replace(/\D/g, '');
+function LinksESuporte({ marcas, lojaNome }: { marcas: { nome: string; slug: string }[]; lojaNome: string }) {
+  const [copiado, setCopiado] = useState<string | null>(null);
+  const origem = typeof window !== 'undefined' ? window.location.origin : '';
+  const copiar = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiado(url);
+      setTimeout(() => setCopiado(null), 1800);
+    } catch {
+      /* sem permissão */
+    }
+  };
+  const msg = encodeURIComponent(`Olá! Sou da ${lojaNome} e preciso de ajuda com o RES.`);
+  return (
+    <section className="menu-folha-secao menu-folha-links" style={{ ['--cor' as string]: '#0891b2' }}>
+      <h2>Meus links</h2>
+      {marcas.length === 0 && <p className="dica" style={{ margin: 0 }}>Nenhum cardápio ainda.</p>}
+      {marcas.map((m) => {
+        const url = `${origem}/c/${m.slug}`;
+        return (
+          <div key={m.slug} className="menu-link-linha">
+            <span><strong>{m.nome}</strong><br /><span className="dica">/c/{m.slug}</span></span>
+            <button type="button" className="mini" onClick={() => void copiar(url)}>{copiado === url ? 'Copiado ✓' : 'Copiar'}</button>
+            <a className="mini botao" href={url} target="_blank" rel="noopener noreferrer">Abrir</a>
+          </div>
+        );
+      })}
+      <h2 style={{ marginTop: 'var(--e3)' }}>Suporte</h2>
+      {SUPORTE_WHATSAPP ? (
+        <a className="menu-bloco" href={`https://wa.me/${SUPORTE_WHATSAPP}?text=${msg}`} target="_blank" rel="noopener noreferrer">💬 Falar com o suporte no WhatsApp</a>
+      ) : (
+        <p className="dica" style={{ margin: 0 }}>O WhatsApp do suporte será informado em breve.</p>
+      )}
+    </section>
   );
 }

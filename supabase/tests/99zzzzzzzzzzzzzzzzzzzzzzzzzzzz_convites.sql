@@ -193,3 +193,24 @@ select case when (pg_temp.v('anual') ->> 'total')::numeric = round((149.90 + 19.
              and (pg_temp.v('anual') ->> 'total_periodo')::numeric = round(round((149.90 + 19.90) * 0.8, 2) * 12, 2)
             then 'ok formato novo: aparelho além do plano pede extra, não reduz abaixo do uso, anual com 20%'
             else 'FALHOU formato novo ' || coalesce(pg_temp.v('anual')::text, '-') end;
+-- LGPD (D-092): só dono/gerente exporta e apaga; apagar pede os 4 últimos dígitos e some com o cadastro
+\o /dev/null
+insert into public.clientes (grupo, loja_id, nome, telefone) values (private.grupo_da_loja((pg_temp.v('loja') #>> '{}')::uuid), (pg_temp.v('loja') #>> '{}')::uuid, 'Maria LGPD', '47999991234');
+insert into r values ('cli', to_jsonb((select id from public.clientes where telefone = '47999991234')));
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a4');
+select from pg_temp.esperar_erro(format($q$select public.dados_do_cliente('%s', '%s')$q$, pg_temp.v('loja') #>> '{}', pg_temp.v('cli') #>> '{}'), 'dono ou o gerente');
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('exp', public.dados_do_cliente((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('cli') #>> '{}')::uuid));
+select from pg_temp.esperar_erro(format($q$select public.apagar_dados_cliente('%s', '%s', '9999')$q$, pg_temp.v('loja') #>> '{}', pg_temp.v('cli') #>> '{}'), '4 últimos');
+select public.apagar_dados_cliente((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('cli') #>> '{}')::uuid, '1234');
+reset role;
+\o
+select case when pg_temp.v('exp') -> 'cliente' ->> 'nome' = 'Maria LGPD'
+             and not exists (select 1 from public.clientes where telefone = '47999991234')
+             and (select count(*) from public.lgpd_registros where acao in ('exportar', 'apagar')) = 2
+            then 'ok lgpd: exportar e apagar dados do cliente só pelo dono/gerente, com confirmação e registro'
+            else 'FALHOU lgpd ' || coalesce(pg_temp.v('exp')::text, '-') end;
+\o /dev/null
+select private.lgpd_prazo_guarda();
+\o
