@@ -279,7 +279,7 @@ export function Assinatura({ d, pixAutomatico }: { d: DadosAssinatura; pixAutoma
           </table>
         </section>
       )}
-      <p className="dica" style={{ margin: 0 }}>Módulos ligados agora: {d.modulos_ativos.length ? d.modulos_ativos.filter((m) => !m.startsWith('app_')).map(nomeModulo).join(', ') : 'só o básico'}.</p>
+      <p className="dica" style={{ margin: 0 }}>Módulos ligados agora: {d.modulos_ativos.length ? d.modulos_ativos.filter((m) => !m.startsWith('app_') && m !== 'marcas').map(nomeModulo).join(', ') : 'só o básico'}.</p>
     </div>
   );
 }

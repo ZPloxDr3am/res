@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794352925.659017,
-    "seen": 1794352932.3425856,
+    "mtime": 1794353635.1998873,
+    "seen": 1794353727.8501358,
     "ast_hash": "24082f2bf7c5568e5dccfad0db7c834e",
     "semantic_hash": ""
   },
@@ -2502,8 +2502,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/equipe-res/painel.tsx": {
-    "mtime": 1794352925.6577353,
-    "seen": 1794352932.3421962,
+    "mtime": 1794353635.1998873,
+    "seen": 1794353727.8498137,
     "ast_hash": "37bc5d1fdc9646952b5b38fddf8585a9",
     "semantic_hash": ""
   },
@@ -2520,14 +2520,14 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794352760.1411245,
-    "seen": 1794352932.342574,
+    "mtime": 1794353635.2118874,
+    "seen": 1794353727.8501272,
     "ast_hash": "0aa182b18c1879a4aaf198e42ceab8bc",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/actions.ts": {
-    "mtime": 1794352889.409712,
-    "seen": 1794352932.342115,
+    "mtime": 1794353635.1998873,
+    "seen": 1794353727.8497412,
     "ast_hash": "a99b1d342a2bcfcb492fe09087913a64",
     "semantic_hash": ""
   },
@@ -2622,15 +2622,15 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/assinatura/actions.ts": {
-    "mtime": 1794352867.0634017,
-    "seen": 1794352932.342022,
+    "mtime": 1794353635.1998873,
+    "seen": 1794353727.8496356,
     "ast_hash": "0a1d22e041d9b1ca48c0dc6f8ad2f742",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/assinatura/page.tsx": {
-    "mtime": 1794351120.7599552,
-    "seen": 1794352017.5346313,
-    "ast_hash": "4256bd942d2501e3b6c7a2ec609164c9",
+    "mtime": 1794353721.4233375,
+    "seen": 1794353727.8496382,
+    "ast_hash": "7b36876cabec8d4867e07e5db0f99912",
     "semantic_hash": ""
   },
   "apps/web/app/api/mercadopago/res/route.ts": {
@@ -2646,15 +2646,15 @@
     "semantic_hash": ""
   },
   "apps/web/app/empresa/planos/page.tsx": {
-    "mtime": 1794352889.4105225,
-    "seen": 1794352932.3421247,
+    "mtime": 1794353635.1998873,
+    "seen": 1794353727.8497512,
     "ast_hash": "3f1cc34756c12f359dea5485d564cf18",
     "semantic_hash": ""
   },
   "apps/web/components/assinatura/assinatura.tsx": {
-    "mtime": 1794352859.4950125,
-    "seen": 1794352932.3421555,
-    "ast_hash": "018174f6fc6e2f6f4be7b742678056e5",
+    "mtime": 1794353721.4252145,
+    "seen": 1794353727.8497796,
+    "ast_hash": "c85af39c5a6556f05fc882174e7823b7",
     "semantic_hash": ""
   },
   "apps/web/components/empresa/cobranca.tsx": {
@@ -2664,8 +2664,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/empresa/planos.tsx": {
-    "mtime": 1794352889.4110644,
-    "seen": 1794352932.3421893,
+    "mtime": 1794353635.1998873,
+    "seen": 1794353727.8498087,
     "ast_hash": "d17f82cfff029097fa75d7ca040b45ba",
     "semantic_hash": ""
   },
@@ -2676,20 +2676,20 @@
     "semantic_hash": ""
   },
   "apps/web/lib/cobranca.ts": {
-    "mtime": 1794352867.0672805,
-    "seen": 1794352932.3422873,
+    "mtime": 1794353635.1998873,
+    "seen": 1794353727.8498971,
     "ast_hash": "cb37d9a4cab7f80427e3670ce0189974",
     "semantic_hash": ""
   },
   "packages/core/src/planos.ts": {
-    "mtime": 1794352790.0438807,
-    "seen": 1794352932.3423667,
+    "mtime": 1794353635.2078874,
+    "seen": 1794353727.8499644,
     "ast_hash": "dd4618e82c6ed1d4c7e1ea4eaeed3190",
     "semantic_hash": ""
   },
   "packages/core/test/planos.test.ts": {
-    "mtime": 1794352799.5543566,
-    "seen": 1794352932.342399,
+    "mtime": 1794353635.2078874,
+    "seen": 1794353727.8499897,
     "ast_hash": "ddba7be4d8cb0d416c572eae67d5ed8d",
     "semantic_hash": ""
   },
@@ -2724,8 +2724,8 @@
     "semantic_hash": ""
   },
   "supabase/migrations/20261111020000_planos_formato_novo.sql": {
-    "mtime": 1794352721.079005,
-    "seen": 1794352932.3425155,
+    "mtime": 1794353635.2078874,
+    "seen": 1794353727.8500845,
     "ast_hash": "8e6b7bb3d5cf488a37663bdab5258d85",
     "semantic_hash": ""
   },
