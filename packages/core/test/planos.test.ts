@@ -8,8 +8,16 @@ test('rotas', () => {
   assert.equal(rotaLiberada('/cardapio', []), true);
 });
 test('valor', () => {
-  const cat = [{ id: 'estoque', nome: 'Estoque', descricao: '', preco: 59, cobranca: 'loja' as const, ordem: 1 }, { id: 'marcas', nome: 'Cardápio extra', descricao: '', preco: 99, cobranca: 'cardapio' as const, ordem: 2 }];
-  const plano = { id: 'essencial', nome: 'Essencial', descricao: '', preco_loja: 199.99, modulos: [], ordem: 1, ativo: true };
-  const v = valorMensal({ plano, lojas: 2, cardapios: 3, adicionais: [{ modulo: 'estoque', ligado: true, cobrar: true }], catalogo: cat });
-  assert.equal(v.total, 399.98 + 118 + 99);
+  const cat = [
+    { id: 'estoque', nome: 'Estoque', descricao: '', preco: 29.9, cobranca: 'conta' as const, ordem: 1 },
+    { id: 'marcas', nome: 'Loja ou cardápio extra', descricao: '', preco: 49.9, cobranca: 'cardapio' as const, ordem: 2 },
+    { id: 'app_entregador', nome: 'App Entregador', descricao: '', preco: 19.9, cobranca: 'aparelho' as const, ordem: 3 },
+  ];
+  const plano = { id: 'completo', nome: 'Completo', descricao: '', preco_loja: 239.9, modulos: [], ordem: 1, ativo: true };
+  // 3 lojas (2 extras) + estoque + 1 aparelho extra
+  const v = valorMensal({ plano, cardapios: 3, adicionais: [{ modulo: 'estoque', ligado: true, cobrar: true }], aparelhosExtra: { app_entregador: 1 }, catalogo: cat });
+  assert.equal(v.total, 389.5);
+  const a = valorMensal({ plano, cardapios: 1, adicionais: [], catalogo: cat, anual: true, descontoAnual: 20 });
+  assert.equal(a.total, 191.92);
+  assert.equal(a.totalPeriodo, 2303.04);
 });

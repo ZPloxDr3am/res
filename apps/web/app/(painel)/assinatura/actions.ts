@@ -45,3 +45,17 @@ export async function conferirFatura(id: string): Promise<'paga' | 'aguardando'>
   if (s === 'paga') revalidatePath('/', 'layout');
   return s;
 }
+
+export async function definirCiclo(ciclo: 'mensal' | 'anual'): Promise<R> {
+  const ctx = await contextoLoja();
+  const { error } = await (await criarClienteServidor()).rpc('definir_ciclo', { p_loja: ctx.lojaId, p_ciclo: ciclo });
+  revalidatePath('/assinatura');
+  return falha(error);
+}
+
+export async function contratarAparelhos(modulo: string, qtd: number): Promise<R> {
+  const ctx = await contextoLoja();
+  const { error } = await (await criarClienteServidor()).rpc('contratar_aparelhos', { p_loja: ctx.lojaId, p_modulo: modulo, p_qtd: Math.max(0, Math.round(qtd)) });
+  revalidatePath('/assinatura');
+  return falha(error);
+}
