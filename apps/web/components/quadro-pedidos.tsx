@@ -19,6 +19,7 @@ import {
   STATUS_ROTULO,
   tempoDecorrido,
   TIPO_ROTULO,
+  transicaoValida,
   type StatusPedido,
 } from '@res/core';
 import type { PedidoRow } from '@/lib/pedidos';
@@ -188,6 +189,21 @@ export function QuadroPedidos({
   const [som, setSom] = useState(false);
   // quadro compacto tipo kanban (D-079): cartão curto, detalhe completo ao tocar
   const [abertoId, setAbertoId] = useState<string | null>(null);
+  // arrastar o cartão para outra coluna (D-091): só para onde o pedido pode ir; cancelar continua pelo pedido (pede motivo)
+  const [arrastando, setArrastando] = useState<PedidoRow | null>(null);
+  const [alvo, setAlvo] = useState<StatusPedido | null>(null);
+  const [erroArrasto, setErroArrasto] = useState<string | null>(null);
+  const podeSoltar = (para: StatusPedido) => !!arrastando && para !== 'cancelado' && para !== arrastando.status && transicaoValida(arrastando.status, para, arrastando.tipo);
+  const soltar = (para: StatusPedido) => {
+    const p = arrastando;
+    setArrastando(null);
+    setAlvo(null);
+    if (!p || !(para !== 'cancelado' && para !== p.status && transicaoValida(p.status, para, p.tipo))) return;
+    iniciar(async () => {
+      const r = await salvando(mudarStatus(p.id, para));
+      setErroArrasto(r.ok ? null : `#${p.numero}: ${r.erro}`);
+    });
+  };
 
   const [, setTique] = useState(0);
   const conhecidos = useRef<Set<string> | null>(null);
@@ -282,7 +298,9 @@ export function QuadroPedidos({
   const abertos = pedidos.filter((p) => COLUNAS.includes(p.status) && !emEspera(p) && passa(p));
   const agendados = pedidos.filter((p) => emEspera(p) && !aguardandoPix(p) && passa(p)).sort((a, b) => a.agendado_para!.localeCompare(b.agendado_para!));
   const pixPendentes = pedidos.filter((p) => aguardandoPix(p) && passa(p));
-  const encerrados = pedidos.filter((p) => !COLUNAS.includes(p.status) && passa(p)).reverse();
+  // mais recente primeiro pela hora em que fechou (pedido antigo concluído agora vai para o topo)
+  const fechouEm = (p: PedidoRow) => Date.parse(p.concluido_em ?? p.cancelado_em ?? p.criado_em);
+  const encerrados = pedidos.filter((p) => !COLUNAS.includes(p.status) && passa(p)).sort((a, b) => fechouEm(b) - fechouEm(a));
   const locais = todas ? lojas.map((l) => ({ id: l.id, nome: l.nome })) : marcas.length > 1 ? marcas.map((m) => ({ id: m.id, nome: m.nome })) : [];
   // cor de cada loja/marca no quadro (mesma ordem sempre)
   const corDe = (p: PedidoRow) => corLocal(locais.findIndex((l) => l.id === localDe(p)));
@@ -401,18 +419,24 @@ export function QuadroPedidos({
 
       <SugestaoLotes prontos={abertos.filter((p) => p.status === 'pronto' && p.tipo === 'entrega').map((p) => ({ id: p.id, loja_id: p.loja_id }))} />
 
-      <div className="qk" role="region" aria-label="Quadro de pedidos">
+      {erroArrasto && <p className="erro" role="alert" style={{ margin: 0 }}>{erroArrasto}</p>}
+      <div className="qk" role="region" aria-label="Quadro de pedidos" data-arrastando={arrastando ? '' : undefined}>
           {[...COLUNAS, 'concluido' as StatusPedido, 'cancelado' as StatusPedido].map((status) => {
             const lista = COLUNAS.includes(status) ? abertos.filter((p) => p.status === status) : encerrados.filter((p) => p.status === status);
             return (
-              <section key={status} className="qk-coluna" data-status={status} aria-label={STATUS_ROTULO[status]}>
+              <section key={status} className="qk-coluna" data-status={status} aria-label={STATUS_ROTULO[status]}
+                data-solta={arrastando ? (podeSoltar(status) ? (alvo === status ? 'alvo' : 'pode') : 'nao') : undefined}
+                onDragOver={(e) => { if (podeSoltar(status)) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (alvo !== status) setAlvo(status); } }}
+                onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setAlvo((a) => (a === status ? null : a)); }}
+                onDrop={(e) => { e.preventDefault(); soltar(status); }}>
                 <h2>
                   <span>{status === 'novo' ? 'Aguardando' : status === 'concluido' ? 'Concluídos' : status === 'cancelado' ? 'Cancelados' : STATUS_ROTULO[status]}</span>
                   <span className="qk-n">{lista.length}</span>
                 </h2>
                 <div className="qk-lista">
                   {lista.map((p) => (
-                    <CartaoCompacto key={p.id} p={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} fuso={fuso} local={etiqueta(p)} cor={corDe(p)} onAbrir={() => setAbertoId(p.id)} />
+                    <CartaoCompacto key={p.id} p={p} tempoPreparo={tempoPreparo + (p.prazo_extra_min ?? 0)} prazoMin={(prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)} fuso={fuso} local={etiqueta(p)} cor={corDe(p)} onAbrir={() => setAbertoId(p.id)}
+                      onArrastar={(v) => { setArrastando(v ? p : null); if (!v) setAlvo(null); }} />
                   ))}
                   {lista.length === 0 && <p className="qk-vazio">Nenhum pedido</p>}
                 </div>
@@ -443,7 +467,7 @@ const CORES_LOCAL = ['#ea1d2c', '#16a34a', '#2563eb', '#9333ea', '#ea580c', '#08
 const corLocal = (i: number) => (i < 0 ? '#64748b' : CORES_LOCAL[i % CORES_LOCAL.length]!);
 
 /** Cartão curto do quadro compacto (D-079): o essencial para a cozinha bater o olho; toque abre o pedido inteiro. */
-function CartaoCompacto({ p, tempoPreparo, prazoMin, fuso, local, cor, onAbrir }: { p: PedidoRow; tempoPreparo: number; prazoMin: number; fuso: string; local: string | null | undefined; cor: string; onAbrir: () => void }) {
+function CartaoCompacto({ p, tempoPreparo, prazoMin, fuso, local, cor, onAbrir, onArrastar }: { p: PedidoRow; tempoPreparo: number; prazoMin: number; fuso: string; local: string | null | undefined; cor: string; onAbrir: () => void; onArrastar?: (v: boolean) => void }) {
   const [pendente, iniciar] = useTransition();
   const [erro, setErro] = useState<string | null>(null);
   const aberto = !['concluido', 'cancelado'].includes(p.status);
@@ -458,7 +482,10 @@ function CartaoCompacto({ p, tempoPreparo, prazoMin, fuso, local, cor, onAbrir }
   const e = p.endereco;
   const icone = p.tipo === 'entrega' ? '🛵' : p.tipo === 'retirada' ? '🏪' : '🍽️';
   return (
-    <article className="qk-cartao" data-status={p.status} data-atrasado={atrasado || undefined} style={{ '--cor-loja': cor } as React.CSSProperties}>
+    <article className="qk-cartao" data-status={p.status} data-atrasado={atrasado || undefined} style={{ '--cor-loja': cor } as React.CSSProperties}
+      draggable={aberto && !!onArrastar} title={aberto ? 'Arraste para outra coluna para mudar a etapa' : undefined}
+      onDragStart={(ev) => { ev.dataTransfer.effectAllowed = 'move'; ev.dataTransfer.setData('text/plain', p.id); onArrastar?.(true); }}
+      onDragEnd={() => onArrastar?.(false)}>
       <button type="button" className="qk-corpo" onClick={onAbrir} aria-label={`Abrir pedido #${p.numero} de ${p.cliente_nome}`}>
         <span className="qk-topo">
           <span className="qk-icone" title={TIPO_ROTULO[p.tipo]} aria-hidden>{icone}</span>

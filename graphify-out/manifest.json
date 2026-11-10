@@ -78,10 +78,10 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/clientes/actions.ts": {
-    "mtime": 1793124255.8803716,
-    "seen": 1793205238.7560036,
-    "ast_hash": "d80c21f6d1cde56e7f9467f1e013009a",
-    "semantic_hash": "d80c21f6d1cde56e7f9467f1e013009a"
+    "mtime": 1794354740.456275,
+    "seen": 1794354777.738655,
+    "ast_hash": "24870741f135d58a23fbaeda06d68f9f",
+    "semantic_hash": ""
   },
   "apps/web/app/(painel)/clientes/page.tsx": {
     "mtime": 1793124255.8803716,
@@ -150,9 +150,9 @@
     "semantic_hash": "c18482a4354bf190ae112d2f406c259f"
   },
   "apps/web/app/(painel)/layout.tsx": {
-    "mtime": 1794351120.7599552,
-    "seen": 1794351126.0286403,
-    "ast_hash": "305601d07334cc37b14994f55b1a5a90",
+    "mtime": 1794354594.9654803,
+    "seen": 1794354777.7386837,
+    "ast_hash": "74b07d39976ee48049f324349b4086fd",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/loading.tsx": {
@@ -462,10 +462,10 @@
     "semantic_hash": "40918055d45150f280baf187d08891b8"
   },
   "apps/web/components/clientes/lista-clientes.tsx": {
-    "mtime": 1793125370.7358608,
-    "seen": 1793205238.7560809,
-    "ast_hash": "6421a53d0fd93433beeeb0f43c2d76de",
-    "semantic_hash": "6421a53d0fd93433beeeb0f43c2d76de"
+    "mtime": 1794354740.4560707,
+    "seen": 1794354777.7388308,
+    "ast_hash": "d24c5d5d83f9e6add3d3994a7f8f72b5",
+    "semantic_hash": ""
   },
   "apps/web/components/entregas/ao-vivo.tsx": {
     "mtime": 1793122772.0516028,
@@ -642,9 +642,9 @@
     "semantic_hash": "e1a2ae124932452ed3b517ceefb9431a"
   },
   "apps/web/components/nav-painel.tsx": {
-    "mtime": 1794351120.7599552,
-    "seen": 1794351126.0288208,
-    "ast_hash": "97bbc050e754c07ecea9f6d2999d6019",
+    "mtime": 1794354594.9651845,
+    "seen": 1794354777.7388916,
+    "ast_hash": "08281e6f4abdd89b49a0ea07e839b7b6",
     "semantic_hash": ""
   },
   "apps/web/components/novo-pedido.tsx": {
@@ -708,9 +708,9 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1794352198.3318367,
-    "seen": 1794352204.49588,
-    "ast_hash": "15cd7ed261aaf76c2755c9f3ff02e2d4",
+    "mtime": 1794354648.510123,
+    "seen": 1794354777.7389092,
+    "ast_hash": "3844f2e328fa6dfccba9bca00a82ca1d",
     "semantic_hash": ""
   },
   "apps/web/components/resumo/grafico-lojas.tsx": {
@@ -834,9 +834,9 @@
     "semantic_hash": "001a137a606e225f972739e75fc6c7aa"
   },
   "apps/web/lib/pedidos.ts": {
-    "mtime": 1794010570.500055,
-    "seen": 1794010575.8209934,
-    "ast_hash": "df2dca003075f57755c5872e66314c7f",
+    "mtime": 1794354644.1900516,
+    "seen": 1794354777.7389443,
+    "ast_hash": "ad75865786ad89240bd05b437b286b47",
     "semantic_hash": ""
   },
   "apps/web/lib/publico.ts": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794353635.1998873,
-    "seen": 1794353727.8501358,
-    "ast_hash": "24082f2bf7c5568e5dccfad0db7c834e",
+    "mtime": 1794354749.3908768,
+    "seen": 1794354777.7391677,
+    "ast_hash": "9d24b8438ea8b853fc155369e47b5c14",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2520,9 +2520,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794353635.2118874,
-    "seen": 1794353727.8501272,
-    "ast_hash": "0aa182b18c1879a4aaf198e42ceab8bc",
+    "mtime": 1794354723.0548751,
+    "seen": 1794354777.7391593,
+    "ast_hash": "d41ba3cfe19b9e1f31a45dd49b014fc3",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/actions.ts": {
@@ -2628,8 +2628,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/assinatura/page.tsx": {
-    "mtime": 1794353721.4233375,
-    "seen": 1794353727.8496382,
+    "mtime": 1794353839.9158995,
+    "seen": 1794354777.7386458,
     "ast_hash": "7b36876cabec8d4867e07e5db0f99912",
     "semantic_hash": ""
   },
@@ -2652,8 +2652,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/assinatura/assinatura.tsx": {
-    "mtime": 1794353721.4252145,
-    "seen": 1794353727.8497796,
+    "mtime": 1794353839.9158995,
+    "seen": 1794354777.7388046,
     "ast_hash": "c85af39c5a6556f05fc882174e7823b7",
     "semantic_hash": ""
   },
@@ -2739,6 +2739,12 @@
     "mtime": 1794352198.3312483,
     "seen": 1794352932.3425841,
     "ast_hash": "5665311666de96f24323e61b4fab9eb6",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261111030000_lgpd_clientes.sql": {
+    "mtime": 1794354705.9273465,
+    "seen": 1794354777.7391157,
+    "ast_hash": "a0b52dd21a5a239dd1976a0e1c0c8c25",
     "semantic_hash": ""
   }
 }

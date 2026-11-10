@@ -42,7 +42,9 @@ export default async function PainelLayout({ children }: { children: React.React
           {ctx.marcas.length > 1 && <span className="dica menu-marcas">{ctx.marcas.map((m) => m.nome).join(' · ')}</span>}
         </div>
         <nav>
-          <NavPainel lojas={ctx.lojas.map((l) => ({ id: l.id, nome: l.nome }))} lojaAtual={ctx.lojaId} lojaNome={ctx.lojaNome} primeirosPassos={primeirosPassos} modulos={modulos} dono={ctx.papel === 'dono'} />
+          <NavPainel lojas={ctx.lojas.map((l) => ({ id: l.id, nome: l.nome }))} lojaAtual={ctx.lojaId} lojaNome={ctx.lojaNome} primeirosPassos={primeirosPassos} modulos={modulos} dono={ctx.papel === 'dono'}
+            marcas={ctx.marcas.filter((m) => !m.evento).map((m) => ({ nome: m.nome, slug: m.slug }))}
+            versao={process.env.VERCEL_GIT_COMMIT_SHA ? process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 7) : null} />
         </nav>
         <MenuRodape
           marcas={ctx.marcas.filter((m) => !m.evento).map((m) => ({ nome: m.nome, slug: m.slug }))}

@@ -790,3 +790,14 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **Aparelhos**: com a conta paga, a equipe só ganha mais motoboys/garçons ativos até o limite (grátis + extras); acima disso, o RES pede para contratar em Assinatura. Teste grátis e piloto: sem limite. Não deixa reduzir extras abaixo do que está em uso.
 - Exemplo: as 3 lojas do piloto no Completo + iFood = 239,90 + 2 × 49,90 + 49,90 = **R$ 389,50/mês** (R$ 311,60/mês no anual).
 - Tudo editável no painel da empresa → Planos e preços (preço, módulos, aparelhos grátis, preço dos adicionais, desconto anual).
+
+## D-091 — Quadro: arrastar o cartão, encerrados de pedido antigo, links no celular (10/11/2026)
+- **Arrastar o cartão** para outra coluna muda a etapa (no computador). Só as colunas para onde o pedido pode ir ficam marcadas; as outras ficam apagadas. Cancelar continua pelo pedido (pede o motivo). No celular, os botões seguem como antes.
+- **Concluídos/Cancelados** passam a mostrar o que foi encerrado nas últimas 12 h, mesmo pedido criado antes disso (o pedido de iFood de 2 dias atrás concluído agora sumia do quadro em vez de ir para Concluídos), do mais recente para o mais antigo.
+- **Celular**: a folha "Mais" ganhou **Meus links** (copiar/abrir cada cardápio), **Suporte** (WhatsApp, quando o número existir) e a versão.
+- Busca por chaves e senhas no histórico do repositório: nada encontrado (só a senha do banco de teste do CI, local). O repositório pode ficar privado quando o dono quiser.
+
+## D-092 — LGPD: dados do cliente final (10/11/2026)
+- Clientes → abrir o cliente → **Pedido do cliente (LGPD)**: **Exportar dados** (arquivo com cadastro, endereços, pedidos e fidelidade) e **Apagar dados** (confirma com os 4 últimos números do telefone). Só dono e gerente.
+- Apagar tira nome, telefone, endereço, documento e observação de entrega dos pedidos em todas as lojas do grupo e remove cadastro, endereços e fidelidade; os valores ficam para o caixa e o financeiro. Não dá para desfazer.
+- **Prazo de guarda**: cliente sem pedido há **24 meses** é apagado sozinho (todo dia 2). Cada exportação e exclusão fica em `lgpd_registros`. A Política de Privacidade deve citar esse prazo quando for revisada (com o CNPJ).
