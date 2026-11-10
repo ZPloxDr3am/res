@@ -13,11 +13,19 @@ export default async function LayoutEmpresa({ children }: { children: React.Reac
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect('/login');
-  const [{ data: equipe }, { count }] = await Promise.all([
-    supabase.rpc('sou_equipe_res'),
-    supabase.from('membros').select('loja_id', { count: 'exact', head: true }).eq('user_id', user.id).eq('ativo', true),
-  ]);
-  if (equipe !== true) redirect('/pedidos');
+  const { data: equipe } = await supabase.rpc('sou_equipe_res');
+  if (equipe !== true) {
+    return (
+      <main className="conteudo" style={{ maxWidth: 460, marginTop: '10vh' }}>
+        <div className="cartao grade">
+          <span className="marca-res">RES</span>
+          <h1 style={{ margin: 0 }}>Acesso só da equipe RES</h1>
+          <p style={{ margin: 0 }}>Este login não faz parte da equipe. Entre com a conta da equipe ou peça para alguém da equipe incluir você em Configurações.</p>
+          <form action="/auth/sair" method="post"><button className="botao" style={{ width: '100%' }}>Sair e entrar com outra conta</button></form>
+        </div>
+      </main>
+    );
+  }
   return (
     <div className="painel painel-empresa">
       <aside className="menu">
@@ -29,12 +37,6 @@ export default async function LayoutEmpresa({ children }: { children: React.Reac
           <NavEmpresa />
         </nav>
         <div className="menu-rodape">
-          {(count ?? 0) > 0 && (
-            <a className="menu-item" href="/pedidos">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" /></svg>
-              <span>Painel do restaurante</span>
-            </a>
-          )}
           <form action="/auth/sair" method="post">
             <button className="menu-item">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10" /></svg>

@@ -10,7 +10,7 @@ const Icone = ({ d }: { d: string }) => (
   </svg>
 );
 
-export function MenuRodape({ marcas, lojaNome, versao, equipeRes = false }: { marcas: { nome: string; slug: string }[]; lojaNome: string; versao: string | null; equipeRes?: boolean }) {
+export function MenuRodape({ marcas, lojaNome, versao }: { marcas: { nome: string; slug: string }[]; lojaNome: string; versao: string | null }) {
   const [aberto, setAberto] = useState<'links' | 'suporte' | null>(null);
   const [copiado, setCopiado] = useState<string | null>(null);
   const caixa = useRef<HTMLDivElement>(null);
@@ -83,12 +83,6 @@ export function MenuRodape({ marcas, lojaNome, versao, equipeRes = false }: { ma
         <Icone d="M4 14v-2a8 8 0 0 1 16 0v2M4 14a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 2zm16 0a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 2zM17 16v1a3 3 0 0 1-3 3h-2" />
         <span>Suporte</span>
       </button>
-      {equipeRes && (
-        <a className="menu-item" href="/empresa">
-          <Icone d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z" />
-          <span>Painel da empresa</span>
-        </a>
-      )}
       <form action="/auth/sair" method="post">
         <button className="menu-item">
           <Icone d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10" />

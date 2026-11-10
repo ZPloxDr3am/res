@@ -35,9 +35,6 @@ export default async function Onboarding({ searchParams }: { searchParams: Promi
   if (!user) redirect('/login');
   const { count } = await supabase.from('membros').select('loja_id', { count: 'exact', head: true }).eq('user_id', user.id).eq('ativo', true);
   if ((count ?? 0) > 0) redirect('/pedidos');
-  // equipe RES sem restaurante próprio vai direto para o painel da empresa (D-083)
-  const { data: equipe } = await supabase.rpc('sou_equipe_res');
-  if (equipe === true) redirect('/empresa');
 
   // veio do cadastro com e-mail a confirmar (D-076): cria a loja com os dados guardados na conta
   const cadastro = (user.user_metadata as { cadastro?: PedidoDeLoja | null } | undefined)?.cadastro;

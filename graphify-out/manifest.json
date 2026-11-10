@@ -150,9 +150,9 @@
     "semantic_hash": "c18482a4354bf190ae112d2f406c259f"
   },
   "apps/web/app/(painel)/layout.tsx": {
-    "mtime": 1794329223.2565062,
-    "seen": 1794329230.0203552,
-    "ast_hash": "1b620c12f27776b7e787d0d988ba355d",
+    "mtime": 1794329983.5846725,
+    "seen": 1794330002.1458437,
+    "ast_hash": "19beb4ad9cf7b11696792f4d26f7de6c",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/loading.tsx": {
@@ -366,9 +366,9 @@
     "semantic_hash": "592e54b91b837468d80f8be9fba1f699"
   },
   "apps/web/app/onboarding/page.tsx": {
-    "mtime": 1794329754.177223,
-    "seen": 1794329761.0552216,
-    "ast_hash": "ac19686389789cf1e0e6a33a36d8bab7",
+    "mtime": 1794329983.5851364,
+    "seen": 1794330002.1459236,
+    "ast_hash": "4f5d47b342e3ff5bd8fc71154efd2109",
     "semantic_hash": ""
   },
   "apps/web/app/page.tsx": {
@@ -870,9 +870,9 @@
     "semantic_hash": "dbeef416075d74e3b6c91519aa686f04"
   },
   "apps/web/middleware.ts": {
-    "mtime": 1794101518.8302953,
-    "seen": 1794101525.1187305,
-    "ast_hash": "029165b1d587ae892eade4c8c0b27bbe",
+    "mtime": 1794329995.13494,
+    "seen": 1794330002.146123,
+    "ast_hash": "1a460221ac077bfea872f03bbf9f881e",
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794329754.1804137,
-    "seen": 1794329761.0556586,
-    "ast_hash": "d5dbe970a7ffb8fb4918143f6efae130",
+    "mtime": 1794329995.1362076,
+    "seen": 1794330002.1463704,
+    "ast_hash": "fb3fa9a3c1204a6fd2e927f564e6d683",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2490,9 +2490,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/menu-rodape.tsx": {
-    "mtime": 1794329735.8869283,
-    "seen": 1794329761.055317,
-    "ast_hash": "7a7e0c8b1c6b1095e2454521481b9c4e",
+    "mtime": 1794329983.584318,
+    "seen": 1794330002.1460285,
+    "ast_hash": "e9ff2a3a81efa44a1ba08d8a6ffaecda",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/actions.ts": {
@@ -2514,9 +2514,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/empresa/layout.tsx": {
-    "mtime": 1794329690.54441,
-    "seen": 1794329761.0552022,
-    "ast_hash": "a47862b09e6f9c9db30b0770f6f73733",
+    "mtime": 1794329983.584948,
+    "seen": 1794330002.1459024,
+    "ast_hash": "ff0cc936ab44f6fb036d1f53daf4dc3a",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/page.tsx": {
