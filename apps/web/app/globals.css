@@ -1842,3 +1842,32 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
 /* Aviso de conexão do quadro (D-084) */
 .faixa-conexao { position: sticky; top: var(--e2); z-index: 40; margin: 0 0 var(--e4); padding: var(--e3) var(--e4); border-radius: var(--raio-controle); background: var(--erro); color: #fff; font-size: var(--t-sm); box-shadow: var(--sombra-alta); }
 .faixa-conexao[data-ok] { background: var(--primaria); }
+
+/* D-085: planos e módulos */
+.modulo-travado { max-width: 34rem; margin: var(--e6, 2rem) auto; text-align: center; display: grid; gap: var(--e3, 0.75rem); justify-items: center; padding: var(--e7, 2.5rem) var(--e6, 2rem); }
+.modulo-travado h2 { margin: 0; font-family: var(--fonte-display, inherit); }
+.modulo-travado p { margin: 0; }
+.modulo-travado-icone { font-size: 2rem; }
+.menu-item[data-travado] { opacity: 0.55; }
+.menu-item[data-travado]::after { content: '🔒'; font-size: 0.7rem; margin-left: auto; }
+.plano-grade { display: grid; gap: var(--e4, 1rem); grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+.plano-cartao { display: grid; gap: var(--e3, 0.75rem); align-content: start; border: 1px solid var(--borda, #e2e8f0); border-radius: 14px; padding: var(--e5, 1.25rem); background: var(--fundo-cartao, #fff); }
+.plano-cartao[data-atual] { border-color: var(--primaria, #ea580c); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primaria, #ea580c) 25%, transparent); }
+.plano-cartao h3 { margin: 0; font-family: var(--fonte-display, inherit); }
+.plano-preco { font-size: var(--t-2xl, 1.6rem); font-weight: 700; font-variant-numeric: tabular-nums; }
+.plano-preco small { font-size: var(--t-sm, 0.85rem); font-weight: 400; color: var(--texto-suave, #64748b); }
+.plano-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; font-size: var(--t-sm, 0.9rem); }
+.plano-lista li[data-nao] { color: var(--texto-suave, #94a3b8); text-decoration: line-through; }
+.plano-selo { font-size: var(--t-xs, 0.75rem); font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 999px; background: color-mix(in srgb, var(--primaria, #ea580c) 14%, transparent); color: var(--primaria, #ea580c); justify-self: start; }
+.fatura-itens { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.fatura-itens td { padding: 0.35rem 0; border-bottom: 1px solid var(--borda, #e2e8f0); }
+.fatura-itens td:last-child { text-align: right; }
+.fatura-itens tr:last-child td { border-bottom: 0; font-weight: 700; }
+.pix-caixa { display: grid; gap: var(--e3, 0.75rem); justify-items: center; text-align: center; }
+.pix-caixa img { width: 220px; height: 220px; image-rendering: pixelated; }
+.pix-caixa textarea { width: 100%; font-family: ui-monospace, monospace; font-size: 0.75rem; }
+.mod-matriz { width: 100%; border-collapse: collapse; font-size: var(--t-sm, 0.9rem); }
+.mod-matriz th, .mod-matriz td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--borda, #e2e8f0); text-align: center; }
+.mod-matriz th:first-child, .mod-matriz td:first-child { text-align: left; }
+.mod-matriz input[type='number'] { width: 6.5rem; }
+.eq-plano summary { cursor: pointer; font-size: var(--t-sm, 0.9rem); }

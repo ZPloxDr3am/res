@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { usePedidoFlutuante } from '@/components/pedido-flutuante';
 import { SeletorLoja } from '@/components/seletor-loja';
+import { rotaLiberada } from '@res/core';
 
 // Ícones simples em traço (sem biblioteca), 20×20, herdam a cor do texto.
 const Icone = ({ d }: { d: string }) => (
@@ -56,6 +57,7 @@ const SECOES: { titulo: string; links: Link_[] }[] = [
       { href: '/aplicativos', rotulo: 'Aplicativos', icone: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z' },
       { href: '/impressoras', rotulo: 'Impressoras', icone: 'M7 8V3h10v5M7 17H4v-7h16v7h-3M7 14h10v7H7z' },
       { href: '/lojas', rotulo: 'Lojas e equipe', icone: 'M3 10l9-6 9 6M5 10v10h14V10M9 20v-6h6v6' },
+      { href: '/assinatura', rotulo: 'Assinatura', icone: 'M3 6h18v12H3zM3 10h18M7 15h4' },
     ],
   },
 ];
@@ -67,8 +69,10 @@ const LINKS = [...COMECO.links, ...SECOES.flatMap((s) => s.links)];
 const BARRA = ['/pedidos', '/pedidos/novo', '/estoque', '/resumo'];
 const COR_SECAO: Record<string, string> = { Começo: '#ea580c', Operação: '#2563eb', Vendas: '#16a34a', Clientes: '#9333ea', Gestão: '#d97706', Ajustes: '#64748b' };
 
-export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeirosPassos = false }: { lojas?: { id: string; nome: string }[]; lojaAtual?: string; lojaNome?: string; primeirosPassos?: boolean }) {
-  const secoes = primeirosPassos ? [COMECO, ...SECOES] : SECOES;
+export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeirosPassos = false, modulos = null, dono = false }: { lojas?: { id: string; nome: string }[]; lojaAtual?: string; lojaNome?: string; primeirosPassos?: boolean; modulos?: string[] | null; dono?: boolean }) {
+  // Assinatura só para o dono; telas fora do plano aparecem com cadeado (D-085)
+  const secoes = (primeirosPassos ? [COMECO, ...SECOES] : SECOES).map((s) => ({ ...s, links: s.links.filter((l) => l.href !== '/assinatura' || dono) }));
+  const travado = (href: string) => (modulos && !rotaLiberada(href, modulos) ? true : undefined);
   const atual = usePathname();
   const [mais, setMais] = useState(false);
   useEffect(() => setMais(false), [atual]);
@@ -84,7 +88,7 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeiros
           <span>{estado === 'minimizado' ? 'Retomar pedido' : l.rotulo}</span>
         </button>
       ) : (
-        <Link href={l.href} className="menu-item" title={l.rotulo} aria-current={ativo === l.href ? 'page' : undefined}>
+        <Link href={l.href} className="menu-item" title={travado(l.href) ? `${l.rotulo} (fora do plano)` : l.rotulo} data-travado={travado(l.href)} aria-current={ativo === l.href ? 'page' : undefined}>
           <Icone d={l.icone} />
           <span>{l.rotulo}</span>
         </Link>
