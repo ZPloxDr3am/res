@@ -20,10 +20,13 @@ export async function mudarStatus(pedidoId: string, status: StatusPedido, motivo
   return { ok: true };
 }
 
-export async function definirAceiteAutomatico(valor: boolean): Promise<Resultado> {
+/** Loja alvo: a pedida (modo "todas as lojas", D-087), se a pessoa trabalha nela; senão a loja atual. */
+const lojaAlvo = (ctx: Awaited<ReturnType<typeof contextoLoja>>, lojaId?: string) => (lojaId && ctx.lojas.some((l) => l.id === lojaId) ? lojaId : ctx.lojaId);
+
+export async function definirAceiteAutomatico(valor: boolean, lojaId?: string): Promise<Resultado> {
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
-  const { data, error } = await supabase.from('lojas').update({ aceite_automatico: valor }).eq('id', ctx.lojaId).select('id');
+  const { data, error } = await supabase.from('lojas').update({ aceite_automatico: valor }).eq('id', lojaAlvo(ctx, lojaId)).select('id');
   if (error) return { ok: false, erro: mensagem(error) };
   if (!data?.length) return { ok: false, erro: 'Só quem cuida dos dados da empresa pode mudar o aceite automático.' };
   revalidatePath('/pedidos');
@@ -145,10 +148,10 @@ export async function marcarAviso(pedidoId: string, etapa: StatusPedido, avisado
 }
 
 /** Pausa temporária da loja com recado (D-059). minutos = 0 retoma. */
-export async function pausarLoja(minutos: number, recado?: string): Promise<Resultado> {
+export async function pausarLoja(minutos: number, recado?: string, lojaId?: string): Promise<Resultado> {
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
-  const { error } = await supabase.rpc('pausar_loja', { p_loja: ctx.lojaId, p_minutos: Math.round(minutos), p_recado: recado ?? null });
+  const { error } = await supabase.rpc('pausar_loja', { p_loja: lojaAlvo(ctx, lojaId), p_minutos: Math.round(minutos), p_recado: recado ?? null });
   if (error) return { ok: false, erro: mensagem(error) };
   revalidatePath('/pedidos');
   revalidatePath('/delivery');
@@ -156,10 +159,10 @@ export async function pausarLoja(minutos: number, recado?: string): Promise<Resu
 }
 
 /** Modo movimento (D-062): +minutos no preparo e na entrega por algumas horas. minutos = 0 desliga. */
-export async function definirMovimento(minutos: number, horas: number | null): Promise<Resultado> {
+export async function definirMovimento(minutos: number, horas: number | null, lojaId?: string): Promise<Resultado> {
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
-  const { error } = await supabase.rpc('definir_movimento', { p_loja: ctx.lojaId, p_minutos: Math.round(minutos), p_horas: horas });
+  const { error } = await supabase.rpc('definir_movimento', { p_loja: lojaAlvo(ctx, lojaId), p_minutos: Math.round(minutos), p_horas: horas });
   if (error) return { ok: false, erro: mensagem(error) };
   revalidatePath('/pedidos');
   return { ok: true };

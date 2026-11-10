@@ -12,6 +12,8 @@ export interface ConfigDelivery {
   mensagem: string;
   /** 0 = não aceita pedido agendado; até 7 dias à frente. */
   agendamentoDias: number;
+  /** D-086: com a loja fechada pelo horário, aceita pedido para quando abrir (mesmo sem agendamento normal). */
+  agendarFechado?: boolean;
   horarios: { dia: number; abre: string; fecha: string }[];
   /** só leitura aqui: bairros e taxas são editados em Entregas (D-020); taxa em centavos */
   areas?: { bairro: string; taxa: number; ativo: boolean }[];
@@ -37,6 +39,10 @@ export async function salvarConfig(marcaId: string, c: ConfigDelivery): Promise<
     },
   });
   if (error) return { ok: false, erro: error.message };
+  if (c.agendarFechado !== undefined) {
+    const r = await supabase.rpc('definir_agendar_fechado', { p_marca: marcaId, p_valor: c.agendarFechado });
+    if (r.error) return { ok: false, erro: r.error.message };
+  }
   revalidatePath('/delivery');
   return { ok: true };
 }

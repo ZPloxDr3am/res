@@ -766,3 +766,18 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **Fatura**: gerada sozinha todo dia às 09:07 para quem vence em até 5 dias (fim do teste ou do mês pago); valor = plano × lojas + adicionais × lojas + cardápios extras. Pagou: conta ativa por mais 1 mês a partir do vencimento. Mudou plano/adicional: a fatura em aberto (sem Pix gerado) acompanha.
 - **Pix**: pela conta Mercado Pago da empresa RES (`MP_RES_ACCESS_TOKEN`, só no servidor; aviso em `/api/mercadopago/res`, que sempre confere o pagamento na API e o valor). Sem o token, a fatura fica para a equipe **marcar como paga** em **Cobrança** (recebido 30 dias, previsto por mês, contas pagantes, vencidas).
 - Brecha fechada: o dono não altera mais situação, prazos, plano ou limites da conta direto na tabela (só pelas funções).
+
+## D-086 — Agendar com a loja fechada (10/11/2026)
+- Com o cardápio fechado **pelo horário** (ou em pausa), o cliente agenda **para quando abrir**, mesmo que a loja não aceite agendamento normal: só horários do próximo turno (passando da meia-noite, se o turno passa). Antes ele ia embora.
+- Vem ligado; desliga em Delivery → "Com a loja fechada, aceitar pedido para quando abrir" (aparece quando "Pedidos agendados" está em "Não aceitar"). Cardápio fechado no botão "Fechado" (férias, problema) continua sem aceitar nada.
+
+## D-087 — Resumo no topo do quadro e controles por loja em "todas as lojas" (10/11/2026)
+- Acima do quadro: pedidos ativos (e quantos novos), preparo médio (aceito → pronto), entrega média (saiu → entregue) e quantos estão passando do prazo, com base nas últimas 12 h. Agendado para mais de 1 h à frente não conta como ativo.
+- No modo "todas as lojas", uma linha por loja (com a cor da loja) mostra ativos, preparo médio e atrasados, e tem **aceite automático, modo movimento e pausa daquela loja**, sem precisar trocar de loja.
+
+## D-088 — CPF do dono só para o dono (10/11/2026)
+- LGPD: a coluna `lojas.cpf` saiu da leitura direta. O titular da conta (e o time do RES) lê por `cpf_da_loja`; a equipe só sabe se existe (`loja_tem_cpf`). Gerente que salva Dados da empresa sem ver o CPF não apaga o CPF guardado.
+- **Para migrações futuras**: coluna nova em `public.lojas` precisa de `select private.liberar_colunas_lojas();` no fim da migração. O teste do banco acusa se esquecer.
+
+## D-089 — Fontes guardadas no projeto (10/11/2026)
+- Onest e Bricolage Grotesque agora vêm de `apps/web/app/fontes` (recortadas para o alfabeto latino; licença OFL junto). O build não baixa mais nada do Google Fonts, o que acaba com a falha falsa do CI.

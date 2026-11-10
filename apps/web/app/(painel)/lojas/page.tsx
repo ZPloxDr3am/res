@@ -39,8 +39,17 @@ export default async function Lojas({ searchParams }: { searchParams: Promise<{ 
   const origem = `${h.get('x-forwarded-proto') ?? 'https'}://${h.get('x-forwarded-host') ?? h.get('host')}`;
   const { data: cidades } = await supabase
     .from('lojas')
-    .select('id, nome, cidade, cnpj, cpf, razao_social, nome_fantasia, inscricao_estadual, telefone, email_contato, cep, logradouro, numero, complemento, bairro, uf, lat, lng')
+    .select('id, nome, cidade, cnpj, razao_social, nome_fantasia, inscricao_estadual, telefone, email_contato, cep, logradouro, numero, complemento, bairro, uf, lat, lng')
     .in('id', ids);
+  // D-088: CPF só o dono lê (pela função); para os outros, só se existe
+  const cpfs = Object.fromEntries(
+    await Promise.all(
+      ids.map(async (id) => {
+        const [{ data: cpf }, { data: tem }] = await Promise.all([supabase.rpc('cpf_da_loja', { p_loja: id }), supabase.rpc('loja_tem_cpf', { p_loja: id })]);
+        return [id, { cpf: (cpf as string | null) ?? null, tem: tem === true }] as const;
+      }),
+    ),
+  ) as Record<string, { cpf: string | null; tem: boolean }>;
   const { data: titularDe } = await supabase.from('contas_titulares').select('conta_id').eq('user_id', titular.data.user?.id ?? '');
 
   const lojas: LojaInfo[] = ctx.lojas.map((l) => ({
@@ -97,8 +106,8 @@ export default async function Lojas({ searchParams }: { searchParams: Promise<{ 
               nome: l.nome as string,
               pode: lojas.find((x) => x.id === l.id)?.equipe.some((m) => m.eu && (m.papel === 'dono' || m.papel === 'gerente')) ?? false,
               valor: {
-                semCnpj: !l.cnpj && !!l.cpf,
-                documento: l.cnpj ? formatarCnpj(l.cnpj as string) : l.cpf ? formatarCpf(l.cpf as string) : '',
+                semCnpj: !l.cnpj && !!cpfs[l.id as string]?.tem,
+                documento: l.cnpj ? formatarCnpj(l.cnpj as string) : cpfs[l.id as string]?.cpf ? formatarCpf(cpfs[l.id as string]!.cpf!) : '',
                 razaoSocial: (l.razao_social as string | null) ?? '',
                 nomeFantasia: (l.nome_fantasia as string | null) ?? '',
                 inscricaoEstadual: (l.inscricao_estadual as string | null) ?? '',

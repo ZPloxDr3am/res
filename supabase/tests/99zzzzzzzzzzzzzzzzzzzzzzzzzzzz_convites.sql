@@ -155,3 +155,22 @@ select case when pg_temp.v('m_pago') -> 'modulos' ? 'ifood' and not (pg_temp.v('
              and not (pg_temp.v('m_off') -> 'modulos' ? 'estoque')
             then 'ok planos: módulos pelo plano, adicional soma na fatura, equipe desliga, dono não mexe direto'
             else 'FALHOU planos ' || coalesce(pg_temp.v('m_pago')::text, '-') || coalesce(pg_temp.v('ass2') -> 'valor', '"-"'::jsonb)::text end;
+-- CPF restrito (D-088): equipe não lê; titular lê pela função; toda outra coluna da loja segue legível
+\o /dev/null
+update public.lojas set cpf = '52998224725', cnpj = null where id = (pg_temp.v('loja') #>> '{}')::uuid;
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000005a4', 'caixa2@example.com');
+insert into public.membros (loja_id, user_id, papel, nome) values ((pg_temp.v('loja') #>> '{}')::uuid, '00000000-0000-0000-0000-0000000005a4', 'funcionario', 'Caixa');
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a4');
+select from pg_temp.esperar_erro(format($q$select cpf from public.lojas where id = '%s'$q$, pg_temp.v('loja') #>> '{}'), 'permission denied');
+insert into r values ('cpf_caixa', to_jsonb(public.cpf_da_loja((pg_temp.v('loja') #>> '{}')::uuid)));
+insert into r values ('tem_cpf', to_jsonb(public.loja_tem_cpf((pg_temp.v('loja') #>> '{}')::uuid)));
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('cpf_dono', to_jsonb(public.cpf_da_loja((pg_temp.v('loja') #>> '{}')::uuid)));
+reset role;
+\o
+select case when coalesce(pg_temp.v('cpf_caixa'), 'null'::jsonb) = 'null'::jsonb and pg_temp.v('cpf_dono') = '"52998224725"' and pg_temp.v('tem_cpf') = 'true'
+             and not exists (select 1 from information_schema.columns c where c.table_schema = 'public' and c.table_name = 'lojas' and c.column_name <> 'cpf'
+                              and not has_column_privilege('authenticated', 'public.lojas', c.column_name, 'select'))
+            then 'ok cpf: só o dono lê; demais colunas da loja liberadas (coluna nova pede private.liberar_colunas_lojas())'
+            else 'FALHOU cpf ' || coalesce(pg_temp.v('cpf_caixa')::text, '-') || ' ' || coalesce(pg_temp.v('cpf_dono')::text, '-') end;

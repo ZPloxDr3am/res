@@ -186,6 +186,13 @@ export function FormDelivery({
           </select>
           <span className="dica">O cliente escolhe um horário dentro do funcionamento. Com a loja fechada, ele ainda pode agendar.</span>
         </label>
+        {c.agendamentoDias === 0 && (
+          <label className="check" style={{ alignItems: 'flex-start' }}>
+            <input type="checkbox" checked={c.agendarFechado !== false} onChange={(e) => setC({ ...c, agendarFechado: e.target.checked })} />
+            <span>Com a loja fechada, aceitar pedido <strong>para quando abrir</strong>
+              <br /><span className="dica">O cliente escolhe um horário do próximo turno, em vez de ir embora. Não vale quando você fecha o cardápio no botão “Fechado”.</span></span>
+          </label>
+        )}
         <label>
           Recado no topo do cardápio (opcional)
           <input type="text" maxLength={300} value={c.mensagem} placeholder={`Ex.: Pedido mínimo ${formatarReais(2000)} · Entregamos até 23h`} onChange={(e) => setC({ ...c, mensagem: e.target.value })} />
