@@ -1833,3 +1833,12 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
 .emp-equipe li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--e3); align-items: center; padding: var(--e2) 0; border-bottom: 1px solid var(--borda); }
 .emp-equipe li:last-child { border-bottom: 0; }
 @media (max-width: 700px) { .emp-funil-linha { grid-template-columns: 7rem minmax(0, 1fr) 2.5rem; } .emp-funil-linha > .dica { display: none; } }
+.emp-erro summary { cursor: pointer; display: grid; gap: 2px; list-style: none; }
+.emp-erro summary::-webkit-details-marker { display: none; }
+.emp-erro-msg { font-weight: 600; overflow-wrap: anywhere; }
+.emp-erro[data-origem='servidor'] { box-shadow: inset 3px 0 0 var(--erro), var(--sombra-cartao); }
+.emp-erro[data-origem='navegador'] { box-shadow: inset 3px 0 0 var(--destaque), var(--sombra-cartao); }
+.emp-pilha { margin: var(--e2) 0 0; padding: var(--e3); background: var(--superficie-2); border-radius: var(--raio-controle); font-size: 0.75rem; line-height: 1.45; overflow-x: auto; white-space: pre; max-height: 18rem; }
+/* Aviso de conexão do quadro (D-084) */
+.faixa-conexao { position: sticky; top: var(--e2); z-index: 40; margin: 0 0 var(--e4); padding: var(--e3) var(--e4); border-radius: var(--raio-controle); background: var(--erro); color: #fff; font-size: var(--t-sm); box-shadow: var(--sombra-alta); }
+.faixa-conexao[data-ok] { background: var(--primaria); }

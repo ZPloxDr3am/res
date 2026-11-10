@@ -312,9 +312,9 @@
     "semantic_hash": "5ce35a0029a0309d36b7f0e9152f6067"
   },
   "apps/web/app/layout.tsx": {
-    "mtime": 1794188589.9575233,
-    "seen": 1794188596.0446472,
-    "ast_hash": "2cee3507610183bcc2701d8866750e6e",
+    "mtime": 1794331537.172234,
+    "seen": 1794331602.805137,
+    "ast_hash": "8a3ce80708afc9cfff1bfd9827089a9b",
     "semantic_hash": ""
   },
   "apps/web/app/login/actions.ts": {
@@ -726,10 +726,10 @@
     "semantic_hash": "21bc4e0bde195f62181c3d641e37df21"
   },
   "apps/web/components/tempo-real.tsx": {
-    "mtime": 1792806774.4043381,
-    "seen": 1793205238.7561195,
-    "ast_hash": "84168dfe57c87f852a203d663c632d23",
-    "semantic_hash": "84168dfe57c87f852a203d663c632d23"
+    "mtime": 1794331663.9986665,
+    "seen": 1794331666.3455899,
+    "ast_hash": "b2b474e0a5a4d23e0711b89511491333",
+    "semantic_hash": ""
   },
   "apps/web/lib/api-publica.ts": {
     "mtime": 1793201896.3192706,
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794330332.9263668,
-    "seen": 1794330339.4387972,
-    "ast_hash": "fb3fa9a3c1204a6fd2e927f564e6d683",
+    "mtime": 1794331595.7711897,
+    "seen": 1794331602.8056016,
+    "ast_hash": "0046c6e55a133244e03197b3a771e3bc",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2520,9 +2520,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794330332.936448,
-    "seen": 1794330339.4386497,
-    "ast_hash": "03f1c734ec834a26bfc8f706be0a76ad",
+    "mtime": 1794331499.5097198,
+    "seen": 1794331602.8055928,
+    "ast_hash": "bd15a7c7ef1d2e86fca32c24f360af69",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/actions.ts": {
@@ -2550,9 +2550,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/empresa/page.tsx": {
-    "mtime": 1794330332.9241154,
-    "seen": 1794330863.132946,
-    "ast_hash": "c7fe5a95dde04bfee06538d922dfd60b",
+    "mtime": 1794331555.454377,
+    "seen": 1794331602.805126,
+    "ast_hash": "81b55deaa12300ea9083050133689129",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/restaurantes/page.tsx": {
@@ -2568,15 +2568,57 @@
     "semantic_hash": ""
   },
   "apps/web/components/empresa/nav.tsx": {
-    "mtime": 1794330332.9263668,
-    "seen": 1794330863.1330137,
-    "ast_hash": "5a0758728ce105e1f92a3be9f2cf35e0",
+    "mtime": 1794331555.4539738,
+    "seen": 1794331602.805199,
+    "ast_hash": "e06cb1c6af4ac88e52b7ab2e43c8acb8",
     "semantic_hash": ""
   },
   "supabase/migrations/20261110190000_painel_empresa.sql": {
     "mtime": 1794330332.936448,
     "seen": 1794330863.1333513,
     "ast_hash": "bbecf60f92538f1d4963d41bda1db542",
+    "semantic_hash": ""
+  },
+  "apps/web/app/empresa/erros/page.tsx": {
+    "mtime": 1794331555.4365208,
+    "seen": 1794331602.8051207,
+    "ast_hash": "c28a7a4ae01eccb5955084eb1f200434",
+    "semantic_hash": ""
+  },
+  "apps/web/app/error.tsx": {
+    "mtime": 1794331537.152583,
+    "seen": 1794331602.8051312,
+    "ast_hash": "04afa83ef73555ed4df347d4a37d2aa3",
+    "semantic_hash": ""
+  },
+  "apps/web/app/global-error.tsx": {
+    "mtime": 1794331537.153663,
+    "seen": 1794331602.8051348,
+    "ast_hash": "4789b3e406e81ecc5cd4127d68ceb7c9",
+    "semantic_hash": ""
+  },
+  "apps/web/components/captura-erros.tsx": {
+    "mtime": 1794331537.1514611,
+    "seen": 1794331602.8051803,
+    "ast_hash": "690bc745668cf3c7884261ea2295b44e",
+    "semantic_hash": ""
+  },
+  "apps/web/instrumentation.ts": {
+    "mtime": 1794331537.1548233,
+    "seen": 1794331602.805298,
+    "ast_hash": "927e1b90489266dd7ce0a021158683d3",
+    "semantic_hash": ""
+  },
+  "apps/web/lib/erros.ts": {
+    "mtime": 1794331537.1500843,
+    "seen": 1794331602.8053114,
+    "ast_hash": "439b90cd4aa1078a6e7caa3da3338879",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261110210000_registro_erros.sql": {
+    "mtime": 1794331499.5097198,
+    "seen": 1794331602.8055384,
+    "ast_hash": "d8460d8f562ae4b72ad96bc11d2379dc",
     "semantic_hash": ""
   }
 }

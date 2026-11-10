@@ -89,3 +89,19 @@ reset role;
 \o
 select case when pg_temp.v('equipe') = '2' and (pg_temp.v('num') ->> 'cadastros')::int >= 1 and (pg_temp.v('num') ->> 'convites_usados_30d')::int >= 1
             then 'ok painel da empresa: equipe pelo e-mail e números da plataforma' else 'FALHOU painel empresa ' || coalesce(pg_temp.v('num')::text, '-') end;
+-- Registro de erros (D-084): qualquer um registra, repetido soma, só a equipe lê
+\o /dev/null
+set role anon;
+select public.registrar_erro('{"mensagem":"Falhou X","caminho":"/pedidos/123","origem":"navegador"}');
+select public.registrar_erro('{"mensagem":"Falhou X","caminho":"/pedidos/456","origem":"navegador"}');
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a3');
+select from pg_temp.esperar_erro($q$select public.erros_recentes(7)$q$, 'Só o time do RES');
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a1');
+insert into r values ('erros', public.erros_recentes(7));
+insert into r values ('e24', to_jsonb(public.erros_24h()));
+reset role;
+\o
+select case when jsonb_array_length(pg_temp.v('erros')) = 1 and (pg_temp.v('erros') -> 0 ->> 'vezes')::int = 2 and pg_temp.v('e24') = '2'
+            then 'ok erros: mesmo erro agrupado, só a equipe lê' else 'FALHOU erros ' || coalesce(pg_temp.v('erros')::text, '-') end;
