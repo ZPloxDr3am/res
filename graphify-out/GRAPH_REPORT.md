@@ -1,7 +1,7 @@
 # Graph Report - res  (2026-11-10)
 
 ## Corpus Check
-- 406 files · ~366,084 words
+- 413 files · ~368,229 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 5 file(s) not represented in the graph (top: (none) 2, .example 1, .css 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2e916bdf`
+- Built from commit: `7eb77b8e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -188,15 +188,15 @@
 10. `public.produtos` - 81 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `D-027 · Rota sugerida quando o motoboy sai com várias entregas` --references--> `otimizarRota()`  [INFERRED]
+  docs/decisoes.md → packages/core/src/rota.ts
+- `D-030 · Telefone sempre com o 9 do celular` --references--> `normalizarTelefone()`  [INFERRED]
+  docs/decisoes.md → packages/core/src/segmentos.ts
 - `A. Processo e base` --references--> `main()`  [INFERRED]
   docs/planejamento/checklists/emmanuel-software.md → packages/agente/src/main.ts
 - `Ambiente no ar (piloto)` --references--> `main()`  [INFERRED]
   README.md → packages/agente/src/main.ts
-- `D-022 Combos com escolhas e categoria de up-sell` --references--> `calcularCombo()`  [INFERRED]
-  docs/decisoes.md → packages/core/src/combo.ts
 - `D-014 Impressão: fila no banco, regras como no BeeFood, navegador até o agente chegar` --references--> `montarCupom()`  [INFERRED]
-  docs/decisoes.md → packages/core/src/cupom.ts
-- `D-015 Agente de impressão do Windows (RES Impressão)` --references--> `montarCupom()`  [INFERRED]
   docs/decisoes.md → packages/core/src/cupom.ts
 
 ## Import Cycles
@@ -794,16 +794,16 @@ Nodes (3): ids, pg_temp.como(), pg_temp.id()
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `next` connect `next` to `equipe.tsx`, `cardapio-cliente.tsx`, `expedicao.ts`, `middleware.ts`, `[codigo]/page.tsx`, `API aberta e MCP (rotas)`, `painel-impressoras.tsx`, `relatorios/page.tsx`, `index.ts`, `evento/page.tsx`, `web/package.json`, `app-motoboy.tsx`, `app/layout.tsx`, `editor-cardapio.tsx`, `bairros.tsx`, `criarClienteServidor`, `aplicativos.tsx`, `lista-clientes.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `financeiro/page.tsx`, `evento.tsx`, `novo-pedido.tsx`, `bairros.tsx`, `painel-caixa.tsx`, `criarClienteServidor`, `react`, `cadastro/actions.ts`, `resumo/page.tsx`, `dependencies`, `ifood.ts`, `mercadopago.ts`, `salvando`, `pedido-flutuante.tsx`, `meta-mes.tsx`, `evento/actions.ts`, `ifood.tsx`, `gestao/actions.ts`?**
-  _High betweenness centrality (0.060) - this node is a cross-community bridge._
+  _High betweenness centrality (0.069) - this node is a cross-community bridge._
 - **What connects `pedidos.qr_token (/m/d/<código>)`, `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `GitHub Actions CI (rules, db, build)` to the rest of the system?**
   _9 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `equipe.tsx` be split into smaller, more focused modules?**
   _Cohesion score 0.08376623376623377 - nodes in this community are weakly interconnected._
 - **Why does `criarClienteServidor()` connect `criarClienteServidor` to `equipe.tsx`, `cardapio-cliente.tsx`, `[codigo]/page.tsx`, `painel-impressoras.tsx`, `relatorios/page.tsx`, `next`, `evento/page.tsx`, `index.ts`, `app-motoboy.tsx`, `editor-cardapio.tsx`, `bairros.tsx`, `criarClienteServidor`, `aplicativos.tsx`, `salvando`, `lista-clientes.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `pedido.ts`, `financeiro/page.tsx`, `novo-pedido.tsx`, `bairros.tsx`, `painel-caixa.tsx`, `negociacoes-ifood.tsx`, `react`, `cadastro/actions.ts`, `resumo/page.tsx`, `cardapio-dados.ts`, `salvando`, `pedido-flutuante.tsx`, `meta-mes.tsx`, `geo.ts`, `evento/actions.ts`, `ifood.tsx`, `gestao/actions.ts`?**
-  _High betweenness centrality (0.058) - this node is a cross-community bridge._
+  _High betweenness centrality (0.049) - this node is a cross-community bridge._
 - **Should `20261020000001_base.sql` be split into smaller, more focused modules?**
   _Cohesion score 0.08558558558558559 - nodes in this community are weakly interconnected._
-- **Why does `react` connect `editor-cardapio.tsx` to `equipe.tsx`, `cardapio-cliente.tsx`, `[codigo]/page.tsx`, `painel-impressoras.tsx`, `relatorios/page.tsx`, `index.ts`, `web/package.json`, `app-motoboy.tsx`, `app/layout.tsx`, `bairros.tsx`, `criarClienteServidor`, `aplicativos.tsx`, `salvando`, `lista-clientes.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `financeiro/page.tsx`, `evento.tsx`, `publico.ts`, `novo-pedido.tsx`, `bairros.tsx`, `cardapio.test.ts`, `painel-caixa.tsx`, `negociacoes-ifood.tsx`, `react`, `cadastro/actions.ts`, `resumo/page.tsx`, `dependencies`, `mercadopago.ts`, `impressao.ts`, `salvando`, `pedido-flutuante.tsx`, `meta-mes.tsx`, `geo.ts`, `ifood.tsx`, `grafico-lojas.tsx`, `gestao/actions.ts`, `grafico-dias.tsx`?**
-  _High betweenness centrality (0.043) - this node is a cross-community bridge._
+- **Why does `formatarReais()` connect `salvando` to `cardapio-cliente.tsx`, `expedicao.ts`, `[codigo]/page.tsx`, `relatorios/page.tsx`, `index.ts`, `app-motoboy.tsx`, `editor-cardapio.tsx`, `bairros.tsx`, `aplicativos.tsx`, `lista-clientes.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `publico.ts`, `novo-pedido.tsx`, `cupom.ts`, `cardapio.test.ts`, `preco.ts`, `painel-caixa.tsx`, `negociacoes-ifood.tsx`, `react`, `resumo/page.tsx`, `mercadopago.ts`, `salvando`, `pedido-flutuante.tsx`, `meta-mes.tsx`, `ifood.tsx`, `grafico-lojas.tsx`, `grafico-dias.tsx`?**
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **Should `cardapio-cliente.tsx` be split into smaller, more focused modules?**
   _Cohesion score 0.09951690821256039 - nodes in this community are weakly interconnected._

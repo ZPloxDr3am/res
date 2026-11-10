@@ -2578,5 +2578,47 @@
     "seen": 1794330863.1333513,
     "ast_hash": "bbecf60f92538f1d4963d41bda1db542",
     "semantic_hash": ""
+  },
+  "apps/web/app/empresa/erros/page.tsx": {
+    "mtime": 1794348866.560676,
+    "seen": 1794348870.8106318,
+    "ast_hash": "a3b028639412235822171f657266994d",
+    "semantic_hash": ""
+  },
+  "apps/web/app/error.tsx": {
+    "mtime": 1794331820.4925365,
+    "seen": 1794348870.8106465,
+    "ast_hash": "04afa83ef73555ed4df347d4a37d2aa3",
+    "semantic_hash": ""
+  },
+  "apps/web/app/global-error.tsx": {
+    "mtime": 1794331820.4925365,
+    "seen": 1794348870.8106508,
+    "ast_hash": "4789b3e406e81ecc5cd4127d68ceb7c9",
+    "semantic_hash": ""
+  },
+  "apps/web/components/captura-erros.tsx": {
+    "mtime": 1794331820.4965367,
+    "seen": 1794348870.8107126,
+    "ast_hash": "690bc745668cf3c7884261ea2295b44e",
+    "semantic_hash": ""
+  },
+  "apps/web/instrumentation.ts": {
+    "mtime": 1794331820.4965367,
+    "seen": 1794348870.8108835,
+    "ast_hash": "927e1b90489266dd7ce0a021158683d3",
+    "semantic_hash": ""
+  },
+  "apps/web/lib/erros.ts": {
+    "mtime": 1794331820.4965367,
+    "seen": 1794348870.8108993,
+    "ast_hash": "439b90cd4aa1078a6e7caa3da3338879",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261110210000_registro_erros.sql": {
+    "mtime": 1794331820.5045366,
+    "seen": 1794348870.811239,
+    "ast_hash": "d8460d8f562ae4b72ad96bc11d2379dc",
+    "semantic_hash": ""
   }
 }
