@@ -674,6 +674,12 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Ao registrar **Perda** de um insumo, aparece "Valor perdido: R$ X" (quantidade × custo médio) antes de salvar, e a confirmação repete o valor. Na **Contagem**, aparece quanto está faltando ou sobrando em relação ao sistema, em quantidade e em R$.
 - O valor já era gravado (movimento a custo médio) e aparece em Movimentações (Perdas) e no Fechamento do mês (CMV).
 
+## D-073 — Método de trabalho para duas pessoas (05/11/2026)
+- O projeto passa a ter duas pessoas, cada uma com o próprio Claude, trabalhando no mesmo repositório. Método em `docs/desenvolvimento/METODO.md`: ciclo semanal (planejamento na segunda, revisão e novidades na sexta), Issue → branch → PR → revisão cruzada → migração → merge → teste no ar; definição de pronto; arquivos e funções SQL "quentes".
+- Emmanuel (`ZPloxDr3am`) e Hugo (`CriadorHugo`) são **donos do projeto**, com acesso Admin; as tarefas são divididas **por frente** (`docs/desenvolvimento/MODULOS.md`): quem está com a frente faz o merge e roda as migrações dela; **o outro sempre revisa**. Peças compartilhadas pedem a aprovação dos dois.
+- Migrações novas com **data e hora** no nome (`AAAAMMDDHHMMSS_assunto.sql`) para duas pessoas não repetirem número.
+- Documentação em três áreas no repositório: `docs/comercial`, `docs/desenvolvimento`, `docs/qualidade` (roteiros e relatórios de teste). Modelos de Issue (funcionalidade, bug, teste) e de PR em `.github/`; etiquetas e marco da semana por `scripts/github-etiquetas.sh`.
+
 ## D-074 — RES pronto para receber o iFood (modo teste) (06/11/2026)
 - **Base de marketplace** (vale para iFood e para os próximos apps): o pedido externo é convertido para o formato do RES (`normalizarPedidoIfood` em `@res/core`) e entra pela mesma porta (`private.receber_pedido_externo`), **uma vez só** (canal + id do pedido; eventos repetidos descartados). Respeita o aceite automático e cai no quadro com som.
 - Pedido ganha: **acréscimo** (taxas extras do app; total = subtotal + entrega + acréscimo − desconto), número do app, **código de retirada**, bandeira do cartão, **CPF/CNPJ na nota**, localizador, observação de entrega, cupons com **quem paga** (loja × iFood) e "entrega pelo iFood".
