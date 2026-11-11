@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       url:
-        description: Endereço a testar (ex.: https://res-iqzs.vercel.app)
+        description: 'Endereço a testar, por exemplo https://res-iqzs.vercel.app'
         required: true
 
 jobs:
