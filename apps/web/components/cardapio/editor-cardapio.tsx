@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useMemo, useState, useTransition } from 'react';
 import { formatarReais, paraCentavos, percentualDesconto, precoBase, resumoAgenda } from '@res/core';
 import { agendaDe, nomeOpcao, paraProdutoCore, situacaoPromo, type Cardapio } from '@/lib/cardapio-dados';
@@ -11,6 +12,7 @@ import {
   excluirProduto,
   excluirSetor,
   mover,
+  moverProdutos,
   type Resultado,
 } from '@/app/(painel)/cardapio/actions';
 import { salvando } from '@/components/tempo-real';
@@ -79,6 +81,7 @@ export function EditorCardapio({ cardapio, marcas, lojaId, outrasLojas = [] }: {
           <p className="dica" style={{ margin: 0 }}>{produtos.length} produto(s) · {promosValendo} promoção(ões) valendo agora</p>
         </div>
         <div className="linha" style={{ alignItems: 'center', gap: '0.5rem' }}>
+        <Link href="/cardapio/organizar" className="botao" title="Arrastar para mudar a ordem e trocar produtos de categoria">⇅ Organizar ordem</Link>
         {outrasLojas.length > 0 && (
           <button type="button" onClick={() => setPainel({ tipo: 'importar' })}>Importar de outra loja</button>
         )}
@@ -209,6 +212,12 @@ export function EditorCardapio({ cardapio, marcas, lojaId, outrasLojas = [] }: {
                             <button type="button" className="mini" disabled={pos === irmaos.length - 1 || pendente} onClick={() => executar(() => mover('produtos', p.id, 1))}>Depois →</button>
                           </span>
                         )}
+                        <select className="mini cd-mover" value="" disabled={pendente} aria-label={`Mover ${p.nome} para outra categoria`}
+                          onChange={(ev) => { const v = ev.target.value; if (!v) return; executar(() => moverProdutos([p.id], v === SEM ? null : v)); }}>
+                          <option value="">Mover para…</option>
+                          {setores.filter((s) => s.id !== p.setor_id).map((s) => <option key={s.id} value={s.id}>{s.nome}</option>)}
+                          {p.setor_id && <option value={SEM}>Sem categoria</option>}
+                        </select>
                         <button type="button" className="mini" disabled={pendente} onClick={() => executar(() => duplicarProduto(p.id), (id) => id && setPainel({ tipo: 'produto', id }))}>Duplicar</button>
                         <button type="button" className="mini texto-perigo" onClick={() => setConfirmar({ texto: `Excluir o produto "${p.nome}"? Não dá para desfazer.`, acao: () => excluirProduto(p.id) })}>Excluir</button>
                       </div>
