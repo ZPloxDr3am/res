@@ -1,0 +1,37 @@
+name: Bug
+description: Algo que não funciona como deveria
+title: "Bug: "
+labels: ["tipo:bug"]
+body:
+  - type: textarea
+    id: passos
+    attributes:
+      label: Passos para repetir
+      placeholder: |
+        1. Entrar como …
+        2. Abrir …
+        3. Tocar em …
+    validations:
+      required: true
+  - type: textarea
+    id: aconteceu
+    attributes:
+      label: O que aconteceu × o que deveria acontecer
+    validations:
+      required: true
+  - type: dropdown
+    id: gravidade
+    attributes:
+      label: Gravidade
+      options: ["alta — impede vender ou perde dinheiro/dados", "média — atrapalha, tem contorno", "baixa — visual ou texto"]
+    validations:
+      required: true
+  - type: input
+    id: onde
+    attributes:
+      label: Onde (aparelho, loja, tela)
+      placeholder: "Celular Android (app RES), LA PIZZA, Estoque → Insumos"
+  - type: textarea
+    id: prints
+    attributes:
+      label: Prints ou vídeo

@@ -1,0 +1,40 @@
+name: Funcionalidade
+description: Algo novo ou melhoria no RES
+title: "Fazer: "
+labels: ["tipo:funcionalidade"]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: O que o usuário ganha
+      description: Quem usa, em que momento, e o problema que resolve.
+    validations:
+      required: true
+  - type: textarea
+    id: aceite
+    attributes:
+      label: Critérios de aceite
+      description: Como saber que ficou pronto (passos e resultado esperado).
+      placeholder: |
+        - Ao …, aparece …
+        - No celular …
+    validations:
+      required: true
+  - type: dropdown
+    id: modulo
+    attributes:
+      label: Módulo
+      options: [pedidos, delivery, cardapio, salao, estoque, financeiro, gestao, relatorios, clientes, entregas, impressao, apps, integracoes, base]
+    validations:
+      required: true
+  - type: checkboxes
+    id: extras
+    attributes:
+      label: Precisa de
+      options:
+        - label: Migração no banco
+        - label: Material para o comercial
+  - type: textarea
+    id: notas
+    attributes:
+      label: Notas, prints, referência (ex.: como o BeeFood faz)

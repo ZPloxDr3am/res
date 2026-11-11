@@ -674,6 +674,12 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Ao registrar **Perda** de um insumo, aparece "Valor perdido: R$ X" (quantidade × custo médio) antes de salvar, e a confirmação repete o valor. Na **Contagem**, aparece quanto está faltando ou sobrando em relação ao sistema, em quantidade e em R$.
 - O valor já era gravado (movimento a custo médio) e aparece em Movimentações (Perdas) e no Fechamento do mês (CMV).
 
+## D-073 — Método de trabalho para duas pessoas (05/11/2026)
+- O projeto passa a ter duas pessoas, cada uma com o próprio Claude, trabalhando no mesmo repositório. Método em `docs/desenvolvimento/METODO.md`: ciclo semanal (planejamento na segunda, revisão e novidades na sexta), Issue → branch → PR → revisão cruzada → migração → merge → teste no ar; definição de pronto; arquivos e funções SQL "quentes".
+- Emmanuel (`ZPloxDr3am`) e Hugo (`CriadorHugo`) são **donos do projeto**, com acesso Admin; as tarefas são divididas **por frente** (`docs/desenvolvimento/MODULOS.md`): quem está com a frente faz o merge e roda as migrações dela; **o outro sempre revisa**. Peças compartilhadas pedem a aprovação dos dois.
+- Migrações novas com **data e hora** no nome (`AAAAMMDDHHMMSS_assunto.sql`) para duas pessoas não repetirem número.
+- Documentação em três áreas no repositório: `docs/comercial`, `docs/desenvolvimento`, `docs/qualidade` (roteiros e relatórios de teste). Modelos de Issue (funcionalidade, bug, teste) e de PR em `.github/`; etiquetas e marco da semana por `scripts/github-etiquetas.sh`.
+
 ## D-074 — RES pronto para receber o iFood (modo teste) (06/11/2026)
 - **Base de marketplace** (vale para iFood e para os próximos apps): o pedido externo é convertido para o formato do RES (`normalizarPedidoIfood` em `@res/core`) e entra pela mesma porta (`private.receber_pedido_externo`), **uma vez só** (canal + id do pedido; eventos repetidos descartados). Respeita o aceite automático e cai no quadro com som.
 - Pedido ganha: **acréscimo** (taxas extras do app; total = subtotal + entrega + acréscimo − desconto), número do app, **código de retirada**, bandeira do cartão, **CPF/CNPJ na nota**, localizador, observação de entrega, cupons com **quem paga** (loja × iFood) e "entrega pelo iFood".
@@ -801,6 +807,9 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Clientes → abrir o cliente → **Pedido do cliente (LGPD)**: **Exportar dados** (arquivo com cadastro, endereços, pedidos e fidelidade) e **Apagar dados** (confirma com os 4 últimos números do telefone). Só dono e gerente.
 - Apagar tira nome, telefone, endereço, documento e observação de entrega dos pedidos em todas as lojas do grupo e remove cadastro, endereços e fidelidade; os valores ficam para o caixa e o financeiro. Não dá para desfazer.
 - **Prazo de guarda**: cliente sem pedido há **24 meses** é apagado sozinho (todo dia 2). Cada exportação e exclusão fica em `lgpd_registros`. A Política de Privacidade deve citar esse prazo quando for revisada (com o CNPJ).
+
+## D-093 — Quadro sem os cartões de controle por loja (10/11/2026)
+- A pedido do dono, saiu do modo "todas as lojas" a linha de cartões com aceite automático, movimento e pausa de cada loja (ficou poluída). O resumo (ativos, preparo médio, entrega média, passando do prazo) continua. Para mexer nos controles de uma loja, escolha a loja no topo do quadro.
 
 ## D-094 — Organizar o cardápio (PR #8, juntado em 10/11/2026)
 - **Cardápio → ⇅ Organizar ordem**: arrastar e soltar (mouse e toque) para ordenar categorias e produtos e levar produto para outra categoria; botões topo/subir/descer/fim; seleção em massa com "Mover para…"; ordenar A-Z ou por preço; desfazer; prévia ao vivo do cardápio do cliente. Salva tudo de uma vez.
