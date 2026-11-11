@@ -2860,5 +2860,11 @@
     "seen": 1794355908.222056,
     "ast_hash": "2a37f4d5a48d6c1526f3ee3d3407c406",
     "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
+    "mtime": 1794355880.8183694,
+    "seen": 1794355910.3734305,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "semantic_hash": ""
   }
 }
