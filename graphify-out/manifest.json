@@ -66,9 +66,9 @@
     "semantic_hash": "7c8c54427dc401e946d8e164c3538a21"
   },
   "apps/web/app/(painel)/cardapio/actions.ts": {
-    "mtime": 1793208750.8513646,
-    "seen": 1793208755.229811,
-    "ast_hash": "58f039d79d87d8548f8481e871a16b85",
+    "mtime": 1794425628.5107818,
+    "seen": 1794425779.4708714,
+    "ast_hash": "d3c1e3c7396a163dc288d84fca6d8cc1",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/cardapio/page.tsx": {
@@ -426,9 +426,9 @@
     "semantic_hash": "9fb3406c9aab789d0f557eadc2cf95bf"
   },
   "apps/web/components/cardapio/editor-cardapio.tsx": {
-    "mtime": 1793208750.8593645,
-    "seen": 1793208755.2299163,
-    "ast_hash": "b143b6eca05977bed80f7977aeae9074",
+    "mtime": 1794425628.5107818,
+    "seen": 1794425779.4710472,
+    "ast_hash": "d396664541eaec6e43ee8eba44fc6233",
     "semantic_hash": ""
   },
   "apps/web/components/cardapio/editor-combo.tsx": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794356093.5563104,
-    "seen": 1794356098.4896722,
-    "ast_hash": "3645fcded363208a04e41a02e989bbae",
+    "mtime": 1794425628.5147817,
+    "seen": 1794425779.4715078,
+    "ast_hash": "5c90529cd89ec9f7293bbae7519a8a46",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2851,8 +2851,50 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794355910.3734305,
-    "ast_hash": "",
+    "seen": 1794425779.470786,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "semantic_hash": ""
+  },
+  ".github/workflows/e2e.yml": {
+    "mtime": 1794425773.738811,
+    "seen": 1794425779.470801,
+    "ast_hash": "7bf554c9e5beca57a760fc74c36f705e",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/cardapio/organizar/page.tsx": {
+    "mtime": 1794425628.5107818,
+    "seen": 1794425779.4708736,
+    "ast_hash": "d32e8ebc249d91d68494656ff095e117",
+    "semantic_hash": ""
+  },
+  "apps/web/components/cardapio/organizador.tsx": {
+    "mtime": 1794425628.5147817,
+    "seen": 1794425779.4710567,
+    "ast_hash": "fbd34ca80eb286868bd0d6c7fd9c0b56",
+    "semantic_hash": ""
+  },
+  "e2e/pedido.spec.ts": {
+    "mtime": 1794356093.5563104,
+    "seen": 1794425779.471213,
+    "ast_hash": "5da556fe4e737570f234d98de96c4f99",
+    "semantic_hash": ""
+  },
+  "e2e/playwright.config.ts": {
+    "mtime": 1794356093.5576189,
+    "seen": 1794425779.4712145,
+    "ast_hash": "8bacdd4797a1ae87d0c58e662e333dcd",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261111040000_organizar_cardapio.sql": {
+    "mtime": 1794425628.5147817,
+    "seen": 1794425779.4714096,
+    "ast_hash": "fc6559d104661486fd8119f1da7af749",
+    "semantic_hash": ""
+  },
+  "supabase/tests/60_organizar.sql": {
+    "mtime": 1794425628.5147817,
+    "seen": 1794425779.4714222,
+    "ast_hash": "5694de05411014ac751c9a1684c93d4c",
     "semantic_hash": ""
   }
 }
