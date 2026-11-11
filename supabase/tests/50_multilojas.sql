@@ -124,6 +124,15 @@ begin
   if (a ->> 'faturamento')::int <> 0 or (a ->> 'cancelados')::int <> 1 or (a ->> 'valor_cancelado')::int <> 4000 then raise exception 'cancelado Trindade: %', a; end if;
   if jsonb_array_length(r -> 'atual') <> 3 then raise exception 'deveria listar as 3 lojas (inclusive sem venda)'; end if;
   if jsonb_array_length(r -> 'dias') <> 1 or (r #>> '{dias,0,dia}') <> '2026-10-21' then raise exception 'dias: %', r -> 'dias'; end if;
+  -- 0013: composição por cardápio fecha com o faturamento e soma produtos + frete − descontos
+  if (select sum((x ->> 'total')::int) from jsonb_array_elements(r -> 'composicao') x) <> (select sum((x ->> 'faturamento')::int) from jsonb_array_elements(r -> 'atual') x) then
+    raise exception 'composição não fecha com o faturamento: %', r -> 'composicao';
+  end if;
+  if exists (select 1 from jsonb_array_elements(r -> 'composicao') x
+              where (x ->> 'produtos')::int + (x ->> 'frete')::int - (x ->> 'descontos')::int <> (x ->> 'total')::int) then
+    raise exception 'produtos + frete − descontos ≠ total: %', r -> 'composicao';
+  end if;
+  if (select sum((x ->> 'total')::int) from jsonb_array_elements(r -> 'composicao_anterior') x) <> 5000 then raise exception 'composição anterior: %', r -> 'composicao_anterior'; end if;
 end $$;
 -- funcionária sem "relatorios" não vê números
 select from pg_temp.como('00000000-0000-0000-0000-0000000000c8', 'jaque@example.com');
@@ -131,6 +140,7 @@ insert into saida values ('rj', public.resumo_vendas(array[pg_temp.id('loja2')],
 reset role;
 do $$ begin
   if jsonb_array_length((select v from saida where chave = 'rj') -> 'atual') <> 0 then raise exception 'funcionária viu relatório'; end if;
+  if jsonb_array_length((select v from saida where chave = 'rj') -> 'composicao') <> 0 then raise exception 'funcionária viu composição'; end if;
 end $$;
 select from pg_temp.esperar_erro($q$select public.resumo_vendas('{}', '2026-10-22', '2026-10-21')$q$, 'Período inválido');
 

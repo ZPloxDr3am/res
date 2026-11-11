@@ -1,6 +1,7 @@
 'use server';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
+import { emailDeLogin } from '@res/core';
 import { criarClienteServidor } from '@/lib/supabase/server';
 
 function credenciais(form: FormData) {
@@ -9,10 +10,16 @@ function credenciais(form: FormData) {
 
 export async function entrar(form: FormData) {
   const supabase = await criarClienteServidor();
-  const { error } = await supabase.auth.signInWithPassword(credenciais(form));
-  if (error) redirect(`/login?erro=${encodeURIComponent('E-mail ou senha incorretos.')}`);
+  const c = credenciais(form);
+  // sem "@" é usuário de caixa: entra pelo e-mail interno (D-012)
+  const { error } = await supabase.auth.signInWithPassword({ email: emailDeLogin(c.email), password: c.password });
+  if (error) {
+    const v = String(form.get('voltar') ?? '');
+    redirect(`/login?erro=${encodeURIComponent('Usuário/e-mail ou senha incorretos.')}${v.startsWith('/m') ? `&voltar=${encodeURIComponent(v)}` : ''}`);
+  }
   await supabase.rpc('aceitar_convites'); // convites de equipe para este e-mail viram acesso às lojas
-  redirect('/pedidos');
+  const voltar = String(form.get('voltar') ?? '');
+  redirect(/^\/m(\/[\w/-]*)?$/.test(voltar) ? voltar : '/pedidos');
 }
 
 export async function cadastrar(form: FormData) {

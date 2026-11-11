@@ -1,11 +1,12 @@
 import { contextoLoja } from '@/lib/loja';
-import { carregarCardapio } from '@/lib/cardapio';
+import { carregarDadosNovoPedido } from '@/lib/novo-pedido';
 import { NovoPedido } from '@/components/novo-pedido';
 
 export const dynamic = 'force-dynamic';
 
+/** Página inteira (link direto). No dia a dia o novo pedido abre na janela flutuante sobre o quadro. */
 export default async function PaginaNovoPedido() {
   const ctx = await contextoLoja();
-  const { setores, produtos, grupos } = await carregarCardapio(ctx.lojaId);
-  return <NovoPedido marcas={ctx.marcas} setores={setores} produtos={produtos} grupos={grupos} />;
+  const d = await carregarDadosNovoPedido(ctx.lojaId, ctx.marcas, ctx.papel);
+  return <NovoPedido {...d} />;
 }

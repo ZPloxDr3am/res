@@ -3,6 +3,7 @@ import QRCode from 'qrcode';
 import { contextoLoja } from '@/lib/loja';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import { FormDelivery } from '@/components/form-delivery';
+import { FormVitrine } from '@/components/delivery/vitrine';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +13,7 @@ export default async function Delivery() {
   const [marcas, horarios, areas, aberta] = await Promise.all([
     supabase
       .from('marcas')
-      .select('id, nome, slug, status_cardapio, pedido_minimo, aceita_entrega, aceita_retirada, formas_pagamento, mensagem_cardapio')
+      .select('id, nome, slug, status_cardapio, pedido_minimo, aceita_entrega, aceita_retirada, formas_pagamento, mensagem_cardapio, agendamento_dias, agendar_fechado, logo_url, capa_url, cor, descricao, instagram, whatsapp')
       .eq('loja_id', ctx.lojaId)
       .order('ordem'),
     supabase.from('marca_horarios').select('marca_id, dia_semana, abre, fecha').eq('loja_id', ctx.lojaId).order('dia_semana').order('abre'),
@@ -37,6 +38,7 @@ export default async function Delivery() {
         id: m.id as string,
         nome: m.nome as string,
         link,
+        vitrine: { logo_url: m.logo_url ?? null, capa_url: m.capa_url ?? null, cor: m.cor ?? null, descricao: m.descricao ?? null, instagram: m.instagram ?? null, whatsapp: m.whatsapp ?? null },
         qr: await QRCode.toString(link, { type: 'svg', margin: 1, width: 180, errorCorrectionLevel: 'M' }),
         abertaAgora: abertaPorSlug.get(m.slug as string) ?? false,
         config: {
@@ -46,6 +48,8 @@ export default async function Delivery() {
           aceitaRetirada: m.aceita_retirada as boolean,
           formasPagamento: m.formas_pagamento as never,
           mensagem: (m.mensagem_cardapio as string | null) ?? '',
+          agendamentoDias: (m.agendamento_dias as number | null) ?? 0,
+          agendarFechado: (m as { agendar_fechado?: boolean }).agendar_fechado ?? true,
           horarios: (horarios.data ?? [])
             .filter((x) => x.marca_id === m.id)
             .map((x) => ({ dia: x.dia_semana as number, abre: String(x.abre).slice(0, 5), fecha: String(x.fecha).slice(0, 5) })),
@@ -64,7 +68,10 @@ export default async function Delivery() {
         O cliente abre o link (ou lê o QR), monta o pedido e envia. O pedido cai direto no quadro de Pedidos, com alerta sonoro.
       </p>
       {lista.map((m) => (
-        <FormDelivery key={m.id} marcaId={m.id} nome={m.nome} link={m.link} qr={m.qr} abertaAgora={m.abertaAgora} inicial={m.config} outrosCardapios={Math.max(0, (cardapiosDoGrupo ?? 1) - 1)} />
+        <div key={m.id} className="grade">
+          <FormVitrine marcaId={m.id} lojaId={ctx.lojaId} nome={m.nome} link={m.link} inicial={m.vitrine} />
+          <FormDelivery marcaId={m.id} nome={m.nome} link={m.link} qr={m.qr} abertaAgora={m.abertaAgora} inicial={m.config} outrosCardapios={Math.max(0, (cardapiosDoGrupo ?? 1) - 1)} />
+        </div>
       ))}
     </div>
   );

@@ -1,0 +1,17 @@
+{
+  "appId": "app.res.gestao",
+  "appName": "RES",
+  "webDir": "www",
+  "server": {
+    "url": "https://res-iqzs.vercel.app/",
+    "cleartext": false,
+    "allowNavigation": [
+      "res-iqzs.vercel.app"
+    ]
+  },
+  "android": {
+    "appendUserAgent": "RESGestaoApp",
+    "backgroundColor": "#1f6f5c",
+    "useLegacyBridge": true
+  }
+}

@@ -1,0 +1,68 @@
+name: App do motoboy (Android)
+
+# Gera o RES-Motoboy.apk (Capacitor) e publica na release "motoboy-latest".
+# O app só carrega o site (/m): melhorias no RES aparecem sem atualizar o APK.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps-mobile/motoboy/**'
+      - '.github/workflows/motoboy-app.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Instalar Capacitor
+        working-directory: apps-mobile/motoboy
+        run: npm install --no-audit --no-fund
+      - name: Gerar projeto Android
+        working-directory: apps-mobile/motoboy
+        run: |
+          npx cap add android
+          npx cap sync android
+          node scripts/ajustar-android.mjs
+      - name: Chave de assinatura
+        working-directory: apps-mobile/motoboy/android/app
+        env:
+          KS_B64: ${{ secrets.MOTOBOY_KEYSTORE_B64 }}
+          KS_PASS: ${{ secrets.MOTOBOY_KEYSTORE_PASS }}
+        run: |
+          if [ -n "$KS_B64" ] && [ -n "$KS_PASS" ]; then
+            echo "$KS_B64" | base64 -d > motoboy.keystore
+            echo "KS_PASS=$KS_PASS" >> "$GITHUB_ENV"
+          else
+            # sem chave guardada: gera uma para este build (versão nova precisa desinstalar a antiga)
+            P=$(openssl rand -hex 16)
+            keytool -genkeypair -keystore motoboy.keystore -alias motoboy -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass "$P" -keypass "$P" -dname "CN=RES Motoboy, O=RES, C=BR"
+            echo "::add-mask::$P"
+            echo "KS_PASS=$P" >> "$GITHUB_ENV"
+            echo "::warning::Sem MOTOBOY_KEYSTORE_B64: APK assinado com chave nova. Para atualizar por cima, cadastre os segredos (ver apps-mobile/motoboy/README.md)."
+          fi
+      - name: Compilar APK
+        working-directory: apps-mobile/motoboy/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+          cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/RES-Motoboy.apk"
+          ls -la "$GITHUB_WORKSPACE/RES-Motoboy.apk"
+      - name: Publicar
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view motoboy-latest >/dev/null 2>&1 || gh release create motoboy-latest --title "RES Motoboy (Android)" \
+            --notes "Abra este link no celular do motoboy, baixe RES-Motoboy.apk e instale (permita instalar apps desta fonte). Entre com o usuário e a senha de Entregador." --latest=false
+          gh release upload motoboy-latest RES-Motoboy.apk --clobber

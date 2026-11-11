@@ -2,21 +2,27 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { formatarReais, PAGAMENTO_ROTULO, type StatusPedido } from '@res/core';
+import { formatarReais, PAGAMENTO_ROTULO, rotuloHorario, type StatusPedido } from '@res/core';
 import type { Acompanhamento } from '@/lib/publico';
+import { MapaCliente } from './mapa-cliente';
+import { PagarPix } from './pagar-pix';
+import { PagarPixMp } from './pagar-pix-mp';
+
+export type ExtrasPedido = { pix: { chave: string; nome: string; cidade: string; valor: number; numero: number; pago: boolean } | null; avaliacao: string | null };
 
 const hora = (iso: string | null) => (iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : null);
 
-export function AcompanharPedido({ pedido: p }: { pedido: Acompanhamento }) {
+export function AcompanharPedido({ pedido: p, extras, pixMp }: { pedido: Acompanhamento; extras: ExtrasPedido; pixMp?: { codigo: string; pago: boolean } | null }) {
   const router = useRouter();
   const final = p.status === 'concluido' || p.status === 'cancelado';
 
   // atualiza sozinho a cada 15 s enquanto o pedido está andando
   useEffect(() => {
     if (final) return;
-    const t = setInterval(() => router.refresh(), 15000);
+    // motoboy a caminho no mapa: a cada 10 s
+    const t = setInterval(() => router.refresh(), p.motoboy ? 10000 : 15000);
     return () => clearInterval(t);
-  }, [final, router]);
+  }, [final, router, p.motoboy]);
 
   const etapas: { status: StatusPedido; rotulo: string; quando: string | null }[] = [
     { status: 'novo', rotulo: 'Pedido enviado', quando: p.criado_em },
@@ -28,7 +34,7 @@ export function AcompanharPedido({ pedido: p }: { pedido: Acompanhamento }) {
   const atual = etapas.findIndex((e) => e.status === p.status);
 
   const previsao = (() => {
-    if (final || !p.aceito_em) return null;
+    if (final || !p.aceito_em || p.tipo === 'entrega') return null;
     const fim = new Date(new Date(p.aceito_em).getTime() + p.tempo_preparo_min * 60000);
     return fim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   })();
@@ -54,8 +60,49 @@ export function AcompanharPedido({ pedido: p }: { pedido: Acompanhamento }) {
             ))}
           </ol>
         )}
-        {p.status === 'novo' && <p className="dica">Aguardando a loja confirmar. Esta página atualiza sozinha.</p>}
-        {previsao && <p>Previsão de ficar pronto: <strong>{previsao}</strong></p>}
+        {pixMp && p.status !== 'cancelado' ? <PagarPixMp codigo={pixMp.codigo} pago={pixMp.pago} /> : extras.pix && p.status !== 'cancelado' && <PagarPix pix={extras.pix} />}
+        {extras.avaliacao && p.status === 'concluido' && (
+          <a className="cartao pub-avaliar" href={extras.avaliacao} target="_blank" rel="noopener noreferrer">
+            <strong>Gostou? Avalie a {p.marca} no Google ⭐</strong>
+            <span className="dica">Leva 10 segundos e ajuda muito a loja.</span>
+          </a>
+        )}
+        {p.agendado_para && p.status !== 'cancelado' && (
+          <p className="aviso">
+            Pedido agendado para <strong>{rotuloHorario(new Date(p.agendado_para), p.fuso)}</strong>
+            {p.tipo === 'entrega' ? ' (entrega)' : ' (retirada)'}.
+          </p>
+        )}
+        {p.status === 'novo' && (
+          <p className="dica">
+            {p.agendado_para ? 'A loja começa a preparar perto do horário marcado.' : 'Aguardando a loja confirmar.'} Esta página atualiza sozinha.
+          </p>
+        )}
+        {previsao && !p.agendado_para && <p>Previsão de ficar pronto: <strong>{previsao}</strong></p>}
+        {p.tipo === 'entrega' && !final && p.status !== 'em_entrega' && !p.agendado_para && (
+          <p>Previsão de entrega: até <strong>{hora(p.prazo)}</strong></p>
+        )}
+        {p.tipo === 'entrega' && p.status === 'em_entrega' && (
+          <section className="cartao grade pub-a-caminho" aria-live="polite">
+            <strong>🛵 {p.motoboy_nome || 'O motoboy'} saiu com o seu pedido</strong>
+            <span>
+              {p.previsao_chegada && new Date(p.previsao_chegada).getTime() > Date.now() - 5 * 60_000 ? (
+                <>Chega por volta das <strong>{hora(p.previsao_chegada)}</strong></>
+              ) : (
+                <>Previsão de entrega: até <strong>{hora(p.prazo)}</strong></>
+              )}
+            </span>
+            {p.paradas_antes != null && p.paradas_antes > 0 && (
+              <span className="dica">Ele tem {p.paradas_antes === 1 ? '1 entrega' : `${p.paradas_antes} entregas`} antes da sua. O mapa aparece quando ele estiver vindo até você.</span>
+            )}
+            {p.motoboy && (
+              <>
+                <span className="dica">Ele está vindo até você — o mapa atualiza sozinho.</span>
+                <MapaCliente motoboy={p.motoboy} destino={p.destino} />
+              </>
+            )}
+          </section>
+        )}
 
         <section className="cartao grade" style={{ gap: '0.35rem' }}>
           <h2>Itens</h2>
@@ -77,6 +124,12 @@ export function AcompanharPedido({ pedido: p }: { pedido: Acompanhamento }) {
             {p.troco_para ? ` · troco para ${formatarReais(p.troco_para)}` : ''}
           </span>
         </section>
+        {p.fidelidade && (p.fidelidade.cashback_ganho > 0 || p.fidelidade.pontos_ganhos > 0) && (
+          <p className="aviso">🎉 Você ganhou <strong>{[p.fidelidade.cashback_ganho > 0 && formatarReais(p.fidelidade.cashback_ganho), p.fidelidade.pontos_ganhos > 0 && `${p.fidelidade.pontos_ganhos} pontos`].filter(Boolean).join(' e ')}</strong> para usar no próximo pedido em {p.marca}.</p>
+        )}
+        {p.fidelidade && (p.fidelidade.cashback_usado > 0 || p.fidelidade.pontos_usados > 0) && (
+          <p className="dica">Neste pedido você usou {[p.fidelidade.cashback_usado > 0 && `${formatarReais(p.fidelidade.cashback_usado)} de cashback`, p.fidelidade.pontos_usados > 0 && `${p.fidelidade.pontos_usados} pontos`].filter(Boolean).join(' e ')}.</p>
+        )}
         <p className="dica">Guarde este endereço para acompanhar o pedido.</p>
         <Link href={`/c/${p.slug}`} className="botao">Fazer outro pedido</Link>
       </main>

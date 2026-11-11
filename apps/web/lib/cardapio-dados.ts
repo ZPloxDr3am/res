@@ -1,5 +1,5 @@
 // Tipos das linhas do cardápio e conversões puras (servem no servidor e no navegador).
-import type { Grupo, Produto } from '@res/core';
+import { promoVale, type AgendaPromo, type Grupo, type PassoCombo, type Produto } from '@res/core';
 
 export type OpcaoRow = {
   id: string;
@@ -13,8 +13,13 @@ export type OpcaoRow = {
   delivery: boolean;
   presencial: boolean;
   ordem: number;
+  /** foto da opção (D-035) */
+  imagem_url?: string | null;
+  /** ingredientes e selo (D-046) */
+  descricao?: string | null;
+  selo?: 'recomendado' | 'novo' | null;
   complementos: { nome: string; preco: number } | null;
-  produtos: { nome: string; preco: number | null } | null;
+  produtos: { nome: string; preco: number | null; imagem_url?: string | null } | null;
 };
 
 export type GrupoRow = {
@@ -41,6 +46,11 @@ export type ProdutoMarcaRow = {
   preco_delivery: number | null;
   preco_presencial: number | null;
   preco_promocional: number | null;
+  /** agenda da promoção (D-021): dias 0–6, horário 'HH:MM:SS', último dia 'AAAA-MM-DD' */
+  promo_dias?: number[] | null;
+  promo_inicio?: string | null;
+  promo_fim?: string | null;
+  promo_ate?: string | null;
 };
 
 export type ProdutoRow = {
@@ -52,6 +62,10 @@ export type ProdutoRow = {
   etiqueta: string | null;
   imagem_url: string | null;
   ordem: number;
+  /** combo com escolhas (D-022): os passos ficam em Cardapio.passos */
+  combo?: boolean;
+  /** % da categoria valendo agora (calculado ao carregar; D-023) */
+  desconto_pct?: number | null;
   produto_marcas: ProdutoMarcaRow[];
   produto_grupos: { grupo_id: string; ordem: number }[];
 };
@@ -62,9 +76,13 @@ export type SetorRow = {
   nome_publico: string | null;
   delivery: boolean;
   presencial: boolean;
+  /** categoria de up-sell: sugerida no carrinho e no balcão */
+  upsell?: boolean;
   ordem: number;
   setor_marcas: { marca_id: string }[];
 };
+
+export type PassoRow = { id: string; combo_id: string; ordem: number; titulo: string; quantidade: number; setor_id: string | null; produtos: string[] };
 
 const c = (v: number | null | undefined) => (v == null ? null : Math.round(Number(v) * 100));
 
@@ -74,12 +92,36 @@ export interface Cardapio {
   grupos: Record<string, GrupoRow>;
   /** grupoId → quantos produtos usam */
   usos: Record<string, number>;
+  /** comboId → passos do combo, em ordem */
+  passos: Record<string, PassoRow[]>;
+}
+
+/** Passos do combo no formato do núcleo (produtos que valem em cada passo, com os grupos deles). */
+export function passosCore(c: Cardapio, comboId: string, agora = new Date()): PassoCombo[] {
+  return (c.passos[comboId] ?? []).map((ps) => ({
+    id: ps.id,
+    titulo: ps.titulo,
+    quantidade: ps.quantidade,
+    opcoes: c.produtos
+      .filter((p) => !p.combo && (ps.produtos.includes(p.id) || (ps.setor_id != null && p.setor_id === ps.setor_id)))
+      .map((p) => ({ produto: paraProdutoCore(p, agora), grupos: p.produto_grupos.map((pg) => c.grupos[pg.grupo_id]).filter((g): g is GrupoRow => !!g).map(paraGrupoCore) })),
+  }));
 }
 
 export const nomeOpcao = (o: OpcaoRow) => o.nome ?? o.complementos?.nome ?? o.produtos?.nome ?? '';
+/** Foto da opção: a dela ou, se a opção é um produto, a do produto. */
+export const fotoOpcao = (o: OpcaoRow) => o.imagem_url ?? o.produtos?.imagem_url ?? null;
 
-/** Converte as linhas do banco nos tipos do núcleo de regras (para simular preço na tela). */
-export function paraProdutoCore(p: ProdutoRow): Produto {
+export const agendaDe = (m: ProdutoMarcaRow): AgendaPromo => ({ dias: m.promo_dias ?? null, inicio: m.promo_inicio ?? null, fim: m.promo_fim ?? null, ate: m.promo_ate ?? null });
+
+/** Situação da promoção do produto numa marca agora: sem, valendo, agendada (fora do horário) ou encerrada. */
+export function situacaoPromo(m: ProdutoMarcaRow | undefined, agora = new Date()): 'sem' | 'valendo' | 'fora' {
+  if (!m || m.preco_promocional == null) return 'sem';
+  return promoVale(agendaDe(m), agora) ? 'valendo' : 'fora';
+}
+
+/** Converte as linhas do banco nos tipos do núcleo de regras (para simular preço na tela). Promoção só se vale agora. */
+export function paraProdutoCore(p: ProdutoRow, agora = new Date()): Produto {
   return {
     id: p.id,
     nome: p.nome,
@@ -92,7 +134,8 @@ export function paraProdutoCore(p: ProdutoRow): Produto {
       totem: m.totem,
       precoDelivery: c(m.preco_delivery),
       precoPresencial: c(m.preco_presencial),
-      precoPromocional: c(m.preco_promocional),
+      precoPromocional: situacaoPromo(m, agora) === 'valendo' ? c(m.preco_promocional) : null,
+      descontoPct: p.desconto_pct ?? null,
     })),
   };
 }

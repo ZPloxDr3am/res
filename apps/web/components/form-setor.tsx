@@ -13,9 +13,10 @@ export function FormSetor({
   aoTerminar,
 }: {
   marcas: Marca[];
-  inicial?: SetorForm & { id: string };
+  inicial?: SetorForm & { id: string; upsell?: boolean };
   aoTerminar?: () => void;
 }) {
+  const [upsell, setUpsell] = useState(!!inicial?.upsell);
   const novo = () => novoSetor(marcas.map((m) => m.id));
   const [s, setS] = useState<SetorForm>(() => (inicial ? { ...inicial } : novo()));
   const [erro, setErro] = useState<string | null>(null);
@@ -71,6 +72,14 @@ export function FormSetor({
         ))}
       </fieldset>
       {s.marcas.length === 0 && <p className="erro">A categoria precisa estar em pelo menos uma marca.</p>}
+      <label className="check cd-upsell">
+        <input type="checkbox" name="upsell" checked={upsell} onChange={(e) => setUpsell(e.target.checked)} />
+        <span>
+          <strong>Categoria de up-sell</strong> — sugerir no carrinho (&quot;Peça também&quot;) e no pedido do balcão
+          <br />
+          <span className="dica">Ex.: Bebidas, Sobremesas, Porções. O cliente adiciona com um toque antes de fechar o pedido.</span>
+        </span>
+      </label>
       {erro && <p className="erro" role="alert">{erro}</p>}
       {ok && <p className="dica" role="status">Categoria criada.</p>}
       <div className="linha">

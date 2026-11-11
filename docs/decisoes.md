@@ -46,3 +46,763 @@ Registro curto de cada decisão, com o motivo. Referências `R-`, `B-`, `T-` apo
 
 ## D-010 Produto novo: ativo em todas as marcas e canais (paridade com R-008)
 - Mantido por familiaridade do restaurante; a função de criação aceita uma lista de marcas para quem quiser restringir.
+
+## D-011 Pedido agendado e taxa por bairro no painel
+- Cada marca escolhe se aceita agendamento e com quantos dias à frente (0 a 7). O cliente escolhe um horário de 15 em 15 min, dentro do funcionamento, a partir de agora + tempo de preparo. Com a loja fechada (inclusive no "Fechar agora"), ele ainda pode agendar.
+- Pedido agendado entra como "novo" e não passa pelo aceite automático: o quadro o guarda em "Agendados" e o traz para "Novo", com alerta, quando faltam tempo de preparo + 10 min. Assim a cozinha não vê como "em preparo" um pedido de amanhã.
+- A equipe pode agendar pelo painel até 30 dias à frente, sem a regra de horário (ela sabe o que combinou com o cliente).
+- No pedido do painel, entrega sem taxa digitada usa a taxa do bairro da marca (comparação sem maiúsculas e espaços); taxa digitada, inclusive zero, vence o cadastro.
+- Regras no banco (`validar_agendamento`, `horarios_agendamento`, `taxa_bairro`) e no core (`faseAgendamento`, `taxaDoBairro`).
+
+## D-012 Usuário de caixa: login por usuário e senha, sem e-mail
+- A equipe do caixa nem sempre tem e-mail. Em *Lojas e equipe*, quem tem a permissão "equipe" cria a pessoa com **usuário + senha**; ela entra digitando só o usuário.
+- No Auth do Supabase a conta usa um e-mail interno `<usuario>@equipe.res.invalid` (domínio reservado, nunca recebe e-mail), já confirmado. O login converte "usuário" nesse e-mail; quem digita um e-mail com @ entra como antes.
+- Criar a conta e trocar a senha exigem a chave `service_role`, usada **só no servidor** (Server Action), depois de o banco confirmar a permissão (`posso`, `pode_gerir_usuario`). Nunca vai ao navegador nem como `NEXT_PUBLIC_*` (mantém D-008). Se o registro no banco falhar, a conta criada no Auth é apagada.
+- O usuário fica em `usuarios_login` (único no sistema). Usuário de caixa não pode ser dono, e só a loja que o criou troca a senha dele.
+
+## D-013 Caixa: sessão, venda ao concluir e fechamento cego
+- Cada loja tem caixas (nasce com "Caixa 1") e define quem opera cada um; sem operadores marcados, qualquer pessoa com a permissão "caixa" opera. Dono e gerente operam todos. Um caixa só tem uma sessão aberta por vez.
+- Abertura com troco contado por cédula/moeda (ou valor digitado). Sangria e suprimento só em dinheiro; sangria não passa do dinheiro esperado.
+- O pedido entra no caixa quando é **concluído**: no caixa aberto que a pessoa que concluiu opera, senão no aberto mais antigo da loja. Concluído sem caixa aberto fica "fora do caixa" e pode ser trazido depois (últimas 24 h). Pago online aparece no relatório, mas fora da gaveta.
+- **Fechamento cego**: quem só opera não vê vendas nem o esperado enquanto o caixa está aberto (nem lê os movimentos pela API); conta o dinheiro e informa os comprovantes, e só então vê sobra ou falta por forma. Gerente, relatórios e cadastro de caixas veem os valores o tempo todo.
+- Alerta para caixa aberto há mais de 16 h (melhoria sobre o BeeFood, EV-014/EV-021).
+
+## D-014 Impressão: fila no banco, regras como no BeeFood, navegador até o agente chegar
+- Catálogo de modelos com a configuração homologada pelo Projeto ACBr (a mesma lista do BeeFood: Epson, Elgin, Bematech, Daruma, Tanca…, mais genéricas 80/58 mm). O dono escolhe o modelo e os parâmetros (comando, página de código, colunas, avanço) vêm prontos.
+- Regras: por canal "ao aceitar" ou "só no botão"; destino por impressora única, por categoria ou por produto (produto vence a categoria); marketplace "tudo aqui" ou "só itens sem vínculo"; um cupom por impressora ou por categoria; via do pedido (caixa/entregador) com impressora própria e opção de imprimir ao aceitar.
+- Cada cupom é uma linha em `impressoes` com o **snapshot** do pedido e do layout: mudar o cardápio depois não muda um cupom já gerado, e a 2ª via sai igual. Status pendente → impresso/erro, quem imprimiu (agente ou navegador), tentativas e histórico com reimpressão.
+- Gatilho adiado para o fim da transação gera os cupons ao aceitar (o pedido é gravado antes dos itens). Gera uma vez só por pedido.
+- O texto do cupom é montado no core (`montarCupom`), igual para o navegador (HTML monoespaçado no tamanho do papel) e para o agente (ESC/POS). Melhoria sobre o BeeFood: troco a levar impresso na via do pedido.
+- Enquanto o agente do Windows (próxima entrega) não existe, o navegador imprime: botões 🖨 no pedido e "Imprimir aqui" para a fila. Quando uma impressora tiver agente ligado (sinal nos últimos 2 min), o navegador deixa o cupom para ele.
+
+## D-015 Agente de impressão do Windows (RES Impressão)
+- O navegador sempre mostra a janela de impressão; para imprimir sozinho é preciso um programa local. O RES Impressão é um `.exe` único (Node "single executable", gerado no GitHub Actions e publicado na release `agente-latest`), sem instalador e sem dependências.
+- **Pareamento**: no painel, quem tem a permissão "impressoras" gera um código de uso único (8 caracteres, 10 minutos). O programa troca o código por um token (`/api/agente/parear`); o banco guarda só o hash. Sem login de pessoa e sem chave secreta no computador da loja: o agente usa a chave pública (anon) + o token, e todas as chamadas dele passam por funções que conferem o token.
+- **Ciclo** a cada 3 s: `agente_sincronizar` (informa as impressoras do Windows e quais impressoras do RES alcança; recebe os cupons pendentes delas, já marcados "imprimindo", sem entregar o mesmo cupom a dois computadores) → imprime → `agente_resultado`. Cupom com erro volta até 3 tentativas; preso "imprimindo" por 2 min volta para a fila.
+- **Impressão**: USB pelo spooler do Windows em modo RAW (bytes ESC/POS direto, sem o desenho do driver); rede por TCP 9100. Página de código 860/850/1252 convertida no agente. O cupom é o mesmo `montarCupom` do core.
+- Abre junto com o Windows (chave Run do usuário, sem pedir administrador) a partir de `%LOCALAPPDATA%\RES Impressao`. Registro em `%APPDATA%\RES Impressao\agente.log`.
+- O painel considera a impressora "ligada" se o agente deu sinal nela nos últimos 2 minutos; aí o navegador não imprime aquele cupom (fica para o agente).
+
+## D-016 Impressora do grupo de lojas
+- Lojas da mesma conta dividem a cozinha e as impressoras. A impressora cadastrada em qualquer loja vale para todas as lojas do grupo: aparece na lista de todas, pode ser usada nas regras de qualquer uma e é editada de qualquer uma (por quem tem a permissão "impressoras" em alguma loja do grupo). Nome único dentro do grupo.
+- Ao cadastrar (ou reativar) uma impressora, toda loja do grupo **sem regra ou sem impressora padrão** passa a usá-la como padrão ("uma impressora só"): já sai imprimindo, sem configurar loja por loja. Loja que já tinha impressora padrão não muda.
+- O computador com o RES Impressão, pareado em qualquer loja, atende os cupons de todas as lojas do grupo. Outra conta não vê nem usa.
+- As regras por categoria/produto e o layout continuam de cada loja/marca (as categorias são de cada loja).
+
+## D-017 App do motoboy com despacho pelo QR da comanda
+- Ideia trazida do módulo de entregas do REA-BBEEFF (QR na comanda, despacho pelo motoboy logado), refeita sobre o banco do RES.
+- Cada pedido tem um código secreto (`qr_token`). A via do pedido de **entrega** sai com um QR (nativo da impressora no agente; SVG no navegador) que aponta para `/m/d/<código>`.
+- Motoboy = membro com a função "Entregador", criado com usuário e senha (como o caixa). Ao entrar, cai direto no app `/m` (celular, botões grandes, pode ser instalado na tela inicial). Atende as lojas do grupo.
+- Ler o QR (câmera do celular ou o leitor do app) despacha na hora: o pedido vai para "Saiu para entrega" com o nome do motoboy, aparece no quadro em tempo real, e as etapas puladas ficam no histórico. Ler de novo não duplica; outro motoboy não pega o mesmo pedido.
+- No celular: COBRAR (vermelho, valor, forma, troco a levar) ou PAGO — NÃO COBRAR (verde, só "Pago online"); endereço grande com bairro e referência; Google Maps/Waze já com a rota; ligar e WhatsApp; "Entregue" conclui o pedido (e ele entra no caixa aberto). Resumo do dia: entregas, dinheiro a prestar contas, cartão/Pix na porta, taxas.
+- A cidade da loja (Lojas e equipe) completa o endereço do mapa.
+- O RES Impressão passa a se atualizar sozinho (versão nova publicada no GitHub → baixa, troca e reabre).
+
+## D-018 Comanda do motoboy completa e "já pago"
+- O QR do motoboy sai também na **via da cozinha** dos pedidos de entrega (muitas lojas imprimem só ela), com o número, o bairro e, em letra grande, **COBRAR R$ X** (forma e troco a levar) ou **PAGO - NÃO COBRAR**. Dá para desligar no layout do cupom ("QR do motoboy").
+- O pedido pode ser **marcado como pago** no quadro (ex.: Pix recebido antes). Aí o celular do motoboy mostra PAGO — NÃO COBRAR e o valor não entra no "a prestar contas" do dia dele. Pago online já conta como pago. Fica no histórico do pedido.
+- RES Impressão 1.2.0 (a partir da 1.1.0 ele se atualiza sozinho).
+
+## D-019 App RES Motoboy (Android) e leitor de QR em qualquer navegador
+- O leitor de QR do `/m` usava só o leitor nativo do Chrome (BarcodeDetector) e falhava no iPhone, no Samsung Internet e em outros navegadores. Agora, sem leitor nativo, ele decodifica os quadros da câmera na própria página (jsQR, carregado só quando precisa).
+- App Android **RES Motoboy** (`apps-mobile/motoboy`, Capacitor): abre `/m` com a câmera liberada e o login guardado; ícone próprio; Maps, ligar e WhatsApp abrem nos apps do celular. O app só carrega o site, então melhorias no RES aparecem sem novo APK.
+- O APK é gerado pelo GitHub Actions (`motoboy-app.yml`) e publicado na release `motoboy-latest`; instalação fora da Play Store ("instalar apps desconhecidos"). Assinatura fixa depende dos segredos `MOTOBOY_KEYSTORE_B64`/`MOTOBOY_KEYSTORE_PASS` (o agente desta sessão não consegue cadastrá-los); sem eles, cada build usa uma chave nova.
+- iPhone: sem App Store por ora (exige conta de desenvolvedor Apple); usa o site no Safari, "Adicionar à Tela de Início", com o leitor novo.
+
+## D-020 Km da entrega, valor do motoboy por bairro e fechamento da noite
+- Bairros e preços saem da tela Delivery e vão para **Entregas → Bairros e preços**, com as lojas do grupo em abas (uma tabela por cardápio, com "copiar tabela de…"). Cada bairro tem a **taxa do cliente**, o **valor do motoboy** (vazio = igual à taxa) e o **km de referência** da loja até o bairro.
+- A loja tem endereço e coordenadas (achadas no mapa ou coladas do Google Maps). O km do bairro é medido pela rua (OSRM) até o centro do bairro (Nominatim/OpenStreetMap). Os dois serviços são gratuitos e têm limite de uso, então a tela mede um bairro por segundo e sempre dá para digitar o km.
+- Ao ler o QR, o pedido grava o valor do motoboy (do bairro; bairro fora da tabela = taxa do pedido) e o km do bairro. O app do motoboy mede em seguida a rota até o endereço exato e troca o km (`registrar_distancia`). Km ajustado à mão não é sobrescrito.
+- O turno vai das 05:00 às 05:00 (a madrugada conta na noite anterior). **Fechamento dos motoboys**: por motoboy, as entregas, os km, quanto ele recebe, o dinheiro em mãos, o cartão/Pix na porta e o **acerto** (dinheiro − valor das entregas). Quem é gestor ou tem caixa pode **ajustar** o valor ou o km de uma entrega; o ajuste fica no histórico do pedido.
+- Fica para depois: taxa por faixa de km para endereço fora da lista, e uma chave paga (Google) se o OpenStreetMap não achar bem as ruas da cidade.
+
+## D-021 Cardápio novo: cards com foto e promoção De/Por com agenda
+- A tela Cardápio vira uma grade de cards com foto grande: arrastar a foto em cima do card (ou clicar) já envia. O navegador diminui a foto (até 1200 px, JPEG) antes de mandar, então foto do celular funciona. "À venda / Pausado" fica no card; canais, ordem, duplicar e excluir ficam no menu "⋯". As categorias viram botões no topo.
+- A promoção De/Por usa o `preco_promocional` que já existia e ganha uma agenda: dias da semana, horário (pode passar da meia-noite; a madrugada conta no dia em que a promoção começou) e último dia. `private.promo_vigente` decide no banco (preço do item e cardápio público com o preço riscado); `promoVale` (core) faz a mesma conta na tela. Os dois usam os mesmos casos de teste.
+- A promoção vale para todas as marcas (cardápios) do produto. As cópias (duplicar, importar, compartilhar catálogo) levam a agenda junto.
+- Próximas fases: combos com escolhas e categoria de up-sell ("Peça também"); depois % por categoria, cupons (com contagem de clientes e usos) e desconto no balcão com limite.
+
+## D-022 Combos com escolhas e categoria de up-sell
+- O combo é um produto marcado como combo (preço, foto, categoria, promoção e cópia funcionam igual) com "passos": em cada passo o cliente escolhe um dos produtos permitidos (lista ou uma categoria inteira) e monta normalmente (sabores, borda).
+- Preço = preço do combo + o que cada escolha cobra além do preço base dela (sabor mais caro, borda). `private.preco_combo` no banco e `calcularCombo` no core usam os mesmos casos de teste.
+- No pedido o combo é um item só; as escolhas viram linhas de opção ("Pizza: Pizza Gigante", "Pizza Gigante · Sabores: Calabresa") e a comanda já imprime. Como a impressão por categoria usa a categoria do item, o combo sai na impressora da categoria do combo (ou na padrão).
+- Combos não vêm no "Importar de outra loja", porque as escolhas apontam para produtos daquela loja. Duplicar um combo copia as escolhas.
+- Categoria de up-sell (marcada na própria categoria): o cardápio digital mostra "Peça também" no carrinho, com produtos dessas categorias que ainda não estão no pedido, e o pedido do balcão mostra "Ofereça também".
+
+## D-023 % por categoria, cupons e desconto no balcão com limite
+- Tela **Promoções** com 4 abas: promoção no produto (lista; edição no Cardápio), % numa categoria, cupons e desconto no balcão.
+- **% na categoria**: tem a mesma agenda da promoção do produto e vale sobre o preço normal do canal. Se o produto já tem promoção própria valendo, fica o menor preço. `private.preco_base` (banco) e `precoBase` (core) fazem a conta. Pizza com preço só nos sabores (base 0) não recebe o %.
+- **Cupons** são por loja, com opção de criar o mesmo cupom nas outras lojas do grupo. Tipos: % do pedido, R$ fixo ou entrega grátis. Regras: pedido mínimo, primeira compra (pelo telefone), vezes por cliente, total de usos, dias e validade. O cardápio digital confere antes (`validar_cupom`) e o banco recalcula ao gravar (`aplicar_cupom`); no cardápio digital o troco é conferido depois do cupom. A tela conta clientes distintos (telefone), usos e desconto dado, sem os pedidos cancelados, e mostra quem usou.
+- **Desconto no balcão** sempre pede motivo. Quem não é dono/gerente tem o limite da loja (`lojas.limite_desconto_pct`). Acima dele, um gerente digita usuário e senha numa sessão à parte, que não troca quem está logado, e isso gera uma autorização de uso único válida por 10 minutos. O pedido grava quem autorizou.
+
+## D-024 Comanda do combo em blocos
+- Na comanda (cozinha e via do pedido) e no quadro, o combo sai sempre no mesmo formato, um bloco por escolha:
+  `> PIZZA GIGANTE 40CM` com os sabores embaixo, `> PIZZA BROTO 25CM` com o sabor, `> REFRIGERANTE 2L` com `- Kuat 2 litros`. Produto com sabores ou adicionais usa o nome do produto como título; produto simples usa o título da escolha.
+- Na via da cozinha de entrega, junto do QR do motoboy, sai o endereço por extenso (rua, número, complemento, bairro e cidade, referência), mais o cliente e o telefone. A via do pedido já traz o endereço no topo, então não repete.
+- `pedido_item_opcoes.ordem` guarda a ordem escolhida. Antes a comanda ordenava pelo id, que é aleatório. `dados_cupom` marca as linhas de passo (`passo`).
+- O agente de impressão monta o cupom com o core, por isso sobe para a versão **1.3.0**, que se atualiza sozinha.
+
+## D-025 Cadastro de clientes
+- Os clientes são do **grupo** (lojas da mesma conta), um por telefone. Todo pedido com telefone, do balcão ou do cardápio digital, salva ou atualiza o cliente (fica o nome mais recente) e, se for entrega, o endereço. Um cliente pode ter vários endereços; o usado por último vem primeiro. Isso é feito pelo gatilho `pedidos_registra_cliente`.
+- Pedido sem telefone não entra no cadastro, porque não dá para saber quem é. Os pedidos antigos com telefone entraram no cadastro na migração 0025.
+- No novo pedido, ao digitar o telefone (4+ dígitos) ou o nome (2+ letras), aparecem os clientes; escolher um preenche nome, telefone e endereço e mostra histórico, outros endereços e as **observações do cliente** (editáveis ali mesmo).
+- Tela **Clientes**: busca, editar nome e observações, tirar endereços antigos.
+- O cardápio digital não busca dados por telefone, porque qualquer pessoa poderia ver o endereço dos outros. Lá o próprio aparelho lembra os dados do cliente.
+
+## D-026 Rastreio dos motoboys em tempo real
+- O celular só manda a posição **enquanto o motoboy tem entrega em rota**. `registrar_posicao` responde `{ativo:false}` quando não há entrega, e o app para. Quando a última entrega é concluída ou cancelada, o motoboy sai do mapa na hora (gatilho no pedido). Fora do serviço não há rastreio.
+- `motoboy_local` guarda a última posição (tempo real por grupo) e `motoboy_posicoes` guarda o caminho, um ponto a cada ~8 s, por 30 dias. A leitura é só para membros das lojas do grupo.
+- **App Android**: plugin `@capacitor-community/background-geolocation`. O GPS continua com a tela desligada, com o aviso fixo "Compartilhando sua rota…", e o envio é nativo (`CapacitorHttp` direto no Supabase, com o token do motoboy), porque o Android segura as requisições da WebView em segundo plano. Precisa de um APK novo; sem a chave fixa de assinatura, é preciso desinstalar o antigo antes.
+- **Navegador (iPhone/Chrome)**: só envia com a tela do app aberta.
+- O painel tem **Entregas → Ao vivo**: mapa (Leaflet + OpenStreetMap) com cada motoboy, o caminho desde que saiu, as entregas (#número no endereço do cliente, quando o app conseguiu localizar) e a loja; a lista mostra o sinal (cinza depois de 2 min sem posição) e a velocidade.
+- Os mapas do OpenStreetMap são gratuitos e têm limite de uso; com muitas lojas, trocar por um provedor de mapas pago (só muda o endereço das imagens do mapa).
+
+## D-027 · Rota sugerida quando o motoboy sai com várias entregas
+
+- O motoboy lê o QR de todas as comandas. Com 2 ou mais entregas, o app mostra a **Rota sugerida**: a ordem de entrega, a hora prevista em cada cliente e quem vai chegar atrasado. Um botão abre a rota completa no Google Maps, com todas as paradas (até 10).
+- **Prazo de cada pedido**: o horário agendado; senão, o horário em que o pedido foi feito + `lojas.prazo_entrega_min` (padrão 35 min).
+- **Ordem**: `otimizarRota` (packages/core) testa todas as ordens até 8 entregas (acima disso, escolhe a mais próxima/urgente a cada passo) e escolhe a de menor custo: minutos rodando + 3 × minutos de atraso. Assim o pedido mais atrasado vai na frente quando isso evita atraso, sem mandar o motoboy cruzar a cidade à toa.
+- **Tempos pela rua**: matriz do OSRM. Sem resposta, usa linha reta × 1,4 a 25 km/h ("estimado"). Cada endereço é procurado no mapa uma vez (Nominatim, 1 por segundo) e guardado em `pedidos.destino_lat/lng`.
+- **Partida**: a posição atual do celular; senão, a loja. "Recalcular daqui" refaz a conta do ponto onde o motoboy está. Ler uma nova comanda ou entregar uma recalcula sozinho.
+- A ordem fica gravada em `pedidos.rota_ordem` (só o próprio motoboy, só com entrega em rota): as comandas aparecem nessa ordem no app e no painel ao vivo.
+
+## D-028 · Cliente acompanha a entrega, prazo por loja, alerta e lotes na expedição, tempos e atrasos
+
+- **Prazo por loja** (Entregas → Bairros e preços → ⏱ Prazo de entrega, de 10 a 240 min; padrão 35). Vale para entrega sem horário agendado; agendado usa o horário marcado. Funções `prazoEntrega` e `situacaoPrazo` no core.
+- **Alerta no quadro**: cartão de entrega mostra "Entregar até HH:MM"; laranja quando faltam 10 min ou menos, vermelho quando estoura ("Atrasado X min"). Em rota, mostra também a chegada prevista pela rota do motoboy.
+- **Sugestão de saída** (acima das colunas, quando há 2+ entregas prontas na mesma loja): `agruparEntregas` começa pelo pedido mais urgente e junta os que ficam no caminho, até 3 por lote. Um pedido só entra no lote se somar no máximo 8 min à rota e não fizer ninguém atrasar mais do que já atrasaria. Sem endereço achado no mapa, junta só pelo mesmo bairro. Os endereços são procurados no mapa na hora (no máximo 6 por vez) e guardados no pedido.
+- **Cliente** (página de acompanhamento do cardápio digital):
+  - antes de sair, vê "Previsão de entrega: até HH:MM";
+  - depois que o pedido sai, vê o nome do motoboy, "chega por volta das HH:MM" (hora gravada pela rota do motoboy, refeita a cada 4 min do ponto onde ele está) e quantas entregas ele faz antes;
+  - **o mapa com o motoboy só aparece quando o pedido do cliente é a próxima parada**, com posição dos últimos 3 min, para não expor as outras entregas.
+- **Tempos e atrasos** (aba nova em Entregas; hoje, ontem, 7 ou 30 dias; turnos 05:00→05:00; lojas do grupo que a pessoa gere ou tem permissão de relatórios):
+  - média de cada etapa (aceitar, preparo, esperando motoboy, na rua), com a etapa mais longa destacada;
+  - % no prazo e atrasos por dia, bairro, motoboy e loja.
+
+## D-029 · Segmentos de clientes para marketing
+
+- Cada cliente do grupo cai em um segmento por **recência** (dias desde o último pedido) e **frequência** (pedidos não cancelados nas lojas do grupo). Regra explicável para o dono, com limites fixos:
+
+  | Último pedido | 4+ pedidos | 2–3 pedidos | 1 pedido |
+  |---|---|---|---|
+  | até 30 dias | 💎 Fiéis | ⭐ Em potencial | 🌱 Promissores |
+  | 31–60 dias | ⚠️ Precisam de atenção | 💤 Quase dormentes | 💤 Quase dormentes |
+  | 61–120 dias | 🔥 Em risco | ❄️ Hibernando | ❄️ Hibernando |
+  | mais de 120 dias | 🌙 Dormindo | 🌙 Dormindo | 🌙 Dormindo |
+
+- "Em risco" (cliente bom sumindo há 2 a 4 meses) foi incluído além dos 7 pedidos pelo dono, por ser o público mais valioso para reativar.
+- A regra fica em `segmentoCliente` (core) e em `private.segmento_cliente` (banco); os testes dos dois usam os mesmos casos (`CASOS_SEGMENTO`).
+- O segmento é calculado na hora (nada guardado): muda sozinho conforme os dias passam e os pedidos chegam.
+- Tela **Clientes**: abas com contagem por segmento, explicação e ação sugerida; lista ordenada por quanto gastou.
+- **Exportar CSV** (gestor, permissão Clientes ou Marketing) com telefone no formato +55…, que serve para SMS e para públicos personalizados do Meta Ads e do Google Ads.
+- Próximos passos:
+  - consentimento de marketing (LGPD) e descadastro antes de enviar SMS;
+  - campanhas de SMS;
+  - envio direto dos públicos ao Meta/Google por OAuth, com os tokens só no servidor.
+
+## D-030 · Telefone sempre com o 9 do celular
+
+- Todo telefone é gravado só com dígitos, DDD + número, sem +55 nem zeros na frente.
+- Celular que vier com 8 dígitos ganha o 9: "+55 47 96731809" vira "47996731809", que é o formato que SMS e anúncios aceitam.
+- Fixo (número começando com 2 a 5) fica como está e sai no CSV como "não (fixo)", porque não recebe SMS.
+- A regra está em `normalizarTelefone` (core, usada no balcão e no cardápio digital) e em `private.normalizar_telefone` (banco, num gatilho em todo pedido novo). Os testes dos dois usam os mesmos casos.
+- A migração 0031 corrige os telefones já gravados. Quando o mesmo cliente estava salvo duas vezes (com e sem o 9), os cadastros viram um só: pedidos, endereços e observações ficam no que já estava certo.
+
+## D-031 · Programa de fidelidade: cashback e pontos nas lojas do grupo
+
+O estudo da tela do BeeFood está em `estudo-beefood/fidelidade.md`, no projeto.
+
+**Configuração**
+- Uma configuração por grupo, na tela **Fidelidade → Programa**. Cashback e pontos ligam e desligam cada um por conta.
+- Canais: cardápio digital, delivery lançado no balcão e balcão/retirada.
+- **Cashback**:
+  - % padrão, com % diferente por dia da semana quando preciso;
+  - dias em que vale: nos dias desligados o cliente não ganha nem usa;
+  - validade em dias sem pedir;
+  - saldo mínimo para usar e teto em % do pedido;
+  - a taxa de entrega não gera cashback.
+- **Pontos**:
+  - pontos por R$ 1 em produtos e por R$ 1 de taxa;
+  - bônus no 1º pedido;
+  - validade em dias sem pedir.
+- **Recompensas**: N pontos dão R$ X de desconto ou um produto grátis. Para o produto grátis, o produto precisa estar no pedido; o desconto é o preço de 1 unidade e vale também para produto de mesmo nome em outra loja do grupo.
+
+**Saldo e extrato**
+- O saldo é do cliente (pelo telefone) e vale em todas as lojas do grupo.
+- O extrato fica em `fidelidade_movimentos` (ganho, uso, vencido, ajuste, estorno) e o saldo é a soma.
+- **Ganho na hora em que o pedido é concluído**, sem esperar processamento de madrugada como no BeeFood. Se o pedido for cancelado depois, o que foi usado volta e o que foi ganho sai.
+- **Validade conta do último pedido do cliente**, para cashback e para pontos. Quem continua pedindo não perde o saldo. Ao voltar depois de vencer, o saldo antigo sai do extrato como "vencido".
+
+**Uso no pedido**
+- O uso vira desconto do pedido (`pedidos.desconto`), detalhado em `fid_cashback`, `fid_desconto` e `fid_pontos`.
+- `pedidos.cupom_desconto` passa a guardar o desconto do cupom, para o painel de resultados.
+- No balcão, o atendente vê o saldo do cliente escolhido e marca "usar cashback" e/ou a troca de pontos. A conta na tela é uma prévia; o banco confere tudo.
+- No **cardápio digital**, o saldo só aparece e só pode ser usado no aparelho do último pedido. O código secreto daquele pedido fica guardado no aparelho e é enviado como prova. Sem essa prova, saber o telefone de alguém não basta para gastar o saldo dele; em outro aparelho, o cliente pede pela loja.
+- A página do pedido mostra o que o cliente ganhou e o que usou.
+
+**Saldos e ajuste manual** (Fidelidade → Saldos dos clientes)
+- Mostra o saldo de cada cliente com a data de vencimento e o extrato.
+- O ajuste manual pede motivo e nunca deixa o saldo negativo.
+- Mudar o programa e ajustar saldo: gestor ou permissão Marketing.
+
+**Resultados** (Fidelidade → Resultados, períodos de 7, 31 ou 90 dias)
+- Vendas e % do faturamento com fidelidade, desconto dado e **ROI** por mecânica (cupom, cashback, recompensa).
+- Faixas de ROI: 5x+, 2–5x, 1–2x, abaixo de 1x.
+- Ticket médio com e sem fidelidade; cashback gerado e vencido; pontos gerados e trocados.
+- **Dia da semana**: dia forte e dia fraco, com sugestão por dia (`recomendacaoDia` no core: dia fraco pede ação do dia, ROI baixo pede revisão, dia forte com pouca fidelidade pede teste).
+- Novos × recorrentes calculado na hora; resultado por origem.
+- As regras de ganho e uso estão no core e no banco, com os mesmos casos de teste (`CASOS_GANHO`).
+
+## D-032 · Fidelidade separada por loja (substitui a regra de grupo da D-031)
+
+- Pedido do dono: tudo separado por loja. Cada loja tem:
+  - o próprio programa (cashback, pontos, canais);
+  - as próprias recompensas (produtos daquela loja);
+  - o próprio saldo de cada cliente e o próprio extrato;
+  - os próprios resultados.
+- O cashback ganho na LA PIZZA só vale na LA PIZZA.
+- O cadastro de clientes (telefone, nome, endereços, segmentos) continua um só para o grupo.
+- A validade conta do último pedido do cliente **naquela loja**. O bônus de boas-vindas é no 1º pedido naquela loja.
+- A tela **Fidelidade** mostra a loja escolhida no menu. O botão "Copiar estas regras para…" leva as regras de cashback e pontos para as outras lojas; as recompensas e os saldos não são copiados.
+- A migração 0033 converte o que estava por grupo: a configuração vira uma cópia por loja; a recompensa de produto fica na loja do produto e a de desconto é copiada para cada loja; no extrato, cada lançamento fica na loja do pedido.
+
+## D-033 · Fidelidade mais simples de configurar
+
+- O cashback liga ou desliga e vale todos os dias com um % só. A escolha de dias e o % por dia saíram da tela. O banco ainda aceita essas regras, mas ao salvar a tela grava "todos os dias" e nenhum % por dia.
+- O prazo do cashback e o dos pontos têm atalhos (30, 60, 90, 180 e 365 dias, ou "Não vence"), e o dono também pode digitar qualquer número de dias. O prazo conta do último pedido do cliente na loja.
+- Para mexer num dia fraco, usar cupom com dias da semana (Promoções).
+
+## D-034 · Visual do painel
+
+- **Paleta:** verde-manjericão (#1d6a50) para ação e item ativo, sobre fundo frio (#f3f4f1) e superfícies brancas. Tomate para urgência e atraso; mel para atenção. Modo escuro com a mesma lógica.
+- **Tipografia:** uma família só, Onest (next/font, servida pelo próprio site), com números tabulares em preços, pedidos e indicadores.
+- **Menu agrupado pelo que a pessoa vai fazer:** Operação (Resumo, Pedidos, Novo pedido, Caixa, Entregas), Vendas (Cardápio, Delivery, Promoções), Clientes (Clientes, Fidelidade) e Ajustes (Impressoras, Lojas e equipe). O item ativo tem fundo verde-claro e uma barra à esquerda.
+- **Componentes com um padrão só:**
+  - campos e botões com 2,4rem de altura;
+  - raios em hierarquia: controle 10, cartão 14, folha 18;
+  - foco sempre visível (anel verde);
+  - abas como trilho, do tamanho do conteúdo;
+  - tabelas com cabeçalho discreto;
+  - cartões com borda leve.
+- **Quadro de pedidos:** cada pedido tem uma faixa de cor por etapa, que fica mais grossa quando o prazo aperta, e as colunas mostram a quantidade num contador.
+- Tudo está numa camada única no fim do `globals.css` ("Refino visual"), que vale sobre as regras antigas de cada tela.
+
+## D-035 · Fotos no novo pedido e nas opções
+
+- O **Novo pedido** (balcão) mostra a foto de cada produto na lista e no topo da montagem (pizza, combo).
+- **Opções com foto** (sabores, bordas, adicionais), em `opcoes.imagem_url`:
+  - o dono envia a foto em Cardápio → Grupos de opções → editar grupo, com um quadradinho ao lado de cada opção (clicar ou arrastar e soltar);
+  - opção nova ganha foto depois que o grupo é salvo;
+  - opção que é um produto usa a foto do produto quando não tem a própria.
+- As fotos das opções aparecem no balcão, na montagem do combo e no cardápio digital do cliente.
+
+## D-036 · Estoque: entrada por NF-e e baixa pela ficha técnica
+
+O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
+
+**Onde fica o estoque**
+- O estoque é **da loja** ou **do grupo**, conforme `contas.estoque_compartilhado`.
+- A escolha só aparece para quem tem o plano de várias lojas, para o dono ou gerente, e só antes de cadastrar o primeiro insumo.
+- `private.estoque_da_loja(loja)` devolve o dono do estoque: a própria loja ou a conta do grupo.
+
+**Insumos**
+- Unidades: un, kg, g, l, ml.
+- Cada insumo tem saldo, **custo médio ponderado** (atualizado a cada entrada com custo), mínimo para o alerta, opção de controlar ou não, e categoria.
+
+**Entrada por NF-e (XML)**
+- O navegador lê o XML com `lerNFe` (core): chave, número, emitente, destinatário e itens.
+- O custo de cada item é: produtos − desconto + frete + seguro + outros + IPI + ICMS-ST.
+- Na tela, cada item vai para:
+  - um insumo cadastrado (a tela sugere pelo nome);
+  - um insumo novo;
+  - ou "não entra no estoque".
+- O **fator** diz quantas unidades do insumo vêm em cada unidade da nota (ex.: caixa de 6 kg → 6). Unidades como CX, FD e PCT pedem confirmação do fator.
+- **Vínculo lembrado:** fornecedor (CNPJ) + código do produto na nota → insumo + fator. A próxima nota do mesmo fornecedor já vem ligada.
+- A chave da nota é única por estoque: a mesma nota não entra duas vezes.
+
+**Ficha técnica**
+- Diz quanto um produto ou uma opção gasta de cada insumo.
+- **Sabor de pizza:** quantidade numa pizza inteira daquele sabor, multiplicada pela fração (no meio a meio baixa a metade).
+- Adicional ou borda: quantidade × a quantidade escolhida.
+- Combo: o produto escolhido em cada passo baixa pela ficha dele (achado pelo nome na loja).
+- A tela mostra o custo da ficha e a % do preço.
+
+**Baixa e ajustes**
+- A baixa é **na hora** em que o pedido é concluído. Se o pedido concluído for cancelado, o estoque volta.
+- O estoque pode ficar negativo; a venda nunca é bloqueada.
+- Ajustes manuais: **contagem** (o saldo passa a ser o contado), **entrada** com custo e **perda** com motivo obrigatório.
+- Tudo fica em `estoque_movimentos`.
+
+**Busca automática de notas na SEFAZ:** fica para depois. Exige o certificado A1 da loja e um provedor fiscal.
+
+## D-037 · Movimentações do estoque com filtros
+
+- Filtros: período (atalhos hoje / 7 / 30 / 90 dias, turno de 05:00 a 05:00), tipo, fornecedor (CNPJ da nota), insumo, produto vendido (pedidos que tinham o produto) e busca (nº da nota, nº do pedido, observação). Período de até 370 dias.
+- Resumo do período: entradas (R$, lançamentos e notas), custo do que saiu nas vendas, perdas e diferença das contagens (falta − / sobra +).
+- "Por insumo": quanto entrou e saiu de cada um. Clicar num insumo, nota ou pedido filtra por ele.
+- Lista até 500 movimentos, com valor (quantidade × custo da hora). Exporta para Excel (CSV com `;`).
+- Em Insumos, "Histórico" abre as movimentações já filtradas pelo insumo.
+
+## D-038 · Meu estoque e Contagem
+
+**Meu estoque** (primeira aba do Estoque)
+- Lista todos os produtos do cardápio com foto, preço, custo da ficha técnica e custo/preço (vermelho acima de 35%).
+- Filtro com ficha / sem ficha. A ficha é montada ali mesmo; quando o pedido é concluído, a venda baixa os insumos.
+- "Esta loja / Todas as lojas": aparece se a pessoa cuida do estoque de mais de uma loja do grupo. Cada loja usa os insumos do seu estoque (o mesmo, se agrupado).
+- "Levar para as outras lojas": copia a ficha para o produto de mesmo nome nas outras lojas. Insumos são achados pelo nome; se faltar algum, aquela loja fica de fora e o aviso diz o que cadastrar.
+- Sabores, bordas e adicionais ficam em "Sabores e adicionais" (a antiga aba Ficha técnica).
+
+**Contagem**
+- Folha com todos os itens: saldo no sistema, contado, diferença (quantidade e R$) e data da última contagem.
+- Filtros: importados de NF-e / cadastrados à mão, categoria e busca. Enter pula para o próximo item.
+- "+ Item à mão" cadastra um item sem NF-e, já com a quantidade e o custo.
+- Salva tudo de uma vez (`salvar_contagem`), só mexe nos itens com diferença, e registra nas Movimentações.
+- O que foi digitado fica guardado no navegador até salvar. A folha pode ser impressa para contar no papel.
+
+## D-039 · Fechamento do mês e CMV
+
+- Aba **Fechamento / CMV** do Estoque, mês a mês: o mês vai do dia 1 às 05:00 até o dia 1 seguinte às 05:00.
+- **CMV real** = estoque inicial + compras − estoque final, em R$ a custo médio. Os estoques inicial e final saem do último movimento antes de cada data: cada movimento guarda o saldo e o custo médio depois dele (`custo_medio_apos`).
+- **CMV pelas fichas** (teórico) = o que as vendas baixaram pela ficha técnica.
+- **Diferença** = real − fichas, explicada por perdas registradas, falta ou sobra nas contagens e "outros" (mudança de custo no mês).
+- **Faturamento** = pedidos concluídos no mês, sem a taxa de entrega. CMV % = CMV ÷ faturamento.
+- Com estoque agrupado, o fechamento é do grupo (todas as lojas do estoque).
+- Aviso quando o mês fechado não tem contagem entre o último dia e o dia 1: sem contagem, o real fica igual ao das fichas.
+- A tela mostra os últimos 6 meses, a quebra por insumo (quantidade e R$), e permite imprimir e exportar para Excel.
+
+## D-040 · Ficha técnica por sabor de pizza
+
+- A ficha do sabor é escrita **uma vez**, para a pizza de 100% (a maior). Ex.: Calabresa → calabresa 100 g, cebola 40 g.
+- Cada pizza tem um **tamanho** (`produtos.fator_sabor`), sugerido pela área do diâmetro no nome: 25 cm = 39%, 30 cm = 56%, 35 cm = 77%, 40 cm = 100%. É editável.
+- **Baixa de cada sabor** = ficha do sabor × tamanho da pizza × fração (meio a meio = ½; 3 sabores = ⅓) × quantidade. No combo, vale o tamanho da pizza escolhida no passo.
+- A ficha do **produto** (massa, molho, mussarela base, caixa) não usa o fator: já é daquele tamanho.
+- Quando o cardápio tem um grupo de sabores por tamanho (LA PIZZA), o mesmo sabor aparece em vários grupos e a ficha é gravada em todos de uma vez.
+- Na tela: quantidades em g/ml (o estoque guarda em kg/l), ingrediente novo cadastrado ali mesmo, "copiar de outro sabor" e uma prévia de quanto baixa em cada tamanho.
+- Bordas e adicionais continuam com ficha própria, sem fator.
+- **Atualização (28/10, pedido do dono):** o padrão passa a ser o tamanho **pela quantidade de sabores**: cada sabor tem a mesma porção. Broto (1 sabor) = 100%, Média (2) = 200%, Grande (3) = 300%, Gigante (4) = 400%, tirado do máximo de sabores do grupo de cada pizza. Ex.: Calabresa 100 g → Broto Calabresa baixa 100 g, Gigante 4× Calabresa 400 g, Gigante meio a meio 200 g. O tamanho pelo diâmetro continua como opção.
+
+## D-041 · A tela de pizza aparece sozinha
+
+- Não há chave para ligar a "ficha por sabor". O cardápio decide: se a loja tem um grupo de sabores de pizza ativo, aparece "Sabores, bordas e adicionais", com os tamanhos.
+- Sem grupo de pizza (hamburgueria, açaí…), aparece "Adicionais e opções", só com a ficha de cada opção, sem falar em pizza.
+- A baixa já era assim no banco: o fator de tamanho só vale para opções de grupos de pizza.
+- Para liberar ou bloquear recursos por contrato, usa-se o plano (como o estoque agrupado). Um campo "segmento" da conta fica como ideia para modelos e exemplos, não para bloquear.
+
+## D-042 · Aplicativos
+
+**Tela Aplicativos** (menu Ajustes), por categoria, com filtro Ligados / Disponíveis / Em breve:
+- **Incluso**: o que já é do RES (cardápio digital, segmentação, fidelidade, cupons, motoboy, impressão, estoque). O cartão abre a tela.
+- **Disponível**: liga ali mesmo, por loja, com "usar também nas outras lojas do grupo".
+- **Em breve**: Mercado Pago, TEF, SMS, WhatsApp, outros marketplaces, entregador sob demanda, KDS. (API, webhooks e IA entraram com a D-043.)
+- **iFood**: "Mais tarde", a pedido do dono (28/10). Lembrar quando o projeto estiver avançado.
+
+**Pix no cardápio**
+- QR Code + copia e cola (BR Code estático do Banco Central, com CRC16) com o valor exato e o número do pedido. Aparece na página do pedido.
+- O dinheiro vai direto para a conta da loja; a loja confirma com "Marcar como pago" e o cliente vê "Pagamento confirmado".
+- Botão para testar com R$ 0,01 no próprio banco. Sem custo e sem intermediário. O Mercado Pago (confirmação automática) vem depois.
+
+**Pixels**
+- Pixel do Meta, Google Analytics 4, Google Ads (conversão com rótulo) e Google Tag Manager no cardápio digital.
+- Eventos: visita, item no carrinho, início do pedido e compra com valor. A compra é contada uma vez por pedido, na página do pedido.
+- Só carregam depois que o cliente aceita os cookies (LGPD). Os IDs são públicos por natureza; nada secreto é guardado.
+
+**Avaliações no Google**: o link de avaliação aparece para o cliente depois que o pedido é concluído.
+
+**Link único do grupo** (`/g/<link>`): todos os cardápios das lojas da conta, com aberto/fechado. Só o titular da conta escolhe o link.
+
+## D-043 · API aberta, webhooks e conexão com IA (MCP)
+
+**Chaves de API**
+- Por loja, até 10 ativas, criadas por gestores em Aplicativos.
+- **Só leitura**, por área: vendas, pedidos, cardápio, clientes (dados pessoais) e estoque.
+- O segredo aparece uma vez; o banco guarda só o hash (como o token do agente, D-015). Revogar corta na hora. Guarda último uso e contagem.
+
+**REST** (`/api/v1/…`, `Authorization: Bearer res_…`)
+- Rotas: `vendas`, `pedidos`, `pedidos/{número|id}`, `cardapio`, `clientes`, `estoque`.
+- A rota chama funções `api_*` com a chave pública (anon); quem confere a chave e a área é o banco (`private.loja_da_chave`).
+- Período em turnos de 05:00 a 05:00, até 92 dias (padrão: 7).
+
+**Webhooks**
+- Até 5 por loja, só `https`. Eventos: `pedido.criado`, `pedido.status` e `pedido.cancelado` (mais `teste`, pelo botão Testar).
+- Corpo em JSON com o pedido no mesmo formato da API. Cabeçalho `X-RES-Assinatura: sha256=<HMAC-SHA256 do corpo>`, feito no próprio Postgres (testado com o vetor do RFC 4231).
+- Envio por **pg_net**, direto do gatilho. Reenvio pelo **pg_cron** (a cada minuto) em 1, 2, 4, 8 e 16 min; depois desiste. Sem pg_net, fica na fila.
+- A tela mostra os 15 últimos envios de cada webhook.
+
+**MCP** (`/api/mcp/<chave>` ou `/api/mcp` com Bearer)
+- Servidor MCP em HTTP (JSON-RPC 2.0) com ferramentas só de leitura: resumo_vendas, listar_pedidos, ver_pedido, ver_cardapio, clientes, estoque.
+- A IA só vê as ferramentas das áreas da chave.
+- O link com a chave é o jeito que ChatGPT e Claude aceitam sem login. Tratado como segredo: aparece uma vez, é revogável e a chave padrão não inclui clientes.
+
+## D-044 · Mercado Pago: Pix com confirmação automática
+
+- **Conta da loja:** cada loja conecta a **própria** conta, colando o Access Token de produção em Aplicativos.
+  - O servidor confere o token no Mercado Pago (`users/me`) antes de guardar.
+  - O token fica em `mp_contas`, que só o service_role lê. Nunca volta para o navegador; a tela mostra só os 4 últimos caracteres.
+  - O dinheiro vai direto para a loja; o RES não intermedeia nem cobra taxa.
+  - Escolhemos o token colado em vez de OAuth porque não depende de uma aplicação do RES aprovada no Mercado Pago. OAuth pode vir depois sem mudar o resto.
+- **Pedido no cardápio digital com Pix:** a página do pedido gera um **Pix dinâmico** (`/v1/payments`, `payment_method_id = pix`).
+  - O Pix vale 30 min, tem o valor exato e leva `external_reference` = id do pedido.
+  - Se o cliente abrir a página de novo, o QR ainda válido é reaproveitado.
+- **Confirmação:** por aviso do Mercado Pago (`/api/mercadopago/notificacao?l=<loja>`) e por conferência a cada 5 s enquanto a página está aberta.
+  - Nos dois casos o servidor **busca o pagamento na API do Mercado Pago**: o corpo do aviso não é confiável.
+  - Só marca pago (`pedidos.pago_em`) se o pagamento foi criado pelo RES para aquele pedido daquela loja e o valor cobre o total.
+- **O fluxo do pedido não muda:** o pedido entra no quadro como hoje (Pix) e vira "Pago" sozinho. O motoboy vê "PAGO — NÃO COBRAR".
+- **Aceite ao pagar (0042, ligado por padrão):** quando o Pix é confirmado, o pedido "Novo" vai para "Em preparo" e imprime, pelos mesmos gatilhos do aceite do quadro. Pedido agendado não: entra na hora de preparar. Desliga em Aplicativos → Mercado Pago.
+- Sem Mercado Pago, continua o Pix estático da D-042, confirmado à mão.
+- **Cartão online:** fica para uma próxima etapa. Exige pedido que só entra no quadro depois de pago.
+- **Pedido só vai para a cozinha depois de pago (0043, 28/10, depois do 1º teste no ar).** Com o aceite automático da loja ligado, o pedido com Pix era aceito e impresso antes do pagamento.
+  - Agora o pedido do cardápio digital com Pix numa loja com Mercado Pago nasce com `aguarda_pagamento`: fica "Novo", não é aceito nem impresso e não bipa.
+  - No quadro, fica na faixa **⏳ Aguardando Pix**.
+  - Pagou (pelo Mercado Pago ou "Marcar como pago"): sai da faixa e é aceito/impresso conforme a opção da loja.
+  - Sem pagamento em 40 min, o pg_cron cancela com o motivo "Pix não foi pago em 40 minutos".
+- **Pedidos do painel também (0044):** o 2º teste no ar foi um pedido lançado em "+ Novo pedido" (telefone), que não tinha a regra.
+  - Agora o pedido com Pix do painel também espera o pagamento.
+  - No cartão do quadro: **Mostrar QR** (abre a página do pedido com o Pix), **Copiar link** e **Enviar no WhatsApp** (mensagem pronta com o link para o telefone do cliente).
+
+## D-045 · Vitrine do cardápio digital (entrega 1 de 3 do novo cardápio)
+
+- Feita a partir do estudo do cardápio do BeeFood da LA PIZZA, salvo em `estudo-beefood/cardapio-digital.md`. O visual usa a marca da loja, nunca a do BeeFood.
+- Cada **cardápio (marca)** tem o próprio endereço `/c/<endereço>` e a própria vitrine, que se configura em Delivery. Quantos cardápios dá para criar depende do plano (`limite_cardapios`, D-017).
+- **Topo:** capa, logo, nome e situação do horário, por exemplo "Aberto até 01:30" ou "Fechado · abre às 18:00", com virada da meia-noite. Também mostra a cidade, "Mais informações", os tempos de entrega e de retirada e o pedido mínimo.
+- **Mais informações**, em abas:
+  - Sobre: texto, WhatsApp, Instagram, endereço e tempos;
+  - Horário: a semana inteira, com o dia de hoje destacado;
+  - Pagamento: online (Pix) e na entrega;
+  - Entrega: endereço de retirada e bairros com a taxa.
+- **Navegação:** seletor de categoria e busca fixos no topo, mais os botões de categoria. Grade de 2 colunas a partir de 860 px.
+- **Cartões dos produtos:** "Serve N pessoas" e selos como "❄ Bebida gelada" e "Vegetariano", vindos de `produtos.serve_pessoas` e `restricoes`.
+- **Rodapé:** nome da loja, CNPJ e endereço.
+- **Cor da marca:** substitui a cor principal em todo o cardápio, inclusive nos botões.
+- **Link de produto:** `?produto=<id>` abre a montagem direto e a URL acompanha o produto aberto, para compartilhar.
+- **Preparado para a entrega 2:** cada opção pode ter `descricao` (ingredientes) e `selo` ("recomendado" ou "novo"). O selo **"Mais pedido"** é calculado: as 3 opções mais escolhidas de cada grupo nos últimos 60 dias, com pelo menos 3 pedidos.
+
+## D-046 · Montagem do produto no cardápio (entrega 2 de 3)
+
+- **Janela de montagem:** no computador, foto grande à esquerda e escolhas à direita; no celular, folha que sobe de baixo.
+- **Cada grupo:**
+  - cabeçalho fixo com a regra ("Escolha 3 opções", "Escolha até 2"…), **contador X/Y** (verde com ✓ quando completo) e **OBRIGATÓRIO**;
+  - **🔍 busca** quando tem mais de 8 opções.
+- **Opções:**
+  - escolha única é como um botão de rádio;
+  - múltipla tem +/− (repetir sabor quando o grupo deixa). Quando o grupo enche, as demais ficam apagadas.
+  - Mostram foto, **ingredientes**, selo e "+ R$" quando faz sentido. O "+ R$" é o preço na soma e a diferença para a mais barata em "maior"; na proporcional não aparece.
+- **Passa sozinho:** ao completar um grupo, a janela rola para o próximo que falta.
+- **Ao tentar adicionar incompleto:** rola até o grupo, pinta de vermelho e mostra "Verifique a quantidade do grupo …".
+- **Rodapé:** observação (até 100 caracteres), quantidade e "Adicionar R$ X". O preço já soma o que foi escolhido enquanto monta.
+- **Selos:** "🔥 Mais pedido" é automático (D-045). "⭐ Recomendado" e "✨ Novo" e os **ingredientes** se cadastram em Cardápio → grupo → "+ Detalhes" em cada opção.
+- **Sacola:** foto, ✏️ **Editar** (reabre a montagem com as escolhas e salva por cima) e 🗑 no lugar do − quando a quantidade é 1.
+- **LA PIZZA (0046, a pedido do dono):** cada tamanho exige **exatamente** o número de sabores dele (Broto 1, Média 2, Grande 3, Gigante 4), como no BeeFood. Para meio a meio, repete um sabor: 2× Calabresa + 1× Bacon numa Grande = ⅔ e ⅓, e o estoque e o preço seguem a fração.
+
+## D-047 — Cardápio público: WhatsApp primeiro, "Pedidos" e "Perfil" do aparelho (28/10/2026)
+
+- No checkout, o **WhatsApp vem antes do nome**, com o aviso "para avisarmos o andamento do seu pedido" (igual ao BeeFood).
+- Barra de baixo **Cardápio · Pedidos · Perfil**. *Pedidos* lista os pedidos feitos **neste aparelho** (`localStorage res_meus_pedidos`, até 30) e busca a situação ao vivo pelo código (`acompanhar_pedido`, até 15 por vez). *Perfil* edita os dados guardados (`res_cliente`) e tem "Esquecer meus dados".
+- **Por que só o aparelho, e não "digite o telefone e veja seus pedidos":** buscar por telefone numa página pública expõe nome, endereço e histórico de qualquer pessoa para quem souber o número. Login por código no WhatsApp fica para depois.
+
+## D-048 — Taxa de entrega por raio em km (28/10/2026)
+
+- **Bairro da lista manda**; a faixa de km vale só para endereço fora da lista (opção "Outro bairro (calcular pela distância)" no cardápio).
+- Faixas por cardápio em **Entregas → Bairros e preços**: até X km, taxa e **tempo adicional**. Acima da última faixa, não entrega.
+- Distância em **linha reta** da loja até o endereço (o "raio" do BeeFood). O servidor acha o endereço no mapa (Nominatim, perto da loja) e o **banco refaz a conta** com as coordenadas ao gravar o pedido; o ponto fica no pedido (`destino_lat/lng`, `distancia_reta_km`) e já serve à rota do motoboy.
+- Risco aceito: quem forja coordenadas paga a faixa errada, mas o pedido mostra o endereço por extenso e a rota vai para o ponto informado. O tempo adicional aparece no checkout; somar ao prazo do quadro fica para depois.
+
+## D-049 — Importar cardápio do BeeFood (28/10/2026)
+
+- O cardápio é lido **só do cardápio público** do BeeFood (sem login, sem salvar nada lá) e convertido por `scripts/beefood_para_res.py`.
+- `private.importar_cardapio(slug, dados)` (0048) grava numa marca: **o que existia fica pausado** (fora do cardápio, pedidos antigos intactos), o importado é lembrado em `private.importacoes` (rodar de novo atualiza sem duplicar) e **fichas técnicas** de sabores/produtos antigos com o mesmo nome são copiadas.
+- Igual ao BeeFood: cada grupo do BeeFood vira um grupo no RES (mesmo nome, mínimo, máximo, obrigatório, ordem); cada escolha **soma o valor cheio** (conferido no BeeFood: Grande 35CM 78,99 + Borda 14 + Atum 6 = 98,99); sabor só repete quando o BeeFood deixa; fotos apontam para as imagens do BeeFood.
+- Grupos de sabor de pizza/sobremesa ficam marcados como pizza (fração na comanda e baixa do estoque); fator da ficha por diâmetro (25=1, 30=2, 35=3, 40=4) só nos produtos com um grupo de sabor.
+- LA PIZZA importada em 0049 (37 produtos, 5 categorias, 17 grupos, 584 opções); dados guardados em `private.cardapios_importados`.
+- HAMBURGUERIA POMERODE importada em 0050 (34 produtos, 5 categorias, 2 grupos, 3 opções). Conferência item a item: `scripts/conferir_importacao.py`.
+- PIZZARIA POMERODE importada em 0051 (38 produtos, 7 categorias, 20 grupos, 729 opções). No BeeFood ela usa os mesmos IDs de grupos/produtos da LA PIZZA com preços próprios: as chaves levam o nome da marca (`beefood:pizzaria-pomerode:`) para não tocar na LA PIZZA. Conferido também o pior caso (as três marcas na mesma loja): 0 diferenças.
+
+## D-050 — Gestão Empresarial (28/10/2026)
+
+- Menu **Gestão → Gestão Empresarial**, só para **dono e gerente** (RLS com `private.e_gestor`): CPF e dados dos funcionários são dados pessoais (LGPD). Eles também ficam **fora do histórico de alterações**, que pode ser aberto por quem não é gestor.
+- **Custos fixos e variáveis**: planilha que já vem com 25 linhas de modelo (aluguel, energia, folha, contador… / CMV, embalagens, impostos, cartão, apps, motoboys…), valores em branco; o dono preenche, renomeia, remove e acrescenta. Variáveis em % das vendas ou R$ no mês. Resumo: fixos, variáveis, sobra/prejuízo, margem e **ponto de equilíbrio** (fixos ÷ (1 − variáveis%)), com o faturamento do mês informado ou sugerido pelos pedidos concluídos nos últimos 30 dias.
+- **Funcionários** (nome, CPF validado, RG, CTPS, PIS, função, admissão, endereço) e **Dados da empresa** (razão social, CNPJ validado, endereço, responsável).
+- **Faltas** e **advertências** numeradas por loja (número nunca reaproveitado) e **documento A4 em duas vias** para imprimir ou salvar em PDF e assinar: termo de ciência de falta (justificada ou não; DSR pela Lei 605/1949 art. 6º, férias pela CLT art. 130) e advertência disciplinar (reincidência → suspensão/justa causa, CLT art. 482), com assinaturas do empregado, do responsável e de duas testemunhas para o caso de recusa. Modelo de referência: a tela recomenda confirmar com contador/advogado.
+
+## D-051 — Equipe mais clara em Lojas e equipe (28/10/2026)
+
+- **Lojas e equipe** ganha três abas: **Lojas e cardápios** (como antes, com um resumo da equipe em cada loja), **Equipe** e **Funções e permissões**.
+- **Equipe**: pessoas agrupadas por função (Dono, Gerente, Caixa / Atendente, Motoboy, Garçom), com como cada uma entra; trocar senha (com senha gerada), mudar função, tirar/devolver acesso, convites pendentes.
+- **Adicionar pessoa** em passos: 1) função, em cartões com o que pode e o que não pode; 2) como entra (usuário e senha criados na hora, recomendado, ou convite por e-mail) com usuário sugerido pelo nome e senha fácil de ditar; 3) **cartão de acesso** para imprimir, copiar ou mandar no WhatsApp (endereço, QR, usuário, senha uma única vez, passo a passo; motoboy com o link do app).
+- **Funções e permissões**: quadro do que cada função faz e o ajuste do que o **Caixa / Atendente** pode (pedidos, caixa, cardápio, pausar itens, clientes, estoque, impressoras, delivery, promoções, relatórios, cadastro de caixas).
+- Regras no banco (0053): só dono/gerente mudam função e permissões; **só o dono** cria ou tira gerente; ninguém muda a função do dono nem a própria; o Caixa / Atendente nunca recebe equipe, plano, dados da empresa nem histórico. Garçom aparece como "em breve" (chega com Mesas e comandas).
+
+## D-052 — Ficha do funcionário ligada ao acesso (28/10/2026)
+
+- `funcionarios.membro_id` (0054): a ficha da Gestão Empresarial aponta para o acesso da pessoa em Lojas e equipe (um para um, mesma loja, garantido no banco).
+- **Adicionar pessoa** (Equipe), com usuário e senha: passo "Ficha do funcionário" — ligar a uma ficha que já existe, **criar a ficha agora** (nome, CPF, cargo, admissão, sem digitar de novo) ou "agora não". Em cada pessoa da equipe aparece a ficha (cargo e CPF) para o dono/gerente.
+- **Gestão → Funcionários**: coluna "Acesso ao RES" com o usuário, botão **+ Criar acesso** (abre o passo a passo já com a ficha escolhida) e campo para ligar a um acesso existente (ex.: quem entrou por convite). Ao marcar a pessoa como desligada, a tela oferece **tirar o acesso ao RES junto**.
+
+## D-053 — Custos do grupo ou de cada loja (28/10/2026)
+
+- Quem tem **mais de uma loja na conta** vê, no topo de Custos fixos e variáveis, a escolha: **cada loja separada** ou **o grupo todo junto**. Só o titular da conta muda (`gestao_conta.modo`, 0055); pode trocar quando quiser, nada é apagado.
+- **Separado**: uma planilha por loja (como antes) e a aba **Soma do grupo**, com faturamento, custos, sobra, margem e ponto de equilíbrio de cada loja e do total.
+- **Grupo**: uma planilha só (`custos.conta_id`), com o modelo pronto e o faturamento das lojas somado (pedidos concluídos dos últimos 30 dias de todas) ou informado.
+- Funcionários, faltas, advertências e dados da empresa continuam **por loja** (cada loja pode ter CNPJ e equipe próprios).
+
+## D-054 — Novo funcionário já cria o acesso (28/10/2026)
+
+- Em **Gestão → Funcionários**, a ficha tem o bloco **Acesso ao RES**: **criar o acesso agora** (função no RES, usuário sugerido pelo nome e senha gerada; recomendado para quem vai usar o sistema), **já tem acesso** (ligar a um existente, ex.: convite) ou **sem acesso** (quem não usa o sistema).
+- "Salvar e criar acesso" grava a ficha, cria o usuário e liga os dois; sai o mesmo **cartão de acesso** da Equipe (imprimir, WhatsApp, copiar). Se o usuário já existir, a ficha fica salva e a tela pede outro usuário.
+- O botão "+ Criar acesso" da lista abre a própria ficha com esse bloco (não precisa ir para Lojas e equipe). Gerente só aparece para o dono.
+
+## D-055 — Cardápio de Evento / Aniversário (28/10/2026)
+
+- Menu **Vendas → Evento / Aniversário**, só dono/gerente. É um **cardápio bônus** por loja (`marcas.evento`, 0056): não conta no limite do pacote, tem **link e QR próprios** e **período** (início/fim). Reaproveitável: muda nome, datas e produtos a cada nova data.
+- Ao criar, copia do cardápio base o visual, horários, bairros/faixas de km, pagamento e pedido mínimo (ajustáveis em Delivery).
+- **Escolher produtos**: cada produto vira uma **cópia** (`produtos.copia_de`) com grupos, opções, fotos e fichas técnicas. Na cópia se muda nome, preço, descrição, mínimo/máximo de cada grupo (atalhos "Sabor único" / "Até 2 sabores"), quais opções ficam e o preço de cada uma, tirar um grupo. **O cardápio principal não muda** (testado), e as cópias não aparecem no editor de Cardápio, em Promoções nem em Estoque.
+- O link do evento fora do período mostra um aviso (e o banco recusa pedido fora do período). Dentro, uma faixa "cardápio especial válido até…". Pedidos chegam no quadro normal, com o nome do evento.
+- Combos com passos ainda não podem ir para o evento.
+
+## D-056 — Pré-venda no cardápio de evento (30/10/2026)
+
+- No **Evento / Aniversário**, o dono liga a **pré-venda**: dia e hora da entrega/retirada, recado opcional e como o cliente recebe — **entrega e retirada**, **só retirada** ou **só entrega** (`marcas.prevenda`, `prevenda_entrega`, `prevenda_texto`, 0057).
+- **Só Pix**: ao ligar, as formas de pagamento do evento viram só Pix (ao desligar, voltam as do cardápio base). Precisa do Pix ligado em Aplicativos; com Mercado Pago o pagamento confirma sozinho e o não pago é cancelado em 40 min (D-044); com chave Pix, a tela avisa para conferir cada pagamento.
+- Cada pedido entra **agendado para o dia marcado** (aparece em Agendados e vai para a cozinha na hora de preparar), mesmo com a loja fechada no momento da compra. As vendas valem dentro do período do evento.
+- No banco: na pré-venda o agendamento só aceita a data marcada e o pedido pelo link só aceita Pix (testado, inclusive pagamento em dinheiro e tipo não liberado sendo recusados).
+- No cardápio público: "🎟️ Pré-venda aberta" no topo, a data de entrega/retirada e, no fechamento do pedido, o aviso de que o pagamento é agora, por Pix.
+
+## D-057 — Quadro de pedidos: filtros rápidos, selo do cliente e "Avisar cliente" (30/10/2026)
+
+- **Filtros rápidos** com contador no topo do quadro: loja (em "todas as lojas") ou marca, tipo (entrega/retirada/balcão), canal (cardápio digital / lançado na loja) e situação (⚠️ atrasados, 🛵 prontos sem motoboy, 💰 a cobrar, ⏳ aguardando Pix, 🌱 1º pedido). Dentro do grupo soma, entre grupos filtra junto; ficam lembrados no aparelho; "Limpar filtros". O alerta de pedido novo toca mesmo fora do filtro.
+- **Selo do cliente** no cartão, pelo telefone em todas as lojas do grupo (`historico_clientes`, 0058): "🌱 1º pedido", "5º pedido · 💎 Fiéis" ou "3º pedido · voltou após 45 dias".
+- **💬 Avisar cliente**: abre o WhatsApp do cliente com a mensagem pronta da etapa (recebido/em preparo, pronto para retirada, saiu para entrega com o motoboy e a previsão, entregue, cancelado com o motivo) e o link de acompanhamento — vale também para pedido lançado no balcão/telefone. Vira "✓ Avisado" naquela etapa (no aparelho).
+
+## D-058 — "Avisar clientes" em fila (30/10/2026)
+
+- Botão **📣 Avisar clientes (N)** no quadro: abre a fila dos clientes ainda não avisados, por etapa (🛵 saíram para entrega, 🏪 prontos para retirada e, se quiser, 👨‍🍳 em preparo). Um clique abre o WhatsApp do próximo com a mensagem pronta; o caixa envia e volta para o próximo. Dá para pular e avisar fora de ordem.
+- Quem já foi avisado fica **no pedido** (`pedidos.avisos`, por etapa, `marcar_aviso`, 0059), não no aparelho: todas as telas da loja veem a mesma fila e o mesmo "✓ Avisado" no cartão.
+- Envio 100% automático depende do WhatsApp oficial (API da Meta), que fica para depois do cadastro na Meta.
+
+## D-059 — Pausa temporária com recado (30/10/2026)
+- No quadro de pedidos, **⏸ Pausar loja** por 15/30/45/60/90 min com recado pronto ou escrito. Qualquer pessoa da equipe pausa (é o caixa quem sente a cozinha apertar).
+- A pausa é da **loja** (todos os cardápios dela) e passa por cima do "Abrir agora". Reabre sozinha no horário; dá para **+15 min** ou **Retomar agora** pela faixa amarela do quadro.
+- O cardápio mostra "⏸ Pausado · volta às HH:MM" e o recado. Agendamento continua, mas só com horários depois da pausa. A pré-venda do evento não é afetada (é para outra data).
+- Banco: `lojas.pausa_ate/pausa_recado/pausa_por`, `pausar_loja`, `pausa_publica`; `marca_aberta` e `horarios_agendamento` consideram a pausa (migração 0060).
+
+## D-060 — Financeiro (30/10/2026)
+- Nova tela **Gestão → Financeiro** (dono/gerente), versão melhorada do Financeiro do BeeFood: Visão do mês, Contas a pagar e receber, Fluxo de caixa (30 dias), DRE (ano, mês a mês, loja ou grupo somado, baixa para Excel) e Cadastros (taxas, categorias, fornecedores, contas).
+- **Não digitar duas vezes:**
+  - **Custos fixos** da planilha da Gestão Empresarial viram contas a pagar mês a mês ("↻ Trazer custos fixos", 1/3/6/12 meses, dia de vencimento). Opção **automático todo mês**. Uma conta por custo por mês (nunca duplica); valor mudado na planilha atualiza as contas ainda não pagas daqui para frente.
+  - **NF-e** importadas no estoque aparecem para virar conta a pagar em um clique (fornecedor criado pelo CNPJ, à vista ou parcelado).
+  - **Vendas** (pedidos concluídos) e **taxas** de cada forma de pagamento (% + fixo) entram sozinhas no DRE.
+  - **Custo das vendas** = CMV real do estoque quando o estoque teve movimento no mês; senão, as contas lançadas em "Custo das vendas" (não conta duas vezes).
+- Lançamento: uma vez, **parcelado** (divide o valor, competência no mês da compra) ou **todo mês** (recorrente); "✓ Paguei" em um clique; excluir uma ou as próximas da série.
+- Categorias prontas (37), cada uma ligada a uma linha do DRE; "Retiradas dos sócios" fica abaixo do lucro e "Aportes" fora do resultado.
+- Fluxo de caixa: saldo de hoje (informado, fica no aparelho) + contas + vendas previstas (média de 28 dias, líquida de taxas); avisa o dia em que o caixa fica negativo.
+- Banco: `fin_categorias`, `fin_fornecedores`, `fin_contas`, `fin_taxas`, `fin_lancamentos`, `fin_config`; `preparar_financeiro`, `criar_lancamento`, `gerar_contas_custos`, `config_custos_financeiro`, `nfe_sem_conta`, `lancar_nfe`, `dre_financeiro`, `vendas_recentes_financeiro` (migração 0061).
+
+## D-061 — Financeiro por loja ou do grupo todo (01/11/2026)
+- O Financeiro segue a **mesma escolha** da Gestão Empresarial para quem tem várias lojas (`gestao_conta.modo`, D-053), feita uma vez e valendo para Custos e Financeiro:
+  - **Cada loja separada**: cada loja tem contas, categorias, fornecedores e DRE próprios. Quem gere mais de uma loja tem a aba **"Soma do grupo"** (visão do mês, contas, fluxo e DRE somados; para lançar, abre-se a loja).
+  - **O grupo todo junto**: um financeiro só (registros com `grupo_id` = a conta). Cada lançamento pode dizer **de qual loja é** (`loja_ref`) ou ficar do grupo. DRE: "Grupo todo" ou cada loja (vendas dela + contas marcadas com ela). Custos fixos vêm da planilha do grupo. Só o titular da conta mexe (como na planilha do grupo).
+- As **taxas** das formas de pagamento continuam por loja (cada loja tem sua maquininha).
+- Migração 0062: `grupo_id` em `fin_categorias/fin_fornecedores/fin_contas/fin_lancamentos`, `loja_ref`, `gestao_conta.custos_auto/dia_custos`, `private.fin_pode/fin_escopo/fin_exigir/fin_semear`; as funções do financeiro passaram a resolver loja/grupo sozinhas.
+
+## D-062 — Modo movimento (01/11/2026)
+- No quadro de pedidos, **🔥 Movimento**: soma **+10/+20/+30/+45 min** ao tempo de preparo e de entrega por **1 h, 2 h ou até desligar** (no máximo 12 h). Qualquer pessoa da equipe liga; faixa laranja no quadro com "Voltar ao normal".
+- O cardápio mostra o prazo maior (entrega, retirada) e o selo **"🔥 Alta demanda"**; o agendamento empurra o primeiro horário.
+- Cada pedido feito no período guarda o acréscimo (`pedidos.prazo_extra_min`): o prazo dele (quadro, acompanhamento do cliente, motoboy, rastreio) não muda quando o movimento acaba, e os pedidos de antes não viram "atrasados" de repente.
+- Diferente da pausa (D-059): a loja continua recebendo pedidos.
+- Banco (0063): `lojas.movimento_min/movimento_ate`, `pedidos.prazo_extra_min` (gatilho na criação), `private.movimento_extra`, `definir_movimento`; `entrega_json`, `rastreio_ao_vivo`, `acompanhar_pedido`, `vitrine_publica`, `cardapio_publico`, `horarios_agendamento` e `validar_agendamento` somam o acréscimo.
+
+## D-063 — "Pronto" automático na retirada (01/11/2026)
+- Opção no quadro de pedidos: **"Retirada pronta sozinha"** (por loja, quem cuida dos dados da empresa liga, como o aceite automático).
+- Pedido de **retirada** em preparo vira **Pronto** sozinho quando acaba o tempo de preparo (o da loja + o acréscimo do modo movimento que o pedido recebeu); agendado: 5 min antes do horário. Entrega e salão não mudam.
+- Roda a cada minuto no banco (pg_cron, `private.retiradas_prontas`), mesmo com o quadro fechado; fica no histórico do pedido como "Automático". O cliente vê "pronto" no acompanhamento e o pedido entra na fila do **📣 Avisar clientes** (🏪 prontos para retirada).
+- Banco (0064): `lojas.pronto_auto_retirada`, `private.retiradas_prontas`, `definir_pronto_auto`.
+
+## D-064 — Meta de vendas com projeção (01/11/2026)
+- No topo do **Resumo**, cartão **🎯 Meta do mês**: barra do vendido com a marca de "onde deveria estar hoje", **projeção do mês**, adiantado/atrasado em relação ao ideal, **quanto vender por dia** para bater e comparação com o mês anterior até o mesmo dia.
+- A projeção usa a **média de cada dia da semana nas últimas 8 semanas** (sexta pesa mais que segunda); com menos de 2 semanas de histórico, usa o ritmo do mês. A curva ideal da meta também segue o peso dos dias.
+- Meta **por loja e mês**, definida por dono/gerente; vale para os meses seguintes até ser trocada. Com várias lojas, "todas as lojas" soma as metas (e avisa quais estão sem meta). Sugestão: mês anterior +10%.
+- Mesma regra de faturamento do Resumo (pedidos não cancelados, pela data do pedido).
+- Banco (0065): `metas_vendas`, `salvar_meta_vendas`, `meta_vendas`.
+
+## D-065 — Relatórios: curva ABC, cancelamentos e calendário (01/11/2026)
+- Nova tela **Vendas → Relatórios**, com período (hoje, ontem, 7/30 dias, mês, datas) e loja (ou todas):
+  - **Curva ABC** em três visões: **Produtos** (valor), **Sabores** (em pizzas inteiras: meia = 0,5) e **Bordas e adicionais** (valor cobrado). A = itens que somam os primeiros 80%, B = até 95%, C = o resto, com o que fazer com cada classe. Baixa para Excel.
+  - **Cancelamentos**: quantidade, % dos pedidos, valor perdido, quantos já tinham ido para a cozinha; por motivo, etapa, canal e quem cancelou; lista completa.
+  - **Calendário do mês**: cada dia com o faturamento (cor mais forte = vendeu mais), pedidos e cancelados; melhor dia do mês.
+- Pedidos cancelados não entram na curva ABC. Mesma permissão do Resumo ("relatórios").
+- Banco (0066): `relatorio_vendas`.
+
+## D-066 — Cupom por área/produto e frete grátis automático (01/11/2026)
+- **Cupom** ganhou "Onde e com o quê vale" (tudo opcional): **bairros**, **até X km da loja** e **produtos**. Com produtos, o pedido precisa ter um deles e o desconto em % ou R$ é calculado **só sobre esses produtos** (ex.: REFRI50 = 50% no refrigerante). Cupom com produtos não é copiado para outras lojas (produtos são de cada loja).
+- **Frete grátis automático** (Promoções → Frete grátis), sem cupom: regras por loja, para todos os cardápios ou um — **a partir de R$ X**, em certos **bairros**, **até X km** e/ou quando o pedido tem certos **produtos**, com dias e validade. Vale no cardápio digital: o cardápio mostra a regra no topo, "Faltam R$ X para a entrega grátis" e a taxa riscada; o banco confere ao gravar.
+- A taxa continua no pedido e o mesmo valor entra como desconto (`pedidos.frete_gratis` guarda o nome da regra): o motoboy recebe normalmente. Cupom de entrega grátis em pedido que já tem frete grátis é recusado com aviso.
+- km = linha reta até o endereço do cliente; cupom com limite de km sem endereço localizado não é barrado (a regra de frete grátis por km, sim).
+- Banco (0067): `cupons.bairros/km_max/produtos`, `frete_gratis`, `private.base_cupom/regra_frete_gratis/aplicar_frete_gratis`, `frete_gratis_publico`, `validar_cupom` (com bairro, km e itens); `aplicar_cupom` e `criar_pedido_publico` atualizados.
+
+## D-067 — Relatórios: aba Operação (01/11/2026)
+- Primeira aba dos **Relatórios**, com período e loja:
+  - **Valores**: faturamento e ticket médio, frete cobrado, **frete grátis concedido**, **cupons concedidos**, descontos no total; **acréscimos** aparecem zerados até existir taxa de serviço (tablet).
+  - **Tempos médios**: para aceitar, em preparo, pronto esperando motoboy, **em rota**, entrega completa e **% de entregas no prazo** (prazo da loja + modo movimento; agendado com 10 min de tolerância).
+  - **Horário de pico**: dia da semana × hora (pedidos), com as horas mais fortes.
+  - **Canais** (com ticket e cancelados), **formas de pagamento**, **clientes novos × recorrentes** e **bairros que mais pedem**.
+  - **Por pessoa**: pedidos lançados no balcão por login (pedidos, valor, ticket, descontos dados, cancelados).
+  - **Motoboys**: entregas, tempo médio em rota, pedido → entregue, % no prazo e km.
+- Fica para o atendimento por tablet: garçom (pedidos, taxa de serviço, up-sell aceito), mesas (giro, tempo de mesa, ticket por pessoa), couvert e acréscimos.
+- Banco (0068): `relatorio_operacao`.
+
+## D-068 — Relatórios com cores (02/11/2026)
+- Cartões com cor e ícone pelo significado: **verde** = entra dinheiro / bom, **azul** = informação, **laranja** = concedido / atenção, **vermelho** = perda / ruim, **cinza** = ainda sem dado.
+- Tempos médios ganham selo **bom / atenção / demorado** com legenda: aceitar ≤3/6 min, preparo ≤25/35, esperando motoboy ≤5/10, rota ≤20/30, entrega completa ≤45/60; entregas no prazo ≥90% / ≥75%. Motoboys com % no prazo e tempo de rota coloridos.
+- Canais e formas de pagamento com uma cor por item (ponto + barra); clientes novos (roxo) × recorrentes (verde) numa barra; pico em laranja (mais forte = mais pedidos); calendário em verde; cancelamentos em vermelho.
+
+## D-069 — App RES (gestão) para Android (02/11/2026)
+- **RES.apk** (Capacitor, como o app do motoboy): abre o painel do RES no celular (pedidos, estoque, CMV, financeiro…), com login guardado e câmera liberada (fotos e leitura de código).
+- O app **só carrega o site**: tudo o que mudar no RES aparece sozinho, sem instalar de novo. Só é preciso baixar um APK novo se mudar algo do próprio app (ícone, permissões).
+- Gerado no GitHub (`.github/workflows/painel-app.yml`) a cada mudança em `apps-mobile/painel/`, publicado na release **gestao-latest**. Assina com a mesma chave do app do motoboy.
+- Link: https://github.com/ZPloxDr3am/res/releases/download/gestao-latest/RES.apk
+
+## D-070 — Painel adaptado ao celular (02/11/2026)
+- Corrigido: no celular o conteúdo ficava espremido numa coluna estreita (a regra do desktop "menu 236px | conteúdo" vinha depois da do celular) e a página rolava de lado.
+- Barra de baixo com os 4 mais usados (**Pedidos, Novo pedido, Estoque, Resumo**) + **Mais**, que abre todas as telas em blocos grandes coloridos por seção (Operação azul, Vendas verde, Clientes roxo, Gestão laranja, Ajustes cinza), com troca de loja e Sair.
+- Quadro de pedidos: botões (som, aceite, movimento, pausar, avisar, novo pedido) e filtros numa linha que rola de lado, em vez de ocupar a tela inteira.
+- Abas, períodos e filtros rolam de lado; números em 2 por linha; tabelas rolam dentro do cartão; campos com 16px (o celular não dá zoom ao tocar).
+
+## D-071 — Estoque: tocar no item abre o ajuste (02/11/2026)
+- Em **Insumos**, tocar em qualquer lugar da linha abre **Ajustar** (entrada, perda, contagem e dados do insumo); em **Meu estoque**, tocar no produto abre **Montar/Editar ficha**. No celular a linha mostra "Ajustar ›" / "Editar ficha ›" embaixo do nome, sem precisar rolar a tabela para o lado até o botão.
+- O painel aberto fica do tamanho da tela (não rola de lado junto com a tabela).
+
+## D-072 — Perda mostra o valor antes de registrar (02/11/2026)
+- Ao registrar **Perda** de um insumo, aparece "Valor perdido: R$ X" (quantidade × custo médio) antes de salvar, e a confirmação repete o valor. Na **Contagem**, aparece quanto está faltando ou sobrando em relação ao sistema, em quantidade e em R$.
+- O valor já era gravado (movimento a custo médio) e aparece em Movimentações (Perdas) e no Fechamento do mês (CMV).
+
+## D-074 — RES pronto para receber o iFood (modo teste) (06/11/2026)
+- **Base de marketplace** (vale para iFood e para os próximos apps): o pedido externo é convertido para o formato do RES (`normalizarPedidoIfood` em `@res/core`) e entra pela mesma porta (`private.receber_pedido_externo`), **uma vez só** (canal + id do pedido; eventos repetidos descartados). Respeita o aceite automático e cai no quadro com som.
+- Pedido ganha: **acréscimo** (taxas extras do app; total = subtotal + entrega + acréscimo − desconto), número do app, **código de retirada**, bandeira do cartão, **CPF/CNPJ na nota**, localizador, observação de entrega, cupons com **quem paga** (loja × iFood) e "entrega pelo iFood".
+- **Ida e volta**: confirmar, pronto (retirada), saiu (entrega) e cancelar no RES entram numa fila e voltam para o iFood. Cancelamento de pedido do app pede um **motivo da lista do iFood** (501–513). O que vem do iFood (cancelado pelo cliente, confirmado no Gestor de Pedidos, concluído) atualiza o RES **sem voltar** para o iFood e nunca faz o pedido andar para trás.
+- **Itens**: cada item do iFood é ligado a um produto do RES (pelo código externo, senão pelo mesmo nome) para a ficha técnica baixar o estoque; os sem ligação aparecem em Aplicativos → iFood para ligar uma vez.
+- **Servidor**: token renovado só perto de vencer; webhook `/api/marketplace/ifood/webhook` com assinatura (X-IFood-Signature); busca de eventos `/api/marketplace/ifood/sincronizar` como reserva (polling + acknowledgment). Credenciais só no servidor (`IFOOD_CLIENT_ID`, `IFOOD_CLIENT_SECRET`, `MARKETPLACE_CRON_SEGREDO`), nunca no navegador.
+- **Modo teste** (sem CNPJ/conta do iFood): em Aplicativos → iFood, ligar o cardápio com merchant "teste" e usar o **simulador** (entrega/retirada, agendado, pago no app/dinheiro/cartão, cupom dividido) e os botões "Cliente cancelou / Confirmado no Gestor / Concluído". No modo teste nada sai para o iFood: a fila marca **simulado**.
+- **Cupom**: "iFood #4821", código de retirada grande, "ENTREGA PELO IFOOD" (sem QR do motoboy da loja), acréscimo, desconto dividido (loja × iFood), "Pago no iFood (VISA)", CPF/CNPJ e observação de entrega.
+- **Falta para ir ao ar** (depende do CNPJ/conta): cadastrar o app no Portal do Desenvolvedor, credenciais no servidor, agendar a busca a cada 30 s, homologação e trocar a loja para produção. Próxima etapa: responder a Plataforma de Negociação e ler os motivos de cancelamento ao vivo.
+- **Roteiro de teste**: (1) ligar o cardápio em modo teste; (2) criar pedido de entrega pago no app com cupom → conferir quadro, selo iFood, cupom dividido, impressão; (3) aceitar, pronto, saiu → fila mostra "simulado" em cada um; (4) pedido em dinheiro com troco → troco no cupom; (5) retirada agendada → data/hora e código de retirada; (6) "Cliente cancelou" → cancela no RES sem item na fila; (7) cancelar pelo RES → pede motivo do iFood; (8) item sem ligação → ligar em Aplicativos e conferir baixa de estoque no próximo pedido.
+
+## D-075 — iFood: Plataforma de Negociação, motivos ao vivo e busca automática (06/11/2026)
+- **Negociação** (eventos HSD/HSS do iFood): quando o cliente pede cancelamento ou reembolso depois de confirmado, aparece uma faixa vermelha **no topo do quadro de pedidos**, com bipe (se o som estiver ligado), o pedido, a mensagem do cliente, o **prazo correndo** e o que o iFood faz se ninguém responder.
+- A loja responde ali mesmo, só com o que o iFood permite em cada caso:
+  - **depois da entrega**: aceitar, recusar (motivo que o cliente lê) ou **oferecer reembolso** até o teto do iFood;
+  - **no preparo**: aceitar ou recusar;
+  - **por atraso**: aceitar (com motivo) ou **pedir mais tempo** (10/20/30 min…); recusar não é permitido;
+  - **reembolso parcial** (item faltando etc.): aceitar, recusar ou contraproposta.
+- Cancelamento aceito (ou vencido com "aceitar cancelamento") **cancela o pedido no RES**, inclusive já concluído, sem pedir cancelamento de novo ao iFood. Reembolso/mais tempo não cancela. Cada negociação é respondida uma vez; o banco confere tudo (permissão, prazo, teto, minutos) e o servidor monta a chamada ao iFood a partir da resposta conferida.
+- **Modo teste**: em Aplicativos → iFood, botões "Quer cancelar no preparo", "Reclamou do atraso", "Reclamou depois da entrega" e "Faltou item"; a resposta é aceita na hora (fila "simulado") e a negociação vencida fecha sozinha.
+- **Motivos de cancelamento ao vivo**: com a loja em produção, o cancelamento de pedido do iFood mostra a lista que o iFood devolve para aquele pedido; no modo teste (ou se a consulta falhar), a lista padrão 501–513.
+- **Busca automática**: o banco roda `private.marketplace_tique()` a cada 30 s (pg_cron). Vence negociações sem resposta e, **só se houver loja em produção**, chama `/api/marketplace/ifood/sincronizar` (cabeçalho X-RES-Chave) para buscar eventos e enviar a fila. O segredo fica no **Vault do Supabase** (`marketplace_cron_segredo`, o mesmo `MARKETPLACE_CRON_SEGREDO` da Vercel) e quem cadastra é o dono, no dia de ligar o iFood.
+
+## D-076 — Cadastro sozinho e Primeiros passos (07/11/2026)
+- **`/cadastro`** (público; "Criar conta" do login leva para cá): numa tela só, nome, WhatsApp, e-mail e senha de quem cadastra + nome do restaurante, tipo (pizzaria, hamburgueria, lanchonete, restaurante, japonês, açaí, doceria, outro), cidade e **endereço do cardápio** (sugerido pelo nome, conferido enquanto digita). Aceite obrigatório dos **Termos de Uso** e da **Política de Privacidade** (versão gravada na conta).
+- Cria **conta própria** (1 loja, 1 cardápio, `origem = cadastro`) com o dono como Administrador, cidade, tipo e WhatsApp no cardápio. O cardápio nasce **fechado** e só abre no último passo.
+- **Cardápio de exemplo** opcional por tipo de restaurante (categorias e produtos com preço sugerido, marcados "Exemplo: troque nome, foto, descrição e preço."). Só entra em loja sem produtos; exemplo não editado não conta como produto pronto.
+- Se o Supabase pedir confirmação de e-mail, os dados ficam guardados na conta e a loja é criada quando a pessoa toca no link (`/auth/confirmar` → `/comecar` → `/onboarding` cria e volta). Se o endereço do cardápio for tomado nesse meio-tempo, o onboarding pede outro e mantém o resto.
+- **Primeiros passos** (`/comecar`, no topo do menu só para dono/gerente de loja nova): dados do restaurante, cardápio (≥3 produtos seus com preço), logo, horários, entrega ou retirada, **abrir o cardápio** (confere produto, horário e entrega antes) e, opcionais, impressora e equipe. Barra de progresso; aberto, mostra link, QR, "Mandar no WhatsApp" e "Ver como o cliente vê". "Concluir" tira do menu. Lojas que já existiam não veem.
+- **Termos e Privacidade** (`/termos`, `/privacidade`): versão preliminar com o papel de cada um na LGPD (RES controlador dos dados da conta; restaurante controlador e RES operador dos dados dos consumidores). **Falta**: revisão de advogado, razão social/CNPJ e canal do encarregado (DPO).
+- Correção: as rotas do iFood (`/api/marketplace/…`) passam a ser públicas no middleware (antes o webhook e a busca do iFood seriam mandados para o login).
+
+## D-077 — Cadastro completo da empresa (08/11/2026)
+- O cadastro vira **3 etapas** com progresso: **Responsável** (nome completo, celular/WhatsApp, e-mail, senha) → **Empresa** → **Restaurante** (nome no cardápio, tipo, endereço do cardápio, quantas lojas, pedidos por dia, sistema atual, como conheceu, exemplo, aceite dos termos). Cada etapa é conferida antes de avançar.
+- **Empresa**: CNPJ com dígito verificador; ao completar, busca os **dados públicos da Receita** (BrasilAPI) e preenche razão social, nome fantasia, telefone, e-mail e endereço, mostrando a **situação cadastral** (aviso se não estiver ATIVA). Quem ainda não tem CNPJ usa o **CPF**. Inscrição estadual opcional. Telefone da loja obrigatório (se for celular vira o WhatsApp do cardápio; senão, o do responsável). **CEP** preenche rua, bairro, cidade e UF (BrasilAPI, ViaCEP de reserva) e, quando vem, o ponto no mapa (saída das entregas).
+- **Um CNPJ/CPF só abre uma conta pelo cadastro** (sem teste grátis repetido); no mesmo grupo de lojas pode repetir.
+- Gravado: na **loja** CNPJ ou CPF, razão social, fantasia, IE, telefone, e-mail, endereço estruturado (e o endereço de uma linha que as entregas já usam); na **conta** razão social como nome, responsável (nome, celular, e-mail) e as respostas comerciais (`info_comercial`).
+- **Lojas e equipe → Dados da empresa**: mesmos campos para editar (trocar CPF por CNPJ, mudar endereço). Vale também para as lojas que já existiam. "Primeiros passos" aponta para cá.
+- Se a Receita ou o CEP não responderem, a pessoa preenche à mão; nada trava.
+
+## D-078 — Quadro de pedidos com todas as lojas (08/11/2026)
+- No topo do quadro, **"[loja atual] | 🏪 Todas as lojas (N)"** (só aparece para quem tem mais de uma loja). Em "todas", cada cartão mostra a loja e os filtros separam por loja; tempo real e negociações do iFood valem para todas.
+- A escolha fica **salva no usuário** (metadado `quadro_todas` da conta de login): cada dono/gerente/caixa decide se abre o quadro numa loja ou na operação inteira, em qualquer aparelho. `?todas=1` / `?todas=0` no endereço manda na hora.
+- Aceite automático, pausa, modo movimento e fila de impressão continuam por loja (aparecem quando uma loja está escolhida).
+
+## D-079 — Quadro compacto tipo kanban (08/11/2026)
+- O quadro passa a ser **só compacto** (a visão detalhada antiga saiu a pedido do dono). Inspirado no quadro do BeeFood, sem copiar. Agendados e "aguardando Pix" também usam o cartão curto.
+- **6 colunas** lado a lado com cor no topo e contador: Aguardando · Em preparo · Pronto · Saiu para entrega · Concluídos · Cancelados (últimas 12 h). Cada coluna rola sozinha; no celular as colunas deslizam para o lado.
+- **Cartão curto**: tipo (🛵/🏪/🍽️), número, selo iFood/Online, agendado, atraso em vermelho, cliente e telefone, bairro e rua, tempo desde o pedido, pagamento (✓ pago / 💰 cobrar), total e, embaixo, **a loja com a cor dela** (em "todas as lojas"; numa loja com várias marcas, a marca). Botão da próxima etapa (Aceitar, Marcar pronto, Saiu, Entregue) direto no cartão.
+- Tocar no cartão abre o **pedido completo** por cima (itens, combo, iFood, cobrança, WhatsApp, impressão, cancelar). Os filtros por loja ganham a mesma cor.
+
+## D-080 — Repaginação: sistema de design (08/11/2026)
+- Mantém a identidade da D-034 (verde-manjericão, mel, tomate, Onest) e sobe o acabamento com um **sistema único** aplicado nas peças que todas as telas usam (cartão, botão, campo, abas, filtros, tabelas, indicadores, menu, quadro).
+- **Escalas**: espaço em múltiplos de 4px (`--e1`…`--e9`); tipo com base 15px (`--t-xs`…`--t-3xl`). Controles de **40px** (tablet e dedo de cozinha), compactos de 32px, abas de 36px, linhas de tabela de 44px com cabeçalho fixo.
+- **Tipografia**: Onest para ler e operar; **Bricolage Grotesque só para números e títulos** (títulos de página, indicadores, preço, total, nº do pedido) — é a "voz de comanda" do RES. Números tabulares em todo o sistema.
+- Página mais larga (até 1360px) e ritmo fixo entre blocos (24px), cartões com 20/24px de respiro.
+
+## D-081 — Rodapé fixo do menu (08/11/2026)
+- Embaixo do menu lateral, sempre visível (o resto do menu rola por cima): **Meus links** (link de cada cardápio da loja, com Copiar e Abrir), **Suporte** (WhatsApp do time RES com a mensagem já começada com o nome da loja), **Sair** e a **versão** publicada.
+- O número do suporte vem de `NEXT_PUBLIC_SUPORTE_WHATSAPP` (Vercel); sem ele, o Suporte avisa que o canal está sendo configurado.
+
+## D-082 — Cadastro por convite, teste grátis e bloqueio (10/11/2026)
+- Etapa 1 da análise de 08/11 (sem nota fiscal e sem mexer no repositório, que ficam para depois).
+- **Cadastro só com convite** (padrão): `/cadastro` pede o código; o link `…/cadastro?convite=K7M2Q9XA` já abre o formulário. Convite é de **uso único**, vale 30 dias e diz quantos dias de teste dá (7, 14, 21 ou 30). O modo "aberto para todos" existe para quando a cobrança estiver pronta.
+- Conta nova só nasce pelo cadastro com convite ou pela equipe RES — o caminho antigo de criar loja (onboarding) deixou de abrir conta grátis sem prazo.
+- **Teste grátis**: a conta do cadastro começa em `teste` com prazo. Situações: teste · ativa (paga até uma data, ou sem prazo — as lojas do piloto) · suspensa.
+- **Bloqueio**: com o teste ou a assinatura vencidos (ou suspensa), **pedido novo não entra** por nenhum canal (cardápio digital, painel, iFood, API); os dados continuam. Faixa no topo do painel: dias de teste nos últimos dias, aviso 5 dias antes de vencer, e "novos pedidos pausados".
+- **Equipe RES** (`/equipe-res`, só para quem está em `private.equipe_res`, liberado à mão no editor SQL — nenhum e-mail no código): criar convite (copia o link, manda no WhatsApp), cancelar, ver se foi usado; lista dos restaurantes com situação, responsável e WhatsApp, pedidos em 7 dias, cardápio aberto ou não, perfil comercial do cadastro; botões Ativar 30 dias, Ativar sem prazo, +7 dias de teste, Suspender. Enquanto não há cobrança automática, é aqui que o pagamento (Pix) é registrado.
+
+## D-083 — Dois painéis: restaurante × empresa RES (10/11/2026)
+- **Painel do restaurante** (o que o dono compra): operação, vendas, clientes, gestão e ajustes da loja — nada da plataforma aparece ali.
+- **Painel da empresa RES** (`/empresa`, só para a equipe RES, menu escuro com o selo "Empresa"): **Visão geral** (restaurantes, em teste, vencendo em 3 dias, ativas, pausadas, pedidos em 7 dias e o caminho convite → cardápio aberto → primeiro pedido; lista do que precisa de atenção), **Restaurantes** (situação, contato, uso, ativar/estender/suspender), **Convites**, **Configurações** (quem pode se cadastrar, equipe RES incluída e tirada pelo e-mail de login, e o que está ligado na plataforma: iFood, busca automática, WhatsApp do suporte — só se está configurado, nunca o valor).
+- **Endereço próprio**: o painel da empresa fica num domínio separado (`EMPRESA_HOST` na Vercel, ex.: `res-empresa.vercel.app`; depois `empresa.<domínio do RES>`). Nesse endereço só existe o painel da empresa (a raiz e qualquer outra página levam para ele); no endereço dos restaurantes, `/empresa` não existe (404). **Nenhum link entre os dois painéis** — o menu do restaurante não mostra nada da empresa. Login separado em cada endereço.
+- Próximos itens do painel da empresa: planos e cobrança, comunicados para os restaurantes, suporte.
+
+## D-084 — Registro de erros e aviso de "sem conexão" (10/11/2026)
+- Etapa 2 da análise de 08/11. **Erros**: tudo que quebra no navegador (tela que não carrega, erro solto) e no servidor (página, ação, rota) vai para `private.erros_app` — sem serviço de fora. O mesmo erro na mesma hora soma "vezes"; teto de 500 registros por hora; textos cortados; guarda 90 dias (limpeza diária às 04:17).
+- **Painel da empresa → Erros**: agrupados, mais recentes primeiro, com onde aconteceu, quantas vezes, para quantas pessoas, em quais lojas e o detalhe técnico ao abrir; filtro 24 h / 7 / 30 dias. A Visão geral mostra "N erros nas últimas 24 horas" em "Precisa de atenção".
+- A tela de erro do RES agora diz que o erro foi registrado e oferece "Tentar de novo" e "Recarregar".
+- **Sem conexão**: no quadro de pedidos, se a internet cai (ou o tempo real fica fora mais de 8 s), aparece uma faixa vermelha fixa no topo, "Sem conexão desde 20:14. Pedidos novos podem não estar aparecendo." Quando volta, "Conexão de volta. Quadro atualizado." e a tela se atualiza sozinha.
+- Alerta ativo (WhatsApp/e-mail para a equipe quando um erro dispara) fica para quando o número do suporte existir.
+
+## D-085 — Planos, módulos e cobrança (10/11/2026)
+- **3 planos por loja + adicionais** (escolha do dono). Preços iniciais: **Essencial R$ 199,99**, **Profissional R$ 299,99**, **Completo R$ 399,99** por loja/mês. Todos editáveis no painel da empresa → **Planos e preços** (nome, preço, descrição, quais módulos entram, se aparece para cliente novo).
+- **Básico em todo plano**: cardápio digital, quadro de pedidos, delivery (bairros/km), impressão, caixa, lojas e equipe.
+- **Módulos** (liga/desliga): iFood, Pix automático, Entregas e motoboy, Clientes, Promoções, Fidelidade, Relatórios (Profissional); + Estoque/CMV, Financeiro, Gestão, Eventos e Vários cardápios (Completo). Cada um também vendido como **adicional** (R$ 39 a 59 por loja; cardápio extra R$ 99 cada, além do 1º de cada loja).
+- **Por cliente** (painel da empresa → Restaurantes → Plano): trocar o plano e ajustar cada módulo: segue o plano / adicional (cobra) / liberado sem cobrar / desligado.
+- **Teste grátis e contas do piloto: tudo liberado.** Cliente novo entra no Profissional; o piloto ficou no Completo e sem cobrança.
+- **No painel do restaurante**: tela fora do plano mostra "não está no seu plano" com "Ver planos"; no menu aparece com cadeado. Nova tela **Ajustes → Assinatura** (só o dono): valor do mês com detalhe, fatura e Pix, troca de plano (vale na hora), contratar/remover adicional, histórico. iFood e Pix automático também param no servidor quando o módulo está fora.
+- **Fatura**: gerada sozinha todo dia às 09:07 para quem vence em até 5 dias (fim do teste ou do mês pago); valor = plano × lojas + adicionais × lojas + cardápios extras. Pagou: conta ativa por mais 1 mês a partir do vencimento. Mudou plano/adicional: a fatura em aberto (sem Pix gerado) acompanha.
+- **Pix**: pela conta Mercado Pago da empresa RES (`MP_RES_ACCESS_TOKEN`, só no servidor; aviso em `/api/mercadopago/res`, que sempre confere o pagamento na API e o valor). Sem o token, a fatura fica para a equipe **marcar como paga** em **Cobrança** (recebido 30 dias, previsto por mês, contas pagantes, vencidas).
+- Brecha fechada: o dono não altera mais situação, prazos, plano ou limites da conta direto na tabela (só pelas funções).
+
+## D-086 — Agendar com a loja fechada (10/11/2026)
+- Com o cardápio fechado **pelo horário** (ou em pausa), o cliente agenda **para quando abrir**, mesmo que a loja não aceite agendamento normal: só horários do próximo turno (passando da meia-noite, se o turno passa). Antes ele ia embora.
+- Vem ligado; desliga em Delivery → "Com a loja fechada, aceitar pedido para quando abrir" (aparece quando "Pedidos agendados" está em "Não aceitar"). Cardápio fechado no botão "Fechado" (férias, problema) continua sem aceitar nada.
+
+## D-087 — Resumo no topo do quadro e controles por loja em "todas as lojas" (10/11/2026)
+- Acima do quadro: pedidos ativos (e quantos novos), preparo médio (aceito → pronto), entrega média (saiu → entregue) e quantos estão passando do prazo, com base nas últimas 12 h. Agendado para mais de 1 h à frente não conta como ativo.
+- No modo "todas as lojas", uma linha por loja (com a cor da loja) mostra ativos, preparo médio e atrasados, e tem **aceite automático, modo movimento e pausa daquela loja**, sem precisar trocar de loja.
+
+## D-088 — CPF do dono só para o dono (10/11/2026)
+- LGPD: a coluna `lojas.cpf` saiu da leitura direta. O titular da conta (e o time do RES) lê por `cpf_da_loja`; a equipe só sabe se existe (`loja_tem_cpf`). Gerente que salva Dados da empresa sem ver o CPF não apaga o CPF guardado.
+- **Para migrações futuras**: coluna nova em `public.lojas` precisa de `select private.liberar_colunas_lojas();` no fim da migração. O teste do banco acusa se esquecer.
+
+## D-089 — Fontes guardadas no projeto (10/11/2026)
+- Onest e Bricolage Grotesque agora vêm de `apps/web/app/fontes` (recortadas para o alfabeto latino; licença OFL junto). O build não baixa mais nada do Google Fonts, o que acaba com a falha falsa do CI.
+
+## D-090 — Precificação no formato do mercado (inspirada no BeeFood) (10/11/2026)
+- Olhamos o "Meu plano" do BeeFood (conta do dono): planos por **tipo de operação**, preço **por conta**, cardápio extra barato, adicionais por conta/cardápio/aparelho, aparelhos grátis no plano e anual com desconto. Eles cobram R$ 530 pelas 3 lojas do piloto; no nosso modelo de D-085 (por loja) seriam uns R$ 900 — caro demais para trocar de sistema.
+- **Planos (por conta, cobre 1 loja e 1 cardápio)**: **Delivery R$ 149,90** (entregas + app do motoboy, Pix automático, clientes, promoções, relatórios; 5 App Entregador grátis) · **Salão R$ 149,90** (salão/garçom, Pix automático, clientes, promoções, relatórios; 5 App Garçom grátis) · **Completo R$ 239,90** (tudo menos iFood; 5 + 5 aparelhos). Essencial e Profissional saíram de venda; quem estava neles foi para Delivery.
+- **Loja ou cardápio extra: R$ 49,90** cada (em todo plano). **Adicionais por conta**: iFood/marketplaces 49,90 · Entregas 49,90 · Salão 49,90 · Pix automático, Promoções, Fidelidade, Estoque, Financeiro, Gestão 29,90 · Clientes, Relatórios, Eventos 19,90. **Aparelho extra** (App Entregador / App Garçom): 19,90 cada.
+- **Anual: 20% de desconto** em tudo (plano, extras, adicionais, aparelhos); a fatura anual cobre 12 meses. O dono escolhe Mensal/Anual em Assinatura.
+- **Aparelhos**: com a conta paga, a equipe só ganha mais motoboys/garçons ativos até o limite (grátis + extras); acima disso, o RES pede para contratar em Assinatura. Teste grátis e piloto: sem limite. Não deixa reduzir extras abaixo do que está em uso.
+- Exemplo: as 3 lojas do piloto no Completo + iFood = 239,90 + 2 × 49,90 + 49,90 = **R$ 389,50/mês** (R$ 311,60/mês no anual).
+- Tudo editável no painel da empresa → Planos e preços (preço, módulos, aparelhos grátis, preço dos adicionais, desconto anual).
+
+## D-091 — Quadro: arrastar o cartão, encerrados de pedido antigo, links no celular (10/11/2026)
+- **Arrastar o cartão** para outra coluna muda a etapa (no computador). Só as colunas para onde o pedido pode ir ficam marcadas; as outras ficam apagadas. Cancelar continua pelo pedido (pede o motivo). No celular, os botões seguem como antes.
+- **Concluídos/Cancelados** passam a mostrar o que foi encerrado nas últimas 12 h, mesmo pedido criado antes disso (o pedido de iFood de 2 dias atrás concluído agora sumia do quadro em vez de ir para Concluídos), do mais recente para o mais antigo.
+- **Celular**: a folha "Mais" ganhou **Meus links** (copiar/abrir cada cardápio), **Suporte** (WhatsApp, quando o número existir) e a versão.
+- Busca por chaves e senhas no histórico do repositório: nada encontrado (só a senha do banco de teste do CI, local). O repositório pode ficar privado quando o dono quiser.
+
+## D-092 — LGPD: dados do cliente final (10/11/2026)
+- Clientes → abrir o cliente → **Pedido do cliente (LGPD)**: **Exportar dados** (arquivo com cadastro, endereços, pedidos e fidelidade) e **Apagar dados** (confirma com os 4 últimos números do telefone). Só dono e gerente.
+- Apagar tira nome, telefone, endereço, documento e observação de entrega dos pedidos em todas as lojas do grupo e remove cadastro, endereços e fidelidade; os valores ficam para o caixa e o financeiro. Não dá para desfazer.
+- **Prazo de guarda**: cliente sem pedido há **24 meses** é apagado sozinho (todo dia 2). Cada exportação e exclusão fica em `lgpd_registros`. A Política de Privacidade deve citar esse prazo quando for revisada (com o CNPJ).
+
+## D-094 — Organizar o cardápio (PR #8, juntado em 10/11/2026)
+- **Cardápio → ⇅ Organizar ordem**: arrastar e soltar (mouse e toque) para ordenar categorias e produtos e levar produto para outra categoria; botões topo/subir/descer/fim; seleção em massa com "Mover para…"; ordenar A-Z ou por preço; desfazer; prévia ao vivo do cardápio do cliente. Salva tudo de uma vez.
+- No editor, o menu ⋯ de cada produto ganhou **Mover para…** (outra categoria ou "Sem categoria").
+- Migração renomeada para `20261111040000_organizar_cardapio.sql` (a original, de 21/10, usava o número 0012 já tomado). Só mexe no que é da loja; quem não tem permissão de cardápio é barrado.

@@ -10,14 +10,16 @@ export interface ConfigDelivery {
   aceitaRetirada: boolean;
   formasPagamento: FormaPagamento[];
   mensagem: string;
+  /** 0 = não aceita pedido agendado; até 7 dias à frente. */
+  agendamentoDias: number;
+  /** D-086: com a loja fechada pelo horário, aceita pedido para quando abrir (mesmo sem agendamento normal). */
+  agendarFechado?: boolean;
   horarios: { dia: number; abre: string; fecha: string }[];
-  areas: { bairro: string; taxa: number; ativo: boolean }[]; // taxa em centavos
+  /** só leitura aqui: bairros e taxas são editados em Entregas (D-020); taxa em centavos */
+  areas?: { bairro: string; taxa: number; ativo: boolean }[];
 }
 
 export async function salvarConfig(marcaId: string, c: ConfigDelivery): Promise<{ ok: true } | { ok: false; erro: string }> {
-  const nomes = c.areas.map((a) => a.bairro.trim().toLowerCase());
-  if (nomes.some((n) => !n)) return { ok: false, erro: 'Há um bairro sem nome.' };
-  if (new Set(nomes).size !== nomes.length) return { ok: false, erro: 'Há bairros repetidos na lista.' };
   if (c.horarios.some((h) => h.abre === h.fecha)) return { ok: false, erro: 'Um horário abre e fecha na mesma hora.' };
   if (c.formasPagamento.length === 0) return { ok: false, erro: 'Escolha pelo menos uma forma de pagamento.' };
   if (!c.aceitaEntrega && !c.aceitaRetirada) return { ok: false, erro: 'Aceite pelo menos entrega ou retirada.' };
@@ -32,11 +34,15 @@ export async function salvarConfig(marcaId: string, c: ConfigDelivery): Promise<
       aceita_retirada: c.aceitaRetirada,
       formas_pagamento: c.formasPagamento,
       mensagem: c.mensagem,
+      agendamento_dias: c.agendamentoDias,
       horarios: c.horarios,
-      areas: c.areas.map((a) => ({ bairro: a.bairro.trim(), taxa: a.taxa / 100, ativo: a.ativo })),
     },
   });
   if (error) return { ok: false, erro: error.message };
+  if (c.agendarFechado !== undefined) {
+    const r = await supabase.rpc('definir_agendar_fechado', { p_marca: marcaId, p_valor: c.agendarFechado });
+    if (r.error) return { ok: false, erro: r.error.message };
+  }
   revalidatePath('/delivery');
   return { ok: true };
 }
@@ -60,4 +66,15 @@ export async function replicarHorarios(marcaId: string, horarios: ConfigDelivery
   if (error) return { ok: false, erro: error.message };
   revalidatePath('/delivery');
   return { ok: true, n: data as number };
+}
+
+export type Vitrine = { logo_url: string | null; capa_url: string | null; cor: string | null; descricao: string | null; instagram: string | null; whatsapp: string | null };
+/** Capa, logo, cor e redes do cardápio (D-045). */
+export async function salvarVitrine(marcaId: string, v: Vitrine): Promise<{ ok: true } | { ok: false; erro: string }> {
+  if (v.cor && !/^#[0-9a-fA-F]{6}$/.test(v.cor)) return { ok: false, erro: 'Cor inválida.' };
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('salvar_vitrine', { p_marca: marcaId, p_dados: v });
+  if (error) return { ok: false, erro: error.message.includes('marcas_vitrine') ? 'Confira o Instagram (só o @usuário) e o WhatsApp (com DDD).' : error.message };
+  revalidatePath('/delivery');
+  return { ok: true };
 }

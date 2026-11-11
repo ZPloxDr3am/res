@@ -1,4 +1,4 @@
--- RES · 0012 · Organizar o cardápio: trocar produtos de categoria e definir a ordem em que
+-- RES · Organizar o cardápio (PR #8, D-094): trocar produtos de categoria e definir a ordem em que
 -- categorias e produtos aparecem para o cliente.
 
 -- Salva a arrumação inteira de uma vez (tudo ou nada):

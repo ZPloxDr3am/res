@@ -34,7 +34,6 @@ export function FormDelivery({
 }) {
   const [c, setC] = useState(inicial);
   const [minimoTxt, setMinimoTxt] = useState(reais(inicial.pedidoMinimo));
-  const [taxas, setTaxas] = useState(inicial.areas.map((a) => reais(a.taxa)));
   const [msg, setMsg] = useState<{ tipo: 'ok' | 'erro'; texto: string } | null>(null);
   const [copiado, setCopiado] = useState(false);
   const [confirmandoReplicar, setConfirmandoReplicar] = useState(false);
@@ -50,9 +49,8 @@ export function FormDelivery({
   const salvar = () =>
     iniciar(async () => {
       const pedidoMinimo = centavos(minimoTxt);
-      const areas = c.areas.map((a, i) => ({ ...a, taxa: centavos(taxas[i] ?? '') }));
-      if (Number.isNaN(pedidoMinimo) || areas.some((a) => Number.isNaN(a.taxa))) return setMsg({ tipo: 'erro', texto: 'Há um valor inválido. Use o formato 5,00.' });
-      const r = await salvando(salvarConfig(marcaId, { ...c, pedidoMinimo, areas }));
+      if (Number.isNaN(pedidoMinimo)) return setMsg({ tipo: 'erro', texto: 'Há um valor inválido. Use o formato 5,00.' });
+      const r = await salvando(salvarConfig(marcaId, { ...c, pedidoMinimo, areas: undefined }));
       setMsg(r.ok ? { tipo: 'ok', texto: 'Configuração salva.' } : { tipo: 'erro', texto: r.erro });
     });
 
@@ -155,20 +153,12 @@ export function FormDelivery({
 
       <fieldset className="grade" style={{ gap: '0.4rem' }}>
         <legend>Bairros atendidos e taxa de entrega</legend>
-        {c.areas.map((a, i) => (
-          <div key={i} className="linha" style={{ alignItems: 'center', gap: '0.5rem' }}>
-            <input type="text" value={a.bairro} placeholder="Bairro" aria-label="Bairro" style={{ flex: '2 1 10rem' }}
-              onChange={(e) => setC({ ...c, areas: c.areas.map((x, j) => (j === i ? { ...x, bairro: e.target.value } : x)) })} />
-            <input type="text" inputMode="decimal" value={taxas[i] ?? ''} aria-label="Taxa (R$)" style={{ width: '6rem' }}
-              onChange={(e) => setTaxas(taxas.map((t, j) => (j === i ? e.target.value : t)))} />
-            <label className="check dica">
-              <input type="checkbox" checked={a.ativo} onChange={(e) => setC({ ...c, areas: c.areas.map((x, j) => (j === i ? { ...x, ativo: e.target.checked } : x)) })} /> Ativo
-            </label>
-            <button type="button" className="dica" onClick={() => { setC({ ...c, areas: c.areas.filter((_, j) => j !== i) }); setTaxas(taxas.filter((_, j) => j !== i)); }}>Remover</button>
-          </div>
-        ))}
-        <button type="button" style={{ justifySelf: 'start' }} onClick={() => { setC({ ...c, areas: [...c.areas, { bairro: '', taxa: 0, ativo: true }] }); setTaxas([...taxas, '']); }}>+ Bairro</button>
-        {c.aceitaEntrega && c.areas.filter((a) => a.ativo).length === 0 && <p className="aviso">Sem bairros ativos, o cliente só consegue pedir para retirar.</p>}
+        <p className="dica" style={{ margin: 0 }}>
+          {(c.areas ?? []).filter((a) => a.ativo).length} bairro(s) ativo(s)
+          {(c.areas ?? []).length > 0 && `: ${(c.areas ?? []).filter((a) => a.ativo).slice(0, 6).map((a) => `${a.bairro} ${formatarReais(a.taxa)}`).join(' · ')}${(c.areas ?? []).filter((a) => a.ativo).length > 6 ? ' …' : ''}`}
+        </p>
+        <a href="/entregas?aba=bairros" style={{ justifySelf: 'start' }}>Editar bairros, preços e valor do motoboy em Entregas →</a>
+        {c.aceitaEntrega && (c.areas ?? []).filter((a) => a.ativo).length === 0 && <p className="aviso">Sem bairros ativos, o cliente só consegue pedir para retirar.</p>}
       </fieldset>
 
       <fieldset className="grade" style={{ gap: '0.5rem' }}>
@@ -187,6 +177,22 @@ export function FormDelivery({
             </label>
           ))}
         </div>
+        <label style={{ maxWidth: '22rem' }}>
+          Pedidos agendados
+          <select value={c.agendamentoDias} onChange={(e) => setC({ ...c, agendamentoDias: Number(e.target.value) })}>
+            <option value={0}>Não aceitar</option>
+            <option value={1}>Hoje e amanhã (até 1 dia antes)</option>
+            {[2, 3, 7].map((d) => <option key={d} value={d}>Até {d} dias antes</option>)}
+          </select>
+          <span className="dica">O cliente escolhe um horário dentro do funcionamento. Com a loja fechada, ele ainda pode agendar.</span>
+        </label>
+        {c.agendamentoDias === 0 && (
+          <label className="check" style={{ alignItems: 'flex-start' }}>
+            <input type="checkbox" checked={c.agendarFechado !== false} onChange={(e) => setC({ ...c, agendarFechado: e.target.checked })} />
+            <span>Com a loja fechada, aceitar pedido <strong>para quando abrir</strong>
+              <br /><span className="dica">O cliente escolhe um horário do próximo turno, em vez de ir embora. Não vale quando você fecha o cardápio no botão “Fechado”.</span></span>
+          </label>
+        )}
         <label>
           Recado no topo do cardápio (opcional)
           <input type="text" maxLength={300} value={c.mensagem} placeholder={`Ex.: Pedido mínimo ${formatarReais(2000)} · Entregamos até 23h`} onChange={(e) => setC({ ...c, mensagem: e.target.value })} />

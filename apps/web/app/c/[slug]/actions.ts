@@ -1,16 +1,35 @@
 'use server';
 import type { FormaPagamento } from '@res/core';
+import { lerConfig, type ProgramaPublico } from '@/lib/fidelidade';
 import { criarClienteServidor } from '@/lib/supabase/server';
+import { localizarEntrega } from '@/lib/geo';
+import { distanciaReta } from '@res/core';
 
 export interface PedidoCliente {
   tipo: 'entrega' | 'retirada';
   cliente: { nome: string; telefone: string };
   endereco?: { logradouro: string; numero?: string; complemento?: string; bairro: string; referencia?: string };
-  itens: { produtoId: string; quantidade: number; observacao?: string; escolhas: Record<string, Record<string, number>> }[];
+  itens: {
+    produtoId: string;
+    quantidade: number;
+    observacao?: string;
+    escolhas: Record<string, Record<string, number>>;
+    /** combo: o que o cliente escolheu em cada passo */
+    passos?: { passoId: string; produtoId: string; escolhas: Record<string, Record<string, number>> }[];
+  }[];
   pagamento: FormaPagamento;
   /** centavos */
   trocoPara: number | null;
   observacao?: string;
+  /** ISO de um dos horários de public.horarios_agendamento; null = o quanto antes. */
+  agendadoPara: string | null;
+  /** código do cupom (o banco confere e calcula o desconto) */
+  cupom?: string | null;
+  /** cashback (centavos) e/ou recompensa (D-031); prova = código de um pedido anterior guardado no aparelho */
+  fidelidade?: { cashback: number; recompensa: string | null } | null;
+  fidelidadeProva?: string | null;
+  /** ponto do endereço achado no mapa (faixa de km, D-048) */
+  destino?: { lat: number; lng: number } | null;
 }
 
 /** Envia o pedido do cliente. O banco confere tudo de novo (aberto, bairro, taxa, preço, mínimo). */
@@ -22,13 +41,107 @@ export async function enviarPedido(slug: string, p: PedidoCliente): Promise<{ ok
       tipo: p.tipo,
       cliente: p.cliente,
       endereco: p.tipo === 'entrega' ? p.endereco : null,
-      itens: p.itens.map((i) => ({ produto_id: i.produtoId, quantidade: i.quantidade, observacao: i.observacao || null, escolhas: i.escolhas })),
+      itens: p.itens.map((i) => ({
+        produto_id: i.produtoId,
+        quantidade: i.quantidade,
+        observacao: i.observacao || null,
+        escolhas: i.passos ? { passos: i.passos.map((x) => ({ passo_id: x.passoId, produto_id: x.produtoId, escolhas: x.escolhas })) } : i.escolhas,
+      })),
       pagamento: p.pagamento,
       troco_para: p.pagamento === 'dinheiro' && p.trocoPara != null ? p.trocoPara / 100 : null,
       observacao: p.observacao || null,
+      agendado_para: p.agendadoPara,
+      cupom: p.cupom || null,
+      fidelidade: p.fidelidade && (p.fidelidade.cashback > 0 || p.fidelidade.recompensa) ? p.fidelidade : null,
+      fidelidade_prova: p.fidelidadeProva ?? null,
+      destino: p.tipo === 'entrega' && p.destino ? p.destino : null,
     },
   });
   if (error) return { ok: false, erro: error.message };
   const r = data as { codigo: string; numero: number };
   return { ok: true, codigo: r.codigo, numero: r.numero };
+}
+
+/** Confere o cupom antes de enviar (centavos). O desconto final é recalculado pelo banco ao gravar. */
+export async function conferirCupom(
+  slug: string,
+  codigo: string,
+  subtotal: number,
+  taxa: number,
+  tipo: 'entrega' | 'retirada',
+  telefone: string,
+  extra?: { bairro: string; km: number | null; itens: { produto_id: string; total: number }[] },
+): Promise<{ ok: true; codigo: string; desconto: number; descricao: string } | { ok: false; erro: string }> {
+  const supabase = await criarClienteServidor();
+  // com bairro, km e itens (D-066): cupom por área/produto
+  const { data, error } = extra
+    ? await supabase.rpc('validar_cupom', { p_slug: slug, p_codigo: codigo, p_subtotal: subtotal, p_taxa: taxa, p_tipo: tipo, p_telefone: telefone, p_bairro: extra.bairro, p_km: extra.km, p_itens: extra.itens })
+    : await supabase.rpc('validar_cupom', { p_slug: slug, p_codigo: codigo, p_subtotal: subtotal, p_taxa: taxa, p_tipo: tipo, p_telefone: telefone });
+  if (error) return { ok: false, erro: error.message };
+  const r = data as { codigo: string; desconto: number; descricao: string };
+  return { ok: true, codigo: r.codigo, desconto: Number(r.desconto), descricao: r.descricao };
+}
+
+/** O programa de fidelidade da loja (para mostrar quanto o cliente ganha). null = desligado. */
+export async function programaFidelidade(slug: string): Promise<ProgramaPublico | null> {
+  const supabase = await criarClienteServidor();
+  const { data } = await supabase.rpc('fidelidade_publica', { p_slug: slug });
+  if (!data) return null;
+  const d = data as ProgramaPublico & { config: Record<string, unknown> };
+  return { ...d, config: lerConfig(d.config)! };
+}
+
+/** Saldo do cliente, só com a prova (código de um pedido anterior dele guardado neste aparelho). */
+export async function saldoFidelidade(slug: string, telefone: string, prova: string): Promise<{ cashback: number; pontos: number } | null> {
+  if (!/^[0-9a-f-]{36}$/i.test(prova)) return null;
+  const supabase = await criarClienteServidor();
+  const { data } = await supabase.rpc('saldo_fidelidade_publico', { p_slug: slug, p_telefone: telefone, p_prova: prova });
+  return (data as { cashback: number; pontos: number } | null) ?? null;
+}
+
+// ---- Pix automático pelo Mercado Pago (D-044)
+export async function pixMercadoPago(codigo: string) {
+  if (!/^[0-9a-f-]{36}$/i.test(codigo)) return null;
+  const { pixDoPedido } = await import('@/lib/mercadopago');
+  return pixDoPedido(codigo);
+}
+export async function conferirPixMercadoPago(codigo: string) {
+  if (!/^[0-9a-f-]{36}$/i.test(codigo)) return null;
+  const { conferirPix } = await import('@/lib/mercadopago');
+  return conferirPix(codigo);
+}
+
+// ---- "Meus pedidos" do aparelho (D-047): situação dos últimos pedidos guardados neste celular
+export async function situacaoPedidos(codigos: string[]): Promise<Record<string, { numero: number; status: string; total: number; criado_em: string; marca: string }>> {
+  const supabase = await criarClienteServidor();
+  const lista = codigos.filter((c) => /^[0-9a-f-]{36}$/i.test(c)).slice(0, 15);
+  const r = await Promise.all(lista.map(async (c) => [c, (await supabase.rpc('acompanhar_pedido', { p_codigo: c })).data] as const));
+  return Object.fromEntries(
+    r.filter(([, d]) => d).map(([c, d]) => {
+      const x = d as { numero: number; status: string; total: number; criado_em: string; marca: string };
+      return [c, { numero: x.numero, status: x.status, total: x.total, criado_em: x.criado_em, marca: x.marca }];
+    }),
+  );
+}
+
+// ---- Taxa por raio em km (D-048) ----
+export type FaixaKm = { ate_km: number; taxa: number; minutos_extra: number };
+export type EntregaKm =
+  | { ok: true; km: number; taxa: number; minutosExtra: number; lat: number; lng: number; aproximado: boolean }
+  | { ok: false; erro: string };
+
+/** Acha o endereço no mapa (perto da loja) e diz a faixa de km. O banco refaz a conta ao gravar o pedido. */
+export async function calcularEntregaKm(slug: string, e: { logradouro: string; numero?: string; bairro: string }): Promise<EntregaKm> {
+  const supabase = await criarClienteServidor();
+  const { data } = await supabase.rpc('faixas_km_publica', { p_slug: slug });
+  const cfg = data as { lat: number | null; lng: number | null; cidade: string | null; faixas: FaixaKm[] } | null;
+  if (!cfg || cfg.lat == null || cfg.lng == null || !cfg.faixas.length) return { ok: false, erro: 'Ainda não entregamos nesse bairro.' };
+  if (!e.logradouro.trim() || !e.bairro.trim()) return { ok: false, erro: 'Informe rua e bairro.' };
+  const loja = { lat: cfg.lat, lng: cfg.lng };
+  const achado = await localizarEntrega({ logradouro: e.logradouro.slice(0, 120), numero: e.numero?.slice(0, 20), bairro: e.bairro.slice(0, 80) }, cfg.cidade, loja);
+  if (!achado) return { ok: false, erro: 'Não achamos esse endereço no mapa. Confira a rua e o bairro.' };
+  const km = Math.round(distanciaReta(loja, achado.ponto) * 100) / 100;
+  const f = cfg.faixas.find((x) => x.ate_km >= km);
+  if (!f) return { ok: false, erro: `Seu endereço fica a ${km.toFixed(1).replace('.', ',')} km, fora da nossa área de entrega.` };
+  return { ok: true, km, taxa: f.taxa, minutosExtra: f.minutos_extra, lat: achado.ponto.lat, lng: achado.ponto.lng, aproximado: achado.precisao === 'bairro' };
 }

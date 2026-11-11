@@ -34,7 +34,7 @@ export async function salvarSetor(form: FormData): Promise<Resultado> {
   if (erros.length) return { ok: false, erro: erros.join(' ') };
 
   const supabase = await criarClienteServidor();
-  const { error } = await supabase.rpc('salvar_setor', {
+  const { data: id, error } = await supabase.rpc('salvar_setor', {
     p_loja: ctx.lojaId,
     p_id: (form.get('id') as string) || null,
     p_nome: dados.nome.trim(),
@@ -43,7 +43,34 @@ export async function salvarSetor(form: FormData): Promise<Resultado> {
     p_presencial: dados.presencial,
     p_marcas: dados.marcas,
   });
-  return error ? { ok: false, erro: mensagem(error) } : pronto();
+  if (error) return { ok: false, erro: mensagem(error) };
+  // categoria de up-sell ("Peça também" no carrinho e no balcão)
+  const up = await supabase.from('setores').update({ upsell: form.get('upsell') === 'on' }).eq('id', id as string);
+  return up.error ? { ok: false, erro: mensagem(up.error) } : pronto();
+}
+
+// ---------------------------------------------------------------- combos
+
+export type PassoForm = { titulo: string; quantidade: number; setorId: string | null; produtos: string[] };
+
+/** Cria ou atualiza um combo (preço em centavos). Devolve o id. */
+export async function salvarCombo(id: string | null, dados: { nome: string; descricao: string; preco: number; setorId: string | null; passos: PassoForm[] }): Promise<Resultado & { id?: string }> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('salvar_combo', {
+    p_loja: ctx.lojaId,
+    p_combo: id,
+    p_dados: {
+      nome: dados.nome.trim(),
+      descricao: dados.descricao.trim() || null,
+      preco: dados.preco / 100,
+      setor_id: dados.setorId,
+      passos: dados.passos.map((p) => ({ titulo: p.titulo.trim(), quantidade: p.quantidade, setor_id: p.setorId, produtos: p.produtos })),
+    },
+  });
+  if (error) return { ok: false, erro: mensagem(error) };
+  revalidatePath('/cardapio');
+  return { ok: true, id: data as string };
 }
 
 export async function excluirSetor(id: string): Promise<Resultado> {
@@ -98,6 +125,32 @@ export async function criarProduto(form: FormData): Promise<Resultado & { id?: s
   return { ok: true, id: data as string };
 }
 
+const HORA = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+/** Promoção De/Por do formulário (vale para todas as marcas do produto). Lança se o preço for inválido. */
+function lerPromocao(form: FormData):
+  | { preco_promocional: number | null; promo_dias: number[] | null; promo_inicio: string | null; promo_fim: string | null; promo_ate: string | null }
+  | { erro: string } {
+  if (form.get('promo_ligada') !== 'on') return { preco_promocional: null, promo_dias: null, promo_inicio: null, promo_fim: null, promo_ate: null };
+  const preco = lerReais(form.get('promo_preco'));
+  if (preco == null) return { erro: 'Informe o preço da promoção.' };
+  const base = lerReais(form.get('preco'));
+  if (base != null && base > 0 && preco >= base) return { erro: 'O preço da promoção precisa ser menor que o preço normal.' };
+  const dias = [...new Set(form.getAll('promo_dia').map(Number).filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))].sort();
+  if (dias.length === 0) return { erro: 'Escolha pelo menos um dia para a promoção.' };
+  let inicio: string | null = null;
+  let fim: string | null = null;
+  if (form.get('promo_horario') === 'on') {
+    inicio = String(form.get('promo_inicio') ?? '');
+    fim = String(form.get('promo_fim') ?? '');
+    if (!HORA.test(inicio) || !HORA.test(fim)) return { erro: 'Horário da promoção inválido (use 18:00).' };
+    if (inicio === fim) return { erro: 'O horário da promoção começa e termina na mesma hora.' };
+  }
+  const ate = String(form.get('promo_ate') ?? '').trim();
+  if (ate && !/^\d{4}-\d{2}-\d{2}$/.test(ate)) return { erro: 'Data final da promoção inválida.' };
+  return { preco_promocional: preco, promo_dias: dias.length === 7 ? null : dias, promo_inicio: inicio, promo_fim: fim, promo_ate: ate || null };
+}
+
 const ETIQUETAS = ['novo', 'recomendado', 'mais_vendido', 'edicao_limitada', 'esgotado'];
 
 /** Salva os dados do produto e os preços por marca (delivery, presencial, promocional). */
@@ -121,13 +174,15 @@ export async function salvarProduto(form: FormData): Promise<Resultado> {
       .eq('id', id);
     if (error) return { ok: false, erro: mensagem(error) };
 
+    const promo = lerPromocao(form);
+    if ('erro' in promo) return { ok: false, erro: promo.erro };
     for (const marca of form.getAll('marca').map(String)) {
       const r = await supabase
         .from('produto_marcas')
         .update({
           preco_delivery: lerReais(form.get(`preco_delivery_${marca}`)),
           preco_presencial: lerReais(form.get(`preco_presencial_${marca}`)),
-          preco_promocional: lerReais(form.get(`preco_promocional_${marca}`)),
+          ...promo,
         })
         .eq('produto_id', id)
         .eq('marca_id', marca);
@@ -143,6 +198,14 @@ export async function definirFoto(produtoId: string, url: string | null): Promis
   if (url && !/^https:\/\/[a-z0-9.-]+\/storage\/v1\/object\/public\/cardapio\//.test(url)) return { ok: false, erro: 'Endereço de foto inválido.' };
   const supabase = await criarClienteServidor();
   const { error } = await supabase.from('produtos').update({ imagem_url: url }).eq('id', produtoId);
+  return error ? { ok: false, erro: mensagem(error) } : pronto();
+}
+
+/** Foto de uma opção de grupo (sabor, borda, adicional) (D-035). */
+export async function definirFotoOpcao(opcaoId: string, url: string | null): Promise<Resultado> {
+  if (url && !/^https:\/\/[a-z0-9.-]+\/storage\/v1\/object\/public\/cardapio\//.test(url)) return { ok: false, erro: 'Endereço de foto inválido.' };
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.from('opcoes').update({ imagem_url: url }).eq('id', opcaoId);
   return error ? { ok: false, erro: mensagem(error) } : pronto();
 }
 
@@ -344,4 +407,13 @@ export async function moverProdutos(ids: string[], setor: string | null): Promis
   const supabase = await criarClienteServidor();
   const { error } = await supabase.rpc('mover_produtos', { p_produtos: ids, p_setor: setor });
   return error ? { ok: false, erro: mensagem(error) } : pronto();
+}
+
+/** Ingredientes e selo de uma opção (D-046): aparecem na montagem do cardápio digital. */
+export async function salvarDetalheOpcao(opcaoId: string, descricao: string, selo: string | null): Promise<{ ok: true } | { ok: false; erro: string }> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('salvar_detalhe_opcao', { p_opcao: opcaoId, p_descricao: descricao, p_selo: selo });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/cardapio');
+  return { ok: true };
 }
