@@ -807,3 +807,6 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Clientes → abrir o cliente → **Pedido do cliente (LGPD)**: **Exportar dados** (arquivo com cadastro, endereços, pedidos e fidelidade) e **Apagar dados** (confirma com os 4 últimos números do telefone). Só dono e gerente.
 - Apagar tira nome, telefone, endereço, documento e observação de entrega dos pedidos em todas as lojas do grupo e remove cadastro, endereços e fidelidade; os valores ficam para o caixa e o financeiro. Não dá para desfazer.
 - **Prazo de guarda**: cliente sem pedido há **24 meses** é apagado sozinho (todo dia 2). Cada exportação e exclusão fica em `lgpd_registros`. A Política de Privacidade deve citar esse prazo quando for revisada (com o CNPJ).
+
+## D-093 — Quadro sem os cartões de controle por loja (10/11/2026)
+- A pedido do dono, saiu do modo "todas as lojas" a linha de cartões com aceite automático, movimento e pausa de cada loja (ficou poluída). O resumo (ativos, preparo médio, entrega média, passando do prazo) continua. Para mexer nos controles de uma loja, escolha a loja no topo do quadro.

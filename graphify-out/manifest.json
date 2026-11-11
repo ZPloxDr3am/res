@@ -708,9 +708,9 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1794354908.0508862,
-    "seen": 1794354913.9779139,
-    "ast_hash": "3844f2e328fa6dfccba9bca00a82ca1d",
+    "mtime": 1794355549.3847628,
+    "seen": 1794355598.4627652,
+    "ast_hash": "9141d8d99eb5e5a24cc86f5afaffd4cb",
     "semantic_hash": ""
   },
   "apps/web/components/resumo/grafico-lojas.tsx": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794354908.054886,
-    "seen": 1794354913.9781806,
-    "ast_hash": "9d24b8438ea8b853fc155369e47b5c14",
+    "mtime": 1794355591.5802805,
+    "seen": 1794355598.4631953,
+    "ast_hash": "7ebc4e55be52ed939b57f21afb1d64b2",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2739,6 +2739,12 @@
     "mtime": 1794352198.3312483,
     "seen": 1794352932.3425841,
     "ast_hash": "5665311666de96f24323e61b4fab9eb6",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261111030000_lgpd_clientes.sql": {
+    "mtime": 1794354908.0588863,
+    "seen": 1794355598.4631014,
+    "ast_hash": "a0b52dd21a5a239dd1976a0e1c0c8c25",
     "semantic_hash": ""
   }
 }
