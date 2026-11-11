@@ -357,7 +357,7 @@ export function QuadroPedidos({
           <BotaoNovoPedido />
         </div>
       </div>
-      <ResumoTopo pedidos={pedidos} lojas={todas ? lojas : []} estados={estadosLojas} prazoEntrega={prazoEntrega} tempoPreparo={tempoPreparo} fuso={fuso} />
+      <ResumoTopo pedidos={pedidos} estados={estadosLojas} prazoEntrega={prazoEntrega} tempoPreparo={tempoPreparo} />
       {!todas && <PausaLoja pausa={pausa} fuso={fuso} lojaNome={lojaAtual} modo="faixa" />}
       {!todas && <MovimentoLoja movimento={movimento} fuso={fuso} tempoPreparo={tempoPreparo} modo="faixa" />}
       {erro && <p className="erro" role="alert">{erro}</p>}
@@ -1094,10 +1094,10 @@ function VisaoLojas({ todas, lojaAtual, total }: { todas: boolean; lojaAtual: st
   );
 }
 
-// ---- Resumo no topo (D-087) e controles de cada loja no modo "todas as lojas"
+// ---- Resumo no topo (D-087); os controles por loja saíram a pedido do dono (D-093)
 const minTxt = (m: number | null) => (m == null ? '—' : m >= 60 ? `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}` : `${m} min`);
 
-function ResumoTopo({ pedidos, lojas, estados, prazoEntrega, tempoPreparo, fuso }: { pedidos: PedidoRow[]; lojas: { id: string; nome: string }[]; estados: EstadoLoja[] | null; prazoEntrega: Record<string, number>; tempoPreparo: number; fuso: string }) {
+function ResumoTopo({ pedidos, estados, prazoEntrega, tempoPreparo }: { pedidos: PedidoRow[]; estados: EstadoLoja[] | null; prazoEntrega: Record<string, number>; tempoPreparo: number }) {
   const [agora, setAgora] = useState(() => Date.now());
   useEffect(() => {
     const t = setInterval(() => setAgora(Date.now()), 30000);
@@ -1118,59 +1118,6 @@ function ResumoTopo({ pedidos, lojas, estados, prazoEntrega, tempoPreparo, fuso 
         <span title="Média de saiu até entregue, últimas 12 h"><b>{minTxt(t.entregaMin)}</b> entrega média</span>
         <span data-alerta={t.atrasados > 0 || undefined}><b>{t.atrasados}</b> passando do prazo</span>
       </div>
-      {lojas.length > 0 && (
-        <div className="qp-lojas">
-          {lojas.map((l, i) => {
-            const e = estados?.find((x) => x.id === l.id);
-            const rl = r.porLoja[l.id];
-            const pausa = e?.pausa_ate && Date.parse(e.pausa_ate) > agora ? { ate: e.pausa_ate, recado: e.pausa_recado } : null;
-            const mov = e?.movimento_ate && Date.parse(e.movimento_ate) > agora && Number(e.movimento_min) > 0 ? { min: Number(e.movimento_min), ate: e.movimento_ate } : null;
-            return (
-              <div key={l.id} className="qp-loja" style={{ '--cor-loja': corLocal(i) } as React.CSSProperties}>
-                <div className="qp-loja-topo">
-                  <strong>{l.nome}</strong>
-                  <span className="dica">{rl?.ativos ?? 0} ativos · preparo {minTxt(rl?.preparoMin ?? null)}{rl?.atrasados ? <span className="erro"> · {rl.atrasados} atrasado{rl.atrasados === 1 ? '' : 's'}</span> : null}</span>
-                </div>
-                {e && (
-                  <div className="linha qp-loja-acoes">
-                    <AceiteLoja lojaId={l.id} valor={e.aceite_automatico} />
-                    <MovimentoLoja movimento={mov} fuso={fuso} tempoPreparo={e.tempo_preparo_min ?? tempoPreparo} modo="botao" lojaId={l.id} />
-                    <PausaLoja pausa={pausa} fuso={fuso} lojaNome={l.nome} modo="botao" lojaId={l.id} />
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
     </div>
-  );
-}
-
-function AceiteLoja({ lojaId, valor }: { lojaId: string; valor: boolean }) {
-  const [v, setV] = useState(valor);
-  const [erro, setErro] = useState<string | null>(null);
-  const [pendente, iniciar] = useTransition();
-  useEffect(() => setV(valor), [valor]);
-  return (
-    <label className="check" title={erro ?? 'Pedidos novos desta loja já entram em preparo'}>
-      <input
-        type="checkbox"
-        checked={v}
-        disabled={pendente}
-        onChange={(ev) => {
-          const novo = ev.target.checked;
-          setV(novo);
-          iniciar(async () => {
-            const r = await salvando(definirAceiteAutomatico(novo, lojaId));
-            if (!r.ok) {
-              setV(!novo);
-              setErro(r.erro);
-            } else setErro(null);
-          });
-        }}
-      />
-      Aceite automático{erro ? ' ⚠️' : ''}
-    </label>
   );
 }
