@@ -815,3 +815,8 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **Cardápio → ⇅ Organizar ordem**: arrastar e soltar (mouse e toque) para ordenar categorias e produtos e levar produto para outra categoria; botões topo/subir/descer/fim; seleção em massa com "Mover para…"; ordenar A-Z ou por preço; desfazer; prévia ao vivo do cardápio do cliente. Salva tudo de uma vez.
 - No editor, o menu ⋯ de cada produto ganhou **Mover para…** (outra categoria ou "Sem categoria").
 - Migração renomeada para `20261111040000_organizar_cardapio.sql` (a original, de 21/10, usava o número 0012 já tomado). Só mexe no que é da loja; quem não tem permissão de cardápio é barrado.
+
+## D-095 — Robô de ponta a ponta (10/11/2026)
+- Toda vez que a Vercel termina uma publicação (teste de PR ou produção), o GitHub roda o **robô** (`e2e/pedido.spec.ts`, Playwright): faz um pedido de retirada no cardápio da **Loja Robô**, entra no painel com o login dela, encontra o pedido no quadro e leva até **Concluídos** pelo botão de cada etapa, e depois abre Resumo, Cardápio, Delivery, Clientes e Assinatura conferindo que nenhuma quebra. Se falhar, guarda fotos e o passo a passo (artefato "relatorio-robo").
+- **Loja Robô**: conta separada (nunca uma loja real), ativa sem prazo, cardápio aberto, com retirada e dinheiro. Segredos no GitHub: `E2E_EMAIL`, `E2E_SENHA`, `E2E_CARDAPIO` (e `VERCEL_BYPASS` se a proteção de preview for ligada). Sem eles o robô é pulado.
+- Também dá para rodar à mão: Actions → "Robô (pedido de ponta a ponta)" → informar o endereço.
