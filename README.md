@@ -1,5 +1,7 @@
 # RES
 
+> **Documentação e método de trabalho:** [`docs/README.md`](docs/README.md) — áreas **Comercial**, **Desenvolvimento** (comece por [`METODO.md`](docs/desenvolvimento/METODO.md) e [`COMECE-AQUI.md`](docs/desenvolvimento/COMECE-AQUI.md)) e **Qualidade/testes**.
+
 Sistema de pedidos para restaurantes, com delivery, salão e gestão. Começou como a **etapa 1 do piloto**:
 
 - uma loja com várias marcas
@@ -7,7 +9,7 @@ Sistema de pedidos para restaurantes, com delivery, salão e gestão. Começou c
 - cardápio completo: setores, produtos, grupos de opções e frações de pizza
 - testes que conferem as regras aprendidas no estudo do BeeFood
 
-Hoje o piloto já cobre delivery, cardápio digital, entregas, fidelidade, estoque, financeiro e relatórios (ver "O que já funciona"). **Atualizado em 06/11/2026**, até o PR #85 (D-072).
+Hoje o piloto já cobre delivery, cardápio digital, entregas, fidelidade, estoque, financeiro, relatórios, iFood (modo teste), cadastro por convite, planos e cobrança (ver "O que já funciona"). **Atualizado em 10/11/2026**, até D-095.
 
 ## Estrutura
 
@@ -15,13 +17,14 @@ Hoje o piloto já cobre delivery, cardápio digital, entregas, fidelidade, estoq
 |---|---|
 | `packages/core` | Regras de negócio em TypeScript puro: preço, grupos, setores, permissões, agendamento, caixa, catálogo de impressoras, montagem do cupom e ordem da rota de entregas. Tem testes. |
 | `packages/agente` | **RES Impressão**: programa do Windows (`.exe` único) que imprime os cupons da fila direto na térmica (ESC/POS, com QR nativo) e se atualiza sozinho. |
-| `supabase/migrations` | Banco Postgres com isolamento por loja (RLS), auditoria e operações atômicas (0001 a 0068) |
+| `supabase/migrations` | Banco Postgres com isolamento por loja (RLS), auditoria e operações atômicas (0001 a 0068 e, desde 06/11, com data e hora no nome: `AAAAMMDDHHMMSS_assunto.sql`) |
 | `supabase/tests` | Testes do banco: regras de paridade (T-xxx), edição do cardápio e pedidos, incluindo a paridade de preço com o core |
 | `apps/web` | Painel em Next.js com login, cadastro da loja e todas as telas; cardápio público em `/c/<endereço>`; app do motoboy em `/m` |
 | `apps-mobile/motoboy` | App Android **RES Motoboy** (Capacitor) que abre o `/m`; o workflow `motoboy-app.yml` gera o `RES-Motoboy.apk` na release `motoboy-latest` |
 | `apps-mobile/painel` | App Android **RES** (gestão, Capacitor) que abre o painel; o workflow `painel-app.yml` gera o `RES.apk` na release `gestao-latest` (D-069) |
 | `scripts` | `beefood_para_res.py` (converte o cardápio público do BeeFood) e `conferir_importacao.py` (confere item a item) |
-| `docs/decisoes.md` | Decisões de projeto D-001 a D-072 |
+| `e2e` | **Robô** (Playwright): pedido de ponta a ponta na Loja Robô a cada publicação (D-095) |
+| `docs/decisoes.md` | Decisões de projeto D-001 a D-095 |
 
 ## Rodar os testes
 
@@ -87,6 +90,12 @@ No piloto, as migrações são aplicadas à mão no **SQL Editor** do Supabase (
 | Financeiro (D-060–D-061) | **Gestão → Financeiro**: Visão do mês, Contas a pagar e receber, Fluxo de caixa (30 dias, avisa o dia em que fica negativo), **DRE** mês a mês (Excel) e Cadastros. Não digita duas vezes: **custos fixos** viram contas a pagar (inclusive automático todo mês), **NF-e** do estoque vira conta em um clique, **vendas e taxas** entram sozinhas, **custo das vendas = CMV real** do estoque. Lançamento único, parcelado ou recorrente; "✓ Paguei". 37 categorias ligadas ao DRE. Por loja ou do grupo, como a Gestão Empresarial |
 | Aplicativos (D-042–D-044) | **Ajustes → Aplicativos**: **Pix no cardápio** (QR estático), **Mercado Pago** (Pix dinâmico, confirmação automática, aceite automático ao pagar, não pago cancela em 40 min), **Pixels** (Meta, GA4, Google Ads, GTM com aceite de cookies), **Avaliação no Google**, **Link único do grupo** (`/g/<link>`), **API aberta** (`/api/v1/…`), **webhooks** assinados e **MCP** (`/api/mcp/<chave>`) |
 | Resumo | Hoje, ontem, 7 ou 30 dias, mês ou datas; todas as lojas ou uma. Indicadores com frase explicativa, composição das vendas, desempenho por loja, faturamento por dia, tabela por loja. **🎯 Meta do mês** por loja com projeção pelo peso de cada dia da semana (8 semanas), "onde deveria estar hoje", quanto vender por dia e comparação com o mês anterior (D-064) |
+| iFood (D-074–D-075) | Pedido do iFood entra no quadro (webhook + busca de reserva), ida e volta de status, cupom dividido loja × iFood, cupom impresso com dados do app, **Plataforma de Negociação** com faixa no quadro. **Modo teste com simulador** enquanto não há conta/homologação |
+| Cadastro e conta (D-076–D-077, D-082) | **Cadastro por convite** (`/cadastro?convite=…`) em 3 passos: responsável, empresa (CNPJ preenche pela Receita, CEP preenche o endereço) e restaurante (com cardápio de exemplo). **Primeiros passos** até abrir o cardápio. **Teste grátis** com prazo; vencido, novos pedidos pausam. CPF do dono só para o dono (D-088) |
+| Planos e cobrança (D-085, D-090) | Planos por operação e por conta: **Delivery 149,90 · Salão 149,90 · Completo 239,90** (1 loja + 1 cardápio), loja/cardápio extra 49,90, adicionais por conta, App Entregador/Garçom grátis no plano (5) e extra por unidade, **anual −20%**. Telas fora do plano com cadeado. **Ajustes → Assinatura**: plano, ciclo, adicionais, aparelhos, fatura com Pix (Mercado Pago do RES, ou manual) |
+| Painel da empresa (D-083–D-084) | Endereço próprio (`res-empresa.vercel.app`), só a equipe RES: Visão geral, Restaurantes (situação, plano e módulos por cliente), **Cobrança**, **Planos e preços**, Convites, **Erros** (registro de erros do app) e Configurações |
+| Quadro (D-078–D-081, D-086–D-093) | Kanban compacto, **todas as lojas** salvo por usuário, resumo no topo (ativos, preparo e entrega médios, passando do prazo), **arrastar o cartão** entre colunas, encerrados das últimas 12 h, aviso de **sem conexão**. Cardápio fechado aceita **agendar para quando abrir**. Organizar cardápio com arrastar (D-094) |
+| LGPD (D-088, D-092) | Exportar e apagar os dados de um cliente (dono/gerente), apagado sozinho após 24 meses sem pedido |
 | Relatórios (D-065, D-067–D-068) | **Vendas → Relatórios**, período e loja: **Operação** (valores, frete grátis e cupons concedidos, **tempos médios** com selo bom/atenção/demorado, % no prazo, **horário de pico** dia × hora, canais, formas de pagamento, novos × recorrentes, bairros, **por pessoa** e **motoboys**); **Curva ABC** de produtos, sabores (meia = 0,5) e bordas/adicionais (Excel); **Cancelamentos** por motivo, etapa, canal e quem cancelou; **Calendário do mês**. Cores por significado (verde bom, laranja concedido, vermelho perda) |
 
 ## Mapa do código (graphify)
@@ -108,7 +117,8 @@ A pedido do dono (28/10), todo trabalho no projeto parte do mapa do **graphify**
 | 6 Reter | Clientes, cupons (agora por área/produto), frete grátis automático, segmentos, cashback e pontos entraram | Consentimento de marketing (LGPD) e descadastro; campanhas de SMS (provedor a contratar); públicos ao Meta/Google Ads por OAuth (tokens só no servidor); login do cliente por código no WhatsApp |
 | 7 Salão e gestão | Estoque, CMV, Gestão Empresarial, Financeiro/DRE entraram | **Salão** (mesas, comandas, PDV, garçom — e os relatórios de garçom/mesas/couvert), **Fiado** com limite de crédito, receitas/produção do estoque, **fiscal** (NFC-e; SEFAZ com certificado A1) |
 | Quadro (lista do estudo) | Itens 1–5 de `delivery-o-que-falta.md` entraram | Linha do tempo do pedido; atalhos F1 / Ctrl+K; Kanban ou Lista; tema escuro; arrastar pedido até o motoboy |
-| Integrações | — | **🔔 iFood: LEMBRAR o dono quando o projeto estiver bem avançado** (pedido dele em 28/10; exige homologação no portal de parceiros do iFood — com as etapas 3 a 6 quase completas, esse momento chegou). Outros marketplaces (99Food, Keeta, Rappi, Aiqfome), entregador sob demanda (Uber Direct, 99 Entrega), TEF. Combos com passos no cardápio de evento |
+| Antes de vender (análise de 08/11) | Cadastro por convite, teste grátis, cobrança, registro de erros e LGPD entraram | **Vercel Pro e Supabase Pro**, **NFC-e**, Termos e Privacidade com CNPJ, repositório privado, WhatsApp do suporte (`NEXT_PUBLIC_SUPORTE_WHATSAPP`), token `MP_RES_ACCESS_TOKEN` para o Pix da mensalidade |
+| Integrações | iFood em modo teste (D-074–D-075) | **iFood**: conta de parceiro e homologação. Outros marketplaces (99Food, Keeta, Rappi, Aiqfome), entregador sob demanda (Uber Direct, 99 Entrega), TEF. Combos com passos no cardápio de evento |
 
 ## RES Impressão (agente) — instalar num computador da loja
 
@@ -131,20 +141,15 @@ Registro do agente: `%APPDATA%\RES Impressao\agente.log`. Para trocar de loja: `
    Sem os segredos `MOTOBOY_KEYSTORE_B64`/`MOTOBOY_KEYSTORE_PASS` no GitHub, cada APK novo tem outra assinatura: para atualizar, desinstalar antes.
 4. Aceitar um pedido de entrega → a comanda sai com QR → motoboy lê com a câmera → quadro mostra "Saiu com …". Com várias comandas lidas, aparece a **Rota sugerida**.
 
-## Pacotes (equipe RES)
+## Planos e pacotes (equipe RES)
 
-O pacote de cada cliente fica na tabela `contas` (`plano`, `limite_lojas`, `limite_cardapios`; `null` = sem limite). Só a equipe RES muda, pelo SQL Editor do Supabase:
-
-```sql
-update public.contas set plano = 'multilojas', limite_lojas = 3, limite_cardapios = 3 where nome = 'Nome do cliente';
-```
-
-Conta nova nasce no básico (1 loja, 1 cardápio). O cardápio de **Evento / Aniversário** não conta no limite (D-055).
+Planos, preços, módulos e aparelhos grátis ficam no **painel da empresa → Planos e preços**; o plano e os módulos de cada cliente, em **Restaurantes → Plano** (D-085, D-090). Limites de lojas e cardápios continuam em `contas.limite_lojas` / `limite_cardapios` (`null` = sem limite), alterados só pela equipe RES. O cardápio de **Evento / Aniversário** não conta no limite (D-055).
 
 ## Ambiente no ar (piloto)
 
 | Peça | Onde |
 |---|---|
+| Painel da empresa | https://res-empresa.vercel.app (mesmo projeto; `EMPRESA_HOST`), só a equipe RES (D-083) |
 | Painel | https://res-iqzs.vercel.app (Vercel, projeto `res-iqzs`, pasta `apps/web`). Funções em **São Paulo (gru1)** via `apps/web/vercel.json`, junto do banco (~0,2–0,4 s por tela, PR #38) |
 | App do motoboy | https://res-iqzs.vercel.app/m |
 | Banco | Supabase, organização **REA BBEEFF**, projeto **RES - PRÓPRIO** (São Paulo), ref `avodakkmqyvnbabfwydr`; SQL Editor em supabase.com/dashboard/project/avodakkmqyvnbabfwydr/sql/new |

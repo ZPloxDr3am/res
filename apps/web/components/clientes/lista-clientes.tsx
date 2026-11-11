@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { eCelular, formatarReais, SEGMENTOS, telefoneInternacional, type Segmento } from '@res/core';
-import { exportarClientes, listarClientes, salvarCliente } from '@/app/(painel)/clientes/actions';
+import { apagarDadosCliente, dadosDoCliente, exportarClientes, listarClientes, salvarCliente } from '@/app/(painel)/clientes/actions';
 import { enderecoTexto, formatarTelefone, type ClienteBusca, type ClienteExportado, type ListagemClientes } from '@/lib/clientes';
 
 const SEG = new Map(SEGMENTOS.map((x) => [x.id, x]));
@@ -138,6 +138,7 @@ export function ListaClientes({ inicial }: { inicial: ListagemClientes }) {
             aberto={aberto === c.id}
             alternar={() => setAberto(aberto === c.id ? null : c.id)}
             aoSalvar={(n) => setLista((l) => l.map((x) => (x.id === n.id ? n : x)))}
+            aoApagar={() => { setLista((l) => l.filter((x) => x.id !== c.id)); setAberto(null); }}
           />
         ))}
       </div>
@@ -150,7 +151,9 @@ export function ListaClientes({ inicial }: { inicial: ListagemClientes }) {
   );
 }
 
-function FichaCliente({ c, aberto, alternar, aoSalvar }: { c: ClienteBusca; aberto: boolean; alternar: () => void; aoSalvar: (c: ClienteBusca) => void }) {
+function FichaCliente({ c, aberto, alternar, aoSalvar, aoApagar }: { c: ClienteBusca; aberto: boolean; alternar: () => void; aoSalvar: (c: ClienteBusca) => void; aoApagar: () => void }) {
+  const [lgpd, setLgpd] = useState<'apagar' | null>(null);
+  const [confirma, setConfirma] = useState('');
   const [nome, setNome] = useState(c.nome);
   const [obs, setObs] = useState(c.observacoes ?? '');
   const [remover, setRemover] = useState<string[]>([]);
@@ -204,6 +207,39 @@ function FichaCliente({ c, aberto, alternar, aoSalvar }: { c: ClienteBusca; aber
             </button>
             {msg && <span className={msg.ok ? 'dica' : 'erro'} role="status">{msg.t}</span>}
           </div>
+          {/* LGPD (D-092): o cliente pede uma cópia ou que seus dados sejam apagados — só dono/gerente */}
+          <details className="cl-lgpd">
+            <summary>Pedido do cliente (LGPD)</summary>
+            <div className="grade" style={{ gap: '0.4rem', marginTop: '0.4rem' }}>
+              <div className="linha" style={{ gap: '0.4rem', flexWrap: 'wrap' }}>
+                <button type="button" className="mini" disabled={pendente} onClick={() => iniciar(async () => {
+                  const r = await dadosDoCliente(c.id);
+                  if (!r.ok) return setMsg({ ok: false, t: r.erro });
+                  const blob = new Blob([JSON.stringify(r.dados, null, 2)], { type: 'application/json' });
+                  const a = document.createElement('a');
+                  a.href = URL.createObjectURL(blob);
+                  a.download = `dados-${c.nome.replace(/[^\p{L}\p{N}]+/gu, '-').toLowerCase()}.json`;
+                  a.click();
+                  URL.revokeObjectURL(a.href);
+                  setMsg({ ok: true, t: 'Arquivo baixado: envie para o cliente.' });
+                })}>⬇ Exportar dados</button>
+                <button type="button" className="mini dica" disabled={pendente} onClick={() => setLgpd(lgpd ? null : 'apagar')}>🗑 Apagar dados</button>
+              </div>
+              {lgpd === 'apagar' && (
+                <div className="cartao grade" style={{ gap: '0.4rem', borderColor: 'var(--erro)' }}>
+                  <span>Some com o cadastro, os endereços, a fidelidade e o nome, telefone e endereço dos pedidos dele em todas as lojas do grupo. Os valores dos pedidos continuam no caixa e no financeiro. <strong>Não dá para desfazer.</strong></span>
+                  <label>Para confirmar, digite os 4 últimos números do telefone
+                    <input value={confirma} inputMode="numeric" maxLength={4} onChange={(e) => setConfirma(e.target.value.replace(/\D/g, ''))} style={{ maxWidth: '8rem' }} /></label>
+                  <button type="button" className="botao-perigo" disabled={pendente || confirma.length !== 4} onClick={() => iniciar(async () => {
+                    const r = await apagarDadosCliente(c.id, confirma);
+                    if (!r.ok) return setMsg({ ok: false, t: r.erro });
+                    aoApagar();
+                  })}>Apagar para sempre</button>
+                </div>
+              )}
+              <span className="dica">Clientes sem pedido há 24 meses são apagados sozinhos.</span>
+            </div>
+          </details>
         </div>
       )}
     </article>

@@ -171,3 +171,23 @@ export async function salvarPermissoesEquipe(lojaId: string, permissoes: string[
   revalidatePath('/lojas');
   return { ok: true };
 }
+
+/** Dados da empresa da loja (D-077): documento, razão social, telefones e endereço. */
+export async function salvarDadosEmpresa(
+  lojaId: string,
+  v: { semCnpj: boolean; documento: string; razaoSocial: string; nomeFantasia: string; inscricaoEstadual: string; telefoneLoja: string; emailLoja: string; endereco: { cep: string; logradouro: string; numero: string; complemento: string; bairro: string; cidade: string; uf: string; lat?: number | null; lng?: number | null } },
+): Promise<R> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('salvar_dados_empresa', {
+    p_loja: lojaId,
+    e: {
+      documento: v.documento, razao_social: v.semCnpj ? '' : v.razaoSocial, nome_fantasia: v.nomeFantasia, inscricao_estadual: v.semCnpj ? '' : v.inscricaoEstadual,
+      telefone: v.telefoneLoja, email: v.emailLoja, cep: v.endereco.cep, logradouro: v.endereco.logradouro, numero: v.endereco.numero,
+      complemento: v.endereco.complemento, bairro: v.endereco.bairro, cidade: v.endereco.cidade, uf: v.endereco.uf, lat: v.endereco.lat ?? null, lng: v.endereco.lng ?? null,
+    },
+  });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/lojas');
+  revalidatePath('/comecar');
+  return { ok: true };
+}

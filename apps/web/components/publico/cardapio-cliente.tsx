@@ -675,7 +675,7 @@ function Checkout({
             </div>
           )}
           {!marca.aberta && !podeAgendar && <p className="aviso">A loja está fechada e não aceita pedidos agendados agora.</p>}
-          {!marca.aberta && podeAgendar && <p className="dica" style={{ margin: 0 }}>A loja está fechada agora, mas você pode agendar seu pedido.</p>}
+          {!marca.aberta && podeAgendar && <p className="dica" style={{ margin: 0 }}>A loja está fechada agora, mas você pode agendar seu pedido para quando ela abrir.</p>}
           {agendar && (
             <div className="pub-linha">
               <label style={{ flex: '1 1 8rem' }}>

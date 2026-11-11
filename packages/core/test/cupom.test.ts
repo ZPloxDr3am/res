@@ -105,3 +105,22 @@ test('via da cozinha de entrega traz o endereço por extenso junto do QR', () =>
   const v = cupomTexto(montarCupom('pedido', { ...pedido, qr: 'abc123' }, 48), 48);
   assert.doesNotMatch(v, /ENTREGAR EM:/);
 });
+
+test('pedido do iFood: número do app, código de retirada, acréscimo, desconto dividido, bandeira e CPF (D-074)', () => {
+  const ifood: CupomDados = {
+    ...pedido, origem: 'ifood', pagamento: 'online', troco_para: null, qr: 'abc123',
+    externo_codigo: '4821', codigo_retirada: '7731', cartao_bandeira: 'VISA', documento_cliente: '123.456.789-00',
+    subtotal: 8500, taxa_entrega: 500, acrescimo: 99, desconto: 1000, desconto_loja: 400, desconto_marketplace: 600, total: 8099,
+    entrega_marketplace: true, observacao_entrega: 'deixar na portaria',
+  };
+  const txt = cupomTexto(montarCupom('pedido', ifood, 48), 48);
+  assert.match(txt, /iFood #4821/);
+  assert.match(txt, /COD\. RETIRADA: 7731/);
+  assert.match(txt, /ENTREGA PELO IFOOD/);
+  assert.match(txt, /Acréscimo\s+R\$\s0,99/);
+  assert.match(txt, /\(loja R\$\s4,00 · iFood R\$\s6,00\)/);
+  assert.match(txt, /Pagamento: Pago no iFood \(VISA\)/);
+  assert.match(txt, /CPF\/CNPJ na nota: 123\.456\.789-00/);
+  assert.match(txt, /Obs\. entrega: deixar na portaria/);
+  assert.ok(!montarCupom('pedido', ifood, 48).some((l) => 'qr' in l), 'entregador do iFood não usa o QR do motoboy da loja');
+});

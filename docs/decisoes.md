@@ -673,3 +673,140 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 ## D-072 — Perda mostra o valor antes de registrar (02/11/2026)
 - Ao registrar **Perda** de um insumo, aparece "Valor perdido: R$ X" (quantidade × custo médio) antes de salvar, e a confirmação repete o valor. Na **Contagem**, aparece quanto está faltando ou sobrando em relação ao sistema, em quantidade e em R$.
 - O valor já era gravado (movimento a custo médio) e aparece em Movimentações (Perdas) e no Fechamento do mês (CMV).
+
+## D-073 — Método de trabalho para duas pessoas (05/11/2026)
+- O projeto passa a ter duas pessoas, cada uma com o próprio Claude, trabalhando no mesmo repositório. Método em `docs/desenvolvimento/METODO.md`: ciclo semanal (planejamento na segunda, revisão e novidades na sexta), Issue → branch → PR → revisão cruzada → migração → merge → teste no ar; definição de pronto; arquivos e funções SQL "quentes".
+- Emmanuel (`ZPloxDr3am`) e Hugo (`CriadorHugo`) são **donos do projeto**, com acesso Admin; as tarefas são divididas **por frente** (`docs/desenvolvimento/MODULOS.md`): quem está com a frente faz o merge e roda as migrações dela; **o outro sempre revisa**. Peças compartilhadas pedem a aprovação dos dois.
+- Migrações novas com **data e hora** no nome (`AAAAMMDDHHMMSS_assunto.sql`) para duas pessoas não repetirem número.
+- Documentação em três áreas no repositório: `docs/comercial`, `docs/desenvolvimento`, `docs/qualidade` (roteiros e relatórios de teste). Modelos de Issue (funcionalidade, bug, teste) e de PR em `.github/`; etiquetas e marco da semana por `scripts/github-etiquetas.sh`.
+
+## D-074 — RES pronto para receber o iFood (modo teste) (06/11/2026)
+- **Base de marketplace** (vale para iFood e para os próximos apps): o pedido externo é convertido para o formato do RES (`normalizarPedidoIfood` em `@res/core`) e entra pela mesma porta (`private.receber_pedido_externo`), **uma vez só** (canal + id do pedido; eventos repetidos descartados). Respeita o aceite automático e cai no quadro com som.
+- Pedido ganha: **acréscimo** (taxas extras do app; total = subtotal + entrega + acréscimo − desconto), número do app, **código de retirada**, bandeira do cartão, **CPF/CNPJ na nota**, localizador, observação de entrega, cupons com **quem paga** (loja × iFood) e "entrega pelo iFood".
+- **Ida e volta**: confirmar, pronto (retirada), saiu (entrega) e cancelar no RES entram numa fila e voltam para o iFood. Cancelamento de pedido do app pede um **motivo da lista do iFood** (501–513). O que vem do iFood (cancelado pelo cliente, confirmado no Gestor de Pedidos, concluído) atualiza o RES **sem voltar** para o iFood e nunca faz o pedido andar para trás.
+- **Itens**: cada item do iFood é ligado a um produto do RES (pelo código externo, senão pelo mesmo nome) para a ficha técnica baixar o estoque; os sem ligação aparecem em Aplicativos → iFood para ligar uma vez.
+- **Servidor**: token renovado só perto de vencer; webhook `/api/marketplace/ifood/webhook` com assinatura (X-IFood-Signature); busca de eventos `/api/marketplace/ifood/sincronizar` como reserva (polling + acknowledgment). Credenciais só no servidor (`IFOOD_CLIENT_ID`, `IFOOD_CLIENT_SECRET`, `MARKETPLACE_CRON_SEGREDO`), nunca no navegador.
+- **Modo teste** (sem CNPJ/conta do iFood): em Aplicativos → iFood, ligar o cardápio com merchant "teste" e usar o **simulador** (entrega/retirada, agendado, pago no app/dinheiro/cartão, cupom dividido) e os botões "Cliente cancelou / Confirmado no Gestor / Concluído". No modo teste nada sai para o iFood: a fila marca **simulado**.
+- **Cupom**: "iFood #4821", código de retirada grande, "ENTREGA PELO IFOOD" (sem QR do motoboy da loja), acréscimo, desconto dividido (loja × iFood), "Pago no iFood (VISA)", CPF/CNPJ e observação de entrega.
+- **Falta para ir ao ar** (depende do CNPJ/conta): cadastrar o app no Portal do Desenvolvedor, credenciais no servidor, agendar a busca a cada 30 s, homologação e trocar a loja para produção. Próxima etapa: responder a Plataforma de Negociação e ler os motivos de cancelamento ao vivo.
+- **Roteiro de teste**: (1) ligar o cardápio em modo teste; (2) criar pedido de entrega pago no app com cupom → conferir quadro, selo iFood, cupom dividido, impressão; (3) aceitar, pronto, saiu → fila mostra "simulado" em cada um; (4) pedido em dinheiro com troco → troco no cupom; (5) retirada agendada → data/hora e código de retirada; (6) "Cliente cancelou" → cancela no RES sem item na fila; (7) cancelar pelo RES → pede motivo do iFood; (8) item sem ligação → ligar em Aplicativos e conferir baixa de estoque no próximo pedido.
+
+## D-075 — iFood: Plataforma de Negociação, motivos ao vivo e busca automática (06/11/2026)
+- **Negociação** (eventos HSD/HSS do iFood): quando o cliente pede cancelamento ou reembolso depois de confirmado, aparece uma faixa vermelha **no topo do quadro de pedidos**, com bipe (se o som estiver ligado), o pedido, a mensagem do cliente, o **prazo correndo** e o que o iFood faz se ninguém responder.
+- A loja responde ali mesmo, só com o que o iFood permite em cada caso:
+  - **depois da entrega**: aceitar, recusar (motivo que o cliente lê) ou **oferecer reembolso** até o teto do iFood;
+  - **no preparo**: aceitar ou recusar;
+  - **por atraso**: aceitar (com motivo) ou **pedir mais tempo** (10/20/30 min…); recusar não é permitido;
+  - **reembolso parcial** (item faltando etc.): aceitar, recusar ou contraproposta.
+- Cancelamento aceito (ou vencido com "aceitar cancelamento") **cancela o pedido no RES**, inclusive já concluído, sem pedir cancelamento de novo ao iFood. Reembolso/mais tempo não cancela. Cada negociação é respondida uma vez; o banco confere tudo (permissão, prazo, teto, minutos) e o servidor monta a chamada ao iFood a partir da resposta conferida.
+- **Modo teste**: em Aplicativos → iFood, botões "Quer cancelar no preparo", "Reclamou do atraso", "Reclamou depois da entrega" e "Faltou item"; a resposta é aceita na hora (fila "simulado") e a negociação vencida fecha sozinha.
+- **Motivos de cancelamento ao vivo**: com a loja em produção, o cancelamento de pedido do iFood mostra a lista que o iFood devolve para aquele pedido; no modo teste (ou se a consulta falhar), a lista padrão 501–513.
+- **Busca automática**: o banco roda `private.marketplace_tique()` a cada 30 s (pg_cron). Vence negociações sem resposta e, **só se houver loja em produção**, chama `/api/marketplace/ifood/sincronizar` (cabeçalho X-RES-Chave) para buscar eventos e enviar a fila. O segredo fica no **Vault do Supabase** (`marketplace_cron_segredo`, o mesmo `MARKETPLACE_CRON_SEGREDO` da Vercel) e quem cadastra é o dono, no dia de ligar o iFood.
+
+## D-076 — Cadastro sozinho e Primeiros passos (07/11/2026)
+- **`/cadastro`** (público; "Criar conta" do login leva para cá): numa tela só, nome, WhatsApp, e-mail e senha de quem cadastra + nome do restaurante, tipo (pizzaria, hamburgueria, lanchonete, restaurante, japonês, açaí, doceria, outro), cidade e **endereço do cardápio** (sugerido pelo nome, conferido enquanto digita). Aceite obrigatório dos **Termos de Uso** e da **Política de Privacidade** (versão gravada na conta).
+- Cria **conta própria** (1 loja, 1 cardápio, `origem = cadastro`) com o dono como Administrador, cidade, tipo e WhatsApp no cardápio. O cardápio nasce **fechado** e só abre no último passo.
+- **Cardápio de exemplo** opcional por tipo de restaurante (categorias e produtos com preço sugerido, marcados "Exemplo: troque nome, foto, descrição e preço."). Só entra em loja sem produtos; exemplo não editado não conta como produto pronto.
+- Se o Supabase pedir confirmação de e-mail, os dados ficam guardados na conta e a loja é criada quando a pessoa toca no link (`/auth/confirmar` → `/comecar` → `/onboarding` cria e volta). Se o endereço do cardápio for tomado nesse meio-tempo, o onboarding pede outro e mantém o resto.
+- **Primeiros passos** (`/comecar`, no topo do menu só para dono/gerente de loja nova): dados do restaurante, cardápio (≥3 produtos seus com preço), logo, horários, entrega ou retirada, **abrir o cardápio** (confere produto, horário e entrega antes) e, opcionais, impressora e equipe. Barra de progresso; aberto, mostra link, QR, "Mandar no WhatsApp" e "Ver como o cliente vê". "Concluir" tira do menu. Lojas que já existiam não veem.
+- **Termos e Privacidade** (`/termos`, `/privacidade`): versão preliminar com o papel de cada um na LGPD (RES controlador dos dados da conta; restaurante controlador e RES operador dos dados dos consumidores). **Falta**: revisão de advogado, razão social/CNPJ e canal do encarregado (DPO).
+- Correção: as rotas do iFood (`/api/marketplace/…`) passam a ser públicas no middleware (antes o webhook e a busca do iFood seriam mandados para o login).
+
+## D-077 — Cadastro completo da empresa (08/11/2026)
+- O cadastro vira **3 etapas** com progresso: **Responsável** (nome completo, celular/WhatsApp, e-mail, senha) → **Empresa** → **Restaurante** (nome no cardápio, tipo, endereço do cardápio, quantas lojas, pedidos por dia, sistema atual, como conheceu, exemplo, aceite dos termos). Cada etapa é conferida antes de avançar.
+- **Empresa**: CNPJ com dígito verificador; ao completar, busca os **dados públicos da Receita** (BrasilAPI) e preenche razão social, nome fantasia, telefone, e-mail e endereço, mostrando a **situação cadastral** (aviso se não estiver ATIVA). Quem ainda não tem CNPJ usa o **CPF**. Inscrição estadual opcional. Telefone da loja obrigatório (se for celular vira o WhatsApp do cardápio; senão, o do responsável). **CEP** preenche rua, bairro, cidade e UF (BrasilAPI, ViaCEP de reserva) e, quando vem, o ponto no mapa (saída das entregas).
+- **Um CNPJ/CPF só abre uma conta pelo cadastro** (sem teste grátis repetido); no mesmo grupo de lojas pode repetir.
+- Gravado: na **loja** CNPJ ou CPF, razão social, fantasia, IE, telefone, e-mail, endereço estruturado (e o endereço de uma linha que as entregas já usam); na **conta** razão social como nome, responsável (nome, celular, e-mail) e as respostas comerciais (`info_comercial`).
+- **Lojas e equipe → Dados da empresa**: mesmos campos para editar (trocar CPF por CNPJ, mudar endereço). Vale também para as lojas que já existiam. "Primeiros passos" aponta para cá.
+- Se a Receita ou o CEP não responderem, a pessoa preenche à mão; nada trava.
+
+## D-078 — Quadro de pedidos com todas as lojas (08/11/2026)
+- No topo do quadro, **"[loja atual] | 🏪 Todas as lojas (N)"** (só aparece para quem tem mais de uma loja). Em "todas", cada cartão mostra a loja e os filtros separam por loja; tempo real e negociações do iFood valem para todas.
+- A escolha fica **salva no usuário** (metadado `quadro_todas` da conta de login): cada dono/gerente/caixa decide se abre o quadro numa loja ou na operação inteira, em qualquer aparelho. `?todas=1` / `?todas=0` no endereço manda na hora.
+- Aceite automático, pausa, modo movimento e fila de impressão continuam por loja (aparecem quando uma loja está escolhida).
+
+## D-079 — Quadro compacto tipo kanban (08/11/2026)
+- O quadro passa a ser **só compacto** (a visão detalhada antiga saiu a pedido do dono). Inspirado no quadro do BeeFood, sem copiar. Agendados e "aguardando Pix" também usam o cartão curto.
+- **6 colunas** lado a lado com cor no topo e contador: Aguardando · Em preparo · Pronto · Saiu para entrega · Concluídos · Cancelados (últimas 12 h). Cada coluna rola sozinha; no celular as colunas deslizam para o lado.
+- **Cartão curto**: tipo (🛵/🏪/🍽️), número, selo iFood/Online, agendado, atraso em vermelho, cliente e telefone, bairro e rua, tempo desde o pedido, pagamento (✓ pago / 💰 cobrar), total e, embaixo, **a loja com a cor dela** (em "todas as lojas"; numa loja com várias marcas, a marca). Botão da próxima etapa (Aceitar, Marcar pronto, Saiu, Entregue) direto no cartão.
+- Tocar no cartão abre o **pedido completo** por cima (itens, combo, iFood, cobrança, WhatsApp, impressão, cancelar). Os filtros por loja ganham a mesma cor.
+
+## D-080 — Repaginação: sistema de design (08/11/2026)
+- Mantém a identidade da D-034 (verde-manjericão, mel, tomate, Onest) e sobe o acabamento com um **sistema único** aplicado nas peças que todas as telas usam (cartão, botão, campo, abas, filtros, tabelas, indicadores, menu, quadro).
+- **Escalas**: espaço em múltiplos de 4px (`--e1`…`--e9`); tipo com base 15px (`--t-xs`…`--t-3xl`). Controles de **40px** (tablet e dedo de cozinha), compactos de 32px, abas de 36px, linhas de tabela de 44px com cabeçalho fixo.
+- **Tipografia**: Onest para ler e operar; **Bricolage Grotesque só para números e títulos** (títulos de página, indicadores, preço, total, nº do pedido) — é a "voz de comanda" do RES. Números tabulares em todo o sistema.
+- Página mais larga (até 1360px) e ritmo fixo entre blocos (24px), cartões com 20/24px de respiro.
+
+## D-081 — Rodapé fixo do menu (08/11/2026)
+- Embaixo do menu lateral, sempre visível (o resto do menu rola por cima): **Meus links** (link de cada cardápio da loja, com Copiar e Abrir), **Suporte** (WhatsApp do time RES com a mensagem já começada com o nome da loja), **Sair** e a **versão** publicada.
+- O número do suporte vem de `NEXT_PUBLIC_SUPORTE_WHATSAPP` (Vercel); sem ele, o Suporte avisa que o canal está sendo configurado.
+
+## D-082 — Cadastro por convite, teste grátis e bloqueio (10/11/2026)
+- Etapa 1 da análise de 08/11 (sem nota fiscal e sem mexer no repositório, que ficam para depois).
+- **Cadastro só com convite** (padrão): `/cadastro` pede o código; o link `…/cadastro?convite=K7M2Q9XA` já abre o formulário. Convite é de **uso único**, vale 30 dias e diz quantos dias de teste dá (7, 14, 21 ou 30). O modo "aberto para todos" existe para quando a cobrança estiver pronta.
+- Conta nova só nasce pelo cadastro com convite ou pela equipe RES — o caminho antigo de criar loja (onboarding) deixou de abrir conta grátis sem prazo.
+- **Teste grátis**: a conta do cadastro começa em `teste` com prazo. Situações: teste · ativa (paga até uma data, ou sem prazo — as lojas do piloto) · suspensa.
+- **Bloqueio**: com o teste ou a assinatura vencidos (ou suspensa), **pedido novo não entra** por nenhum canal (cardápio digital, painel, iFood, API); os dados continuam. Faixa no topo do painel: dias de teste nos últimos dias, aviso 5 dias antes de vencer, e "novos pedidos pausados".
+- **Equipe RES** (`/equipe-res`, só para quem está em `private.equipe_res`, liberado à mão no editor SQL — nenhum e-mail no código): criar convite (copia o link, manda no WhatsApp), cancelar, ver se foi usado; lista dos restaurantes com situação, responsável e WhatsApp, pedidos em 7 dias, cardápio aberto ou não, perfil comercial do cadastro; botões Ativar 30 dias, Ativar sem prazo, +7 dias de teste, Suspender. Enquanto não há cobrança automática, é aqui que o pagamento (Pix) é registrado.
+
+## D-083 — Dois painéis: restaurante × empresa RES (10/11/2026)
+- **Painel do restaurante** (o que o dono compra): operação, vendas, clientes, gestão e ajustes da loja — nada da plataforma aparece ali.
+- **Painel da empresa RES** (`/empresa`, só para a equipe RES, menu escuro com o selo "Empresa"): **Visão geral** (restaurantes, em teste, vencendo em 3 dias, ativas, pausadas, pedidos em 7 dias e o caminho convite → cardápio aberto → primeiro pedido; lista do que precisa de atenção), **Restaurantes** (situação, contato, uso, ativar/estender/suspender), **Convites**, **Configurações** (quem pode se cadastrar, equipe RES incluída e tirada pelo e-mail de login, e o que está ligado na plataforma: iFood, busca automática, WhatsApp do suporte — só se está configurado, nunca o valor).
+- **Endereço próprio**: o painel da empresa fica num domínio separado (`EMPRESA_HOST` na Vercel, ex.: `res-empresa.vercel.app`; depois `empresa.<domínio do RES>`). Nesse endereço só existe o painel da empresa (a raiz e qualquer outra página levam para ele); no endereço dos restaurantes, `/empresa` não existe (404). **Nenhum link entre os dois painéis** — o menu do restaurante não mostra nada da empresa. Login separado em cada endereço.
+- Próximos itens do painel da empresa: planos e cobrança, comunicados para os restaurantes, suporte.
+
+## D-084 — Registro de erros e aviso de "sem conexão" (10/11/2026)
+- Etapa 2 da análise de 08/11. **Erros**: tudo que quebra no navegador (tela que não carrega, erro solto) e no servidor (página, ação, rota) vai para `private.erros_app` — sem serviço de fora. O mesmo erro na mesma hora soma "vezes"; teto de 500 registros por hora; textos cortados; guarda 90 dias (limpeza diária às 04:17).
+- **Painel da empresa → Erros**: agrupados, mais recentes primeiro, com onde aconteceu, quantas vezes, para quantas pessoas, em quais lojas e o detalhe técnico ao abrir; filtro 24 h / 7 / 30 dias. A Visão geral mostra "N erros nas últimas 24 horas" em "Precisa de atenção".
+- A tela de erro do RES agora diz que o erro foi registrado e oferece "Tentar de novo" e "Recarregar".
+- **Sem conexão**: no quadro de pedidos, se a internet cai (ou o tempo real fica fora mais de 8 s), aparece uma faixa vermelha fixa no topo, "Sem conexão desde 20:14. Pedidos novos podem não estar aparecendo." Quando volta, "Conexão de volta. Quadro atualizado." e a tela se atualiza sozinha.
+- Alerta ativo (WhatsApp/e-mail para a equipe quando um erro dispara) fica para quando o número do suporte existir.
+
+## D-085 — Planos, módulos e cobrança (10/11/2026)
+- **3 planos por loja + adicionais** (escolha do dono). Preços iniciais: **Essencial R$ 199,99**, **Profissional R$ 299,99**, **Completo R$ 399,99** por loja/mês. Todos editáveis no painel da empresa → **Planos e preços** (nome, preço, descrição, quais módulos entram, se aparece para cliente novo).
+- **Básico em todo plano**: cardápio digital, quadro de pedidos, delivery (bairros/km), impressão, caixa, lojas e equipe.
+- **Módulos** (liga/desliga): iFood, Pix automático, Entregas e motoboy, Clientes, Promoções, Fidelidade, Relatórios (Profissional); + Estoque/CMV, Financeiro, Gestão, Eventos e Vários cardápios (Completo). Cada um também vendido como **adicional** (R$ 39 a 59 por loja; cardápio extra R$ 99 cada, além do 1º de cada loja).
+- **Por cliente** (painel da empresa → Restaurantes → Plano): trocar o plano e ajustar cada módulo: segue o plano / adicional (cobra) / liberado sem cobrar / desligado.
+- **Teste grátis e contas do piloto: tudo liberado.** Cliente novo entra no Profissional; o piloto ficou no Completo e sem cobrança.
+- **No painel do restaurante**: tela fora do plano mostra "não está no seu plano" com "Ver planos"; no menu aparece com cadeado. Nova tela **Ajustes → Assinatura** (só o dono): valor do mês com detalhe, fatura e Pix, troca de plano (vale na hora), contratar/remover adicional, histórico. iFood e Pix automático também param no servidor quando o módulo está fora.
+- **Fatura**: gerada sozinha todo dia às 09:07 para quem vence em até 5 dias (fim do teste ou do mês pago); valor = plano × lojas + adicionais × lojas + cardápios extras. Pagou: conta ativa por mais 1 mês a partir do vencimento. Mudou plano/adicional: a fatura em aberto (sem Pix gerado) acompanha.
+- **Pix**: pela conta Mercado Pago da empresa RES (`MP_RES_ACCESS_TOKEN`, só no servidor; aviso em `/api/mercadopago/res`, que sempre confere o pagamento na API e o valor). Sem o token, a fatura fica para a equipe **marcar como paga** em **Cobrança** (recebido 30 dias, previsto por mês, contas pagantes, vencidas).
+- Brecha fechada: o dono não altera mais situação, prazos, plano ou limites da conta direto na tabela (só pelas funções).
+
+## D-086 — Agendar com a loja fechada (10/11/2026)
+- Com o cardápio fechado **pelo horário** (ou em pausa), o cliente agenda **para quando abrir**, mesmo que a loja não aceite agendamento normal: só horários do próximo turno (passando da meia-noite, se o turno passa). Antes ele ia embora.
+- Vem ligado; desliga em Delivery → "Com a loja fechada, aceitar pedido para quando abrir" (aparece quando "Pedidos agendados" está em "Não aceitar"). Cardápio fechado no botão "Fechado" (férias, problema) continua sem aceitar nada.
+
+## D-087 — Resumo no topo do quadro e controles por loja em "todas as lojas" (10/11/2026)
+- Acima do quadro: pedidos ativos (e quantos novos), preparo médio (aceito → pronto), entrega média (saiu → entregue) e quantos estão passando do prazo, com base nas últimas 12 h. Agendado para mais de 1 h à frente não conta como ativo.
+- No modo "todas as lojas", uma linha por loja (com a cor da loja) mostra ativos, preparo médio e atrasados, e tem **aceite automático, modo movimento e pausa daquela loja**, sem precisar trocar de loja.
+
+## D-088 — CPF do dono só para o dono (10/11/2026)
+- LGPD: a coluna `lojas.cpf` saiu da leitura direta. O titular da conta (e o time do RES) lê por `cpf_da_loja`; a equipe só sabe se existe (`loja_tem_cpf`). Gerente que salva Dados da empresa sem ver o CPF não apaga o CPF guardado.
+- **Para migrações futuras**: coluna nova em `public.lojas` precisa de `select private.liberar_colunas_lojas();` no fim da migração. O teste do banco acusa se esquecer.
+
+## D-089 — Fontes guardadas no projeto (10/11/2026)
+- Onest e Bricolage Grotesque agora vêm de `apps/web/app/fontes` (recortadas para o alfabeto latino; licença OFL junto). O build não baixa mais nada do Google Fonts, o que acaba com a falha falsa do CI.
+
+## D-090 — Precificação no formato do mercado (inspirada no BeeFood) (10/11/2026)
+- Olhamos o "Meu plano" do BeeFood (conta do dono): planos por **tipo de operação**, preço **por conta**, cardápio extra barato, adicionais por conta/cardápio/aparelho, aparelhos grátis no plano e anual com desconto. Eles cobram R$ 530 pelas 3 lojas do piloto; no nosso modelo de D-085 (por loja) seriam uns R$ 900 — caro demais para trocar de sistema.
+- **Planos (por conta, cobre 1 loja e 1 cardápio)**: **Delivery R$ 149,90** (entregas + app do motoboy, Pix automático, clientes, promoções, relatórios; 5 App Entregador grátis) · **Salão R$ 149,90** (salão/garçom, Pix automático, clientes, promoções, relatórios; 5 App Garçom grátis) · **Completo R$ 239,90** (tudo menos iFood; 5 + 5 aparelhos). Essencial e Profissional saíram de venda; quem estava neles foi para Delivery.
+- **Loja ou cardápio extra: R$ 49,90** cada (em todo plano). **Adicionais por conta**: iFood/marketplaces 49,90 · Entregas 49,90 · Salão 49,90 · Pix automático, Promoções, Fidelidade, Estoque, Financeiro, Gestão 29,90 · Clientes, Relatórios, Eventos 19,90. **Aparelho extra** (App Entregador / App Garçom): 19,90 cada.
+- **Anual: 20% de desconto** em tudo (plano, extras, adicionais, aparelhos); a fatura anual cobre 12 meses. O dono escolhe Mensal/Anual em Assinatura.
+- **Aparelhos**: com a conta paga, a equipe só ganha mais motoboys/garçons ativos até o limite (grátis + extras); acima disso, o RES pede para contratar em Assinatura. Teste grátis e piloto: sem limite. Não deixa reduzir extras abaixo do que está em uso.
+- Exemplo: as 3 lojas do piloto no Completo + iFood = 239,90 + 2 × 49,90 + 49,90 = **R$ 389,50/mês** (R$ 311,60/mês no anual).
+- Tudo editável no painel da empresa → Planos e preços (preço, módulos, aparelhos grátis, preço dos adicionais, desconto anual).
+
+## D-091 — Quadro: arrastar o cartão, encerrados de pedido antigo, links no celular (10/11/2026)
+- **Arrastar o cartão** para outra coluna muda a etapa (no computador). Só as colunas para onde o pedido pode ir ficam marcadas; as outras ficam apagadas. Cancelar continua pelo pedido (pede o motivo). No celular, os botões seguem como antes.
+- **Concluídos/Cancelados** passam a mostrar o que foi encerrado nas últimas 12 h, mesmo pedido criado antes disso (o pedido de iFood de 2 dias atrás concluído agora sumia do quadro em vez de ir para Concluídos), do mais recente para o mais antigo.
+- **Celular**: a folha "Mais" ganhou **Meus links** (copiar/abrir cada cardápio), **Suporte** (WhatsApp, quando o número existir) e a versão.
+- Busca por chaves e senhas no histórico do repositório: nada encontrado (só a senha do banco de teste do CI, local). O repositório pode ficar privado quando o dono quiser.
+
+## D-092 — LGPD: dados do cliente final (10/11/2026)
+- Clientes → abrir o cliente → **Pedido do cliente (LGPD)**: **Exportar dados** (arquivo com cadastro, endereços, pedidos e fidelidade) e **Apagar dados** (confirma com os 4 últimos números do telefone). Só dono e gerente.
+- Apagar tira nome, telefone, endereço, documento e observação de entrega dos pedidos em todas as lojas do grupo e remove cadastro, endereços e fidelidade; os valores ficam para o caixa e o financeiro. Não dá para desfazer.
+- **Prazo de guarda**: cliente sem pedido há **24 meses** é apagado sozinho (todo dia 2). Cada exportação e exclusão fica em `lgpd_registros`. A Política de Privacidade deve citar esse prazo quando for revisada (com o CNPJ).
+
+## D-093 — Quadro sem os cartões de controle por loja (10/11/2026)
+- A pedido do dono, saiu do modo "todas as lojas" a linha de cartões com aceite automático, movimento e pausa de cada loja (ficou poluída). O resumo (ativos, preparo médio, entrega média, passando do prazo) continua. Para mexer nos controles de uma loja, escolha a loja no topo do quadro.

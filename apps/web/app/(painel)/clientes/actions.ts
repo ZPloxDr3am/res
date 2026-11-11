@@ -39,3 +39,19 @@ export async function exportarClientes(segmento: Segmento | null): Promise<{ ok:
   if (error) return { ok: false, erro: error.message };
   return { ok: true, clientes: (data as ClienteExportado[]) ?? [] };
 }
+
+/** LGPD (D-092): cópia dos dados do cliente (dono/gerente). */
+export async function dadosDoCliente(clienteId: string): Promise<{ ok: true; dados: unknown } | { ok: false; erro: string }> {
+  const ctx = await contextoLoja();
+  const { data, error } = await (await criarClienteServidor()).rpc('dados_do_cliente', { p_loja: ctx.lojaId, p_cliente: clienteId });
+  return error ? { ok: false, erro: error.message } : { ok: true, dados: data };
+}
+
+/** LGPD (D-092): apaga os dados do cliente em todas as lojas do grupo. */
+export async function apagarDadosCliente(clienteId: string, confirmacao: string): Promise<{ ok: true } | { ok: false; erro: string }> {
+  const ctx = await contextoLoja();
+  const { error } = await (await criarClienteServidor()).rpc('apagar_dados_cliente', { p_loja: ctx.lojaId, p_cliente: clienteId, p_confirmacao: confirmacao });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/clientes');
+  return { ok: true };
+}

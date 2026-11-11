@@ -1,9 +1,36 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PUBLICAS = ['/api/v1/', '/api/mcp', '/api/mercadopago/', '/login', '/auth', '/c/', '/g/', '/api/agente/', '/m/manifest.webmanifest']; // /api/agente: pareamento do agente de impressão // /c/: cardápio digital do cliente (sem login)
+const PUBLICAS = ['/api/v1/', '/api/mcp', '/api/mercadopago/', '/api/marketplace/', '/login', '/cadastro', '/termos', '/privacidade', '/auth', '/c/', '/g/', '/api/agente/', '/m/manifest.webmanifest']; // /api/agente: pareamento do agente de impressão // /c/: cardápio digital do cliente (sem login)
+
+// Painel da empresa RES em endereço próprio (D-083): EMPRESA_HOST = o domínio do painel da empresa
+// (ex.: res-empresa.vercel.app). Nele só existe o /empresa; no endereço dos restaurantes o /empresa não existe.
+const EMPRESA_HOST = (process.env.EMPRESA_HOST ?? '').toLowerCase();
+const NO_EMPRESA = ['/empresa', '/login', '/auth', '/api/'];
 
 export async function middleware(request: NextRequest) {
+  const host = (request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? '').toLowerCase();
+  const caminho = request.nextUrl.pathname;
+  if (EMPRESA_HOST) {
+    if (host === EMPRESA_HOST) {
+      if (caminho === '/') {
+        const url = request.nextUrl.clone();
+        url.pathname = '/empresa';
+        return NextResponse.redirect(url);
+      }
+      if (!NO_EMPRESA.some((p) => caminho.startsWith(p))) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/empresa';
+        url.search = '';
+        return NextResponse.redirect(url);
+      }
+    } else if (caminho === '/empresa' || caminho.startsWith('/empresa/') || caminho === '/equipe-res') {
+      return new NextResponse('Página não encontrada', { status: 404 });
+    }
+  }
+
+  // D-085: o layout do painel sabe a tela pedida (para travar módulo fora do plano)
+  request.headers.set('x-res-caminho', caminho);
   let resposta = NextResponse.next({ request });
 
   const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
