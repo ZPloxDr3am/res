@@ -1620,9 +1620,9 @@
     "semantic_hash": "94a1688047a50c73f4a3c65b0fcdcaf6"
   },
   "README.md": {
-    "mtime": 1794355880.8202977,
-    "seen": 1794355908.2216601,
-    "ast_hash": "3af1556e190fa8dda0efd8b7f1b3d2f4",
+    "mtime": 1794356093.5563104,
+    "seen": 1794356098.4895077,
+    "ast_hash": "f04d73cf54022850d4b20c9a41bd45c9",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/README.md": {
@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794355900.9722989,
-    "seen": 1794355908.2217956,
+    "mtime": 1794356093.5563104,
+    "seen": 1794356098.4896722,
     "ast_hash": "3645fcded363208a04e41a02e989bbae",
     "semantic_hash": ""
   },
@@ -2765,18 +2765,6 @@
     "ast_hash": "bf83c79a01a3baa45bcb4dfd75efd117",
     "semantic_hash": ""
   },
-  "e2e/pedido.spec.ts": {
-    "mtime": 1794355880.9699545,
-    "seen": 1794355908.2170417,
-    "ast_hash": "5da556fe4e737570f234d98de96c4f99",
-    "semantic_hash": ""
-  },
-  "e2e/playwright.config.ts": {
-    "mtime": 1794355880.9739122,
-    "seen": 1794355908.2170436,
-    "ast_hash": "8bacdd4797a1ae87d0c58e662e333dcd",
-    "semantic_hash": ""
-  },
   "scripts/github-etiquetas.sh": {
     "mtime": 1794355880.8322978,
     "seen": 1794355908.218387,
@@ -2864,7 +2852,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1794355910.3734305,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   }
 }
