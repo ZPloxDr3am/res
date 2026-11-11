@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794426080.662827,
-    "seen": 1794426084.3024654,
+    "mtime": 1794426168.1388137,
+    "seen": 1794426175.44597,
     "ast_hash": "e2eeca25676bf3b2bed6f056e500299e",
     "semantic_hash": ""
   },
@@ -2852,12 +2852,12 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1794425779.470786,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
-    "mtime": 1794426080.660399,
-    "seen": 1794426084.3016737,
+    "mtime": 1794426168.1388137,
+    "seen": 1794426175.4355857,
     "ast_hash": "f4f6c552bb4a3711874878bbf738e2ac",
     "semantic_hash": ""
   },
