@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794425628.5147817,
-    "seen": 1794425779.4715078,
-    "ast_hash": "5c90529cd89ec9f7293bbae7519a8a46",
+    "mtime": 1794426080.662827,
+    "seen": 1794426084.3024654,
+    "ast_hash": "e2eeca25676bf3b2bed6f056e500299e",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2856,9 +2856,9 @@
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
-    "mtime": 1794425773.738811,
-    "seen": 1794425779.470801,
-    "ast_hash": "7bf554c9e5beca57a760fc74c36f705e",
+    "mtime": 1794426080.660399,
+    "seen": 1794426084.3016737,
+    "ast_hash": "f4f6c552bb4a3711874878bbf738e2ac",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/cardapio/organizar/page.tsx": {
