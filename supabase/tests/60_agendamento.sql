@@ -72,11 +72,26 @@ select from pg_temp.esperar_erro($q$select private.validar_agendamento(pg_temp.i
 select from pg_temp.esperar_erro($q$select private.validar_agendamento(pg_temp.id('marca'), '2026-10-30 19:00:00-03', '2026-10-23 17:00:00-03')$q$, 'até 2 dia');
 select from pg_temp.esperar_erro($q$select private.validar_agendamento(pg_temp.id('marca'), '2026-10-24 12:00:00-03', '2026-10-23 17:00:00-03')$q$, 'não funciona');
 select private.validar_agendamento(pg_temp.id('marca'), '2026-10-23 20:00:00-03', '2026-10-23 17:00:00-03');
-update public.marcas set agendamento_dias = 0 where id = pg_temp.id('marca');
+update public.marcas set agendamento_dias = 0, agendar_fechado = false where id = pg_temp.id('marca');
 select from pg_temp.esperar_erro($q$select private.validar_agendamento(pg_temp.id('marca'), '2026-10-23 20:00:00-03', '2026-10-23 17:00:00-03')$q$, 'não aceita');
 do $$ begin
   if cardinality(private.horarios_agendamento(pg_temp.id('marca'), '2026-10-23 17:00:00-03')) <> 0 then raise exception 'sem agendamento: lista deveria ser vazia'; end if;
 end $$;
+-- D-086: fechada pelo horário → agenda para quando abrir (só o próximo turno), mesmo sem agendamento normal
+update public.marcas set agendar_fechado = true where id = pg_temp.id('marca');
+do $$
+declare h timestamptz[] := private.horarios_agendamento(pg_temp.id('marca'), '2026-10-23 17:00:00-03');
+begin
+  if cardinality(h) <> 32 or h[32] <> '2026-10-24 01:45:00-03' then raise exception 'para quando abrir: % horários, último %', cardinality(h), h[cardinality(h)]; end if;
+  -- aberta agora (sexta 19:00): sem agendamento normal, nada de agendar
+  if cardinality(private.horarios_agendamento(pg_temp.id('marca'), '2026-10-23 19:00:00-03')) <> 0 then raise exception 'aberta não deveria agendar'; end if;
+end $$;
+select private.validar_agendamento(pg_temp.id('marca'), '2026-10-23 20:00:00-03', '2026-10-23 17:00:00-03');
+select from pg_temp.esperar_erro($q$select private.validar_agendamento(pg_temp.id('marca'), '2026-10-23 20:00:00-03', '2026-10-23 19:00:00-03')$q$, 'não aceita');
+-- "Fechado" manual (férias, problema) continua sem aceitar
+update public.marcas set status_cardapio = 'fechado' where id = pg_temp.id('marca');
+select from pg_temp.esperar_erro($q$select private.validar_agendamento(pg_temp.id('marca'), '2026-10-23 20:00:00-03', '2026-10-23 17:00:00-03')$q$, 'não aceita');
+update public.marcas set status_cardapio = 'auto' where id = pg_temp.id('marca');
 
 -- ---------------------------------------------------------------- pedido agendado pelo cliente (agora real)
 -- Funciona todos os dias 00:00–23:59, mas está "fechado agora" no botão.

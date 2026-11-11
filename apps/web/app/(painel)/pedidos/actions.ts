@@ -1,10 +1,11 @@
 'use server';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@supabase/supabase-js';
-import { DOMINIO_USUARIOS, normalizarUsuario, type FormaPagamento, type StatusPedido, type TipoPedido } from '@res/core';
+import { DOMINIO_USUARIOS, MOTIVOS_CANCELAMENTO_PADRAO, normalizarUsuario, type RespostaNegociacao, type FormaPagamento, type StatusPedido, type TipoPedido } from '@res/core';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import { contextoLoja } from '@/lib/loja';
 import { carregarDadosNovoPedido, type DadosNovoPedido } from '@/lib/novo-pedido';
+import { motivosCancelamento } from '@/lib/marketplace/ifood';
 
 export type Resultado = { ok: true } | { ok: false; erro: string };
 
@@ -19,10 +20,13 @@ export async function mudarStatus(pedidoId: string, status: StatusPedido, motivo
   return { ok: true };
 }
 
-export async function definirAceiteAutomatico(valor: boolean): Promise<Resultado> {
+/** Loja alvo: a pedida (modo "todas as lojas", D-087), se a pessoa trabalha nela; senão a loja atual. */
+const lojaAlvo = (ctx: Awaited<ReturnType<typeof contextoLoja>>, lojaId?: string) => (lojaId && ctx.lojas.some((l) => l.id === lojaId) ? lojaId : ctx.lojaId);
+
+export async function definirAceiteAutomatico(valor: boolean, lojaId?: string): Promise<Resultado> {
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
-  const { data, error } = await supabase.from('lojas').update({ aceite_automatico: valor }).eq('id', ctx.lojaId).select('id');
+  const { data, error } = await supabase.from('lojas').update({ aceite_automatico: valor }).eq('id', lojaAlvo(ctx, lojaId)).select('id');
   if (error) return { ok: false, erro: mensagem(error) };
   if (!data?.length) return { ok: false, erro: 'Só quem cuida dos dados da empresa pode mudar o aceite automático.' };
   revalidatePath('/pedidos');
@@ -144,10 +148,10 @@ export async function marcarAviso(pedidoId: string, etapa: StatusPedido, avisado
 }
 
 /** Pausa temporária da loja com recado (D-059). minutos = 0 retoma. */
-export async function pausarLoja(minutos: number, recado?: string): Promise<Resultado> {
+export async function pausarLoja(minutos: number, recado?: string, lojaId?: string): Promise<Resultado> {
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
-  const { error } = await supabase.rpc('pausar_loja', { p_loja: ctx.lojaId, p_minutos: Math.round(minutos), p_recado: recado ?? null });
+  const { error } = await supabase.rpc('pausar_loja', { p_loja: lojaAlvo(ctx, lojaId), p_minutos: Math.round(minutos), p_recado: recado ?? null });
   if (error) return { ok: false, erro: mensagem(error) };
   revalidatePath('/pedidos');
   revalidatePath('/delivery');
@@ -155,10 +159,10 @@ export async function pausarLoja(minutos: number, recado?: string): Promise<Resu
 }
 
 /** Modo movimento (D-062): +minutos no preparo e na entrega por algumas horas. minutos = 0 desliga. */
-export async function definirMovimento(minutos: number, horas: number | null): Promise<Resultado> {
+export async function definirMovimento(minutos: number, horas: number | null, lojaId?: string): Promise<Resultado> {
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
-  const { error } = await supabase.rpc('definir_movimento', { p_loja: ctx.lojaId, p_minutos: Math.round(minutos), p_horas: horas });
+  const { error } = await supabase.rpc('definir_movimento', { p_loja: lojaAlvo(ctx, lojaId), p_minutos: Math.round(minutos), p_horas: horas });
   if (error) return { ok: false, erro: mensagem(error) };
   revalidatePath('/pedidos');
   return { ok: true };
@@ -172,4 +176,35 @@ export async function definirProntoAuto(ligado: boolean): Promise<Resultado> {
   if (error) return { ok: false, erro: mensagem(error) };
   revalidatePath('/pedidos');
   return { ok: true };
+}
+
+/** Resposta da loja numa negociação do iFood (D-075). O banco confere o que o iFood permite. */
+export async function responderNegociacao(id: string, resposta: RespostaNegociacao): Promise<{ ok: true; situacao: string } | { ok: false; erro: string }> {
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('responder_negociacao', { p_negociacao: id, p_resposta: resposta });
+  if (error) return { ok: false, erro: mensagem(error) };
+  revalidatePath('/pedidos');
+  return { ok: true, situacao: String(data) };
+}
+
+/** Motivos de cancelamento do iFood para este pedido: ao vivo com o iFood ligado; senão a lista padrão. */
+export async function motivosCancelamentoPedido(pedidoId: string): Promise<{ codigo: string; descricao: string }[]> {
+  const supabase = await criarClienteServidor();
+  const { data: p } = await supabase.from('pedidos').select('externo_id, loja_id, marca_id').eq('id', pedidoId).maybeSingle();
+  if (!p?.externo_id) return MOTIVOS_CANCELAMENTO_PADRAO;
+  const { data: ml } = await supabase.from('marketplace_lojas').select('modo').eq('loja_id', p.loja_id as string).eq('marca_id', p.marca_id as string).eq('canal', 'ifood').maybeSingle();
+  if (ml?.modo !== 'producao') return MOTIVOS_CANCELAMENTO_PADRAO;
+  try {
+    const vivos = await motivosCancelamento(p.externo_id as string);
+    return vivos?.length ? vivos : MOTIVOS_CANCELAMENTO_PADRAO;
+  } catch {
+    return MOTIVOS_CANCELAMENTO_PADRAO;
+  }
+}
+
+/** Quadro de pedidos com todas as lojas do grupo (D-078): preferência de cada usuário, salva na conta dele. */
+export async function definirQuadroTodas(todas: boolean): Promise<{ ok: boolean }> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.auth.updateUser({ data: { quadro_todas: todas } });
+  return { ok: !error };
 }

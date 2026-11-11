@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { usePedidoFlutuante } from '@/components/pedido-flutuante';
 import { SeletorLoja } from '@/components/seletor-loja';
+import { rotaLiberada } from '@res/core';
 
 // Ícones simples em traço (sem biblioteca), 20×20, herdam a cor do texto.
 const Icone = ({ d }: { d: string }) => (
@@ -56,16 +57,22 @@ const SECOES: { titulo: string; links: Link_[] }[] = [
       { href: '/aplicativos', rotulo: 'Aplicativos', icone: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z' },
       { href: '/impressoras', rotulo: 'Impressoras', icone: 'M7 8V3h10v5M7 17H4v-7h16v7h-3M7 14h10v7H7z' },
       { href: '/lojas', rotulo: 'Lojas e equipe', icone: 'M3 10l9-6 9 6M5 10v10h14V10M9 20v-6h6v6' },
+      { href: '/assinatura', rotulo: 'Assinatura', icone: 'M3 6h18v12H3zM3 10h18M7 15h4' },
     ],
   },
 ];
-const LINKS = SECOES.flatMap((s) => s.links);
+// loja nova (D-076): "Primeiros passos" no topo até o dono concluir
+const COMECO = { titulo: 'Começo', links: [{ href: '/comecar', rotulo: 'Primeiros passos', icone: 'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11' }] };
+const LINKS = [...COMECO.links, ...SECOES.flatMap((s) => s.links)];
 
 // celular (D-070): barra de baixo com os 4 mais usados + "Mais" (todas as telas, por seção e com cor)
 const BARRA = ['/pedidos', '/pedidos/novo', '/estoque', '/resumo'];
-const COR_SECAO: Record<string, string> = { Operação: '#2563eb', Vendas: '#16a34a', Clientes: '#9333ea', Gestão: '#d97706', Ajustes: '#64748b' };
+const COR_SECAO: Record<string, string> = { Começo: '#ea580c', Operação: '#2563eb', Vendas: '#16a34a', Clientes: '#9333ea', Gestão: '#d97706', Ajustes: '#64748b' };
 
-export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '' }: { lojas?: { id: string; nome: string }[]; lojaAtual?: string; lojaNome?: string }) {
+export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeirosPassos = false, modulos = null, dono = false, marcas = [], versao = null }: { lojas?: { id: string; nome: string }[]; lojaAtual?: string; lojaNome?: string; primeirosPassos?: boolean; modulos?: string[] | null; dono?: boolean; marcas?: { nome: string; slug: string }[]; versao?: string | null }) {
+  // Assinatura só para o dono; telas fora do plano aparecem com cadeado (D-085)
+  const secoes = (primeirosPassos ? [COMECO, ...SECOES] : SECOES).map((s) => ({ ...s, links: s.links.filter((l) => l.href !== '/assinatura' || dono) }));
+  const travado = (href: string) => (modulos && !rotaLiberada(href, modulos) ? true : undefined);
   const atual = usePathname();
   const [mais, setMais] = useState(false);
   useEffect(() => setMais(false), [atual]);
@@ -81,7 +88,7 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '' }: { lojas
           <span>{estado === 'minimizado' ? 'Retomar pedido' : l.rotulo}</span>
         </button>
       ) : (
-        <Link href={l.href} className="menu-item" title={l.rotulo} aria-current={ativo === l.href ? 'page' : undefined}>
+        <Link href={l.href} className="menu-item" title={travado(l.href) ? `${l.rotulo} (fora do plano)` : l.rotulo} data-travado={travado(l.href)} aria-current={ativo === l.href ? 'page' : undefined}>
           <Icone d={l.icone} />
           <span>{l.rotulo}</span>
         </Link>
@@ -93,7 +100,7 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '' }: { lojas
   return (
     <>
       <div className="menu-secoes">
-        {SECOES.map((s) => (
+        {secoes.map((s) => (
           <section key={s.titulo} className="menu-secao" aria-label={s.titulo}>
             <h2 className="menu-secao-titulo">{s.titulo}</h2>
             <ul className="menu-lista">{s.links.map(item)}</ul>
@@ -117,7 +124,7 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '' }: { lojas
               {lojas.length > 1 ? <SeletorLoja lojas={lojas} atual={lojaAtual} /> : <strong>{lojaNome}</strong>}
               <button type="button" className="mini" onClick={() => setMais(false)} aria-label="Fechar">✕</button>
             </div>
-            {SECOES.map((s) => (
+            {secoes.map((s) => (
               <section key={s.titulo} className="menu-folha-secao" style={{ ['--cor' as string]: COR_SECAO[s.titulo] ?? '#64748b' }}>
                 <h2>{s.titulo}</h2>
                 <div className="menu-folha-grade">
@@ -137,12 +144,53 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '' }: { lojas
                 </div>
               </section>
             ))}
+            <LinksESuporte marcas={marcas} lojaNome={lojaNome} />
             <form action="/auth/sair" method="post">
               <button className="menu-bloco menu-sair">Sair</button>
             </form>
+            {versao && <p className="dica" style={{ margin: 0, textAlign: 'center' }}>RES · versão {versao}</p>}
           </div>
         </div>
       )}
     </>
+  );
+}
+
+// Celular (D-091): Meus links e Suporte também na folha "Mais" (no computador ficam no rodapé do menu)
+const SUPORTE_WHATSAPP = (process.env.NEXT_PUBLIC_SUPORTE_WHATSAPP ?? '').replace(/\D/g, '');
+function LinksESuporte({ marcas, lojaNome }: { marcas: { nome: string; slug: string }[]; lojaNome: string }) {
+  const [copiado, setCopiado] = useState<string | null>(null);
+  const origem = typeof window !== 'undefined' ? window.location.origin : '';
+  const copiar = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiado(url);
+      setTimeout(() => setCopiado(null), 1800);
+    } catch {
+      /* sem permissão */
+    }
+  };
+  const msg = encodeURIComponent(`Olá! Sou da ${lojaNome} e preciso de ajuda com o RES.`);
+  return (
+    <section className="menu-folha-secao menu-folha-links" style={{ ['--cor' as string]: '#0891b2' }}>
+      <h2>Meus links</h2>
+      {marcas.length === 0 && <p className="dica" style={{ margin: 0 }}>Nenhum cardápio ainda.</p>}
+      {marcas.map((m) => {
+        const url = `${origem}/c/${m.slug}`;
+        return (
+          <div key={m.slug} className="menu-link-linha">
+            <span><strong>{m.nome}</strong><br /><span className="dica">/c/{m.slug}</span></span>
+            <button type="button" className="mini" onClick={() => void copiar(url)}>{copiado === url ? 'Copiado ✓' : 'Copiar'}</button>
+            <a className="mini botao" href={url} target="_blank" rel="noopener noreferrer">Abrir</a>
+          </div>
+        );
+      })}
+      <h2 style={{ marginTop: 'var(--e3)' }}>Suporte</h2>
+      {SUPORTE_WHATSAPP ? (
+        <a className="menu-bloco" href={`https://wa.me/${SUPORTE_WHATSAPP}?text=${msg}`} target="_blank" rel="noopener noreferrer">💬 Falar com o suporte no WhatsApp</a>
+      ) : (
+        <p className="dica" style={{ margin: 0 }}>O WhatsApp do suporte será informado em breve.</p>
+      )}
+    </section>
   );
 }

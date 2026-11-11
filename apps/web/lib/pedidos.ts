@@ -26,6 +26,17 @@ export type PedidoRow = {
   pago_em: string | null;
   /** Pix do Mercado Pago ainda não pago (D-044) */
   aguarda_pagamento?: boolean;
+  /** marketplace (D-074): iFood */
+  acrescimo?: number;
+  externo_canal?: string | null;
+  externo_codigo?: string | null;
+  codigo_retirada?: string | null;
+  cartao_bandeira?: string | null;
+  documento_cliente?: string | null;
+  localizador?: string | null;
+  observacao_entrega?: string | null;
+  beneficios?: { valor: number; alvo: string; loja: number; marketplace: number; descricao: string | null }[] | null;
+  entrega_marketplace?: boolean;
   /** etapas em que o cliente já foi avisado no WhatsApp (D-058): { em_entrega: '2026-…' } */
   avisos?: Record<string, string>;
   /** minutos a mais prometidos porque o pedido entrou no modo movimento (D-062) */
@@ -48,7 +59,7 @@ export type PedidoRow = {
   }[];
 };
 
-/** Pedidos em aberto (inclusive agendados para outro dia) e os encerrados nas últimas 12 horas, do mais antigo para o mais novo. Uma ou várias lojas. */
+/** Pedidos em aberto (inclusive agendados para outro dia) e os criados ou encerrados nas últimas 12 horas, do mais antigo para o mais novo. Uma ou várias lojas. */
 export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
   const supabase = await criarClienteServidor();
   const desde = new Date(Date.now() - 12 * 3600 * 1000).toISOString();
@@ -56,10 +67,11 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
     supabase
       .from('pedidos')
       .select(
-        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, agendado_para, entregador_nome, pago_em, aguarda_pagamento, avisos, prazo_extra_min, codigo, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, previsao_chegada, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_id, opcao_id, grupo_nome, nome, quantidade, fracao, ordem))',
+        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, agendado_para, entregador_nome, pago_em, aguarda_pagamento, avisos, prazo_extra_min, acrescimo, externo_canal, externo_codigo, codigo_retirada, cartao_bandeira, documento_cliente, localizador, observacao_entrega, beneficios, entrega_marketplace, codigo, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, previsao_chegada, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_id, opcao_id, grupo_nome, nome, quantidade, fracao, ordem))',
       )
       .in('loja_id', lojaIds)
-      .or(`status.not.in.(concluido,cancelado),criado_em.gte.${desde}`)
+      // encerrados: os que fecharam nas últimas 12 h (pedido antigo concluído agora também aparece em Concluídos)
+      .or(`status.not.in.(concluido,cancelado),criado_em.gte.${desde},concluido_em.gte.${desde},cancelado_em.gte.${desde}`)
       .order('criado_em', { ascending: true })
       .limit(500),
     supabase.from('lojas').select('aceite_automatico, tempo_preparo_min, fuso_horario, movimento_min, movimento_ate, pronto_auto_retirada').eq('id', lojaPrincipal).single(),

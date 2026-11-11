@@ -1,13 +1,19 @@
-import { entrar, cadastrar } from './actions';
+import Link from 'next/link';
+import { headers } from 'next/headers';
+import { entrar } from './actions';
 
 export default async function Login({ searchParams }: { searchParams: Promise<{ erro?: string; aviso?: string; voltar?: string }> }) {
   const { erro, aviso, voltar } = await searchParams;
+  // no endereço do painel da empresa (D-083): outro título, sem cadastro nem dicas do caixa
+  const h = await headers();
+  const host = (h.get('x-forwarded-host') ?? h.get('host') ?? '').toLowerCase();
+  const empresa = !!process.env.EMPRESA_HOST && host === process.env.EMPRESA_HOST.toLowerCase();
   return (
     <main className="conteudo" style={{ maxWidth: 420, marginTop: '8vh' }}>
       <div className="cartao grade">
         <div>
           <div className="marca-res" style={{ fontSize: '1.6rem' }}>RES</div>
-          <p className="dica">Pedidos, cardápio e gestão do seu restaurante.</p>
+          <p className="dica">{empresa ? 'Painel da empresa RES. Acesso só da equipe.' : 'Pedidos, cardápio e gestão do seu restaurante.'}</p>
         </div>
         {erro && <p className="erro" role="alert">{erro}</p>}
         {aviso && <p className="dica" role="status">{aviso}</p>}
@@ -15,9 +21,9 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
           {voltar && <input type="hidden" name="voltar" value={voltar} />}
           {voltar?.startsWith('/m') && <p className="aviso" style={{ margin: 0 }}>Motoboy: entre com seu usuário e senha para levar o pedido.</p>}
           <label>
-            E-mail ou usuário
+            {empresa ? 'E-mail' : 'E-mail ou usuário'}
             <input type="text" name="email" required autoComplete="username" autoCapitalize="none" spellCheck={false} />
-            <span className="dica">Equipe do caixa: digite só o seu usuário (ex.: ana.caixa).</span>
+            {!empresa && <span className="dica">Equipe do caixa: digite só o seu usuário (ex.: ana.caixa).</span>}
           </label>
           <label>
             Senha
@@ -25,7 +31,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
           </label>
           <div className="linha">
             <button className="botao-primario" formAction={entrar}>Entrar</button>
-            <button formAction={cadastrar}>Criar conta</button>
+            {!empresa && <Link className="botao" href="/cadastro">Criar conta</Link>}
           </div>
         </form>
       </div>
