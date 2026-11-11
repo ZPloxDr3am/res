@@ -810,3 +810,8 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 
 ## D-093 — Quadro sem os cartões de controle por loja (10/11/2026)
 - A pedido do dono, saiu do modo "todas as lojas" a linha de cartões com aceite automático, movimento e pausa de cada loja (ficou poluída). O resumo (ativos, preparo médio, entrega média, passando do prazo) continua. Para mexer nos controles de uma loja, escolha a loja no topo do quadro.
+
+## D-095 — Robô de ponta a ponta (10/11/2026)
+- Toda vez que a Vercel termina uma publicação (teste de PR ou produção), o GitHub roda o **robô** (`e2e/pedido.spec.ts`, Playwright): faz um pedido de retirada no cardápio da **Loja Robô**, entra no painel com o login dela, encontra o pedido no quadro e leva até **Concluídos** pelo botão de cada etapa, e depois abre Resumo, Cardápio, Delivery, Clientes e Assinatura conferindo que nenhuma quebra. Se falhar, guarda fotos e o passo a passo (artefato "relatorio-robo").
+- **Loja Robô**: conta separada (nunca uma loja real), ativa sem prazo, cardápio aberto, com retirada e dinheiro. Segredos no GitHub: `E2E_EMAIL`, `E2E_SENHA`, `E2E_CARDAPIO` (e `VERCEL_BYPASS` se a proteção de preview for ligada). Sem eles o robô é pulado.
+- Também dá para rodar à mão: Actions → "Robô (pedido de ponta a ponta)" → informar o endereço.

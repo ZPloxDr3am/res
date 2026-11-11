@@ -1,0 +1,45 @@
+name: Robô (pedido de ponta a ponta)
+
+# D-095: quando a Vercel termina uma publicação de teste (preview) ou de produção, o robô faz um pedido
+# na Loja Robô e leva até Concluídos. Sem os segredos E2E_*, o teste é pulado.
+on:
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Endereço a testar (ex.: https://res-iqzs.vercel.app)
+        required: true
+
+jobs:
+  robo:
+    if: github.event_name == 'workflow_dispatch' || (github.event.deployment_status.state == 'success' && github.event.deployment_status.environment_url != '')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Playwright
+        working-directory: e2e
+        run: |
+          npm init -y >/dev/null
+          npm install --no-audit --no-fund @playwright/test@1.48.2
+          npx playwright install --with-deps chromium
+      - name: Pedido de ponta a ponta
+        working-directory: e2e
+        env:
+          E2E_URL: ${{ github.event.inputs.url || github.event.deployment_status.environment_url }}
+          E2E_EMAIL: ${{ secrets.E2E_EMAIL }}
+          E2E_SENHA: ${{ secrets.E2E_SENHA }}
+          E2E_CARDAPIO: ${{ secrets.E2E_CARDAPIO }}
+          VERCEL_BYPASS: ${{ secrets.VERCEL_BYPASS }}
+        run: npx playwright test --config playwright.config.ts
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: relatorio-robo
+          path: |
+            e2e/relatorio
+            e2e/test-results
+          retention-days: 7
