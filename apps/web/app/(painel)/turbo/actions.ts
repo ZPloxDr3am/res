@@ -28,8 +28,8 @@ export async function contarPublico(publico: Record<string, unknown>): Promise<n
   return r.ok ? Number(r.data) : null;
 }
 
-export async function criarCampanha(c: { nome: string; publico: Record<string, unknown>; mensagem: string; cupom: string; janela: number; quando: string | null }): Promise<{ ok: true; gerados: number } | { ok: false; erro: string }> {
-  const r = await rpc<number>('turbo_criar_campanha', { p_nome: c.nome, p_publico: c.publico, p_mensagem: c.mensagem, p_cupom: c.cupom || null, p_janela: c.janela, p_quando: c.quando });
+export async function criarCampanha(c: { nome: string; publico: Record<string, unknown>; mensagem: string; cupom: string; janela: number; quando: string | null; modelo?: string | null }): Promise<{ ok: true; gerados: number } | { ok: false; erro: string }> {
+  const r = await rpc<number>('turbo_criar_campanha', { p_nome: c.nome, p_publico: c.publico, p_mensagem: c.mensagem, p_cupom: c.cupom || null, p_janela: c.janela, p_quando: c.quando, p_modelo: c.modelo || null });
   revalidatePath('/turbo');
   return r.ok ? { ok: true, gerados: Number(r.data) } : r;
 }
