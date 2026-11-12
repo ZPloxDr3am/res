@@ -1986,3 +1986,6 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
 .turbo-safras td, .turbo-safras th { white-space: nowrap; font-size: var(--t-xs, 0.78rem); }
 .cl-perfil { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.3rem 0.8rem; font-size: var(--t-sm, 0.85rem); }
 .cl-perfil b { display: block; font-size: var(--t-xs, 0.75rem); color: var(--texto-suave); font-weight: 500; }
+.turbo-selo { font-size: var(--t-xs, 0.75rem); font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 999px; }
+.turbo-selo[data-tipo='oficial'] { background: color-mix(in srgb, #25d366 18%, transparent); color: #128c4a; }
+.turbo-selo[data-tipo='erro'] { background: color-mix(in srgb, #dc2626 14%, transparent); color: #b91c1c; }

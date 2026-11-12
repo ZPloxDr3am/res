@@ -9,7 +9,9 @@ type Tipo = 'boas_vindas' | 'sumido' | 'ciclo' | 'carrinho' | 'avaliacao';
 export interface Automacao { id: string; tipo: Tipo; ativo: boolean; mensagem: string; cupom: string | null; config: Record<string, number>; enviados: number; conversoes: number; receita: number }
 export interface Campanha { id: string; nome: string; status: string; publico: Record<string, unknown>; mensagem: string; cupom: string | null; janela_dias: number; agendada_para: string | null; gerada_em: string | null; gerados: number; enviados: number; conversoes: number; receita: number }
 export interface DadosTurbo { fila: number; enviados: number; conversoes: number; receita: number; automacoes: Automacao[]; campanhas: Campanha[]; cupons: { codigo: string; descricao: string | null }[]; tem_avaliacao: boolean }
-export interface EnvioFila { id: string; nome: string | null; telefone: string; mensagem: string; cupom: string | null; criado_em: string; origem: string }
+export interface EnvioFila { id: string; nome: string | null; telefone: string; mensagem: string; cupom: string | null; criado_em: string; origem: string; oficial?: boolean; modelo?: string | null; falhou?: boolean; erro?: string | null }
+type NumCanal = { enviados: number; conversoes: number; receita: number; entregues?: number; lidas?: number; falhas?: number };
+export interface Canais { manual: NumCanal; oficial: NumCanal; conectado: boolean }
 export interface UsoModelos { automacoes: Record<string, string>; campanhas: Record<string, string>; fila_automatica: number }
 export interface Safra { mes: string; clientes: number; ltv: number[] | null; ativos: number[] | null }
 
@@ -27,7 +29,7 @@ const pct = (a: number, b: number) => (b > 0 ? `${Math.round((a / b) * 100)}%` :
 const wa = (tel: string, msg: string) => `https://wa.me/${tel.length <= 11 ? '55' + tel : tel}?text=${encodeURIComponent(msg)}`;
 
 /** Turbo-Vendas (D-096): automações, fila de WhatsApp, campanhas, resultados e safras. */
-export function TurboVendas({ d, fila, safras, abaInicial, wa = null, uso = null }: { d: DadosTurbo; fila: EnvioFila[]; safras: Safra[]; abaInicial?: string; wa?: StatusWhatsapp | null; uso?: UsoModelos | null }) {
+export function TurboVendas({ d, fila, safras, abaInicial, wa = null, uso = null, canais = null }: { d: DadosTurbo; fila: EnvioFila[]; safras: Safra[]; abaInicial?: string; wa?: StatusWhatsapp | null; uso?: UsoModelos | null; canais?: Canais | null }) {
   const aprovados = wa?.conectado ? wa.modelos.filter((m) => m.status === 'aprovado') : [];
   const [aba, setAba] = useState<Aba>((ABAS.find(([k]) => k === abaInicial)?.[0] as Aba) ?? (fila.length ? 'fila' : 'resultados'));
   return (
@@ -39,7 +41,7 @@ export function TurboVendas({ d, fila, safras, abaInicial, wa = null, uso = null
           </button>
         ))}
       </div>
-      {aba === 'resultados' && <Resultados d={d} />}
+      {aba === 'resultados' && <Resultados d={d} canais={canais} />}
       {aba === 'fila' && <Fila fila={fila} automatica={wa?.conectado ? uso?.fila_automatica ?? 0 : null} />}
       {aba === 'automacoes' && <Automacoes d={d} aprovados={aprovados} uso={uso} />}
       {aba === 'campanhas' && <Campanhas d={d} aprovados={aprovados} uso={uso} />}
@@ -49,7 +51,7 @@ export function TurboVendas({ d, fila, safras, abaInicial, wa = null, uso = null
   );
 }
 
-function Resultados({ d }: { d: DadosTurbo }) {
+function Resultados({ d, canais }: { d: DadosTurbo; canais: Canais | null }) {
   const linhas = [
     ...d.automacoes.map((a) => ({ k: a.id, nome: MODELOS.find((m) => m.tipo === a.tipo)?.titulo ?? a.tipo, enviados: a.enviados, conv: a.conversoes, receita: Number(a.receita), extra: a.ativo ? 'ligada' : 'desligada' })),
     ...d.campanhas.map((c) => ({ k: c.id, nome: `📣 ${c.nome}`, enviados: c.enviados, conv: c.conversoes, receita: Number(c.receita), extra: c.status })),
@@ -61,6 +63,19 @@ function Resultados({ d }: { d: DadosTurbo }) {
         <div className="cartao kpi"><span className="dica">Voltaram e compraram</span><span className="kpi-valor">{d.conversoes}</span><span className="kpi-frase">{pct(d.conversoes, d.enviados)} das mensagens</span></div>
         <div className="cartao kpi"><span className="dica">Vendas pelas mensagens</span><span className="kpi-valor">{reais(Number(d.receita))}</span><span className="kpi-frase">pedido concluído até 5 dias depois (ajustável)</span></div>
       </div>
+      {canais && (
+        <section className="cartao grade">
+          <h2 style={{ margin: 0 }}>Por canal</h2>
+          <table className="mod-matriz">
+            <thead><tr><th>Canal</th><th>Enviadas</th><th>Entregues</th><th>Lidas</th><th>Falhas</th><th>Compraram</th><th>Vendas</th></tr></thead>
+            <tbody>
+              <tr><td>📱 Manual (toque e envia)</td><td>{canais.manual.enviados}</td><td>—</td><td>—</td><td>—</td><td>{canais.manual.conversoes}</td><td>{reais(Number(canais.manual.receita))}</td></tr>
+              <tr><td>⚡ WhatsApp oficial{canais.conectado ? '' : ' (não conectado)'}</td><td>{canais.oficial.enviados}</td><td>{canais.oficial.entregues ?? 0}</td><td>{canais.oficial.lidas ?? 0}</td><td>{canais.oficial.falhas ?? 0}</td><td>{canais.oficial.conversoes}</td><td>{reais(Number(canais.oficial.receita))}</td></tr>
+            </tbody>
+          </table>
+          <p className="dica" style={{ margin: 0 }}>Entregue e lida só existem no oficial (a Meta avisa). O que falha no oficial volta para a fila para enviar à mão.</p>
+        </section>
+      )}
       <section className="cartao grade">
         <h2 style={{ margin: 0 }}>Por automação e campanha</h2>
         {linhas.length === 0 ? <p className="dica" style={{ margin: 0 }}>Ligue uma automação ou crie uma campanha para começar.</p> : (
@@ -113,6 +128,8 @@ function Fila({ fila, automatica }: { fila: EnvioFila[]; automatica: number | nu
           <article key={e.id} className="cartao turbo-envio">
             <div className="linha" style={{ justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
               <span><strong>{e.nome ?? 'Cliente'}</strong> <span className="dica">· {e.telefone} · {MODELOS.find((m) => m.tipo === e.origem)?.titulo ?? `📣 ${e.origem}`}</span></span>
+              {e.falhou ? <span className="turbo-selo" data-tipo="erro" title={e.erro ?? ''}>Falhou no oficial: envie à mão{e.erro ? ` (${e.erro})` : ''}</span>
+                : e.oficial ? <span className="turbo-selo" data-tipo="oficial">⚡ Sai pelo oficial ({e.modelo})</span> : null}
               {feitos[e.id]?.startsWith('erro') && <span className="erro">{feitos[e.id]}</span>}
             </div>
             <p className="turbo-msg">{e.mensagem}</p>
@@ -180,10 +197,10 @@ function CartaoAutomacao({ m, a, cupons, semAvaliacao, aprovados, modeloAtual }:
         )}
       </div>
       {a && aprovados.length > 0 && (
-        <label>Modelo no WhatsApp oficial <span className="dica">(com modelo, sai sozinho)</span>
+        <label>Como enviar <span className="dica">(com modelo, sai pelo oficial com o texto do modelo; sem, fica na fila manual)</span>
           <select value={modelo} disabled={pendente} onChange={(e) => { const v = e.target.value; setModelo(v); iniciar(async () => { const r = await definirModelo('automacao', a.id, v || null); setMsg(r.ok ? { ok: true, t: v ? 'Modelo escolhido ✓' : 'Sem modelo: fila manual' } : { ok: false, t: r.erro }); }); }}>
-            <option value="">Sem modelo (fila manual)</option>
-            {aprovados.map((x) => <option key={x.id} value={x.id}>{x.nome}</option>)}
+            <option value="">📱 Fila manual (toque e envia)</option>
+            {aprovados.map((x) => <option key={x.id} value={x.id}>⚡ WhatsApp oficial · modelo {x.nome}</option>)}
           </select>
         </label>
       )}
@@ -205,6 +222,7 @@ function Campanhas({ d, aprovados, uso }: { d: DadosTurbo; aprovados: StatusWhat
   const [cupom, setCupom] = useState('');
   const [janela, setJanela] = useState(5);
   const [quando, setQuando] = useState('');
+  const [modeloNovo, setModeloNovo] = useState('');
   const [publico, setPublico] = useState<number | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null);
   const [pendente, iniciar] = useTransition();
@@ -242,10 +260,19 @@ function Campanhas({ d, aprovados, uso }: { d: DadosTurbo; aprovados: StatusWhat
           <label>Conta venda até (dias)<input type="number" min={1} max={30} value={janela} onChange={(e) => setJanela(Number(e.target.value) || 5)} /></label>
         </div>
         <label>Quando <span className="dica">(vazio = agora)</span><input type="datetime-local" value={quando} onChange={(e) => setQuando(e.target.value)} /></label>
+        {aprovados.length > 0 && (
+          <label>Como enviar
+            <select value={modeloNovo} onChange={(e) => setModeloNovo(e.target.value)}>
+              <option value="">📱 Fila manual (toque e envia)</option>
+              {aprovados.map((x) => <option key={x.id} value={x.id}>⚡ WhatsApp oficial · modelo {x.nome}</option>)}
+            </select>
+            <span className="dica">Com modelo, o texto enviado é o do modelo aprovado (a Meta exige). Quem falhar no oficial volta para a fila manual.</span>
+          </label>
+        )}
         {msg && <p className={msg.ok ? 'dica' : 'erro'} role="status" style={{ margin: 0 }}>{msg.t}</p>}
         <div>
           <button type="button" className="botao-primario" disabled={pendente || nome.trim().length < 2} onClick={() => iniciar(async () => {
-            const r = await criarCampanha({ nome, publico: filtro(), mensagem, cupom, janela, quando: quando ? new Date(quando).toISOString() : null });
+            const r = await criarCampanha({ nome, publico: filtro(), mensagem, cupom, janela, quando: quando ? new Date(quando).toISOString() : null, modelo: modeloNovo || null });
             setMsg(r.ok ? { ok: true, t: quando ? 'Campanha agendada ✓' : `${r.gerados} mensagem(ns) na fila ✓` } : { ok: false, t: r.erro });
             if (r.ok) setNome('');
           })}>{quando ? 'Agendar campanha' : 'Gerar fila agora'}</button>

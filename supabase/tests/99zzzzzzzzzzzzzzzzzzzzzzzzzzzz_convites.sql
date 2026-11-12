@@ -295,3 +295,22 @@ select case when (pg_temp.v('wst') ->> 'conectado')::boolean and not (pg_temp.v(
              and (select marketing_optout_em is not null from public.clientes where telefone = '47966665555' and grupo = private.grupo_da_loja((pg_temp.v('loja') #>> '{}')::uuid))
             then 'ok whatsapp: conexão sem expor token, modelo com {{n}}, fila pega uma vez, lido pelo webhook, SAIR tira do marketing'
             else 'FALHOU whatsapp ' || coalesce(pg_temp.v('pega')::text, '-') || ' ' || coalesce(pg_temp.v('wst')::text, '-') end;
+-- Dois canais (D-098): falha no oficial volta para a fila manual com o texto do modelo; resultados por canal
+\o /dev/null
+insert into public.clientes (grupo, loja_id, nome, telefone) values (private.grupo_da_loja((pg_temp.v('loja') #>> '{}')::uuid), (pg_temp.v('loja') #>> '{}')::uuid, 'Duda Dois', '47955554444');
+insert into public.turbo_envios (loja_id, cliente_id, telefone, nome, origem, automacao_id, mensagem, status, erro)
+  select (pg_temp.v('loja') #>> '{}')::uuid, c.id, c.telefone, c.nome, 'automacao', (pg_temp.v('aut') #>> '{}')::uuid, 'texto da automação', 'erro', 'número sem WhatsApp'
+    from public.clientes c where c.telefone = '47955554444' limit 1;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('fila2', public.turbo_fila((pg_temp.v('loja') #>> '{}')::uuid));
+select public.turbo_marcar((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('fila2') -> 0 ->> 'id')::uuid, 'enviado');
+insert into r values ('canais', public.turbo_canais((pg_temp.v('loja') #>> '{}')::uuid));
+insert into r values ('camp2', to_jsonb(public.turbo_criar_campanha((pg_temp.v('loja') #>> '{}')::uuid, 'Com modelo', '{}', 'Oi {nome}', null, 5, now() + interval '1 day', (pg_temp.v('mod') #>> '{}')::uuid)));
+reset role;
+\o
+select case when (pg_temp.v('fila2') -> 0 ->> 'falhou')::boolean and pg_temp.v('fila2') -> 0 ->> 'mensagem' like 'Oi Duda! Use %'
+             and (pg_temp.v('fila2') -> 0 ->> 'oficial')::boolean
+             and (pg_temp.v('canais') -> 'oficial' ->> 'lidas')::int = 1 and (pg_temp.v('canais') -> 'manual' ->> 'enviados')::int >= 1
+             and exists (select 1 from public.turbo_campanhas where nome = 'Com modelo' and modelo_id is not null)
+            then 'ok dois canais: falha do oficial vai para o manual com o texto do modelo; resultados por canal; campanha com modelo'
+            else 'FALHOU dois canais ' || coalesce(pg_temp.v('fila2')::text, '-') || ' ' || coalesce(pg_temp.v('canais')::text, '-') end;

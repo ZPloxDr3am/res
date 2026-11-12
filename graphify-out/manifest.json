@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794489310.5273597,
-    "seen": 1794489320.1192808,
-    "ast_hash": "b83ddc9639dde4c0ab0bfbce898f4c5f",
+    "mtime": 1794490844.6476648,
+    "seen": 1794490849.7854118,
+    "ast_hash": "6e0252fee63580adb1ce74ae851aaae0",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2520,9 +2520,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794489310.5378203,
-    "seen": 1794489320.1188896,
-    "ast_hash": "8cac047d3900cd18e5f8a31a9832fa06",
+    "mtime": 1794490784.0156612,
+    "seen": 1794490849.785392,
+    "ast_hash": "07a36e4c5ea9f853eaf2d8510114e283",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/actions.ts": {
@@ -2851,8 +2851,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794489036.5982711,
-    "ast_hash": "",
+    "seen": 1794490849.7844546,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -2898,21 +2898,21 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/turbo/actions.ts": {
-    "mtime": 1794489310.5218203,
-    "seen": 1794489320.1063564,
-    "ast_hash": "05621093dcc19b4f2961d3aaf644ec30",
+    "mtime": 1794490828.8293529,
+    "seen": 1794490849.7845736,
+    "ast_hash": "7d641df749154b168e45d933c3dcfe90",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/turbo/page.tsx": {
-    "mtime": 1794489310.5218203,
-    "seen": 1794489320.1063597,
-    "ast_hash": "0d8df3077e5ccfeb884a57948a6cd5bd",
+    "mtime": 1794490828.8290842,
+    "seen": 1794490849.7845771,
+    "ast_hash": "bdfd0bb4544bc5dbba74effa572f9b04",
     "semantic_hash": ""
   },
   "apps/web/components/turbo/turbo-vendas.tsx": {
-    "mtime": 1794489310.5273597,
-    "seen": 1794489320.111403,
-    "ast_hash": "ed612790d045253f2a80c7dcfdf1819d",
+    "mtime": 1794490828.8357694,
+    "seen": 1794490849.7849631,
+    "ast_hash": "1ab75589ef98639ea015285e8678a43f",
     "semantic_hash": ""
   },
   "supabase/migrations/20261112100000_turbo_vendas.sql": {
@@ -2925,6 +2925,60 @@
     "mtime": 1794489310.5273597,
     "seen": 1794489320.1208904,
     "ast_hash": "d5fbddc9a7ffc5f5c830e941e045a870",
+    "semantic_hash": ""
+  },
+  "apps/web/app/api/whatsapp/processar/route.ts": {
+    "mtime": 1794489310.5273597,
+    "seen": 1794490849.784613,
+    "ast_hash": "3515ca98036dabf6bbde20e0d0a222de",
+    "semantic_hash": ""
+  },
+  "apps/web/app/api/whatsapp/webhook/route.ts": {
+    "mtime": 1794489310.5273597,
+    "seen": 1794490849.7846153,
+    "ast_hash": "612d9a0c4700a489c46e57f04587d9df",
+    "semantic_hash": ""
+  },
+  "apps/web/components/turbo/whatsapp.tsx": {
+    "mtime": 1794489310.5273597,
+    "seen": 1794490849.7849653,
+    "ast_hash": "fa4804cceb1b0f837a224bce0d6f97b4",
+    "semantic_hash": ""
+  },
+  "apps/web/lib/whatsapp.ts": {
+    "mtime": 1794489310.5273597,
+    "seen": 1794490849.7850175,
+    "ast_hash": "d7ab82621fbea29273b909322905398f",
+    "semantic_hash": ""
+  },
+  "packages/core/src/whatsapp.ts": {
+    "mtime": 1794489310.5338202,
+    "seen": 1794490849.7850869,
+    "ast_hash": "7cac4fc447b7de6c10d6c5ef72c4c39f",
+    "semantic_hash": ""
+  },
+  "packages/core/test/whatsapp.test.ts": {
+    "mtime": 1794489310.5338202,
+    "seen": 1794490849.7851188,
+    "ast_hash": "1108a0e1e55a45f9a6dc6257f6b5bc4d",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261112120000_whatsapp_api.sql": {
+    "mtime": 1794489310.5338202,
+    "seen": 1794490849.7853067,
+    "ast_hash": "09ea79b576b36bed1acca10f1d1542d4",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261112140000_turbo_dois_canais.sql": {
+    "mtime": 1794490784.0156612,
+    "seen": 1794490849.7853084,
+    "ast_hash": "f1a5be6bf96cd5d7519a924788770533",
+    "semantic_hash": ""
+  },
+  "docs/desenvolvimento/whatsapp-api.md": {
+    "mtime": 1794489310.5273597,
+    "seen": 1794490849.785421,
+    "ast_hash": "7dbe70d24fc4ebe051fbeeeda74e0d45",
     "semantic_hash": ""
   }
 }

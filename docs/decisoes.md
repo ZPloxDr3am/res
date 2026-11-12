@@ -836,3 +836,9 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Cada automação e campanha pode ter um **modelo aprovado**. Com modelo, a mensagem sai pela API: **envio automático** a cada 5 min (agendador do banco → `/api/whatsapp/processar`) ou **⚡ Enviar tudo** na fila. Sem modelo, segue a fila manual.
 - **Webhook** `/api/whatsapp/webhook` (verificação com `WHATSAPP_VERIFY_TOKEN`; assinatura com `WHATSAPP_APP_SECRET`): entregue, lido e falha voltam para o envio; **SAIR/PARAR/STOP** tira o cliente do marketing.
 - Passo a passo: `docs/desenvolvimento/whatsapp-api.md`. Ainda não ligado: falta a conta da Meta de cada loja e as duas variáveis na Vercel.
+
+## D-098 — Turbo-Vendas nos dois canais: manual e WhatsApp oficial (12/11/2026)
+- Cada automação e campanha escolhe **Como enviar**: 📱 fila manual (toque e envia) ou ⚡ WhatsApp oficial com um modelo aprovado. A campanha já nasce com essa escolha.
+- **Fila**: cada mensagem mostra se sai pelo oficial; o atendente ainda pode mandar qualquer uma à mão. Com modelo, o texto manual é o mesmo do modelo (o cliente recebe igual pelos dois canais). O que **falhar no oficial** (número sem WhatsApp, modelo pausado…) volta para a fila marcado em vermelho para envio manual.
+- **Resultados por canal**: manual (enviadas, compraram, vendas) × oficial (enviadas, entregues, lidas, falhas, compraram, vendas).
+- Avisos de pedido (saiu para entrega, pronto para retirar) pelo oficial ficam para quando o primeiro número estiver ligado.
