@@ -2048,3 +2048,13 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
 .kds-rodape { padding: 0.5rem 0.7rem; display: flex; gap: 0.4rem; }
 .kds-rodape button { flex: 1; font-size: 1rem; padding: 0.6rem; }
 .kds-tela-cheia { position: fixed; inset: 0; z-index: 50; overflow: auto; padding: 0.75rem; background: var(--fundo, #f4f4f5); }
+
+/* KDS: situação da conexão (D-100) */
+.kds-conexao { font-weight: 700; padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.95rem; white-space: nowrap; }
+.kds-conexao[data-estado='ok'] { background: color-mix(in srgb, #16a34a 15%, transparent); color: #166534; }
+.kds-conexao[data-estado='instavel'] { background: color-mix(in srgb, #d97706 18%, transparent); color: #92400e; }
+.kds-conexao[data-estado='caiu'] { background: #dc2626; color: #fff; animation: salao-pulsa 1.4s ease-in-out infinite; }
+.kds-queda { display: grid; gap: 0.2rem; padding: 0.9rem 1rem; border-radius: 12px; background: #dc2626; color: #fff; font-size: 1.1rem; }
+.kds-queda strong { font-size: 1.35rem; }
+.kds-voltou { padding: 0.6rem 1rem; border-radius: 12px; background: #16a34a; color: #fff; font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .kds-conexao[data-estado='caiu'] { animation: none; } }

@@ -852,3 +852,7 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **QR na mesa** (`/mesa/<código>`, sem login): o cliente vê o cardápio digital, pede para a mesa, acompanha a conta e pede a conta. A rodada do QR **espera a equipe confirmar** (ou vai direto com o aceite automático), com freio de 20 s por mesa. Vale o **preço do cardápio digital** (o que o cliente viu); o garçom lança com o preço do salão.
 - **KDS** (`/kds`): tela da cozinha por **estação** (Cozinha, Pizzaria, Bar…, cada uma com suas categorias), pedidos em preparo de todos os canais, tempo correndo e cor de atraso (alerta configurável no aparelho), bip de pedido novo, tela cheia. Toque no item = pronto; todos os itens prontos → pedido **Pronto** (desfazer em até 3 min). A **impressora continua** funcionando igual.
 - Banco: `salao_locais`, `salao_contas`, `salao_pagamentos`, `kds_estacoes`, `pedido_itens.kds_pronto_em`, `lojas.taxa_servico_pct`; tudo por funções (`salao_*`, `kds_*`).
+
+## D-100 — KDS mostra a conexão; salão com cores de livre/ocupada (12/11/2026)
+- **KDS**: selo fixo no topo — 🟢 Conexão estável · 🟠 instável (sem resposta há 12 s) · 🔴 Sem conexão (20 s ou aparelho sem rede). Na queda: faixa vermelha "SEM INTERNET desde HH:MM — pedidos novos não aparecem", bip na hora e a cada 2 min; quando volta, "✅ Conexão voltou". Toques feitos sem internet ficam guardados no aparelho e são enviados, na ordem, quando a conexão volta.
+- **Salão**: mesa livre em verde e ocupada em vermelho; o selo diz o que falta (QR, PRONTO, CONTA).

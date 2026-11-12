@@ -49,6 +49,12 @@ export function Kds({ inicial, gestor }: { inicial: FilaKds; gestor: boolean }) 
   const [, tique] = useState(0);
   const [, iniciar] = useTransition();
   const vistos = useRef<Set<string> | null>(null);
+  // conexão: última resposta boa do servidor, se o aparelho diz estar sem rede, e toques feitos sem internet
+  const [ultimaOk, setUltimaOk] = useState(() => Date.now());
+  const [semRede, setSemRede] = useState(false);
+  const [voltou, setVoltou] = useState(false);
+  const pendentes = useRef<{ pedido: string; itens: string[]; pronto: boolean }[]>([]);
+  const caiuEm = useRef<number | null>(null);
 
   useEffect(() => {
     const e = ler(CHAVE);
@@ -58,7 +64,24 @@ export function Kds({ inicial, gestor }: { inicial: FilaKds; gestor: boolean }) 
   }, [inicial.estacoes]);
 
   const atualizar = useCallback(async () => {
-    const r = await filaKds(estacao);
+    let r: Awaited<ReturnType<typeof filaKds>>;
+    try {
+      // primeiro manda o que foi tocado sem internet, na ordem
+      while (pendentes.current.length) {
+        const x = pendentes.current[0]!;
+        await marcarKds(x.pedido, x.itens, x.pronto);
+        pendentes.current.shift();
+      }
+      r = await filaKds(estacao);
+    } catch {
+      return; // sem conexão: a tela fica como está e o aviso aparece
+    }
+    setUltimaOk(Date.now());
+    if (caiuEm.current != null) {
+      caiuEm.current = null;
+      setVoltou(true);
+      setTimeout(() => setVoltou(false), 6000);
+    }
     if (!r.ok) return setErro(r.erro);
     setErro(null);
     setDesvio(Date.parse(r.fila.agora) - Date.now());
@@ -74,15 +97,42 @@ export function Kds({ inicial, gestor }: { inicial: FilaKds; gestor: boolean }) 
     void atualizar();
     const t = setInterval(() => document.visibilityState === 'visible' && void atualizar(), 5000);
     const r = setInterval(() => tique((n) => n + 1), 1000);
-    return () => { clearInterval(t); clearInterval(r); };
+    const on = () => { setSemRede(false); void atualizar(); };
+    const off = () => setSemRede(true);
+    setSemRede(!navigator.onLine);
+    window.addEventListener('online', on);
+    window.addEventListener('offline', off);
+    return () => { clearInterval(t); clearInterval(r); window.removeEventListener('online', on); window.removeEventListener('offline', off); };
   }, [atualizar]);
+
+  // situação da conexão: sem resposta há 12 s = instável; há 20 s (ou aparelho sem rede) = caiu
+  const semResposta = Math.floor((Date.now() - ultimaOk) / 1000);
+  const conexao: 'ok' | 'instavel' | 'caiu' = semRede || semResposta >= 20 ? 'caiu' : semResposta >= 12 ? 'instavel' : 'ok';
+  useEffect(() => {
+    if (conexao !== 'caiu') return;
+    caiuEm.current ??= ultimaOk;
+    // alerta sonoro na queda e a cada 2 min enquanto estiver fora
+    if (som) bip();
+    const t = setInterval(() => som && bip(), 120000);
+    return () => clearInterval(t);
+  }, [conexao, som, ultimaOk]);
 
   const marcar = (p: PedidoKds, itens: string[], pronto: boolean) => {
     // otimista: a tela responde na hora
     setFila((f) => ({ ...f, pedidos: f.pedidos.map((x) => (x.id !== p.id ? x : { ...x, itens: x.itens.map((i) => (itens.includes(i.id) ? { ...i, pronto } : i)) })) }));
+    if (conexao === 'caiu' || pendentes.current.length) {
+      // sem internet: guarda o toque e manda quando a conexão voltar
+      pendentes.current.push({ pedido: p.id, itens, pronto });
+      return;
+    }
     iniciar(async () => {
-      const r = await marcarKds(p.id, itens, pronto);
-      if (!r.ok) setErro(r.erro);
+      try {
+        const r = await marcarKds(p.id, itens, pronto);
+        if (!r.ok) setErro(r.erro);
+      } catch {
+        pendentes.current.push({ pedido: p.id, itens, pronto });
+        return;
+      }
       await atualizar();
     });
   };
@@ -107,6 +157,9 @@ export function Kds({ inicial, gestor }: { inicial: FilaKds; gestor: boolean }) 
           <h1 style={{ margin: 0 }}>👨‍🍳 {nomeEstacao}</h1>
           <span className="dica">{pedidos.filter((p) => p.status === 'em_preparo').length} em preparo · toque no item quando ficar pronto</span>
         </div>
+        <span className="kds-conexao" data-estado={conexao} role="status" aria-live="polite" title={`Última atualização há ${semResposta} s`}>
+          {conexao === 'ok' ? '🟢 Conexão estável' : conexao === 'instavel' ? '🟠 Conexão instável…' : '🔴 Sem conexão'}
+        </span>
         <div className="linha" style={{ gap: '0.4rem', flexWrap: 'wrap' }}>
           <select value={estacao ?? ''} aria-label="Estação" onChange={(e) => { const v = e.target.value || null; setEstacao(v); gravar(CHAVE, v ?? ''); }}>
             <option value="">Todas as estações</option>
@@ -120,6 +173,13 @@ export function Kds({ inicial, gestor }: { inicial: FilaKds; gestor: boolean }) 
           <button type="button" onClick={telaCheia}>{cheia ? 'Sair da tela cheia' : '⛶ Tela cheia'}</button>
         </div>
       </div>
+      {conexao === 'caiu' && (
+        <div className="kds-queda" role="alert">
+          <strong>⚠️ SEM INTERNET desde {new Date(caiuEm.current ?? ultimaOk).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</strong>
+          <span>Pedidos novos NÃO aparecem nesta tela. Confira a internet da loja e use as comandas impressas.{pendentes.current.length ? ` ${pendentes.current.length} toque(s) guardado(s): vão sozinhos quando voltar.` : ''}</span>
+        </div>
+      )}
+      {voltou && <div className="kds-voltou" role="status">✅ Conexão voltou — tela atualizada.</div>}
       {erro && <p className="erro" role="alert" style={{ margin: 0 }}>{erro}</p>}
       {pedidos.length === 0 ? (
         <p className="cartao dica" style={{ textAlign: 'center', padding: '2rem' }}>Nada para preparar agora. Os pedidos aceitos aparecem aqui sozinhos.</p>

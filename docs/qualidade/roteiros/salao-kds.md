@@ -12,4 +12,5 @@ Pré: loja com o módulo Salão (plano Salão/Completo, piloto ou teste), cardá
 8. Com uma rodada do QR esperando, **Fechar conta** → "Há rodada pedida pelo QR esperando confirmação".
 9. **Transferir** a Mesa 2 para a Mesa 5; **Cancelar** uma rodada pede motivo; mesa sem consumo → **Liberar sem consumo**.
 10. **Garçom**: entre com o usuário de papel Garçom no celular → abre direto no Salão; tentar abrir /pedidos volta para o Salão. Ele abre mesa e lança; não fecha conta sem permissão de caixa.
+12. **Internet caiu (KDS)**: com o KDS aberto, desligue o Wi-Fi do aparelho → em segundos o selo fica 🔴 e aparece a faixa "SEM INTERNET desde…" com bip. Toque num item (fica riscado). Religue → "✅ Conexão voltou" e o toque é gravado (o item continua riscado depois de recarregar).
 11. Loja sem o módulo Salão: /salao mostra o cadeado; o QR de uma mesa diz "QR code não encontrado".
