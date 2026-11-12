@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794492793.5016563,
-    "seen": 1794492802.9576113,
-    "ast_hash": "57045862c361c83f9e5a2d8c8d2fa9cb",
+    "mtime": 1794493716.3398356,
+    "seen": 1794493721.6129565,
+    "ast_hash": "ed86ea3e72295f925a71ae1b2488616c",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2851,8 +2851,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794493071.9075541,
-    "ast_hash": "",
+    "seen": 1794493388.0749328,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -3024,9 +3024,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/kds/kds.tsx": {
-    "mtime": 1794492793.4998908,
-    "seen": 1794493071.907875,
-    "ast_hash": "125a468eac82abf249a888790127009d",
+    "mtime": 1794493695.4444022,
+    "seen": 1794493721.6124537,
+    "ast_hash": "a04b52df11b5f548ded0b9fc9818877a",
     "semantic_hash": ""
   },
   "apps/web/components/publico/checkout-mesa.tsx": {
@@ -3066,9 +3066,9 @@
     "semantic_hash": ""
   },
   "docs/qualidade/roteiros/salao-kds.md": {
-    "mtime": 1794492793.5016563,
-    "seen": 1794493071.9083476,
-    "ast_hash": "46a59b536c48ae471e719f9f84b05e47",
+    "mtime": 1794493716.3440156,
+    "seen": 1794493721.613008,
+    "ast_hash": "b07c36995e32953cdfe0ad63c9c2e458",
     "semantic_hash": ""
   }
 }

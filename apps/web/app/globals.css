@@ -2003,14 +2003,13 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
 .salao-mesa .salao-info { font-size: 0.75rem; opacity: 0.8; }
 .salao-mesa .salao-selo { position: absolute; top: 6px; right: 6px; font-size: 0.65rem; font-weight: 800; padding: 1px 6px; border-radius: 999px; background: currentColor; }
 .salao-mesa .salao-selo { color: #fff; background: #334155; }
-.salao-mesa[data-estado='livre'] { border-style: dashed; opacity: 0.85; }
-.salao-mesa[data-estado='ocupada'] { border-color: #2563eb; background: color-mix(in srgb, #2563eb 8%, var(--superficie, #fff)); }
-.salao-mesa[data-estado='pronto'] { border-color: #16a34a; background: color-mix(in srgb, #16a34a 10%, var(--superficie, #fff)); }
+.salao-mesa[data-estado='livre'] { border-color: #16a34a; background: color-mix(in srgb, #16a34a 14%, var(--superficie, #fff)); color: #14532d; }
+/* ocupada = vermelho; o selo diz o que falta (QR para confirmar, pronto para servir, pediu a conta) */
+.salao-mesa:not([data-estado='livre']) { border-color: #dc2626; background: color-mix(in srgb, #dc2626 14%, var(--superficie, #fff)); color: #7f1d1d; }
 .salao-mesa[data-estado='pronto'] .salao-selo { background: #16a34a; }
-.salao-mesa[data-estado='conta'] { border-color: #d97706; background: color-mix(in srgb, #d97706 12%, var(--superficie, #fff)); }
 .salao-mesa[data-estado='conta'] .salao-selo { background: #d97706; }
-.salao-mesa[data-estado='confirmar'] { border-color: #dc2626; background: color-mix(in srgb, #dc2626 10%, var(--superficie, #fff)); animation: salao-pulsa 1.4s ease-in-out infinite; }
-.salao-mesa[data-estado='confirmar'] .salao-selo { background: #dc2626; }
+.salao-mesa[data-estado='confirmar'] { animation: salao-pulsa 1.4s ease-in-out infinite; }
+.salao-mesa[data-estado='confirmar'] .salao-selo { background: #7f1d1d; }
 @keyframes salao-pulsa { 50% { box-shadow: 0 0 0 4px color-mix(in srgb, #dc2626 25%, transparent); } }
 @media (prefers-reduced-motion: reduce) { .salao-mesa[data-estado='confirmar'] { animation: none; } }
 .salao-rodada { border: 1px solid var(--borda, #e4e4e7); border-radius: 10px; padding: 0.5rem 0.6rem; display: grid; gap: 0.3rem; }
@@ -2049,3 +2048,13 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
 .kds-rodape { padding: 0.5rem 0.7rem; display: flex; gap: 0.4rem; }
 .kds-rodape button { flex: 1; font-size: 1rem; padding: 0.6rem; }
 .kds-tela-cheia { position: fixed; inset: 0; z-index: 50; overflow: auto; padding: 0.75rem; background: var(--fundo, #f4f4f5); }
+
+/* KDS: situação da conexão (D-100) */
+.kds-conexao { font-weight: 700; padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.95rem; white-space: nowrap; }
+.kds-conexao[data-estado='ok'] { background: color-mix(in srgb, #16a34a 15%, transparent); color: #166534; }
+.kds-conexao[data-estado='instavel'] { background: color-mix(in srgb, #d97706 18%, transparent); color: #92400e; }
+.kds-conexao[data-estado='caiu'] { background: #dc2626; color: #fff; animation: salao-pulsa 1.4s ease-in-out infinite; }
+.kds-queda { display: grid; gap: 0.2rem; padding: 0.9rem 1rem; border-radius: 12px; background: #dc2626; color: #fff; font-size: 1.1rem; }
+.kds-queda strong { font-size: 1.35rem; }
+.kds-voltou { padding: 0.6rem 1rem; border-radius: 12px; background: #16a34a; color: #fff; font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .kds-conexao[data-estado='caiu'] { animation: none; } }
