@@ -648,9 +648,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/novo-pedido.tsx": {
-    "mtime": 1794492793.4998908,
-    "seen": 1794492802.9485896,
-    "ast_hash": "4d24f2434b95d5426840775f428b42b5",
+    "mtime": 1794493050.3748324,
+    "seen": 1794493071.9078887,
+    "ast_hash": "c324f841969b1127ecd2444e937cc14d",
     "semantic_hash": ""
   },
   "apps/web/components/pedido-flutuante.tsx": {
@@ -2851,8 +2851,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794492415.2455409,
-    "ast_hash": "",
+    "seen": 1794493071.9075541,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -2979,6 +2979,96 @@
     "mtime": 1794490977.7676728,
     "seen": 1794492415.2463076,
     "ast_hash": "f1a5be6bf96cd5d7519a924788770533",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/kds/actions.ts": {
+    "mtime": 1794492793.4957807,
+    "seen": 1794493071.9076533,
+    "ast_hash": "f3537335c1ded4fd9a398d65418b8d54",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/kds/page.tsx": {
+    "mtime": 1794492793.4980502,
+    "seen": 1794493071.9076552,
+    "ast_hash": "be454b62ad88d04041b94eb0da8b3662",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/salao/actions.ts": {
+    "mtime": 1794492793.4980502,
+    "seen": 1794493071.9076784,
+    "ast_hash": "aee4f47686b49ef68cfedde43fd91d5a",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/salao/page.tsx": {
+    "mtime": 1794492793.4984398,
+    "seen": 1794493071.90768,
+    "ast_hash": "b420ea2686cd2b7333146fdc80956e23",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/salao/qr/page.tsx": {
+    "mtime": 1794492793.4984398,
+    "seen": 1794493071.9076812,
+    "ast_hash": "37849e6c3427bc8e40860d13084995f0",
+    "semantic_hash": ""
+  },
+  "apps/web/app/mesa/[token]/actions.ts": {
+    "mtime": 1794492793.4997404,
+    "seen": 1794493071.9077601,
+    "ast_hash": "ae0a40be3d57ce385caa100799ba226e",
+    "semantic_hash": ""
+  },
+  "apps/web/app/mesa/[token]/page.tsx": {
+    "mtime": 1794492793.4998908,
+    "seen": 1794493071.9077613,
+    "ast_hash": "96a0f7f22d46d98275373fe89e8372eb",
+    "semantic_hash": ""
+  },
+  "apps/web/components/kds/kds.tsx": {
+    "mtime": 1794492793.4998908,
+    "seen": 1794493071.907875,
+    "ast_hash": "125a468eac82abf249a888790127009d",
+    "semantic_hash": ""
+  },
+  "apps/web/components/publico/checkout-mesa.tsx": {
+    "mtime": 1794492793.4998908,
+    "seen": 1794493071.9078972,
+    "ast_hash": "8cb9425fa304f9a965fe8d009fbac610",
+    "semantic_hash": ""
+  },
+  "apps/web/components/publico/conta-mesa.tsx": {
+    "mtime": 1794492793.4998908,
+    "seen": 1794493071.9079,
+    "ast_hash": "e73719d5273cab170eee35494203f80a",
+    "semantic_hash": ""
+  },
+  "apps/web/components/salao/botao-imprimir.tsx": {
+    "mtime": 1794492793.4998908,
+    "seen": 1794493071.9079132,
+    "ast_hash": "f91ac7aaa52ed295d9d5ebad3ac2f9ab",
+    "semantic_hash": ""
+  },
+  "apps/web/components/salao/salao.tsx": {
+    "mtime": 1794492793.5016563,
+    "seen": 1794493071.9079146,
+    "ast_hash": "fd52061e10ac062768b5a2c270cb6dda",
+    "semantic_hash": ""
+  },
+  "apps/web/components/salao/tipos.ts": {
+    "mtime": 1794492793.5016563,
+    "seen": 1794493071.9079163,
+    "ast_hash": "9654248049957c2084437e86dfa6f490",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261112160000_salao_kds.sql": {
+    "mtime": 1794492793.5117807,
+    "seen": 1794493071.908239,
+    "ast_hash": "90d7735faafe02a45a5373853082406a",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/salao-kds.md": {
+    "mtime": 1794492793.5016563,
+    "seen": 1794493071.9083476,
+    "ast_hash": "46a59b536c48ae471e719f9f84b05e47",
     "semantic_hash": ""
   }
 }
