@@ -214,3 +214,48 @@ select case when pg_temp.v('exp') -> 'cliente' ->> 'nome' = 'Maria LGPD'
 \o /dev/null
 select private.lgpd_prazo_guarda();
 \o
+-- Turbo-Vendas (D-096): módulo fora do plano barra; automação "sumido" gera fila; enviado + pedido concluído = venda atribuída
+\o /dev/null
+insert into public.clientes (grupo, loja_id, nome, telefone) values (private.grupo_da_loja((pg_temp.v('loja') #>> '{}')::uuid), (pg_temp.v('loja') #>> '{}')::uuid, 'Ana Turbo', '47988887777');
+insert into r values ('ana', to_jsonb((select id from public.clientes where telefone = '47988887777' and grupo = private.grupo_da_loja((pg_temp.v('loja') #>> '{}')::uuid))));
+insert into public.pedidos (loja_id, marca_id, numero, status, tipo, origem, pagamento, cliente_nome, cliente_telefone, cliente_id, subtotal, total, criado_em, concluido_em)
+  select (pg_temp.v('loja') #>> '{}')::uuid, m.id, 9001, 'concluido', 'balcao', 'painel', 'dinheiro', 'Ana Turbo', '47988887777', (pg_temp.v('ana') #>> '{}')::uuid, 50, 50, now() - interval '40 days', now() - interval '40 days'
+    from public.marcas m where m.loja_id = (pg_temp.v('loja') #>> '{}')::uuid limit 1;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select from pg_temp.esperar_erro(format($q$select public.turbo_painel('%s')$q$, pg_temp.v('loja') #>> '{}'), 'não está no seu plano');
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a1');
+select public.ajustar_conta_plano((pg_temp.v('conta') #>> '{}')::uuid, null, 'turbo', 'cortesia');
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select public.turbo_salvar_automacao((pg_temp.v('loja') #>> '{}')::uuid, 'sumido', true, 'Oi {nome}, que saudade! Volte em {link}', null, '{"dias": 30}');
+select public.turbo_salvar_automacao((pg_temp.v('loja') #>> '{}')::uuid, 'carrinho', true, 'Oi {nome}, esqueceu algo?', null, '{"minutos": 20}');
+select from pg_temp.esperar_erro(format($q$select public.turbo_salvar_automacao('%s', 'boas_vindas', true, 'Oi {nome}', 'NAOEXISTE', '{}')$q$, pg_temp.v('loja') #>> '{}'), 'não existe');
+reset role;
+select private.turbo_tique();
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('fila', public.turbo_fila((pg_temp.v('loja') #>> '{}')::uuid));
+select public.turbo_marcar((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('fila') -> 0 ->> 'id')::uuid, 'enviado');
+insert into r values ('camp', to_jsonb(public.turbo_criar_campanha((pg_temp.v('loja') #>> '{}')::uuid, 'Sexta', '{}', 'Promo {nome}', null, 5, null)));
+reset role;
+insert into public.pedidos (loja_id, marca_id, numero, status, tipo, origem, pagamento, cliente_nome, cliente_telefone, cliente_id, subtotal, total)
+  select (pg_temp.v('loja') #>> '{}')::uuid, m.id, 9002, 'novo', 'balcao', 'painel', 'dinheiro', 'Ana Turbo', '47988887777', (pg_temp.v('ana') #>> '{}')::uuid, 72.5, 72.5
+    from public.marcas m where m.loja_id = (pg_temp.v('loja') #>> '{}')::uuid limit 1;
+update public.pedidos set status = 'concluido', concluido_em = now() where loja_id = (pg_temp.v('loja') #>> '{}')::uuid and numero = 9002;
+insert into r values ('slug', to_jsonb((select slug from public.marcas where loja_id = (pg_temp.v('loja') #>> '{}')::uuid and ativa limit 1)));
+set role anon;
+select public.turbo_carrinho(pg_temp.v('slug') #>> '{}', '(47) 97777-1111', 'Beto', '1x X-Burguer', 30);
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('painel', public.turbo_painel((pg_temp.v('loja') #>> '{}')::uuid));
+insert into r values ('safras', public.turbo_safras((pg_temp.v('loja') #>> '{}')::uuid));
+insert into r values ('perfil', public.turbo_perfil((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('ana') #>> '{}')::uuid));
+reset role;
+\o
+select case when jsonb_array_length(pg_temp.v('fila')) = 1 and pg_temp.v('fila') -> 0 ->> 'mensagem' like 'Oi Ana, que saudade!%'
+             and pg_temp.v('camp') = '0'::jsonb
+             and (pg_temp.v('painel') ->> 'conversoes')::int = 1 and (pg_temp.v('painel') ->> 'receita')::numeric = 72.5
+             and exists (select 1 from public.turbo_carrinhos where telefone = '47977771111')
+             and (pg_temp.v('perfil') ->> 'pedidos')::int = 2 and jsonb_typeof(pg_temp.v('safras')) = 'array'
+            then 'ok turbo: módulo, automação gera fila com texto pronto, limite de 2 dias, venda atribuída, carrinho guardado, perfil e safras'
+            else 'FALHOU turbo camp=' || coalesce(pg_temp.v('camp')::text, '-') || ' carrinho=' || (select count(*) from public.turbo_carrinhos)::text || ' perfil=' || coalesce(pg_temp.v('perfil')::text, '-') end;

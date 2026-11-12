@@ -36,7 +36,7 @@ import {
   situacaoHorario,
   type VitrinePublica,
 } from '@/lib/publico';
-import { calcularEntregaKm, conferirCupom, enviarPedido, type EntregaKm, type FaixaKm } from '@/app/c/[slug]/actions';
+import { calcularEntregaKm, conferirCupom, enviarPedido, guardarCarrinho, type EntregaKm, type FaixaKm } from '@/app/c/[slug]/actions';
 import { rastrear } from '@/lib/rastreio';
 import { GruposMontagem, Montador } from '@/components/publico/montagem';
 import { guardarPedido, MeusPedidos, NavCliente, PerfilCliente } from '@/components/publico/conta-cliente';
@@ -193,6 +193,15 @@ export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [],
   const hoje = diaNoFuso(marca.fuso);
   const horarioHoje = marca.horarios.filter((h) => h.dia === hoje).map((h) => `${h.abre}–${h.fecha}`).join(', ');
   const podeAgendar = agendamento.horarios.length > 0;
+  // Turbo-Vendas (D-096): com o telefone digitado, guarda o carrinho para o lembrete de "carrinho abandonado"
+  // (o banco só guarda se a loja usa essa automação)
+  const telCarrinho = normalizarTelefone(cliente.telefone);
+  const resumoCarrinho = itens.map((i) => `${i.quantidade}x ${i.produto.nome}`).join(', ');
+  useEffect(() => {
+    if (telCarrinho.length < 10 || !resumoCarrinho) return;
+    const t = setTimeout(() => void guardarCarrinho(marca.slug, telCarrinho, cliente.nome, resumoCarrinho, subtotal).catch(() => null), 2500);
+    return () => clearTimeout(t);
+  }, [telCarrinho, cliente.nome, resumoCarrinho, subtotal, marca.slug]);
 
   return (
     <div className="pub" style={vitrine?.cor ? ({ ['--primaria' as string]: vitrine.cor, ['--primaria-forte' as string]: `color-mix(in srgb, ${vitrine.cor} 80%, black)`, ['--primaria-fundo' as string]: `color-mix(in srgb, ${vitrine.cor} 12%, white)`, ['--primaria-texto' as string]: '#fff' } as CSSProperties) : undefined}>

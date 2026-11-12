@@ -1976,3 +1976,13 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
 .menu-link-linha { display: grid; grid-template-columns: 1fr auto auto; gap: 0.4rem; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid var(--borda); }
 .menu-link-linha:last-of-type { border-bottom: 0; }
 .cl-lgpd summary { cursor: pointer; font-size: var(--t-sm, 0.85rem); color: var(--texto-suave); }
+
+/* D-096: Turbo-Vendas */
+.turbo-grade { display: grid; gap: var(--e4, 1rem); grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+.turbo-auto[data-ativo] { border-color: var(--primaria); box-shadow: 0 0 0 1px var(--primaria); }
+.turbo-auto h3 { font-size: var(--t-md, 1rem); }
+.turbo-envio { display: grid; gap: var(--e2, 0.5rem); }
+.turbo-msg { margin: 0; white-space: pre-wrap; background: color-mix(in srgb, #25d366 10%, var(--fundo-cartao, #fff)); border-radius: 10px; padding: 0.6rem 0.75rem; font-size: var(--t-sm, 0.9rem); }
+.turbo-safras td, .turbo-safras th { white-space: nowrap; font-size: var(--t-xs, 0.78rem); }
+.cl-perfil { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.3rem 0.8rem; font-size: var(--t-sm, 0.85rem); }
+.cl-perfil b { display: block; font-size: var(--t-xs, 0.75rem); color: var(--texto-suave); font-weight: 500; }
