@@ -2928,9 +2928,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/turbo/whatsapp.tsx": {
-    "mtime": 1794488957.8377993,
-    "seen": 1794489030.3311121,
-    "ast_hash": "6fb05d5e59904c41894b2e37e9df423a",
+    "mtime": 1794489107.3802388,
+    "seen": 1794489113.1413703,
+    "ast_hash": "fa4804cceb1b0f837a224bce0d6f97b4",
     "semantic_hash": ""
   },
   "apps/web/lib/whatsapp.ts": {
@@ -2940,15 +2940,15 @@
     "semantic_hash": ""
   },
   "packages/core/src/whatsapp.ts": {
-    "mtime": 1794488873.4897943,
-    "seen": 1794489030.3336818,
-    "ast_hash": "94e1aac84d2740b0f6cfa70e8e7da00d",
+    "mtime": 1794489107.3757834,
+    "seen": 1794489113.1415102,
+    "ast_hash": "7cac4fc447b7de6c10d6c5ef72c4c39f",
     "semantic_hash": ""
   },
   "packages/core/test/whatsapp.test.ts": {
-    "mtime": 1794488873.492211,
-    "seen": 1794489030.334518,
-    "ast_hash": "3845d76e332991765c7f629507b43f07",
+    "mtime": 1794489107.378067,
+    "seen": 1794489113.141543,
+    "ast_hash": "1108a0e1e55a45f9a6dc6257f6b5bc4d",
     "semantic_hash": ""
   },
   "supabase/migrations/20261112100000_turbo_vendas.sql": {
