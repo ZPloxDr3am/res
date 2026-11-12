@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   calcularCombo,
@@ -92,6 +92,12 @@ export function NovoPedido({
   const canal = tipo === 'balcao' ? 'presencial' : 'delivery';
   const [setorAtivo, setSetorAtivo] = useState<string | null>(null);
   const [montando, setMontando] = useState<ProdutoRow | null>(null);
+  // a montagem abre embaixo da lista de produtos: leva a tela até ela (no salão a lista é longa)
+  const refMontagem = useRef<HTMLDivElement>(null);
+  const refResumo = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (montando) refMontagem.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [montando]);
   const [carrinho, setCarrinho] = useState<ItemCarrinho[]>([]);
   const [cliente, setCliente] = useState({ nome: '', telefone: '' });
   // cadastro de clientes (D-025): busca por telefone ou nome e preenche sozinho
@@ -152,6 +158,8 @@ export function NovoPedido({
     setCarrinho((c) => [...c, { chave: contador, produto, quantidade: 1, escolhas, unitario, resumo, observacao: '', ...(passosEscolhidos ? { passos: passosEscolhidos } : {}) }]);
     setContador((x) => x + 1);
     setMontando(null);
+    // salão: depois de montar, volta para o pedido (com o botão de enviar)
+    if (salao) requestAnimationFrame(() => refResumo.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   };
 
   // "Peça também": categorias de up-sell, produtos que ainda não estão no pedido
@@ -338,6 +346,7 @@ export function NovoPedido({
               {visiveis.length === 0 && <p className="dica">Nenhum produto disponível neste canal.</p>}
             </div>
           </div>
+          <div ref={refMontagem} style={{ scrollMarginTop: '0.5rem' }} />
           {montando?.combo && (
             <MontadorCombo
               key={montando.id + marcaId + canal}
@@ -365,7 +374,7 @@ export function NovoPedido({
         </section>
 
         {/* ---------------- pedido */}
-        <section className="cartao grade" style={{ alignContent: 'start' }} aria-label="Resumo do pedido">
+        <section ref={refResumo} className="cartao grade" style={{ alignContent: 'start', scrollMarginTop: '0.5rem' }} aria-label="Resumo do pedido">
           <h2>Pedido</h2>
           <ul className="lista carrinho">
             {carrinho.map((i) => (
