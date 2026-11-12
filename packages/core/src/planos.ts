@@ -16,6 +16,7 @@ export const ROTAS_DO_MODULO: Partial<Record<ModuloId, string[]>> = {
   gestao: ['/gestao'],
   evento: ['/evento'],
   turbo: ['/turbo'],
+  salao: ['/salao'],
 };
 
 /** Módulo que libera a tela (ou null se a tela vem em todo plano). */

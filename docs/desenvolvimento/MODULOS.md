@@ -13,7 +13,7 @@ Proposta inicial (05/11/2026):
 | Financeiro e Gestão Empresarial | `mod:financeiro`, `mod:gestao` | Emmanuel | `app/(painel)/financeiro`, `app/(painel)/gestao` |
 | Relatórios e Resumo | `mod:relatorios` | Emmanuel | `app/(painel)/relatorios`, `app/(painel)/resumo` |
 | Clientes, fidelidade, promoções | `mod:clientes` | Emmanuel | `app/(painel)/clientes`, `fidelidade`, `promocoes` |
-| **Salão e atendimento por tablet** (mesas, comandas, garçom, taxa de serviço, KDS) | `mod:salao` | **Hugo** | novo |
+| **Salão e atendimento por tablet** (mesas, comandas, garçom, taxa de serviço, KDS) | `mod:salao` | **Hugo** | `app/(painel)/salao`, `app/(painel)/kds`, `app/mesa`, `components/salao`, `components/kds` (base em D-099) |
 | **Fiscal** (NFC-e/NF-e) | `mod:integracoes` | **Hugo** | novo |
 | **Integrações** (iFood, WhatsApp oficial, marketplaces) | `mod:integracoes` | **Hugo** | novo |
 | Entregas e motoboy | `mod:entregas` | Hugo | `app/(painel)/entregas`, `app/m`, `apps-mobile/motoboy` |

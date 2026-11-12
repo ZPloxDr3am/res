@@ -13,13 +13,16 @@ export default async function PainelLayout({ children }: { children: React.React
   const ctx = await contextoLoja();
   // motoboy usa o app do celular, não o painel
   if (ctx.papel === 'entregador' && ctx.lojas.length >= 1) redirect('/m');
+  // garçom (D-099): o painel dele é o salão (e a cozinha, se ajudar lá)
+  const caminho = (await headers()).get('x-res-caminho') ?? '';
+  if (ctx.papel === 'garcom' && !['/salao', '/kds'].some((r) => caminho === r || caminho.startsWith(r + '/'))) redirect('/salao');
   const supa = await criarClienteServidor();
   // D-082: situação da conta (teste com prazo, vencida)
   const { data: sitConta } = await supa.rpc('situacao_conta', { p_loja: ctx.lojaId });
   // D-085: módulos do plano (menu marca com cadeado; a tela fora do plano mostra como liberar)
   const { data: mods } = await supa.rpc('meus_modulos', { p_loja: ctx.lojaId });
   const modulos = (mods as { modulos?: string[] } | null)?.modulos ?? null;
-  const travado = modulos ? moduloDaRota((await headers()).get('x-res-caminho') ?? '') : null;
+  const travado = modulos ? moduloDaRota(caminho) : null;
   const telaTravada = travado && !modulos!.includes(travado) ? travado : null;
   const situacao = sitConta as { situacao: string; teste_ate: string | null; pago_ate: string | null; liberada: boolean } | null;
   // loja nova do cadastro (D-076): mostra "Primeiros passos" no menu até o dono concluir

@@ -22,6 +22,8 @@ const SECOES: { titulo: string; links: Link_[] }[] = [
       { href: '/resumo', rotulo: 'Resumo', icone: 'M4 20V10M10 20V4M16 20v-7M22 20H2' },
       { href: '/pedidos', rotulo: 'Pedidos', icone: 'M4 5h16M4 12h16M4 19h10' },
       { href: '/pedidos/novo', rotulo: 'Novo pedido', icone: 'M12 5v14M5 12h14' },
+      { href: '/salao', rotulo: 'Salão', icone: 'M3 10h18M5 10v10M19 10v10M8 10V6a4 4 0 0 1 8 0v4' },
+      { href: '/kds', rotulo: 'Cozinha (KDS)', icone: 'M3 5h18v11H3zM8 20h8M12 16v4' },
       { href: '/caixa', rotulo: 'Caixa', icone: 'M3 8h18v12H3zM7 8V4h10v4M7 13h4M15 13h2M7 16h10' },
       { href: '/estoque', rotulo: 'Estoque / CMV', icone: 'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8' },
       { href: '/entregas', rotulo: 'Entregas', icone: 'M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z' },

@@ -20,7 +20,10 @@ import {
   normalizarTelefone,
 } from '@res/core';
 import { nomeOpcao, paraGrupoCore, paraProdutoCore, passosCore, type Cardapio, type GrupoRow, type PassoRow, type ProdutoRow, type SetorRow, fotoOpcao } from '@/lib/cardapio-dados';
-import { autorizarDesconto, criarPedido } from '@/app/(painel)/pedidos/actions';
+import { autorizarDesconto, criarPedido, type NovoPedido as DadosPedido } from '@/app/(painel)/pedidos/actions';
+
+/** Item como vai para o servidor (o banco recalcula o preço). */
+export type ItemRodada = DadosPedido['itens'][number];
 import { FidelidadeBalcao, type UsoFidelidade } from '@/components/fidelidade/balcao';
 import { buscarClientes, salvarCliente } from '@/app/(painel)/clientes/actions';
 import { enderecoTexto, formatarTelefone, type ClienteBusca, type EnderecoCliente } from '@/lib/clientes';
@@ -65,7 +68,10 @@ export function NovoPedido({
   embutido = false,
   aoConcluir,
   aoMudar,
+  salao,
 }: {
+  /** Salão (D-099): rodada de uma mesa — sem cliente, endereço, pagamento nem agendamento; vai direto para a cozinha. */
+  salao?: { rotulo: string; enviar: (marcaId: string, itens: ItemRodada[], observacao: string) => Promise<{ ok: true; numero: number } | { ok: false; erro: string }> };
   /** Dentro da janela flutuante: sem título próprio e sem trocar de página ao lançar. */
   embutido?: boolean;
   aoConcluir?: (numero: number) => void;
@@ -82,7 +88,7 @@ export function NovoPedido({
   const router = useRouter();
   const cardapio: Cardapio = useMemo(() => ({ setores, produtos, grupos, usos: {}, passos }), [setores, produtos, grupos, passos]);
   const [marcaId, setMarcaId] = useState(marcas[0]?.id ?? '');
-  const [tipo, setTipo] = useState<TipoPedido>('entrega');
+  const [tipo, setTipo] = useState<TipoPedido>(salao ? 'balcao' : 'entrega');
   const canal = tipo === 'balcao' ? 'presencial' : 'delivery';
   const [setorAtivo, setSetorAtivo] = useState<string | null>(null);
   const [montando, setMontando] = useState<ProdutoRow | null>(null);
@@ -227,13 +233,24 @@ export function NovoPedido({
   const faltando: string[] = [];
   if ((desconto ?? 0) > 0 && motivo.trim().length < 3) faltando.push('motivo do desconto');
   if (acimaDoLimite && !autorizacao) faltando.push('autorização do gerente para o desconto');
-  if (!cliente.nome.trim()) faltando.push('nome do cliente');
+  if (!salao && !cliente.nome.trim()) faltando.push('nome do cliente');
   if (tipo === 'entrega' && (!endereco.logradouro.trim() || !endereco.bairro.trim())) faltando.push('rua e bairro');
   if (carrinho.length === 0) faltando.push('pelo menos um item');
   if (agendar && (!agendadoPara || Number.isNaN(agendadoPara.getTime()) || agendadoPara.getTime() <= Date.now())) faltando.push('data e hora futuras para o agendamento');
 
+  const itensRodada = (): ItemRodada[] =>
+    carrinho.map((i) => ({ produtoId: i.produto.id, quantidade: i.quantidade, observacao: i.observacao, escolhas: i.escolhas, ...(i.passos ? { passos: i.passos } : {}) }));
   const enviar = () =>
     iniciar(async () => {
+      if (salao) {
+        const r = await salvando(salao.enviar(marcaId, itensRodada(), observacao));
+        if (!r.ok) return setErro(r.erro);
+        setErro(null);
+        setCarrinho([]);
+        setObservacao('');
+        aoConcluir?.(r.numero);
+        return;
+      }
       const r = await salvando(
         criarPedido({
           marcaId,
@@ -270,7 +287,7 @@ export function NovoPedido({
 
   return (
     <div className="grade">
-      {!embutido && <h1>Novo pedido</h1>}
+      {!embutido && <h1>{salao ? `Pedido — ${salao.rotulo}` : 'Novo pedido'}</h1>}
       <div className="grade grade-2">
         {/* ---------------- cardápio */}
         <section className="grade" style={{ alignContent: 'start', gridColumn: 'span 1' }}>
@@ -286,14 +303,14 @@ export function NovoPedido({
                   </select>
                 </label>
               )}
-              <fieldset className="linha" style={{ gap: '0.5rem' }}>
+              {!salao && <fieldset className="linha" style={{ gap: '0.5rem' }}>
                 <legend>Tipo</legend>
                 {(['entrega', 'retirada', 'balcao'] as TipoPedido[]).map((t) => (
                   <label key={t} className="check">
                     <input type="radio" name="tipo" checked={tipo === t} onChange={() => { setTipo(t); recalcular(marcaId, t); }} /> {TIPO_ROTULO[t]}
                   </label>
                 ))}
-              </fieldset>
+              </fieldset>}
             </div>
             <div className="linha" style={{ gap: '0.35rem' }}>
               <button type="button" aria-pressed={setorAtivo === null} className={setorAtivo === null ? 'botao-primario' : ''} onClick={() => setSetorAtivo(null)}>Todos</button>
@@ -385,7 +402,7 @@ export function NovoPedido({
             </div>
           )}
 
-          <fieldset className="grade" style={{ gap: '0.5rem' }}>
+          {!salao && <><fieldset className="grade" style={{ gap: '0.5rem' }}>
             <legend>Cliente</legend>
             <div className="linha np-cliente">
               <label style={{ flex: '1 1 9rem' }}>
@@ -609,8 +626,9 @@ export function NovoPedido({
             {agendar && <span className="dica">Fica em "Agendados" no quadro e entra em "Novo", com alerta, perto da hora de preparar.</span>}
           </fieldset>
 
+          </>}
           <label>
-            Observação do pedido
+            {salao ? 'Observação para a cozinha' : 'Observação do pedido'}
             <textarea rows={2} maxLength={500} value={observacao} onChange={(e) => setObservacao(e.target.value)} />
           </label>
 
@@ -629,7 +647,7 @@ export function NovoPedido({
           {erro && <p className="erro" role="alert">{erro}</p>}
           {faltando.length > 0 && <p className="dica">Falta: {faltando.join(', ')}.</p>}
           <button type="button" className="botao-primario" disabled={pendente || faltando.length > 0 || !!resumo.erro} onClick={enviar}>
-            {pendente ? 'Lançando…' : 'Lançar pedido'}
+            {pendente ? 'Enviando…' : salao ? 'Enviar para a cozinha' : 'Lançar pedido'}
           </button>
           <p className="dica" style={{ margin: 0 }}>O preço final é conferido no servidor com o cardápio.</p>
         </section>

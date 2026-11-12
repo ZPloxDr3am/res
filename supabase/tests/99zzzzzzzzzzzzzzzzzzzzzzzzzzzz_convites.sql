@@ -314,3 +314,66 @@ select case when (pg_temp.v('fila2') -> 0 ->> 'falhou')::boolean and pg_temp.v('
              and exists (select 1 from public.turbo_campanhas where nome = 'Com modelo' and modelo_id is not null)
             then 'ok dois canais: falha do oficial vai para o manual com o texto do modelo; resultados por canal; campanha com modelo'
             else 'FALHOU dois canais ' || coalesce(pg_temp.v('fila2')::text, '-') || ' ' || coalesce(pg_temp.v('canais')::text, '-') end;
+-- Salão e KDS (D-099): mesas, rodada do garçom vai para a cozinha, QR do cliente espera confirmação,
+-- KDS por estação marca item e pedido fica pronto, fechar com taxa + 2 formas entra no caixa sem duplicar
+\o /dev/null
+with s as (insert into public.setores (loja_id, nome) values ((pg_temp.v('loja') #>> '{}')::uuid, 'Bebidas KDS'), ((pg_temp.v('loja') #>> '{}')::uuid, 'Lanches KDS') returning id, loja_id)
+insert into public.setor_marcas (loja_id, setor_id, marca_id) select s.loja_id, s.id, (select id from public.marcas where slug = pg_temp.v('slug') #>> '{}') from s;
+insert into public.produtos (loja_id, setor_id, nome, preco, cobra_taxa_servico)
+  select s.loja_id, s.id, case s.nome when 'Bebidas KDS' then 'Refri KDS' else 'Xis KDS' end, case s.nome when 'Bebidas KDS' then 10 else 40 end, s.nome <> 'Bebidas KDS'
+    from public.setores s where s.loja_id = (pg_temp.v('loja') #>> '{}')::uuid and s.nome like '% KDS';
+insert into public.produto_marcas (loja_id, produto_id, marca_id)
+  select p.loja_id, p.id, (select id from public.marcas where slug = pg_temp.v('slug') #>> '{}') from public.produtos p where p.nome like '% KDS' and p.loja_id = (pg_temp.v('loja') #>> '{}')::uuid;
+insert into r values ('s_refri', to_jsonb((select id from public.produtos where nome = 'Refri KDS' and loja_id = (pg_temp.v('loja') #>> '{}')::uuid)));
+insert into r values ('s_xis', to_jsonb((select id from public.produtos where nome = 'Xis KDS' and loja_id = (pg_temp.v('loja') #>> '{}')::uuid)));
+insert into r values ('s_marca', to_jsonb((select id from public.marcas where slug = pg_temp.v('slug') #>> '{}')));
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select public.salao_salvar_locais((pg_temp.v('loja') #>> '{}')::uuid, 'mesa', 1, 5, 4);
+insert into r values ('s_mapa', public.salao_mapa((pg_temp.v('loja') #>> '{}')::uuid));
+insert into r values ('s_conta', to_jsonb(public.salao_abrir_conta((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('s_mapa') -> 'locais' -> 0 ->> 'id')::uuid, 2)));
+select public.salao_lancar((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('s_conta') #>> '{}')::uuid, (pg_temp.v('s_marca') #>> '{}')::uuid,
+  jsonb_build_array(jsonb_build_object('produto_id', pg_temp.v('s_xis') #>> '{}', 'quantidade', 2), jsonb_build_object('produto_id', pg_temp.v('s_refri') #>> '{}', 'quantidade', 1)));
+insert into r values ('s_est', to_jsonb(public.kds_estacoes_salvar((pg_temp.v('loja') #>> '{}')::uuid, null, 'Bar', array[(select id from public.setores where nome = 'Bebidas KDS' and loja_id = (pg_temp.v('loja') #>> '{}')::uuid)])));
+insert into r values ('kbar', public.kds_fila((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('s_est') #>> '{}')::uuid));
+insert into r values ('ktudo', public.kds_fila((pg_temp.v('loja') #>> '{}')::uuid, null));
+insert into r values ('k1', to_jsonb(public.kds_marcar((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('kbar') -> 'pedidos' -> 0 ->> 'id')::uuid,
+  array[(pg_temp.v('kbar') -> 'pedidos' -> 0 -> 'itens' -> 0 ->> 'id')::uuid], true)));
+insert into r values ('k2', to_jsonb(public.kds_marcar((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('ktudo') -> 'pedidos' -> 0 ->> 'id')::uuid,
+  array(select (x ->> 'id')::uuid from jsonb_array_elements(pg_temp.v('ktudo') -> 'pedidos' -> 0 -> 'itens') x), true)));
+reset role;
+-- cliente pelo QR da mesa 2 (sem login)
+insert into r values ('s_qr', to_jsonb((select qr_token from public.salao_locais where loja_id = (pg_temp.v('loja') #>> '{}')::uuid and numero = 2)));
+set role anon;
+insert into r values ('s_pub', public.salao_mesa_publica(pg_temp.v('s_qr') #>> '{}'));
+select public.salao_pedido_qr(pg_temp.v('s_qr') #>> '{}', pg_temp.v('slug') #>> '{}', jsonb_build_array(jsonb_build_object('produto_id', pg_temp.v('s_refri') #>> '{}', 'quantidade', 2)), 'Lia', null);
+reset role;
+insert into r values ('s_qrrep', to_jsonb((select count(*) from public.pedidos p join public.salao_contas c on c.id = p.salao_conta_id join public.salao_locais l on l.id = c.local_id where l.qr_token = pg_temp.v('s_qr') #>> '{}')));
+set role anon;
+select from pg_temp.esperar_erro(format($q$select public.salao_pedido_qr('%s', '%s', '[{"produto_id": "%s", "quantidade": 1}]', 'Lia', null)$q$, pg_temp.v('s_qr') #>> '{}', pg_temp.v('slug') #>> '{}', pg_temp.v('s_refri') #>> '{}'), 'Aguarde');
+reset role;
+insert into r values ('s_conta2', to_jsonb((select c.id from public.salao_contas c join public.salao_locais l on l.id = c.local_id where l.qr_token = pg_temp.v('s_qr') #>> '{}')));
+-- caixa aberto para o fechamento
+insert into public.caixas (loja_id, nome) values ((pg_temp.v('loja') #>> '{}')::uuid, 'Caixa salão');
+insert into public.caixa_sessoes (loja_id, caixa_id, numero, aberto_por)
+  select loja_id, id, 1, '00000000-0000-0000-0000-0000000005a2' from public.caixas where nome = 'Caixa salão' and loja_id = (pg_temp.v('loja') #>> '{}')::uuid;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select from pg_temp.esperar_erro(format($q$select public.salao_fechar('%s', '%s', true, 0, '[{"forma": "pix", "valor": 20}]')$q$, pg_temp.v('loja') #>> '{}', pg_temp.v('s_conta2') #>> '{}'), 'esperando confirmação');
+select from pg_temp.esperar_erro(format($q$select public.salao_fechar('%s', '%s', true, 0, '[{"forma": "pix", "valor": 50}]')$q$, pg_temp.v('loja') #>> '{}', pg_temp.v('s_conta') #>> '{}'), 'Faltam');
+select from pg_temp.esperar_erro(format($q$select public.salao_fechar('%s', '%s', true, 0, '[{"forma": "pix", "valor": 100}]')$q$, pg_temp.v('loja') #>> '{}', pg_temp.v('s_conta') #>> '{}'), 'só em dinheiro');
+-- 2×40 + 10 = 90; taxa 10% só nos 80 do lanche = 8; total 98: 50 pix + 50 dinheiro (troco 2)
+insert into r values ('s_fecha', public.salao_fechar((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('s_conta') #>> '{}')::uuid, true, 0, '[{"forma": "pix", "valor": 50}, {"forma": "dinheiro", "valor": 50}]'));
+reset role;
+\o
+select case when jsonb_array_length(pg_temp.v('s_mapa') -> 'locais') = 5
+             and jsonb_array_length(pg_temp.v('kbar') -> 'pedidos' -> 0 -> 'itens') = 1 and pg_temp.v('kbar') -> 'pedidos' -> 0 ->> 'mesa' like 'Mesa 1%'
+             and jsonb_array_length(pg_temp.v('ktudo') -> 'pedidos' -> 0 -> 'itens') = 2
+             and pg_temp.v('k1') = '"em_preparo"' and pg_temp.v('k2') = '"pronto"'
+             and pg_temp.v('s_pub') ->> 'rotulo' = 'Mesa 2' and pg_temp.v('s_qrrep') = '1'
+             and (select status from public.pedidos where salao_conta_id = (pg_temp.v('s_conta2') #>> '{}')::uuid) in ('novo', 'em_preparo')
+             and (pg_temp.v('s_fecha') ->> 'total')::numeric = 98 and (pg_temp.v('s_fecha') ->> 'troco')::numeric = 2
+             and (select sum(valor) from public.caixa_movimentos m join public.caixa_sessoes s on s.id = m.sessao_id join public.caixas cx on cx.id = s.caixa_id where cx.nome = 'Caixa salão') = 98
+             and (select count(*) from public.caixa_movimentos m join public.caixa_sessoes s on s.id = m.sessao_id join public.caixas cx on cx.id = s.caixa_id where cx.nome = 'Caixa salão') = 2
+             and (select bool_and(status = 'concluido') from public.pedidos where salao_conta_id = (pg_temp.v('s_conta') #>> '{}')::uuid)
+             and (select status from public.salao_contas where id = (pg_temp.v('s_conta') #>> '{}')::uuid) = 'fechada'
+            then 'ok salão/KDS: mesas, rodada na cozinha, KDS por estação, QR com freio, fechar com taxa só onde cobra, troco e caixa sem duplicar'
+            else 'FALHOU salão ' || coalesce(pg_temp.v('s_fecha')::text, '-') || ' k1=' || coalesce(pg_temp.v('k1')::text, '-') || ' k2=' || coalesce(pg_temp.v('k2')::text, '-') || ' bar=' || coalesce(pg_temp.v('kbar')::text, '-') end;
