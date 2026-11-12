@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794490844.6476648,
-    "seen": 1794490849.7854118,
+    "mtime": 1794490977.7556727,
+    "seen": 1794490986.5190125,
     "ast_hash": "6e0252fee63580adb1ce74ae851aaae0",
     "semantic_hash": ""
   },
@@ -2520,8 +2520,8 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794490784.0156612,
-    "seen": 1794490849.785392,
+    "mtime": 1794490977.7676728,
+    "seen": 1794490986.5187116,
     "ast_hash": "07a36e4c5ea9f853eaf2d8510114e283",
     "semantic_hash": ""
   },
@@ -2852,7 +2852,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1794490849.7844546,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -2898,20 +2898,20 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/turbo/actions.ts": {
-    "mtime": 1794490828.8293529,
-    "seen": 1794490849.7845736,
+    "mtime": 1794490977.7556727,
+    "seen": 1794490986.507868,
     "ast_hash": "7d641df749154b168e45d933c3dcfe90",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/turbo/page.tsx": {
-    "mtime": 1794490828.8290842,
-    "seen": 1794490849.7845771,
+    "mtime": 1794490977.7556727,
+    "seen": 1794490986.507872,
     "ast_hash": "bdfd0bb4544bc5dbba74effa572f9b04",
     "semantic_hash": ""
   },
   "apps/web/components/turbo/turbo-vendas.tsx": {
-    "mtime": 1794490828.8357694,
-    "seen": 1794490849.7849631,
+    "mtime": 1794490977.7556727,
+    "seen": 1794490986.5125406,
     "ast_hash": "1ab75589ef98639ea015285e8678a43f",
     "semantic_hash": ""
   },
@@ -2967,12 +2967,6 @@
     "mtime": 1794489310.5338202,
     "seen": 1794490849.7853067,
     "ast_hash": "09ea79b576b36bed1acca10f1d1542d4",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261112140000_turbo_dois_canais.sql": {
-    "mtime": 1794490784.0156612,
-    "seen": 1794490849.7853084,
-    "ast_hash": "f1a5be6bf96cd5d7519a924788770533",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/whatsapp-api.md": {
