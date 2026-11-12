@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794495441.2441988,
-    "seen": 1794495447.4931238,
+    "mtime": 1794495630.59221,
+    "seen": 1794495642.023043,
     "ast_hash": "895161958c4f21a667188d2f1909f5ab",
     "semantic_hash": ""
   },
@@ -1830,8 +1830,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/gestao/page.tsx": {
-    "mtime": 1794495361.1732519,
-    "seen": 1794495447.4922903,
+    "mtime": 1794495630.58821,
+    "seen": 1794495642.011669,
     "ast_hash": "08b2ccbfb9f8253be0d303f6e93cf06e",
     "semantic_hash": ""
   },
@@ -2520,8 +2520,8 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794495214.5445874,
-    "seen": 1794495447.493102,
+    "mtime": 1794495630.60421,
+    "seen": 1794495642.0226266,
     "ast_hash": "b4101ee0cdb2111f8833152cc0b11298",
     "semantic_hash": ""
   },
@@ -2852,7 +2852,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1794495447.4921958,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -2982,14 +2982,14 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/kds/actions.ts": {
-    "mtime": 1794495347.2763326,
-    "seen": 1794495447.492296,
+    "mtime": 1794495630.59221,
+    "seen": 1794495642.0117323,
     "ast_hash": "6b4de298f068cda8a2bc91d30d45dead",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/kds/page.tsx": {
-    "mtime": 1794495324.4080784,
-    "seen": 1794495447.4922981,
+    "mtime": 1794495630.59221,
+    "seen": 1794495642.0117352,
     "ast_hash": "eefaa45612e2f094b66e9f4e8d8bebfe",
     "semantic_hash": ""
   },
@@ -3000,8 +3000,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/salao/page.tsx": {
-    "mtime": 1794495347.277812,
-    "seen": 1794495447.4923267,
+    "mtime": 1794495630.59221,
+    "seen": 1794495642.012191,
     "ast_hash": "a86e787e8ed4df2651df8f931fdfdf8a",
     "semantic_hash": ""
   },
@@ -3024,8 +3024,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/kds/kds.tsx": {
-    "mtime": 1794495324.407557,
-    "seen": 1794495447.492539,
+    "mtime": 1794495630.59221,
+    "seen": 1794495642.016004,
     "ast_hash": "921c6ac242173056df52797f02382b82",
     "semantic_hash": ""
   },
@@ -3048,8 +3048,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/salao/salao.tsx": {
-    "mtime": 1794495347.2772524,
-    "seen": 1794495447.4925811,
+    "mtime": 1794495630.59221,
+    "seen": 1794495642.0166914,
     "ast_hash": "85d1def567e8f0c4c27af95e63ce9133",
     "semantic_hash": ""
   },
@@ -3069,12 +3069,6 @@
     "mtime": 1794493845.0878432,
     "seen": 1794493852.0651972,
     "ast_hash": "b07c36995e32953cdfe0ad63c9c2e458",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261112180000_teste_de_raiva.sql": {
-    "mtime": 1794495283.7601893,
-    "seen": 1794495447.493038,
-    "ast_hash": "e16ee91022f7db7b34105121dc6b7b5d",
     "semantic_hash": ""
   }
 }
