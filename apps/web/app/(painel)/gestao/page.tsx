@@ -50,17 +50,12 @@ export default async function Gestao({ searchParams }: { searchParams: Promise<{
           .limit(500)
       : Promise.resolve({ data: [] as Registro[], error: null }),
     // faturamento dos últimos 30 dias no RES (pedidos concluídos), sugestão para a planilha
-    supabase
-      .from('pedidos')
-      .select('total')
-      .eq('loja_id', ctx.lojaId)
-      .eq('status', 'concluido')
-      .gte('concluido_em', new Date(Date.now() - 30 * 86400_000).toISOString())
-      .limit(20000),
+    // somado no banco (D-101): a API devolve no máximo 1.000 linhas e a soma saía menor
+    supabase.rpc('faturamento_lojas', { p_lojas: [ctx.lojaId], p_dias: 30 }),
   ]);
   const erro = erroPrep?.message ?? emp.error?.message ?? custos.error?.message ?? funcs.error?.message ?? regs.error?.message;
   const empresa = (emp.data as Empresa | null) ?? null;
-  const faturamento30 = Math.round((fat.data ?? []).reduce((s, p) => s + Number(p.total), 0) * 100) / 100;
+  const faturamento30 = Math.round(((fat.data ?? []) as { total: number }[]).reduce((s, p) => s + Number(p.total), 0) * 100) / 100;
   const funcionarios = (funcs.data ?? []) as Funcionario[];
 
   // várias lojas na mesma conta: custos de cada loja separada ou do grupo todo junto (D-053)
@@ -80,9 +75,9 @@ export default async function Gestao({ searchParams }: { searchParams: Promise<{
     const ver = sp.ver === 'grupo' && modo === 'separado' ? 'grupo' : 'loja';
     const escolha = <EscolhaModo contaId={contaId} modo={modo} titular={titular} lojas={doGrupo.map((l) => l.nome)} ver={ver} />;
     const fatGrupo = async () => {
-      const { data } = await supabase.from('pedidos').select('loja_id, total').in('loja_id', ids).eq('status', 'concluido').gte('concluido_em', new Date(Date.now() - 30 * 86400_000).toISOString()).limit(50000);
+      const { data } = await supabase.rpc('faturamento_lojas', { p_lojas: ids, p_dias: 30 });
       const por = new Map<string, number>();
-      for (const p of data ?? []) por.set(p.loja_id as string, (por.get(p.loja_id as string) ?? 0) + Number(p.total));
+      for (const p of (data ?? []) as { loja_id: string; total: number }[]) por.set(p.loja_id, (por.get(p.loja_id) ?? 0) + Number(p.total));
       return por;
     };
     if (modo === 'grupo') {

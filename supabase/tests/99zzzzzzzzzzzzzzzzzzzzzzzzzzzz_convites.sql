@@ -377,3 +377,21 @@ select case when jsonb_array_length(pg_temp.v('s_mapa') -> 'locais') = 5
              and (select status from public.salao_contas where id = (pg_temp.v('s_conta') #>> '{}')::uuid) = 'fechada'
             then 'ok salão/KDS: mesas, rodada na cozinha, KDS por estação, QR com freio, fechar com taxa só onde cobra, troco e caixa sem duplicar'
             else 'FALHOU salão ' || coalesce(pg_temp.v('s_fecha')::text, '-') || ' k1=' || coalesce(pg_temp.v('k1')::text, '-') || ' k2=' || coalesce(pg_temp.v('k2')::text, '-') || ' bar=' || coalesce(pg_temp.v('kbar')::text, '-') end;
+-- Teste de raiva (D-101): QR com limite; faturamento somado no banco, só das lojas da pessoa
+\o /dev/null
+insert into r values ('s_qr3', to_jsonb((select qr_token from public.salao_locais where numero = 3 and loja_id = (pg_temp.v('loja') #>> '{}')::uuid)));
+set role anon;
+select from pg_temp.esperar_erro(format($q$select public.salao_pedido_qr('%s', '%s', '[{"produto_id": "%s", "quantidade": 99}]', 'X', null)$q$,
+  pg_temp.v('s_qr3') #>> '{}', pg_temp.v('slug') #>> '{}', pg_temp.v('s_refri') #>> '{}'), 'grande demais');
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('rv_fat', (select jsonb_agg(f) from public.faturamento_lojas(array[(pg_temp.v('loja') #>> '{}')::uuid], 30) f));
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a3');
+insert into r values ('rv_fat_fora', (select coalesce(jsonb_agg(f), '[]') from public.faturamento_lojas(array[(pg_temp.v('loja') #>> '{}')::uuid], 30) f));
+reset role;
+\o
+select case when (pg_temp.v('rv_fat') -> 0 ->> 'total')::numeric = (select sum(total) from public.pedidos where loja_id = (pg_temp.v('loja') #>> '{}')::uuid and status = 'concluido' and concluido_em > now() - interval '30 days')
+             and pg_temp.v('rv_fat_fora') = '[]'
+            then 'ok raiva: QR com limite de quantidade; faturamento somado no banco e só para quem é da loja'
+            else 'FALHOU raiva ' || coalesce(pg_temp.v('rv_fat')::text, '-') || ' ' || coalesce(pg_temp.v('rv_fat_fora')::text, '-') end;
