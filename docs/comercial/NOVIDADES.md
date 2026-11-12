@@ -7,6 +7,7 @@ Uma seção por semana, escrita na revisão de sexta. Linguagem de cliente.
 - Planos por operação (Delivery, Salão, Completo), plano anual com 20% de desconto e tela **Assinatura** com fatura e Pix.
 - Cardápio fechado aceita pedido **para quando abrir**; resumo no topo do quadro; arrastar o pedido entre colunas; **Organizar cardápio** arrastando.
 - Exportar e apagar dados do cliente (LGPD).
+- **WhatsApp oficial** pronto para ligar: conectando o número da Meta, as mensagens do Turbo-Vendas saem sozinhas (ou num botão), com modelos aprovados, confirmação de entregue/lido e "SAIR" automático.
 
 ## Semana 45 (02–06/11/2026)
 - App **RES** para Android, com o painel adaptado ao celular (barra de atalhos e menu "Mais" colorido).

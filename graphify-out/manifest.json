@@ -870,9 +870,9 @@
     "semantic_hash": "dbeef416075d74e3b6c91519aa686f04"
   },
   "apps/web/middleware.ts": {
-    "mtime": 1794351120.7599552,
-    "seen": 1794351126.029041,
-    "ast_hash": "ec3aa3928f1b0586d2356a85a27278d7",
+    "mtime": 1794488906.7001557,
+    "seen": 1794489030.3322637,
+    "ast_hash": "b672273ccb8c71f2738c8a1d537d5ee9",
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
@@ -1026,9 +1026,9 @@
     "semantic_hash": "ca7ba0b48f2b641149acdba9eb74387d"
   },
   "packages/core/src/index.ts": {
-    "mtime": 1794352198.3398366,
-    "seen": 1794352204.4959972,
-    "ast_hash": "a83656b5f7a1b88b083576b0a4187a4c",
+    "mtime": 1794488873.4897943,
+    "seen": 1794489030.333161,
+    "ast_hash": "7d90f65cfcdc132c0af8e992a50afaed",
     "semantic_hash": ""
   },
   "packages/core/src/pedido.ts": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794488203.7200968,
-    "seen": 1794488214.0005348,
-    "ast_hash": "47db8704a22bc25a6da46db4209b8360",
+    "mtime": 1794489018.3058028,
+    "seen": 1794489030.338088,
+    "ast_hash": "b83ddc9639dde4c0ab0bfbce898f4c5f",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2520,9 +2520,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794488203.7298937,
-    "seen": 1794488214.0002522,
-    "ast_hash": "8c2869f62599489ccc8e21474a887f09",
+    "mtime": 1794488833.2510326,
+    "seen": 1794489030.337768,
+    "ast_hash": "8cac047d3900cd18e5f8a31a9832fa06",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/actions.ts": {
@@ -2790,9 +2790,9 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1794488203.7200968,
-    "seen": 1794488214.0005093,
-    "ast_hash": "f9c606d55dfcad92311baa37bbac28ad",
+    "mtime": 1794489018.3025887,
+    "seen": 1794489030.3380625,
+    "ast_hash": "f62aba06109f0163fc5c59fda35b0509",
     "semantic_hash": ""
   },
   "docs/comercial/README.md": {
@@ -2851,8 +2851,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794487797.9483669,
-    "ast_hash": "",
+    "seen": 1794489036.5982711,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -2895,6 +2895,84 @@
     "mtime": 1794425628.5147817,
     "seen": 1794425779.4714222,
     "ast_hash": "5694de05411014ac751c9a1684c93d4c",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/turbo/actions.ts": {
+    "mtime": 1794488923.6282532,
+    "seen": 1794489030.325957,
+    "ast_hash": "05621093dcc19b4f2961d3aaf644ec30",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/turbo/page.tsx": {
+    "mtime": 1794488985.3053784,
+    "seen": 1794489030.325962,
+    "ast_hash": "0d8df3077e5ccfeb884a57948a6cd5bd",
+    "semantic_hash": ""
+  },
+  "apps/web/app/api/whatsapp/processar/route.ts": {
+    "mtime": 1794488906.696781,
+    "seen": 1794489030.3265364,
+    "ast_hash": "3515ca98036dabf6bbde20e0d0a222de",
+    "semantic_hash": ""
+  },
+  "apps/web/app/api/whatsapp/webhook/route.ts": {
+    "mtime": 1794488906.6977963,
+    "seen": 1794489030.32654,
+    "ast_hash": "612d9a0c4700a489c46e57f04587d9df",
+    "semantic_hash": ""
+  },
+  "apps/web/components/turbo/turbo-vendas.tsx": {
+    "mtime": 1794488985.3094647,
+    "seen": 1794489030.3310883,
+    "ast_hash": "ed612790d045253f2a80c7dcfdf1819d",
+    "semantic_hash": ""
+  },
+  "apps/web/components/turbo/whatsapp.tsx": {
+    "mtime": 1794489107.3802388,
+    "seen": 1794489113.1413703,
+    "ast_hash": "fa4804cceb1b0f837a224bce0d6f97b4",
+    "semantic_hash": ""
+  },
+  "apps/web/lib/whatsapp.ts": {
+    "mtime": 1794488891.2137954,
+    "seen": 1794489030.3322601,
+    "ast_hash": "d7ab82621fbea29273b909322905398f",
+    "semantic_hash": ""
+  },
+  "packages/core/src/whatsapp.ts": {
+    "mtime": 1794489107.3757834,
+    "seen": 1794489113.1415102,
+    "ast_hash": "7cac4fc447b7de6c10d6c5ef72c4c39f",
+    "semantic_hash": ""
+  },
+  "packages/core/test/whatsapp.test.ts": {
+    "mtime": 1794489107.378067,
+    "seen": 1794489113.141543,
+    "ast_hash": "1108a0e1e55a45f9a6dc6257f6b5bc4d",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261112100000_turbo_vendas.sql": {
+    "mtime": 1794488203.7298937,
+    "seen": 1794489030.336804,
+    "ast_hash": "6f76c1b8697614b97e45b1f3f43c2e63",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261112120000_whatsapp_api.sql": {
+    "mtime": 1794488811.1152234,
+    "seen": 1794489030.3368063,
+    "ast_hash": "09ea79b576b36bed1acca10f1d1542d4",
+    "semantic_hash": ""
+  },
+  "docs/desenvolvimento/whatsapp-api.md": {
+    "mtime": 1794489018.2898028,
+    "seen": 1794489030.3382363,
+    "ast_hash": "7dbe70d24fc4ebe051fbeeeda74e0d45",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/turbo-vendas.md": {
+    "mtime": 1794489018.31032,
+    "seen": 1794489030.3385987,
+    "ast_hash": "d5fbddc9a7ffc5f5c830e941e045a870",
     "semantic_hash": ""
   }
 }
