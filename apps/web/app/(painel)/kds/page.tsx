@@ -11,5 +11,5 @@ export default async function PaginaKds() {
   const supabase = await criarClienteServidor();
   const { data, error } = await supabase.rpc('kds_fila', { p_loja: ctx.lojaId, p_estacao: null });
   if (error) return <p className="cartao dica">{error.message}</p>;
-  return <Kds inicial={data as FilaKds} gestor={ctx.papel === 'dono' || ctx.papel === 'gerente'} />;
+  return <Kds lojaId={ctx.lojaId} inicial={data as FilaKds} gestor={ctx.papel === 'dono' || ctx.papel === 'gerente'} />;
 }

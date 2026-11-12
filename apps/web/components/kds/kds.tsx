@@ -1,6 +1,18 @@
 'use client';
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
-import { filaKds, marcarKds, salvarEstacao } from '@/app/(painel)/kds/actions';
+import { salvarEstacao } from '@/app/(painel)/kds/actions';
+import { clienteNavegador } from '@/lib/supabase/client';
+
+/** Fala direto com o banco (D-101): sem passar pelo servidor do site a cada 5 s — mais rápido e sem gastar a cota da Vercel.
+ *  Falha de rede vira exceção (a tela mostra "Sem conexão"); erro do banco volta como mensagem. */
+async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<{ ok: true; dados: T } | { ok: false; erro: string }> {
+  const { data, error } = await clienteNavegador().rpc(fn, args);
+  if (error) {
+    if (!error.code || /fetch|network|Load failed/i.test(error.message)) throw new Error('sem conexão');
+    return { ok: false, erro: error.message };
+  }
+  return { ok: true, dados: data as T };
+}
 
 type Opcao = { grupo: string; nome: string; quantidade: number; fracao: number | null };
 type ItemKds = { id: string; nome: string; quantidade: number; observacao: string | null; pronto: boolean; opcoes: Opcao[] | null };
@@ -37,7 +49,12 @@ function bip() {
 }
 
 /** KDS (D-099): uma tela por estação (Cozinha, Pizzaria, Bar…), com tempo e cor de atraso. */
-export function Kds({ inicial, gestor }: { inicial: FilaKds; gestor: boolean }) {
+export function Kds({ inicial, gestor, lojaId }: { inicial: FilaKds; gestor: boolean; lojaId: string }) {
+  const filaKds = useCallback(async (estacao: string | null) => {
+    const r = await rpc<FilaKds>('kds_fila', { p_loja: lojaId, p_estacao: estacao });
+    return r.ok ? { ok: true as const, fila: r.dados } : r;
+  }, [lojaId]);
+  const marcarKds = useCallback((pedido: string, itens: string[], pronto: boolean) => rpc<string>('kds_marcar', { p_loja: lojaId, p_pedido: pedido, p_itens: itens, p_pronto: pronto }), [lojaId]);
   const [fila, setFila] = useState(inicial);
   const [estacao, setEstacao] = useState<string | null>(null);
   const [alerta, setAlerta] = useState(15);
@@ -90,7 +107,7 @@ export function Kds({ inicial, gestor }: { inicial: FilaKds; gestor: boolean }) 
     if (vistos.current && som && [...ids].some((id) => !vistos.current!.has(id))) bip();
     vistos.current = ids;
     setFila(r.fila);
-  }, [estacao, som]);
+  }, [estacao, som, filaKds, marcarKds]);
 
   useEffect(() => {
     vistos.current = null;

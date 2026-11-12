@@ -7,6 +7,17 @@ import { salvando } from '@/components/tempo-real';
 import type { DadosNovoPedido } from '@/lib/novo-pedido';
 import { abrirConta, acaoConta, cancelarRodada, confirmarRodada, criarLocais, editarLocal, fecharConta, lancarRodada, salvarTaxaServico, verConta } from '@/app/(painel)/salao/actions';
 import { rotuloLocal, type ContaSalao, type LocalSalao, type MapaSalao } from './tipos';
+import { clienteNavegador } from '@/lib/supabase/client';
+
+/** Leituras que se repetem vão direto ao banco (D-101): não recarregam a página nem o cardápio inteiro. */
+async function ler<T>(fn: string, args: Record<string, unknown>): Promise<T | null> {
+  try {
+    const { data, error } = await clienteNavegador().rpc(fn, args);
+    return error ? null : (data as T);
+  } catch {
+    return null;
+  }
+}
 
 const reais = (v: number) => formatarReais(Math.round(v * 100));
 const minutos = (iso: string) => Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60000));
@@ -23,7 +34,22 @@ const lerCentavos = (t: string) => {
 const FORMAS: FormaPagamento[] = ['dinheiro', 'pix', 'cartao_credito', 'cartao_debito', 'vale_refeicao'];
 
 /** Salão (D-099): mapa de mesas e comandas, conta da mesa, rodadas para a cozinha e fechamento no caixa. */
-export function Salao({ mapa, dados }: { mapa: MapaSalao; dados: DadosNovoPedido }) {
+export function Salao({ mapa: mapaServidor, dados, lojaId }: { mapa: MapaSalao; dados: DadosNovoPedido; lojaId: string }) {
+  const [mapa, setMapa] = useState(mapaServidor);
+  useEffect(() => setMapa(mapaServidor), [mapaServidor]);
+  // mapa ao vivo: muda quando qualquer conta muda (tempo real) e confere a cada 10 s
+  useEffect(() => {
+    const atualizar = async () => {
+      if (document.visibilityState !== 'visible') return;
+      const m = await ler<MapaSalao>('salao_mapa', { p_loja: lojaId });
+      if (m) setMapa(m);
+    };
+    const sb = clienteNavegador();
+    const canal = sb.channel(`salao:${lojaId}`).on('postgres_changes', { event: '*', schema: 'public', table: 'salao_contas', filter: `loja_id=eq.${lojaId}` }, () => void atualizar()).subscribe();
+    const t = setInterval(() => void atualizar(), 10000);
+    document.addEventListener('visibilitychange', atualizar);
+    return () => { clearInterval(t); document.removeEventListener('visibilitychange', atualizar); void sb.removeChannel(canal); };
+  }, [lojaId]);
   const [aba, setAba] = useState<'mesa' | 'comanda' | 'config'>(mapa.locais.some((l) => l.tipo === 'mesa') || !mapa.locais.length ? 'mesa' : 'comanda');
   const [busca, setBusca] = useState('');
   const [abrindo, setAbrindo] = useState<LocalSalao | null>(null);
@@ -90,7 +116,7 @@ export function Salao({ mapa, dados }: { mapa: MapaSalao; dados: DadosNovoPedido
       )}
 
       {abrindo && <AbrirMesa local={abrindo} fechar={() => setAbrindo(null)} aberta={(id) => { setAbrindo(null); setContaId(id); }} />}
-      {contaId && <Conta id={contaId} mapa={mapa} dados={dados} fechar={() => setContaId(null)} />}
+      {contaId && <Conta id={contaId} lojaId={lojaId} mapa={mapa} dados={dados} fechar={() => setContaId(null)} />}
     </div>
   );
 }
@@ -126,7 +152,7 @@ function AbrirMesa({ local, fechar, aberta }: { local: LocalSalao; fechar: () =>
   );
 }
 
-function Conta({ id, mapa, dados, fechar }: { id: string; mapa: MapaSalao; dados: DadosNovoPedido; fechar: () => void }) {
+function Conta({ id, lojaId, mapa, dados, fechar }: { id: string; lojaId: string; mapa: MapaSalao; dados: DadosNovoPedido; fechar: () => void }) {
   const [conta, setConta] = useState<ContaSalao | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [modo, setModo] = useState<'ver' | 'lancar' | 'fechar' | 'transferir'>('ver');
@@ -135,9 +161,13 @@ function Conta({ id, mapa, dados, fechar }: { id: string; mapa: MapaSalao; dados
   const [motivo, setMotivo] = useState('');
   const [pendente, iniciar] = useTransition();
   const recarregar = async () => {
-    const r = await verConta(id);
-    if (r.ok) setConta(r.dados);
-    else setErro(r.erro);
+    const c = await ler<ContaSalao>('salao_conta', { p_loja: lojaId, p_conta: id });
+    if (c) setConta(c);
+    else if (!conta) {
+      const r = await verConta(id); // mostra a mensagem de erro do servidor
+      if (!r.ok) setErro(r.erro);
+      else setConta(r.dados);
+    }
   };
   // atualiza junto com o mapa (tempo real) e a cada 10 s, para ver a cozinha marcando pronto
   const versao = useMemo(() => JSON.stringify(mapa.locais.find((l) => l.conta?.id === id)?.conta ?? null), [mapa, id]);

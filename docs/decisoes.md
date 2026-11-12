@@ -856,3 +856,13 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 ## D-100 — KDS mostra a conexão; salão com cores de livre/ocupada (12/11/2026)
 - **KDS**: selo fixo no topo — 🟢 Conexão estável · 🟠 instável (sem resposta há 12 s) · 🔴 Sem conexão (20 s ou aparelho sem rede). Na queda: faixa vermelha "SEM INTERNET desde HH:MM — pedidos novos não aparecem", bip na hora e a cada 2 min; quando volta, "✅ Conexão voltou". Toques feitos sem internet ficam guardados no aparelho e são enviados, na ordem, quando a conexão volta.
 - **Salão**: mesa livre em verde e ocupada em vermelho; o selo diz o que falta (QR, PRONTO, CONTA).
+
+## D-101 — Correções do teste de raiva (12/11/2026)
+Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques como anônimo e como usuário de outra loja (relatório no projeto: `claude/teste-de-raiva-2026-11-12.md`). Corrigido:
+- **Quadro**: índices para "abertos ou fechados nas últimas 12 h" — o banco lia a tabela inteira de pedidos a cada atualização (76 ms → 0,2 ms com 450 mil pedidos; cresce com o tempo).
+- **KDS**: duas estações marcando itens do mesmo pedido ao mesmo tempo deixavam 1 em cada 30 preso em "em preparo" — agora o pedido é travado na marcação. A tela fala direto com o banco (sem passar pelo servidor do site a cada 5 s).
+- **Salão**: o mapa se atualiza direto do banco (tempo real + 10 s) sem recarregar a página e o cardápio inteiro a cada mudança.
+- **QR na mesa**: freio de 20 s valia só para cliques em sequência (4 de 15 simultâneos passavam) e aceitava 40 itens × 99. Mesa travada, no máximo 30 itens e 20 de cada.
+- **Cardápio digital**: com telefones diferentes, um script fez 100 pedidos falsos em 2 s. Freio por loja: 25 esperando aceite (30 min) ou 60 em 10 min.
+- **Carrinho abandonado**: no máximo 60 telefones novos por loja a cada 10 min (robô enchendo a fila / a conta da Meta).
+- **Gestão**: faturamento de 30 dias somado no banco (`faturamento_lojas`); antes a API cortava em 1.000 pedidos e o total saía menor.
