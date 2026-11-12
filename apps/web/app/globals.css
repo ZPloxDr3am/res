@@ -2003,14 +2003,13 @@ button.dica:hover:not(:disabled) { color: var(--texto); background: var(--superf
 .salao-mesa .salao-info { font-size: 0.75rem; opacity: 0.8; }
 .salao-mesa .salao-selo { position: absolute; top: 6px; right: 6px; font-size: 0.65rem; font-weight: 800; padding: 1px 6px; border-radius: 999px; background: currentColor; }
 .salao-mesa .salao-selo { color: #fff; background: #334155; }
-.salao-mesa[data-estado='livre'] { border-style: dashed; opacity: 0.85; }
-.salao-mesa[data-estado='ocupada'] { border-color: #2563eb; background: color-mix(in srgb, #2563eb 8%, var(--superficie, #fff)); }
-.salao-mesa[data-estado='pronto'] { border-color: #16a34a; background: color-mix(in srgb, #16a34a 10%, var(--superficie, #fff)); }
+.salao-mesa[data-estado='livre'] { border-color: #16a34a; background: color-mix(in srgb, #16a34a 14%, var(--superficie, #fff)); color: #14532d; }
+/* ocupada = vermelho; o selo diz o que falta (QR para confirmar, pronto para servir, pediu a conta) */
+.salao-mesa:not([data-estado='livre']) { border-color: #dc2626; background: color-mix(in srgb, #dc2626 14%, var(--superficie, #fff)); color: #7f1d1d; }
 .salao-mesa[data-estado='pronto'] .salao-selo { background: #16a34a; }
-.salao-mesa[data-estado='conta'] { border-color: #d97706; background: color-mix(in srgb, #d97706 12%, var(--superficie, #fff)); }
 .salao-mesa[data-estado='conta'] .salao-selo { background: #d97706; }
-.salao-mesa[data-estado='confirmar'] { border-color: #dc2626; background: color-mix(in srgb, #dc2626 10%, var(--superficie, #fff)); animation: salao-pulsa 1.4s ease-in-out infinite; }
-.salao-mesa[data-estado='confirmar'] .salao-selo { background: #dc2626; }
+.salao-mesa[data-estado='confirmar'] { animation: salao-pulsa 1.4s ease-in-out infinite; }
+.salao-mesa[data-estado='confirmar'] .salao-selo { background: #7f1d1d; }
 @keyframes salao-pulsa { 50% { box-shadow: 0 0 0 4px color-mix(in srgb, #dc2626 25%, transparent); } }
 @media (prefers-reduced-motion: reduce) { .salao-mesa[data-estado='confirmar'] { animation: none; } }
 .salao-rodada { border: 1px solid var(--borda, #e4e4e7); border-radius: 10px; padding: 0.5rem 0.6rem; display: grid; gap: 0.3rem; }
