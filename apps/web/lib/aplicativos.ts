@@ -62,7 +62,8 @@ export const CATALOGO: { titulo: string; apps: App[] }[] = [
     apps: [
       { id: 'impressao', nome: 'Impressão automática', desc: 'RES Impressão no computador da cozinha', icone: '🖨️', tipo: 'nativo', href: '/impressoras' },
       { id: 'estoque', nome: 'Estoque por NF-e', desc: 'XML da nota, ficha técnica e CMV', icone: '📦', tipo: 'nativo', href: '/estoque' },
-      { id: 'kds', nome: 'Tela da cozinha (KDS)', desc: 'Pedidos numa TV ou tablet da cozinha', icone: '🍳', tipo: 'breve' },
+      { id: 'kds', nome: 'Tela da cozinha (KDS)', desc: 'Pedidos numa TV ou tablet, por estação, com tempo e atraso', icone: '🍳', tipo: 'nativo', href: '/kds' },
+      { id: 'garcom', nome: 'Salão, garçom e QR na mesa', desc: 'Mesas, comandas, pedido pelo celular e fechar conta', icone: '🍽️', tipo: 'nativo', href: '/salao' },
       { id: 'api', nome: 'API aberta e webhooks', desc: 'Para integrar o RES com outros sistemas', icone: '🔌', tipo: 'api' },
       { id: 'mcp', nome: 'Conectar com IA', desc: 'Pergunte sobre suas vendas no ChatGPT ou no Claude', icone: '✨', tipo: 'mcp' },
     ],

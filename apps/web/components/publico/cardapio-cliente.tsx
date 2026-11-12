@@ -36,13 +36,14 @@ import {
   situacaoHorario,
   type VitrinePublica,
 } from '@/lib/publico';
+import { CheckoutMesa } from '@/components/publico/checkout-mesa';
 import { calcularEntregaKm, conferirCupom, enviarPedido, guardarCarrinho, type EntregaKm, type FaixaKm } from '@/app/c/[slug]/actions';
 import { rastrear } from '@/lib/rastreio';
 import { GruposMontagem, Montador } from '@/components/publico/montagem';
 import { guardarPedido, MeusPedidos, NavCliente, PerfilCliente } from '@/components/publico/conta-cliente';
 
-type Item = { chave: number; produtoId: string; quantidade: number; escolhas: Escolhas; observacao: string; passos?: EscolhaPasso[] };
-type ItemCalculado = Item & { produto: ProdutoPublico; unitario: number; resumo: string };
+export type Item = { chave: number; produtoId: string; quantidade: number; escolhas: Escolhas; observacao: string; passos?: EscolhaPasso[] };
+export type ItemCalculado = Item & { produto: ProdutoPublico; unitario: number; resumo: string };
 
 const ler = <T,>(chave: string, padrao: T): T => {
   try {
@@ -108,10 +109,10 @@ function regraFreteGratis(fretes: FreteGratisPublico[], subtotal: number, bairro
   ) ?? null;
 }
 
-export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [], prevenda = null, pausa = null, fretes = [] }: { cardapio: CardapioPublico; agendamento: AgendamentoPublico; vitrine?: VitrinePublica | null; faixasKm?: FaixaKm[]; prevenda?: Prevenda | null; pausa?: { ate: string; recado: string | null } | null; fretes?: FreteGratisPublico[] }) {
+export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [], prevenda = null, pausa = null, fretes = [], mesa = null }: { cardapio: CardapioPublico; agendamento: AgendamentoPublico; vitrine?: VitrinePublica | null; faixasKm?: FaixaKm[]; prevenda?: Prevenda | null; pausa?: { ate: string; recado: string | null } | null; fretes?: FreteGratisPublico[]; /** QR na mesa (D-099): pedido vai para a conta da mesa */ mesa?: { token: string; rotulo: string } | null }) {
   const { marca, setores } = cardapio;
   const router = useRouter();
-  const chaveCarrinho = `res_carrinho_${marca.slug}`;
+  const chaveCarrinho = mesa ? `res_carrinho_mesa_${mesa.token}_${marca.slug}` : `res_carrinho_${marca.slug}`;
   const produtos = useMemo(() => new Map(setores.flatMap((s) => s.produtos.map((p) => [p.id, p] as const))), [setores]);
 
   const [itens, setItens] = useState<Item[]>([]);
@@ -297,7 +298,26 @@ export function CardapioCliente({ cardapio, agendamento, vitrine, faixasKm = [],
         </>
       )}
 
-      {etapa === 'carrinho' && (
+      {etapa === 'carrinho' && mesa && (
+        <CheckoutMesa
+          mesa={mesa}
+          slug={marca.slug}
+          itens={calculados}
+          subtotal={subtotal}
+          alterar={(chave, delta) =>
+            setItens((x) => x.flatMap((i) => (i.chave !== chave ? [i] : i.quantidade + delta <= 0 ? [] : [{ ...i, quantidade: Math.min(99, i.quantidade + delta) }])))
+          }
+          voltar={() => setEtapa('cardapio')}
+          concluido={() => {
+            setItens([]);
+            gravar(chaveCarrinho, []);
+            setEtapa('cardapio');
+            router.refresh();
+          }}
+        />
+      )}
+
+      {etapa === 'carrinho' && !mesa && (
         <Checkout
           cardapio={cardapio}
           prevenda={prevenda}

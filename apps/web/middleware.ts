@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PUBLICAS = ['/api/v1/', '/api/mcp', '/api/mercadopago/', '/api/marketplace/', '/api/whatsapp/', '/login', '/cadastro', '/termos', '/privacidade', '/auth', '/c/', '/g/', '/api/agente/', '/m/manifest.webmanifest']; // /api/agente: pareamento do agente de impressão // /c/: cardápio digital do cliente (sem login)
+const PUBLICAS = ['/api/v1/', '/api/mcp', '/api/mercadopago/', '/api/marketplace/', '/api/whatsapp/', '/login', '/cadastro', '/termos', '/privacidade', '/auth', '/c/', '/g/', '/mesa/', '/api/agente/', '/m/manifest.webmanifest']; // /api/agente: pareamento do agente de impressão // /c/: cardápio digital do cliente (sem login)
 
 // Painel da empresa RES em endereço próprio (D-083): EMPRESA_HOST = o domínio do painel da empresa
 // (ex.: res-empresa.vercel.app). Nele só existe o /empresa; no endereço dos restaurantes o /empresa não existe.

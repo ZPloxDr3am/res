@@ -24,6 +24,8 @@ export type PedidoRow = {
   agendado_para: string | null;
   entregador_nome: string | null;
   pago_em: string | null;
+  /** rodada de mesa/comanda do salão (D-099) */
+  salao_conta_id?: string | null;
   /** Pix do Mercado Pago ainda não pago (D-044) */
   aguarda_pagamento?: boolean;
   /** marketplace (D-074): iFood */
@@ -67,7 +69,7 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
     supabase
       .from('pedidos')
       .select(
-        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, agendado_para, entregador_nome, pago_em, aguarda_pagamento, avisos, prazo_extra_min, acrescimo, externo_canal, externo_codigo, codigo_retirada, cartao_bandeira, documento_cliente, localizador, observacao_entrega, beneficios, entrega_marketplace, codigo, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, previsao_chegada, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_id, opcao_id, grupo_nome, nome, quantidade, fracao, ordem))',
+        'id, loja_id, numero, status, tipo, origem, marca_id, cliente_nome, cliente_telefone, endereco, subtotal, taxa_entrega, desconto, total, pagamento, troco_para, observacao, motivo_cancelamento, criado_em, agendado_para, entregador_nome, pago_em, aguarda_pagamento, avisos, prazo_extra_min, acrescimo, externo_canal, externo_codigo, codigo_retirada, cartao_bandeira, documento_cliente, localizador, observacao_entrega, beneficios, entrega_marketplace, codigo, salao_conta_id, aceito_em, pronto_em, saiu_em, concluido_em, cancelado_em, previsao_chegada, pedido_itens(id, nome, quantidade, total, observacao, ordem, pedido_item_opcoes(grupo_id, opcao_id, grupo_nome, nome, quantidade, fracao, ordem))',
       )
       .in('loja_id', lojaIds)
       // encerrados: os que fecharam nas últimas 12 h (pedido antigo concluído agora também aparece em Concluídos)
@@ -84,7 +86,8 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
     supabase.from('lojas').select('id, prazo_entrega_min').in('id', lojaIds),
   ]);
   if (pedidos.error) throw new Error(pedidos.error.message);
-  const lista = (pedidos.data ?? []) as unknown as PedidoRow[];
+  // salão (D-099): rodadas das mesas ficam na tela do Salão; no quadro só enquanto esperam alguém aceitar (pedido pelo QR)
+  const lista = ((pedidos.data ?? []) as unknown as PedidoRow[]).filter((p) => !p.salao_conta_id || p.status === 'novo');
   for (const p of lista) {
     p.pedido_itens.sort((a, b) => a.ordem - b.ordem);
     for (const i of p.pedido_itens) i.pedido_item_opcoes.sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));
