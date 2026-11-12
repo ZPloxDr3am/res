@@ -259,3 +259,39 @@ select case when jsonb_array_length(pg_temp.v('fila')) = 1 and pg_temp.v('fila')
              and (pg_temp.v('perfil') ->> 'pedidos')::int = 2 and jsonb_typeof(pg_temp.v('safras')) = 'array'
             then 'ok turbo: módulo, automação gera fila com texto pronto, limite de 2 dias, venda atribuída, carrinho guardado, perfil e safras'
             else 'FALHOU turbo camp=' || coalesce(pg_temp.v('camp')::text, '-') || ' carrinho=' || (select count(*) from public.turbo_carrinhos)::text || ' perfil=' || coalesce(pg_temp.v('perfil')::text, '-') end;
+-- WhatsApp API (D-097): conectar (só gestor), token nunca volta para a tela, modelo vira {{1}}…, fila sai pelo servidor, SAIR tira do marketing
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select public.whatsapp_conectar((pg_temp.v('loja') #>> '{}')::uuid, '123456789012345', '987654321098765', 'EAAB-token-de-teste-bem-comprido-0123456789', '+55 47 99999-0000', 'Burger Teste', 'GREEN');
+insert into r values ('wst', public.whatsapp_status((pg_temp.v('loja') #>> '{}')::uuid));
+insert into r values ('mod', to_jsonb(public.whatsapp_salvar_modelo((pg_temp.v('loja') #>> '{}')::uuid, 'Volta Sumido', 'MARKETING', 'Oi {nome}! Use {cupom} em {link}. Abraço da {loja}, {nome}')));
+select from pg_temp.esperar_erro($q$select token from private.whatsapp_contas$q$, 'permission denied');
+select public.turbo_salvar_automacao((pg_temp.v('loja') #>> '{}')::uuid, 'sumido', true, 'Oi {nome}, que saudade! Volte em {link}', null, '{"dias": 1}');
+reset role;
+insert into r values ('aut', to_jsonb((select id from public.turbo_automacoes where loja_id = (pg_temp.v('loja') #>> '{}')::uuid and tipo = 'sumido')));
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select public.turbo_definir_modelo((pg_temp.v('loja') #>> '{}')::uuid, 'automacao', (pg_temp.v('aut') #>> '{}')::uuid, (pg_temp.v('mod') #>> '{}')::uuid);
+reset role;
+update public.whatsapp_modelos set status = 'aprovado' where id = (pg_temp.v('mod') #>> '{}')::uuid;
+insert into public.clientes (grupo, loja_id, nome, telefone) values (private.grupo_da_loja((pg_temp.v('loja') #>> '{}')::uuid), (pg_temp.v('loja') #>> '{}')::uuid, 'Caio Zap', '47966665555');
+insert into public.turbo_envios (loja_id, cliente_id, telefone, nome, origem, automacao_id, mensagem)
+  select (pg_temp.v('loja') #>> '{}')::uuid, c.id, c.telefone, c.nome, 'automacao', a.id, 'x'
+    from public.clientes c, public.turbo_automacoes a where c.telefone = '47966665555' and a.loja_id = (pg_temp.v('loja') #>> '{}')::uuid and a.tipo = 'sumido' limit 1;
+set role service_role;
+insert into r values ('pega', public.whatsapp_pegar_envios((pg_temp.v('loja') #>> '{}')::uuid, 10));
+insert into r values ('pega2', public.whatsapp_pegar_envios((pg_temp.v('loja') #>> '{}')::uuid, 10));
+select public.whatsapp_resultado_envio((pg_temp.v('pega') -> 0 ->> 'id')::uuid, 'wamid.TESTE1', null);
+select public.whatsapp_status_mensagem('wamid.TESTE1', 'read', null);
+insert into r values ('sair', to_jsonb(public.whatsapp_entrada('123456789012345', '5547966665555', 'sair')));
+reset role;
+\o
+select case when (pg_temp.v('wst') ->> 'conectado')::boolean and not (pg_temp.v('wst') ? 'token')
+             and (select variaveis from public.whatsapp_modelos where id = (pg_temp.v('mod') #>> '{}')::uuid) = '{nome,cupom,link,loja}'
+             and jsonb_array_length(pg_temp.v('pega')) = 1 and pg_temp.v('pega') -> 0 ->> 'modelo' = 'volta_sumido'
+             and pg_temp.v('pega') -> 0 -> 'variaveis' ->> 'nome' = 'Caio'
+             and jsonb_array_length(pg_temp.v('pega2')) = 0
+             and (select lido_em is not null and status = 'enviado' from public.turbo_envios where wa_id = 'wamid.TESTE1')
+             and pg_temp.v('sair') = '"optout"'
+             and (select marketing_optout_em is not null from public.clientes where telefone = '47966665555' and grupo = private.grupo_da_loja((pg_temp.v('loja') #>> '{}')::uuid))
+            then 'ok whatsapp: conexão sem expor token, modelo com {{n}}, fila pega uma vez, lido pelo webhook, SAIR tira do marketing'
+            else 'FALHOU whatsapp ' || coalesce(pg_temp.v('pega')::text, '-') || ' ' || coalesce(pg_temp.v('wst')::text, '-') end;

@@ -1,6 +1,7 @@
 import { contextoLoja } from '@/lib/loja';
 import { criarClienteServidor } from '@/lib/supabase/server';
-import { TurboVendas, type DadosTurbo, type EnvioFila, type Safra } from '@/components/turbo/turbo-vendas';
+import { TurboVendas, type DadosTurbo, type EnvioFila, type Safra, type UsoModelos } from '@/components/turbo/turbo-vendas';
+import type { StatusWhatsapp } from '@/components/turbo/whatsapp';
 
 export const metadata = { title: 'Turbo-Vendas' };
 export const dynamic = 'force-dynamic';
@@ -13,6 +14,8 @@ export default async function Turbo({ searchParams }: { searchParams: Promise<{ 
     supabase.rpc('turbo_fila', { p_loja: ctx.lojaId }),
     supabase.rpc('turbo_safras', { p_loja: ctx.lojaId }),
   ]);
+  // WhatsApp oficial (D-097): antes da migração estas chamadas falham e a tela segue sem a aba
+  const [wa, uso] = await Promise.all([supabase.rpc('whatsapp_status', { p_loja: ctx.lojaId }), supabase.rpc('turbo_modelos_uso', { p_loja: ctx.lojaId })]);
   const { aba } = await searchParams;
   return (
     <div className="grade">
@@ -23,7 +26,7 @@ export default async function Turbo({ searchParams }: { searchParams: Promise<{ 
       {painel.error ? (
         <p className="cartao dica">{painel.error.message}</p>
       ) : (
-        <TurboVendas d={painel.data as DadosTurbo} fila={(fila.data ?? []) as EnvioFila[]} safras={(safras.data ?? []) as Safra[]} abaInicial={aba} />
+        <TurboVendas d={painel.data as DadosTurbo} fila={(fila.data ?? []) as EnvioFila[]} safras={(safras.data ?? []) as Safra[]} abaInicial={aba} wa={(wa.data ?? null) as StatusWhatsapp | null} uso={(uso.data ?? null) as UsoModelos | null} />
       )}
     </div>
   );

@@ -10,3 +10,4 @@ Pré: loja com o módulo Turbo-Vendas (Completo, adicional ou cortesia), um cupo
 6. **Campanhas**: marque um segmento, **Contar clientes**, gere agora → itens na fila; agende para daqui a 15 min → status "agendada" e depois "gerada". Cancelar tira da fila o que não foi enviado.
 7. Um cliente não recebe 2 mensagens em menos de 2 dias.
 8. **Clientes → abrir cliente → Perfil do cliente**: pedidos, gasto, ticket, intervalo, dia/hora, canal, bairro, favoritos.
+9. **WhatsApp oficial** (com conta da Meta de teste): conectar com dados errados → "A Meta recusou…"; com dados certos → número e qualidade aparecem. Criar modelo, enviar para aprovação, atualizar status. Escolher o modelo numa automação; na fila aparece "⚡ Enviar tudo" e a mensagem chega no celular; no webhook, ler a mensagem marca "lido". Responder **SAIR** tira o cliente do marketing.

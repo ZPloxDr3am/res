@@ -24,3 +24,4 @@ export * from './cadastro.js';
 export * from './empresa.js';
 export * from './planos.js';
 export * from './resumo-quadro.js';
+export * from './whatsapp.js';

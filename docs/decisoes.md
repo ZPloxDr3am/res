@@ -829,3 +829,10 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - **Regras de respeito**: no máximo 1 mensagem de marketing por cliente a cada 2 dias; "Pediu para sair" tira o cliente do marketing no grupo todo (LGPD); o carrinho só é guardado se a loja usa a automação de carrinho.
 - **Plano**: módulo **adicional de R$ 79,90/mês** (editável em Planos e preços), **incluso no Completo**.
 - Ficou para depois (do Repediu): WhatsApp oficial/SMS/e-mail, IA que monta a campanha, aniversário, avaliações do iFood/Google dentro do RES, alerta de chuva.
+
+## D-097 — RES pronto para a API oficial do WhatsApp (12/11/2026)
+- **Turbo-Vendas → WhatsApp oficial**: o dono ou gerente cola o **ID do número**, o **ID da conta do WhatsApp Business** e o **token permanente** da Meta; o RES confere na Meta e guarda o token só no servidor (`private.whatsapp_contas`, lido só com a chave de serviço).
+- **Modelos** criados no RES (`{nome}` vira `{{1}}` na Meta, com exemplos) e enviados para aprovação; status atualizado no botão.
+- Cada automação e campanha pode ter um **modelo aprovado**. Com modelo, a mensagem sai pela API: **envio automático** a cada 5 min (agendador do banco → `/api/whatsapp/processar`) ou **⚡ Enviar tudo** na fila. Sem modelo, segue a fila manual.
+- **Webhook** `/api/whatsapp/webhook` (verificação com `WHATSAPP_VERIFY_TOKEN`; assinatura com `WHATSAPP_APP_SECRET`): entregue, lido e falha voltam para o envio; **SAIR/PARAR/STOP** tira o cliente do marketing.
+- Passo a passo: `docs/desenvolvimento/whatsapp-api.md`. Ainda não ligado: falta a conta da Meta de cada loja e as duas variáveis na Vercel.
