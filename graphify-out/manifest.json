@@ -648,8 +648,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/novo-pedido.tsx": {
-    "mtime": 1794493050.3748324,
-    "seen": 1794493071.9078887,
+    "mtime": 1794493173.9358034,
+    "seen": 1794493184.197599,
     "ast_hash": "c324f841969b1127ecd2444e937cc14d",
     "semantic_hash": ""
   },
@@ -2852,7 +2852,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1794493071.9075541,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
