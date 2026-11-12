@@ -1,6 +1,6 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { corpoParaMeta, nomeModelo } from '@res/core';
+import { corpoParaMeta, nomeModeloWhatsapp as nomeModelo } from '@res/core';
 import {
   whatsappApagarModelo,
   whatsappAutomatico,

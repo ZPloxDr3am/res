@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { corpoParaMeta, nomeModelo, parametrosModelo, telefoneWhatsapp } from '../src/whatsapp.js';
+import { corpoParaMeta, nomeModeloWhatsapp as nomeModelo, parametrosModelo, telefoneWhatsapp } from '../src/whatsapp.js';
 
 test('modelo vira {{n}} na ordem, repetida conta uma vez', () => {
   const r = corpoParaMeta('Oi {nome}! Use {cupom} em {link}. Abraço da {loja}, {nome}');

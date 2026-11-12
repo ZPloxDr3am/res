@@ -32,7 +32,7 @@ export function corpoParaMeta(corpo: string): { texto: string; ordem: VariavelTu
 
 /** Nome aceito pela Meta: minúsculas, números e _ (3 a 100). */
 export const nomeModeloValido = (s: string) => /^[a-z0-9_]{3,100}$/.test(s);
-export const nomeModelo = (s: string) =>
+export const nomeModeloWhatsapp = (s: string) =>
   s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 100);
 
 /** Telefone do cliente no formato da Meta (com 55). */
