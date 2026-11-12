@@ -150,8 +150,8 @@
     "semantic_hash": "c18482a4354bf190ae112d2f406c259f"
   },
   "apps/web/app/(painel)/layout.tsx": {
-    "mtime": 1794492114.9213114,
-    "seen": 1794492415.245658,
+    "mtime": 1794492793.4980502,
+    "seen": 1794492802.9428167,
     "ast_hash": "85d392a359dec3fd225230e08a65955d",
     "semantic_hash": ""
   },
@@ -642,14 +642,14 @@
     "semantic_hash": "e1a2ae124932452ed3b517ceefb9431a"
   },
   "apps/web/components/nav-painel.tsx": {
-    "mtime": 1794492114.9223208,
-    "seen": 1794492415.245917,
+    "mtime": 1794492793.4998908,
+    "seen": 1794492802.9485514,
     "ast_hash": "1c7747a1a0bc5461664ee7a4db28f8bc",
     "semantic_hash": ""
   },
   "apps/web/components/novo-pedido.tsx": {
-    "mtime": 1794491756.8490212,
-    "seen": 1794492415.2459207,
+    "mtime": 1794492793.4998908,
+    "seen": 1794492802.9485896,
     "ast_hash": "4d24f2434b95d5426840775f428b42b5",
     "semantic_hash": ""
   },
@@ -678,8 +678,8 @@
     "semantic_hash": "d472090f7948a1f67e4266a37eecb2ad"
   },
   "apps/web/components/publico/cardapio-cliente.tsx": {
-    "mtime": 1794492070.3549082,
-    "seen": 1794492415.2459288,
+    "mtime": 1794492793.4998908,
+    "seen": 1794492802.9488084,
     "ast_hash": "140466935f6851962943292640fd2198",
     "semantic_hash": ""
   },
@@ -738,8 +738,8 @@
     "semantic_hash": "1fa4daebb637ee6ce32fb7eac945b984"
   },
   "apps/web/lib/aplicativos.ts": {
-    "mtime": 1794492120.1140373,
-    "seen": 1794492415.2459629,
+    "mtime": 1794492793.5016563,
+    "seen": 1794492802.949405,
     "ast_hash": "02b4eaf40ec3ee6f51396ddf1c47d50f",
     "semantic_hash": ""
   },
@@ -834,8 +834,8 @@
     "semantic_hash": "001a137a606e225f972739e75fc6c7aa"
   },
   "apps/web/lib/pedidos.ts": {
-    "mtime": 1794491762.1428533,
-    "seen": 1794492415.246002,
+    "mtime": 1794492793.5016563,
+    "seen": 1794492802.9502604,
     "ast_hash": "f72938a9dc95b3693fd744135f64ceaa",
     "semantic_hash": ""
   },
@@ -870,8 +870,8 @@
     "semantic_hash": "dbeef416075d74e3b6c91519aa686f04"
   },
   "apps/web/middleware.ts": {
-    "mtime": 1794492114.8907092,
-    "seen": 1794492415.246015,
+    "mtime": 1794492793.5016563,
+    "seen": 1794492802.9505112,
     "ast_hash": "6a6ca68d7d908655a7da9e26b695ca75",
     "semantic_hash": ""
   },
@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794492395.719757,
-    "seen": 1794492415.2463925,
+    "mtime": 1794492793.5016563,
+    "seen": 1794492802.9576113,
     "ast_hash": "57045862c361c83f9e5a2d8c8d2fa9cb",
     "semantic_hash": ""
   },
@@ -2520,8 +2520,8 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794491689.878247,
-    "seen": 1794492415.2463734,
+    "mtime": 1794492793.5117807,
+    "seen": 1794492802.9572396,
     "ast_hash": "219aacc4f35131b1d0eac75fdd40500e",
     "semantic_hash": ""
   },
@@ -2682,8 +2682,8 @@
     "semantic_hash": ""
   },
   "packages/core/src/planos.ts": {
-    "mtime": 1794491762.1424012,
-    "seen": 1794492415.246114,
+    "mtime": 1794492793.5117807,
+    "seen": 1794492802.951742,
     "ast_hash": "adb4afcf21af2f163a09e40c9fe6aac6",
     "semantic_hash": ""
   },
@@ -2790,8 +2790,8 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1794492395.7378697,
-    "seen": 1794492415.24639,
+    "mtime": 1794492793.5016563,
+    "seen": 1794492802.9575803,
     "ast_hash": "24f280d88ff9c33068247f46d941bb0a",
     "semantic_hash": ""
   },
@@ -2814,8 +2814,8 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/MODULOS.md": {
-    "mtime": 1794492395.7381315,
-    "seen": 1794492415.2463973,
+    "mtime": 1794492793.5016563,
+    "seen": 1794492802.95768,
     "ast_hash": "8e6a4eba8c988afaea7e39d64ca53d75",
     "semantic_hash": ""
   },
@@ -2852,7 +2852,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1794492415.2455409,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -2975,100 +2975,10 @@
     "ast_hash": "7dbe70d24fc4ebe051fbeeeda74e0d45",
     "semantic_hash": ""
   },
-  "apps/web/app/(painel)/kds/actions.ts": {
-    "mtime": 1794492058.2115262,
-    "seen": 1794492415.2456534,
-    "ast_hash": "f3537335c1ded4fd9a398d65418b8d54",
-    "semantic_hash": ""
-  },
-  "apps/web/app/(painel)/kds/page.tsx": {
-    "mtime": 1794492013.0468173,
-    "seen": 1794492415.2456555,
-    "ast_hash": "be454b62ad88d04041b94eb0da8b3662",
-    "semantic_hash": ""
-  },
-  "apps/web/app/(painel)/salao/actions.ts": {
-    "mtime": 1794491860.6877253,
-    "seen": 1794492415.245683,
-    "ast_hash": "aee4f47686b49ef68cfedde43fd91d5a",
-    "semantic_hash": ""
-  },
-  "apps/web/app/(painel)/salao/page.tsx": {
-    "mtime": 1794492004.7512586,
-    "seen": 1794492415.2456844,
-    "ast_hash": "b420ea2686cd2b7333146fdc80956e23",
-    "semantic_hash": ""
-  },
-  "apps/web/app/(painel)/salao/qr/page.tsx": {
-    "mtime": 1794492004.7525847,
-    "seen": 1794492415.245686,
-    "ast_hash": "37849e6c3427bc8e40860d13084995f0",
-    "semantic_hash": ""
-  },
-  "apps/web/app/mesa/[token]/actions.ts": {
-    "mtime": 1794492088.1813385,
-    "seen": 1794492415.2457798,
-    "ast_hash": "ae0a40be3d57ce385caa100799ba226e",
-    "semantic_hash": ""
-  },
-  "apps/web/app/mesa/[token]/page.tsx": {
-    "mtime": 1794492108.2543511,
-    "seen": 1794492415.2457812,
-    "ast_hash": "96a0f7f22d46d98275373fe89e8372eb",
-    "semantic_hash": ""
-  },
-  "apps/web/components/kds/kds.tsx": {
-    "mtime": 1794492058.2119267,
-    "seen": 1794492415.2459059,
-    "ast_hash": "125a468eac82abf249a888790127009d",
-    "semantic_hash": ""
-  },
-  "apps/web/components/publico/checkout-mesa.tsx": {
-    "mtime": 1794492088.1798594,
-    "seen": 1794492415.24593,
-    "ast_hash": "8cb9425fa304f9a965fe8d009fbac610",
-    "semantic_hash": ""
-  },
-  "apps/web/components/publico/conta-mesa.tsx": {
-    "mtime": 1794492108.2563632,
-    "seen": 1794492415.245933,
-    "ast_hash": "e73719d5273cab170eee35494203f80a",
-    "semantic_hash": ""
-  },
-  "apps/web/components/salao/botao-imprimir.tsx": {
-    "mtime": 1794492004.7538435,
-    "seen": 1794492415.2459478,
-    "ast_hash": "f91ac7aaa52ed295d9d5ebad3ac2f9ab",
-    "semantic_hash": ""
-  },
-  "apps/web/components/salao/salao.tsx": {
-    "mtime": 1794491967.3557315,
-    "seen": 1794492415.2459495,
-    "ast_hash": "fd52061e10ac062768b5a2c270cb6dda",
-    "semantic_hash": ""
-  },
-  "apps/web/components/salao/tipos.ts": {
-    "mtime": 1794491868.9517257,
-    "seen": 1794492415.2459507,
-    "ast_hash": "9654248049957c2084437e86dfa6f490",
-    "semantic_hash": ""
-  },
   "supabase/migrations/20261112140000_turbo_dois_canais.sql": {
     "mtime": 1794490977.7676728,
     "seen": 1794492415.2463076,
     "ast_hash": "f1a5be6bf96cd5d7519a924788770533",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261112160000_salao_kds.sql": {
-    "mtime": 1794491828.7272978,
-    "seen": 1794492415.2463093,
-    "ast_hash": "90d7735faafe02a45a5373853082406a",
-    "semantic_hash": ""
-  },
-  "docs/qualidade/roteiros/salao-kds.md": {
-    "mtime": 1794492395.7416954,
-    "seen": 1794492415.2464225,
-    "ast_hash": "46a59b536c48ae471e719f9f84b05e47",
     "semantic_hash": ""
   }
 }
