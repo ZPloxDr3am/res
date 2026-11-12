@@ -1,7 +1,7 @@
 # Graph Report - res  (2026-11-12)
 
 ## Corpus Check
-- 486 files · ~431,862 words
+- 486 files · ~432,462 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 8 file(s) not represented in the graph (top: (none) 3, .woff 2, .example 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `bb86775b`
+- Built from commit: `284efb74`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -985,7 +985,7 @@ Cohesion: 0.40
 Nodes (4): Novidades, Semana 44 (26/10–01/11/2026), Semana 45 (02–06/11/2026), Semana 46 (09–13/11/2026)
 
 ## Knowledge Gaps
-- **9 isolated node(s):** `lerNFe (core NF-e XML parser)`, `pedidos.qr_token (/m/d/<código>)`, `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `GitHub Actions CI (rules, db, build)`, `Roadmap stages 3c-7 and integrations` (+4 more)
+- **9 isolated node(s):** `pedidos.qr_token (/m/d/<código>)`, `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `GitHub Actions CI (rules, db, build)`, `Roadmap stages 3c-7 and integrations`, `supabase/migrations (Postgres RLS, audit, atomic ops)` (+4 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1003 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **27 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -993,16 +993,16 @@ Nodes (4): Novidades, Semana 44 (26/10–01/11/2026), Semana 45 (02–06/11/2026
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `next` connect `next` to `equipe.tsx`, `lancamentos.tsx`, `relatorios/page.tsx`, `api.tsx`, `painel-impressoras.tsx`, `turbo-vendas.tsx`, `API aberta e MCP (rotas)`, `cardapio-cliente.tsx`, `resumo/page.tsx`, `mesa/[token]/page.tsx`, `fidelidade/actions.ts`, `web/package.json`, `app-motoboy.tsx`, `novo-pedido.tsx`, `salao.tsx`, `sabores-pizza.tsx`, `bairros.tsx`, `aplicativos.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `financeiro/page.tsx`, `evento.tsx`, `index.ts`, `painel.tsx`, `gestao/actions.ts`, `salvando`, `ifood.tsx`, `painel-caixa.tsx`, `criarClienteServidor`, `formatarReais`, `clienteAdmin`, `contextoLoja`, `planos.ts`, `pedidos/actions.ts`, `pedido-flutuante.tsx`, `[slug]/page.tsx`, `react`, `entregas/page.tsx`, `gestao/page.tsx`, `aplicativos/actions.ts`, `ifood.ts`, `index.ts`, `cadastro/actions.ts`, `turbo-vendas.tsx`, `comecar/actions.ts`, `middleware.ts`, `form-delivery.tsx`, `@supabase/supabase-js`, `resultados.tsx`, `cardapio-dados.ts`, `financeiro/actions.ts`, `gestao.ts`, `meta-mes.tsx`, `nav-painel.tsx`, `lista-clientes.tsx`, `salao/page.tsx`, `mcp.ts`?**
-  _High betweenness centrality (0.059) - this node is a cross-community bridge._
-- **What connects `lerNFe (core NF-e XML parser)`, `pedidos.qr_token (/m/d/<código>)`, `contas table plans and limits (plano, limite_lojas, limite_cardapios)` to the rest of the system?**
+  _High betweenness centrality (0.071) - this node is a cross-community bridge._
+- **What connects `pedidos.qr_token (/m/d/<código>)`, `contas table plans and limits (plano, limite_lojas, limite_cardapios)`, `GitHub Actions CI (rules, db, build)` to the rest of the system?**
   _9 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `public.membros` be split into smaller, more focused modules?**
   _Cohesion score 0.05028248587570622 - nodes in this community are weakly interconnected._
-- **Why does `criarClienteServidor()` connect `criarClienteServidor` to `equipe.tsx`, `relatorios/page.tsx`, `api.tsx`, `painel-impressoras.tsx`, `turbo-vendas.tsx`, `cardapio-cliente.tsx`, `contextoLoja`, `resumo/page.tsx`, `mesa/[token]/page.tsx`, `fidelidade/actions.ts`, `app-motoboy.tsx`, `novo-pedido.tsx`, `salao.tsx`, `bairros.tsx`, `aplicativos.tsx`, `salvando`, `negociacoes-ifood.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `financeiro/page.tsx`, `evento.tsx`, `salvando`, `painel.tsx`, `index.ts`, `gestao/actions.ts`, `form-grupo.tsx`, `ifood.tsx`, `painel-caixa.tsx`, `next`, `contextoLoja`, `ao-vivo.tsx`, `planos.ts`, `empresa.ts`, `pedidos/actions.ts`, `fichas.tsx`, `[slug]/page.tsx`, `erros/page.tsx`, `react`, `entregas/page.tsx`, `gestao/page.tsx`, `aplicativos/actions.ts`, `pedidos/page.tsx`, `turbo-vendas.tsx`, `cadastro/actions.ts`, `comecar/actions.ts`, `importar-nfe.tsx`, `m/page.tsx`, `form-delivery.tsx`, `dados-empresa.tsx`, `resultados.tsx`, `cardapio-dados.ts`, `financeiro/actions.ts`, `gestao.ts`, `m/actions.ts`, `meta-mes.tsx`, `form-setor.tsx`, `nav-painel.tsx`, `lista-clientes.tsx`, `salao/page.tsx`, `ref_node_test`?**
-  _High betweenness centrality (0.048) - this node is a cross-community bridge._
+- **Why does `formatarReais()` connect `formatarReais` to `relatorios/page.tsx`, `cardapio-cliente.tsx`, `resumo/page.tsx`, `grafico-dias.tsx`, `fidelidade/actions.ts`, `mesa/[token]/page.tsx`, `app-motoboy.tsx`, `novo-pedido.tsx`, `sabores-pizza.tsx`, `salao.tsx`, `bairros.tsx`, `salvando`, `negociacoes-ifood.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `index.ts`, `cupom.ts`, `form-grupo.tsx`, `novo-pedido.tsx`, `ifood.tsx`, `painel-caixa.tsx`, `criarClienteServidor`, `pedido.ts`, `contextoLoja`, `pedido-flutuante.tsx`, `fichas.tsx`, `react`, `aplicativos/actions.ts`, `importar-nfe.tsx`, `form-delivery.tsx`, `resultados.tsx`, `cardapio-dados.ts`, `publico.ts`, `meta-mes.tsx`, `lista-clientes.tsx`?**
+  _High betweenness centrality (0.041) - this node is a cross-community bridge._
 - **Should `steps` be split into smaller, more focused modules?**
   _Cohesion score 0.06451612903225806 - nodes in this community are weakly interconnected._
-- **Why does `public.lojas` connect `public.lojas` to `public.membros`, `public.produtos`, `public`, `20261021000014_caixa.sql`, `Banco: impressão`, `Banco: estoque`, `public`, `20261110230000_cobranca.sql`, `20261027000026_rastreio_motoboys.sql`, `public.marcas`, `20261110170000_convites_e_teste.sql`, `anon`, `public.clientes`, `20261112100000_turbo_vendas.sql`, `anon`, `20261110210000_registro_erros.sql`, `20261027000032_fidelidade.sql`, `20261111010000_cpf_restrito.sql`, `50_multilojas.sql`, `Grupo 100: tempos_ajuste.sql`, `20261028000040_api_webhooks.sql`, `20261110230000_cobranca.sql`, `public.pedidos`, `20261112120000_whatsapp_api.sql`?**
-  _High betweenness centrality (0.038) - this node is a cross-community bridge._
+- **Why does `criarClienteServidor()` connect `criarClienteServidor` to `equipe.tsx`, `relatorios/page.tsx`, `api.tsx`, `painel-impressoras.tsx`, `turbo-vendas.tsx`, `cardapio-cliente.tsx`, `contextoLoja`, `resumo/page.tsx`, `mesa/[token]/page.tsx`, `fidelidade/actions.ts`, `app-motoboy.tsx`, `novo-pedido.tsx`, `salao.tsx`, `bairros.tsx`, `aplicativos.tsx`, `salvando`, `negociacoes-ifood.tsx`, `Promoções e cupons (tela)`, `quadro-pedidos.tsx`, `financeiro/page.tsx`, `evento.tsx`, `salvando`, `painel.tsx`, `index.ts`, `gestao/actions.ts`, `form-grupo.tsx`, `ifood.tsx`, `painel-caixa.tsx`, `next`, `contextoLoja`, `ao-vivo.tsx`, `planos.ts`, `empresa.ts`, `pedidos/actions.ts`, `fichas.tsx`, `[slug]/page.tsx`, `erros/page.tsx`, `react`, `entregas/page.tsx`, `gestao/page.tsx`, `aplicativos/actions.ts`, `pedidos/page.tsx`, `turbo-vendas.tsx`, `cadastro/actions.ts`, `comecar/actions.ts`, `importar-nfe.tsx`, `m/page.tsx`, `form-delivery.tsx`, `dados-empresa.tsx`, `resultados.tsx`, `cardapio-dados.ts`, `financeiro/actions.ts`, `gestao.ts`, `m/actions.ts`, `meta-mes.tsx`, `form-setor.tsx`, `nav-painel.tsx`, `lista-clientes.tsx`, `salao/page.tsx`, `ref_node_test`?**
+  _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **Should `public.lojas` be split into smaller, more focused modules?**
   _Cohesion score 0.06717687074829932 - nodes in this community are weakly interconnected._
