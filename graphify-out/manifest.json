@@ -2851,8 +2851,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794425779.470786,
-    "ast_hash": "",
+    "seen": 1794487797.9483669,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
