@@ -678,9 +678,9 @@
     "semantic_hash": "d472090f7948a1f67e4266a37eecb2ad"
   },
   "apps/web/components/publico/cardapio-cliente.tsx": {
-    "mtime": 1794487648.7324452,
-    "seen": 1794487791.5907114,
-    "ast_hash": "5a16eadeb9265eec9943533583f6c207",
+    "mtime": 1794487864.8484185,
+    "seen": 1794487876.060215,
+    "ast_hash": "d1b4a33e3ac4daf7a343f641ab732d29",
     "semantic_hash": ""
   },
   "apps/web/components/publico/mapa-cliente.tsx": {
