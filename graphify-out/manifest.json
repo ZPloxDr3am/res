@@ -876,8 +876,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1794492354.0477545,
-    "seen": 1794492415.2460165,
+    "mtime": 1794495429.3385015,
+    "seen": 1794495447.4926436,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": "8ccf37b0657b4213f1c10db5c78e039a"
   },
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794493845.0878432,
-    "seen": 1794493852.0644467,
-    "ast_hash": "ed86ea3e72295f925a71ae1b2488616c",
+    "mtime": 1794495441.2441988,
+    "seen": 1794495447.4931238,
+    "ast_hash": "895161958c4f21a667188d2f1909f5ab",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1830,9 +1830,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/gestao/page.tsx": {
-    "mtime": 1793228491.1001537,
-    "seen": 1793231974.5470128,
-    "ast_hash": "266ac3a83d7917bb9e6dbeabd68c6ee1",
+    "mtime": 1794495361.1732519,
+    "seen": 1794495447.4922903,
+    "ast_hash": "08b2ccbfb9f8253be0d303f6e93cf06e",
     "semantic_hash": ""
   },
   "apps/web/components/gestao/custos.tsx": {
@@ -2520,9 +2520,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794492793.5117807,
-    "seen": 1794492802.9572396,
-    "ast_hash": "219aacc4f35131b1d0eac75fdd40500e",
+    "mtime": 1794495214.5445874,
+    "seen": 1794495447.493102,
+    "ast_hash": "b4101ee0cdb2111f8833152cc0b11298",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/actions.ts": {
@@ -2851,8 +2851,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794493388.0749328,
-    "ast_hash": "",
+    "seen": 1794495447.4921958,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -2982,15 +2982,15 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/kds/actions.ts": {
-    "mtime": 1794492793.4957807,
-    "seen": 1794493071.9076533,
-    "ast_hash": "f3537335c1ded4fd9a398d65418b8d54",
+    "mtime": 1794495347.2763326,
+    "seen": 1794495447.492296,
+    "ast_hash": "6b4de298f068cda8a2bc91d30d45dead",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/kds/page.tsx": {
-    "mtime": 1794492793.4980502,
-    "seen": 1794493071.9076552,
-    "ast_hash": "be454b62ad88d04041b94eb0da8b3662",
+    "mtime": 1794495324.4080784,
+    "seen": 1794495447.4922981,
+    "ast_hash": "eefaa45612e2f094b66e9f4e8d8bebfe",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/salao/actions.ts": {
@@ -3000,9 +3000,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/salao/page.tsx": {
-    "mtime": 1794492793.4984398,
-    "seen": 1794493071.90768,
-    "ast_hash": "b420ea2686cd2b7333146fdc80956e23",
+    "mtime": 1794495347.277812,
+    "seen": 1794495447.4923267,
+    "ast_hash": "a86e787e8ed4df2651df8f931fdfdf8a",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/salao/qr/page.tsx": {
@@ -3024,9 +3024,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/kds/kds.tsx": {
-    "mtime": 1794493845.0838432,
-    "seen": 1794493852.0541086,
-    "ast_hash": "a04b52df11b5f548ded0b9fc9818877a",
+    "mtime": 1794495324.407557,
+    "seen": 1794495447.492539,
+    "ast_hash": "921c6ac242173056df52797f02382b82",
     "semantic_hash": ""
   },
   "apps/web/components/publico/checkout-mesa.tsx": {
@@ -3048,9 +3048,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/salao/salao.tsx": {
-    "mtime": 1794492793.5016563,
-    "seen": 1794493071.9079146,
-    "ast_hash": "fd52061e10ac062768b5a2c270cb6dda",
+    "mtime": 1794495347.2772524,
+    "seen": 1794495447.4925811,
+    "ast_hash": "85d1def567e8f0c4c27af95e63ce9133",
     "semantic_hash": ""
   },
   "apps/web/components/salao/tipos.ts": {
@@ -3069,6 +3069,12 @@
     "mtime": 1794493845.0878432,
     "seen": 1794493852.0651972,
     "ast_hash": "b07c36995e32953cdfe0ad63c9c2e458",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261112180000_teste_de_raiva.sql": {
+    "mtime": 1794495283.7601893,
+    "seen": 1794495447.493038,
+    "ast_hash": "e16ee91022f7db7b34105121dc6b7b5d",
     "semantic_hash": ""
   }
 }
