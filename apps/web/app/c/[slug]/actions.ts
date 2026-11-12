@@ -145,3 +145,9 @@ export async function calcularEntregaKm(slug: string, e: { logradouro: string; n
   if (!f) return { ok: false, erro: `Seu endereço fica a ${km.toFixed(1).replace('.', ',')} km, fora da nossa área de entrega.` };
   return { ok: true, km, taxa: f.taxa, minutosExtra: f.minutos_extra, lat: achado.ponto.lat, lng: achado.ponto.lng, aproximado: achado.precisao === 'bairro' };
 }
+
+/** Turbo-Vendas (D-096): carrinho com telefone, para o lembrete de carrinho abandonado (só se a loja usa). */
+export async function guardarCarrinho(slug: string, telefone: string, nome: string, itens: string, total: number): Promise<void> {
+  const supabase = await criarClienteServidor();
+  await supabase.rpc('turbo_carrinho', { p_slug: slug, p_telefone: telefone, p_nome: nome || null, p_itens: itens.slice(0, 400), p_total: total });
+}

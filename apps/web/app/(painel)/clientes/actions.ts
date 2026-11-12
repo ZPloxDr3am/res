@@ -55,3 +55,10 @@ export async function apagarDadosCliente(clienteId: string, confirmacao: string)
   revalidatePath('/clientes');
   return { ok: true };
 }
+
+/** Perfil do cliente (D-096): gasto, ticket, intervalo, favoritos, dia/hora e canal preferidos. */
+export async function perfilCliente(clienteId: string): Promise<Record<string, unknown> | null> {
+  const ctx = await contextoLoja();
+  const { data } = await (await criarClienteServidor()).rpc('turbo_perfil', { p_loja: ctx.lojaId, p_cliente: clienteId });
+  return (data as Record<string, unknown> | null) ?? null;
+}

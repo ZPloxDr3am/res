@@ -1,7 +1,7 @@
 // Planos e módulos do RES (D-085). O banco guarda preços e o que entra em cada plano
 // (editável no painel da empresa); aqui ficam as telas de cada módulo e as contas da fatura.
 
-export const MODULOS_IDS = ['ifood', 'pix_online', 'entregas', 'salao', 'clientes', 'promocoes', 'fidelidade', 'relatorios', 'estoque', 'financeiro', 'gestao', 'evento', 'marcas', 'app_entregador', 'app_garcom'] as const;
+export const MODULOS_IDS = ['ifood', 'pix_online', 'entregas', 'salao', 'clientes', 'promocoes', 'fidelidade', 'relatorios', 'estoque', 'financeiro', 'gestao', 'evento', 'marcas', 'app_entregador', 'app_garcom', 'turbo'] as const;
 export type ModuloId = (typeof MODULOS_IDS)[number];
 
 /** Telas do painel que pertencem a um módulo. O resto (pedidos, cardápio, delivery, caixa, impressão, lojas) vem em todo plano. */
@@ -15,6 +15,7 @@ export const ROTAS_DO_MODULO: Partial<Record<ModuloId, string[]>> = {
   financeiro: ['/financeiro'],
   gestao: ['/gestao'],
   evento: ['/evento'],
+  turbo: ['/turbo'],
 };
 
 /** Módulo que libera a tela (ou null se a tela vem em todo plano). */
@@ -95,5 +96,5 @@ export const NOME_MODULO: Record<ModuloId, string> = {
   ifood: 'Integração iFood', pix_online: 'Pix automático', entregas: 'Entregas e motoboy', clientes: 'Clientes', promocoes: 'Promoções e cupons',
   fidelidade: 'Fidelidade', relatorios: 'Relatórios', estoque: 'Estoque e CMV', financeiro: 'Financeiro', gestao: 'Gestão empresarial',
   evento: 'Eventos e aniversários', marcas: 'Loja ou cardápio extra', salao: 'Salão e garçom',
-  app_entregador: 'App Entregador', app_garcom: 'App Garçom',
+  app_entregador: 'App Entregador', app_garcom: 'App Garçom', turbo: 'Turbo-Vendas',
 };

@@ -36,7 +36,7 @@ import {
   situacaoHorario,
   type VitrinePublica,
 } from '@/lib/publico';
-import { calcularEntregaKm, conferirCupom, enviarPedido, type EntregaKm, type FaixaKm } from '@/app/c/[slug]/actions';
+import { calcularEntregaKm, conferirCupom, enviarPedido, guardarCarrinho, type EntregaKm, type FaixaKm } from '@/app/c/[slug]/actions';
 import { rastrear } from '@/lib/rastreio';
 import { GruposMontagem, Montador } from '@/components/publico/montagem';
 import { guardarPedido, MeusPedidos, NavCliente, PerfilCliente } from '@/components/publico/conta-cliente';
@@ -475,6 +475,15 @@ function Checkout({
   const [conferindo, iniciarCupom] = useTransition();
   const [usoFid, setUsoFid] = useState<UsoFidelidade>({ cashback: 0, recompensa: null });
   const podeAgendar = agendamento.horarios.length > 0;
+  // Turbo-Vendas (D-096): com o telefone digitado, guarda o carrinho para o lembrete de "carrinho abandonado"
+  // (o banco só guarda se a loja usa essa automação)
+  const telCarrinho = normalizarTelefone(cliente.telefone);
+  const resumoCarrinho = itens.map((i) => `${i.quantidade}x ${i.produto.nome}`).join(', ');
+  useEffect(() => {
+    if (telCarrinho.length < 10 || !resumoCarrinho) return;
+    const t = setTimeout(() => void guardarCarrinho(marca.slug, telCarrinho, cliente.nome, resumoCarrinho, subtotal).catch(() => null), 2500);
+    return () => clearTimeout(t);
+  }, [telCarrinho, cliente.nome, resumoCarrinho, subtotal, marca.slug]);
   // fechada agora: só agendando
   const [agendar, setAgendar] = useState(!!prevenda || (!marca.aberta && podeAgendar));
   // horários agrupados por dia no fuso da loja

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { eCelular, formatarReais, SEGMENTOS, telefoneInternacional, type Segmento } from '@res/core';
-import { apagarDadosCliente, dadosDoCliente, exportarClientes, listarClientes, salvarCliente } from '@/app/(painel)/clientes/actions';
+import { apagarDadosCliente, dadosDoCliente, exportarClientes, listarClientes, perfilCliente, salvarCliente } from '@/app/(painel)/clientes/actions';
 import { enderecoTexto, formatarTelefone, type ClienteBusca, type ClienteExportado, type ListagemClientes } from '@/lib/clientes';
 
 const SEG = new Map(SEGMENTOS.map((x) => [x.id, x]));
@@ -153,6 +153,7 @@ export function ListaClientes({ inicial }: { inicial: ListagemClientes }) {
 
 function FichaCliente({ c, aberto, alternar, aoSalvar, aoApagar }: { c: ClienteBusca; aberto: boolean; alternar: () => void; aoSalvar: (c: ClienteBusca) => void; aoApagar: () => void }) {
   const [lgpd, setLgpd] = useState<'apagar' | null>(null);
+  const [perfil, setPerfil] = useState<Record<string, unknown> | null | 'carregando'>(null);
   const [confirma, setConfirma] = useState('');
   const [nome, setNome] = useState(c.nome);
   const [obs, setObs] = useState(c.observacoes ?? '');
@@ -207,6 +208,11 @@ function FichaCliente({ c, aberto, alternar, aoSalvar, aoApagar }: { c: ClienteB
             </button>
             {msg && <span className={msg.ok ? 'dica' : 'erro'} role="status">{msg.t}</span>}
           </div>
+          {/* Perfil (D-096) */}
+          <details className="cl-lgpd" onToggle={(e) => { if ((e.target as HTMLDetailsElement).open && perfil === null) { setPerfil('carregando'); void perfilCliente(c.id).then(setPerfil); } }}>
+            <summary>Perfil do cliente</summary>
+            {perfil === 'carregando' ? <p className="dica">Carregando…</p> : perfil ? <PerfilCliente p={perfil} /> : null}
+          </details>
           {/* LGPD (D-092): o cliente pede uma cópia ou que seus dados sejam apagados — só dono/gerente */}
           <details className="cl-lgpd">
             <summary>Pedido do cliente (LGPD)</summary>
@@ -243,5 +249,26 @@ function FichaCliente({ c, aberto, alternar, aoSalvar, aoApagar }: { c: ClienteB
         </div>
       )}
     </article>
+  );
+}
+
+const DIAS_SEMANA = ['', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado', 'domingo'];
+const CANAL: Record<string, string> = { painel: 'Lançado na loja', cardapio_digital: 'Cardápio digital', ifood: 'iFood', whatsapp: 'WhatsApp' };
+function PerfilCliente({ p }: { p: Record<string, unknown> }) {
+  const n = (k: string) => Number(p[k] ?? 0);
+  const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const fav = (p.favoritos as { nome: string; qtd: number }[] | undefined) ?? [];
+  return (
+    <div className="cl-perfil" style={{ marginTop: '0.4rem' }}>
+      <span><b>Pedidos</b>{n('pedidos')}</span>
+      <span><b>Gasto total</b>{brl(n('gasto'))}</span>
+      <span><b>Ticket médio</b>{brl(n('ticket'))}</span>
+      <span><b>Pede a cada</b>{p.intervalo_dias != null ? `${p.intervalo_dias} dias` : '—'}</span>
+      <span><b>Dia e hora preferidos</b>{p.dia_semana ? `${DIAS_SEMANA[n('dia_semana')]}, ${p.hora}h` : '—'}</span>
+      <span><b>Canal preferido</b>{CANAL[String(p.canal)] ?? '—'}</span>
+      <span><b>Bairro</b>{(p.bairro as string) || '—'}</span>
+      <span><b>Favoritos</b>{fav.length ? fav.map((f) => `${f.nome} (${f.qtd})`).join(', ') : '—'}</span>
+      <span><b>Mensagens do Turbo</b>{n('mensagens')} · {n('compras_por_mensagem')} compra(s){p.optout ? ' · pediu para sair' : ''}</span>
+    </div>
   );
 }

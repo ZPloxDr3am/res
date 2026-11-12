@@ -78,9 +78,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/clientes/actions.ts": {
-    "mtime": 1794354908.0508862,
-    "seen": 1794354913.9776585,
-    "ast_hash": "24870741f135d58a23fbaeda06d68f9f",
+    "mtime": 1794487748.1142461,
+    "seen": 1794487791.5859487,
+    "ast_hash": "89388406f438ee4d57f0d59ee01a455f",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/clientes/page.tsx": {
@@ -288,9 +288,9 @@
     "semantic_hash": "6653f6d2413afaa67f5e5af557e30816"
   },
   "apps/web/app/c/[slug]/actions.ts": {
-    "mtime": 1793587648.5260413,
-    "seen": 1793587655.3749232,
-    "ast_hash": "cfb9782e867a56223ffd28d44a36c3b2",
+    "mtime": 1794487648.7327278,
+    "seen": 1794487791.5875392,
+    "ast_hash": "2baa260af9657cc6e618c5768247fe58",
     "semantic_hash": ""
   },
   "apps/web/app/c/[slug]/page.tsx": {
@@ -462,9 +462,9 @@
     "semantic_hash": "40918055d45150f280baf187d08891b8"
   },
   "apps/web/components/clientes/lista-clientes.tsx": {
-    "mtime": 1794354908.0508862,
-    "seen": 1794354913.9778333,
-    "ast_hash": "d24c5d5d83f9e6add3d3994a7f8f72b5",
+    "mtime": 1794487748.1157749,
+    "seen": 1794487791.589106,
+    "ast_hash": "408f3d3ab3bcda840699473e9c530cfc",
     "semantic_hash": ""
   },
   "apps/web/components/entregas/ao-vivo.tsx": {
@@ -642,9 +642,9 @@
     "semantic_hash": "e1a2ae124932452ed3b517ceefb9431a"
   },
   "apps/web/components/nav-painel.tsx": {
-    "mtime": 1794354908.0508862,
-    "seen": 1794354913.977897,
-    "ast_hash": "08281e6f4abdd89b49a0ea07e839b7b6",
+    "mtime": 1794487648.7333639,
+    "seen": 1794487791.5905552,
+    "ast_hash": "7154af9c112a4b7ae4db278dc43ca267",
     "semantic_hash": ""
   },
   "apps/web/components/novo-pedido.tsx": {
@@ -678,9 +678,9 @@
     "semantic_hash": "d472090f7948a1f67e4266a37eecb2ad"
   },
   "apps/web/components/publico/cardapio-cliente.tsx": {
-    "mtime": 1794352198.3318367,
-    "seen": 1794352204.495871,
-    "ast_hash": "f425d32f0d04d2a22db7504f0b24ef69",
+    "mtime": 1794487864.8484185,
+    "seen": 1794487876.060215,
+    "ast_hash": "d1b4a33e3ac4daf7a343f641ab732d29",
     "semantic_hash": ""
   },
   "apps/web/components/publico/mapa-cliente.tsx": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794426168.1388137,
-    "seen": 1794426175.44597,
-    "ast_hash": "e2eeca25676bf3b2bed6f056e500299e",
+    "mtime": 1794487767.6064813,
+    "seen": 1794487791.5973005,
+    "ast_hash": "47db8704a22bc25a6da46db4209b8360",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2520,9 +2520,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794354908.0588863,
-    "seen": 1794354913.9781716,
-    "ast_hash": "d41ba3cfe19b9e1f31a45dd49b014fc3",
+    "mtime": 1794487606.8156404,
+    "seen": 1794487791.596903,
+    "ast_hash": "8c2869f62599489ccc8e21474a887f09",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/actions.ts": {
@@ -2682,9 +2682,9 @@
     "semantic_hash": ""
   },
   "packages/core/src/planos.ts": {
-    "mtime": 1794353635.2078874,
-    "seen": 1794353727.8499644,
-    "ast_hash": "dd4618e82c6ed1d4c7e1ea4eaeed3190",
+    "mtime": 1794487648.7331476,
+    "seen": 1794487791.5928023,
+    "ast_hash": "4bb37b3cf6cbe3531978efffbdc6e6fb",
     "semantic_hash": ""
   },
   "packages/core/test/planos.test.ts": {
@@ -2790,9 +2790,9 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1794355880.821732,
-    "seen": 1794355908.2217922,
-    "ast_hash": "0747da7ac2698c96157285c148428819",
+    "mtime": 1794487767.6021037,
+    "seen": 1794487791.597275,
+    "ast_hash": "f9c606d55dfcad92311baa37bbac28ad",
     "semantic_hash": ""
   },
   "docs/comercial/README.md": {
@@ -2851,8 +2851,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794425779.470786,
-    "ast_hash": "",
+    "seen": 1794487797.9483669,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -2895,6 +2895,36 @@
     "mtime": 1794425628.5147817,
     "seen": 1794425779.4714222,
     "ast_hash": "5694de05411014ac751c9a1684c93d4c",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/turbo/actions.ts": {
+    "mtime": 1794487668.5144806,
+    "seen": 1794487791.5869124,
+    "ast_hash": "756bb46498ff78b08b47b5d488ffab25",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/turbo/page.tsx": {
+    "mtime": 1794487668.516359,
+    "seen": 1794487791.5869153,
+    "ast_hash": "10f1947d2353d7592ef8880ad09b4b4c",
+    "semantic_hash": ""
+  },
+  "apps/web/components/turbo/turbo-vendas.tsx": {
+    "mtime": 1794487729.742036,
+    "seen": 1794487791.5910282,
+    "ast_hash": "7d11091d75bab1ff0f2192860c189e17",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261112100000_turbo_vendas.sql": {
+    "mtime": 1794487484.9341962,
+    "seen": 1794487791.5958388,
+    "ast_hash": "6f76c1b8697614b97e45b1f3f43c2e63",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/turbo-vendas.md": {
+    "mtime": 1794487779.365116,
+    "seen": 1794487791.598378,
+    "ast_hash": "9fcfb0478d19474e068a44bb9ec86e14",
     "semantic_hash": ""
   }
 }

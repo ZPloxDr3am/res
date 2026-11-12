@@ -822,3 +822,10 @@ O estudo da tela do BeeFood está em `estudo-beefood/estoque.md`, no projeto.
 - Também dá para rodar à mão: Actions → "Robô (pedido de ponta a ponta)" → informar o endereço.
 
 - Ajuste (11/11): a Vercel deste projeto não cria "deployments" no GitHub (só o status do commit), então o gatilho passou a ser o status "Vercel" = sucesso na main, testando https://res-iqzs.vercel.app (ou a variável `E2E_URL`). Previews de PR não são testados pelo robô.
+
+## D-096 — TURBO-VENDAS (inspirado no Repediu) (12/11/2026)
+- Olhamos o Repediu (CRM de marketing para restaurantes, R$ 187,94 a 296,65/mês à parte). Trouxemos para dentro do RES, no menu Clientes → **Turbo-Vendas**: **automações** (carrinho abandonado, boas-vindas, pedir avaliação no Google, passou do costume pelo ciclo do próprio cliente, cliente sumido há X dias), **campanhas** (público por segmento RFV, dias sem pedir e gasto, mensagem com `{nome} {loja} {cupom} {link} {favorito} {avaliacao}`, cupom, agora ou agendada), **resultados** com venda atribuída (pedido concluído até X dias depois da última mensagem, padrão 5), **safras e LTV** por mês do 1º pedido e **perfil do cliente** (em Clientes).
+- **Envio**: por enquanto pela **fila no WhatsApp** (o atendente toca, a conversa abre com o texto, ele envia). O robô monta a fila a cada 10 min. Quando a API oficial do WhatsApp (Meta) for ligada, a mesma fila sai sozinha. SMS/voz/e-mail ficaram para depois.
+- **Regras de respeito**: no máximo 1 mensagem de marketing por cliente a cada 2 dias; "Pediu para sair" tira o cliente do marketing no grupo todo (LGPD); o carrinho só é guardado se a loja usa a automação de carrinho.
+- **Plano**: módulo **adicional de R$ 79,90/mês** (editável em Planos e preços), **incluso no Completo**.
+- Ficou para depois (do Repediu): WhatsApp oficial/SMS/e-mail, IA que monta a campanha, aniversário, avaliações do iFood/Google dentro do RES, alerta de chuva.
