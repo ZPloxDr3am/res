@@ -191,3 +191,26 @@ export async function salvarDadosEmpresa(
   revalidatePath('/comecar');
   return { ok: true };
 }
+
+// ---- Motoboy se cadastra pelo link (D-104)
+
+export type SolicitacaoMotoboy = { id: string; nome: string; usuario: string; telefone: string; veiculo: string | null; placa: string | null; pix: string | null; status: 'pendente' | 'aprovado' | 'recusado'; criado_em: string };
+
+export async function motoboyPainel(lojaId: string, trocar = false): Promise<{ ok: true; token: string; lista: SolicitacaoMotoboy[] } | { ok: false; erro: string }> {
+  const supabase = await criarClienteServidor();
+  const [t, l] = await Promise.all([
+    supabase.rpc('motoboy_link', { p_loja: lojaId, p_trocar: trocar }),
+    supabase.rpc('motoboy_solicitacoes_lista', { p_loja: lojaId }),
+  ]);
+  if (t.error) return { ok: false, erro: t.error.message };
+  return { ok: true, token: t.data as string, lista: (l.data as SolicitacaoMotoboy[] | null) ?? [] };
+}
+
+export async function motoboyDecidir(lojaId: string, id: string, aprovar: boolean): Promise<R> {
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('motoboy_decidir', { p_loja: lojaId, p_id: id, p_aprovar: aprovar });
+  if (error) return { ok: false, erro: error.message };
+  if (!aprovar && data) await clienteAdmin()?.auth.admin.deleteUser(data as string); // recusado: a conta de login some
+  revalidatePath('/lojas');
+  return { ok: true };
+}

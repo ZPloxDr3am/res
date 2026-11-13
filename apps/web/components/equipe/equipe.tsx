@@ -8,6 +8,7 @@ import { cpfValido, formatarCpf, soDigitos } from '@/lib/gestao';
 import { salvando } from '@/components/tempo-real';
 import { FUNCOES, gerarSenha, iniciais, ORDEM_FUNCOES, PERMISSOES_EQUIPE, sugerirUsuario, type Papel } from '@/lib/equipe';
 import type { LojaInfo } from '@/components/gestao-lojas';
+import { MotoboyLink } from '@/components/equipe/motoboy-link';
 
 type Res = { ok: boolean; erro?: string; texto?: string } | null;
 export type Ficha = { id: string; nome: string; cpf: string | null; cargo: string | null; membroId: string | null; ativo: boolean };
@@ -49,6 +50,7 @@ export function Equipe({ lojas, inicial, fichaInicial }: { lojas: LojaEquipe[]; 
         )}
       </section>
 
+      {gestor && !assistente && !cartao && <MotoboyLink key={loja.id} lojaId={loja.id} loja={loja.nome} />}
       {cartao && <CartaoAcesso c={cartao} fechar={() => setCartao(null)} />}
       {assistente && (
         <Assistente

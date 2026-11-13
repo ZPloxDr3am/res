@@ -463,3 +463,37 @@ select case when (pg_temp.v('ea_eans') #>> '{7891234567895,fator}')::numeric = 1
              and pg_temp.v('ea_lig') = '0' and pg_temp.v('ea_p1') = '"esgotado:true"' and pg_temp.v('ea_p2') = '"-:false"'
             then 'ok estoque automático: EAN da nota liga o insumo, lista de compras com fornecedor e sugestão, produto pausa e volta com o saldo'
             else 'FALHOU estoque automático ' || coalesce(pg_temp.v('ea_lista')::text, '-') || ' p1=' || coalesce(pg_temp.v('ea_p1')::text, '-') || ' p2=' || coalesce(pg_temp.v('ea_p2')::text, '-') end;
+-- Motoboy se cadastra (D-104): link da loja, pedido com conta própria, aprovar vira membro motoboy, recusar devolve a conta
+\o /dev/null
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-00000000c701', 'joao.moto@equipe.res.invalid'), ('00000000-0000-0000-0000-00000000c702', 'pedro.moto@equipe.res.invalid');
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('mb_tk', to_jsonb(public.motoboy_link((pg_temp.v('loja') #>> '{}')::uuid)));
+reset role;
+set role anon;
+insert into r values ('mb_info', public.motoboy_link_info(pg_temp.v('mb_tk') #>> '{}'));
+select from pg_temp.esperar_erro(format($q$select public.motoboy_solicitar('%s', '00000000-0000-0000-0000-00000000c701', 'joao.moto', 'João', '47999990000', 'Moto', 'ABC1D23', 'joao@pix')$q$, pg_temp.v('mb_tk') #>> '{}'), 'permission denied');
+reset role;
+set role service_role;
+insert into r values ('mb_s1', to_jsonb(public.motoboy_solicitar(pg_temp.v('mb_tk') #>> '{}', '00000000-0000-0000-0000-00000000c701', 'joao.moto', 'João Moto', '(47) 99999-0000', 'Honda CG', 'abc-1d23', 'joao@pix')));
+insert into r values ('mb_s2', to_jsonb(public.motoboy_solicitar(pg_temp.v('mb_tk') #>> '{}', '00000000-0000-0000-0000-00000000c702', 'pedro.moto', 'Pedro Moto', '47988887777', null, null, null)));
+select from pg_temp.esperar_erro($q$select public.motoboy_solicitar('linkerrado', '00000000-0000-0000-0000-00000000c702', 'x', 'X', '47988887777', null, null, null)$q$, 'Link de cadastro inválido');
+reset role;
+-- o plano do teste deixa 1 aparelho de motoboy: abre a vaga (o limite em si é testado na D-090)
+update public.membros set ativo = false where loja_id = (pg_temp.v('loja') #>> '{}')::uuid and papel = 'entregador';
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('mb_lista', public.motoboy_solicitacoes_lista((pg_temp.v('loja') #>> '{}')::uuid));
+select public.motoboy_decidir((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('mb_s1') #>> '{}')::uuid, true);
+insert into r values ('mb_rec', to_jsonb(public.motoboy_decidir((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('mb_s2') #>> '{}')::uuid, false)));
+insert into r values ('mb_tk2', to_jsonb(public.motoboy_link((pg_temp.v('loja') #>> '{}')::uuid, true)));
+reset role;
+insert into r values ('mb_membro', to_jsonb((select papel::text || ':' || nome from public.membros where user_id = '00000000-0000-0000-0000-00000000c701')));
+set role anon;
+insert into r values ('mb_info_velho', coalesce(public.motoboy_link_info(pg_temp.v('mb_tk') #>> '{}'), 'null'::jsonb));
+reset role;
+\o
+select case when pg_temp.v('mb_info') ->> 'loja' is not null and jsonb_array_length(pg_temp.v('mb_lista')) = 2
+             and pg_temp.v('mb_lista')::text like '%"placa": "ABC1D23"%' and pg_temp.v('mb_lista')::text like '%"telefone": "47999990000"%'
+             and pg_temp.v('mb_membro') = '"entregador:João Moto"' and pg_temp.v('mb_rec') = '"00000000-0000-0000-0000-00000000c702"'
+             and pg_temp.v('mb_tk2') <> pg_temp.v('mb_tk') and pg_temp.v('mb_info_velho') = 'null'
+            then 'ok motoboy se cadastra: link, pedido só pelo servidor, aprovar vira motoboy, recusar devolve a conta, link trocado'
+            else 'FALHOU motoboy ' || coalesce(pg_temp.v('mb_lista')::text, '-') || ' membro=' || coalesce(pg_temp.v('mb_membro')::text, '-') end;
