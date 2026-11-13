@@ -658,3 +658,35 @@ select case when (select (x -> 'dow' ->> extract(dow from ((now() - interval '8 
              and jsonb_array_length(pg_temp.v('pv') -> 'insumos' -> 0 -> 'dow') = 7 and pg_temp.v('pv') ? 'produtos'
             then 'ok previsão: consumo médio por dia da semana nas últimas 4 semanas'
             else 'FALHOU previsão ' || coalesce(pg_temp.v('pv')::text, '-') end;
+-- Avaliação do pedido (D-111): cliente avalia pelo código, nota baixa no painel e no Bom dia, Google só na nota alta
+\o /dev/null
+reset role;
+insert into r values ('av_ped', to_jsonb((select id from public.pedidos where loja_id = (pg_temp.v('loja') #>> '{}')::uuid order by criado_em limit 1)));
+update public.pedidos set status = 'concluido', concluido_em = now(), cancelado_em = null where id = (pg_temp.v('av_ped') #>> '{}')::uuid;
+insert into r values ('av_cod', to_jsonb((select codigo from public.pedidos where id = (pg_temp.v('av_ped') #>> '{}')::uuid)));
+insert into public.integracoes (loja_id, tipo, config, ativo) values ((pg_temp.v('loja') #>> '{}')::uuid, 'google_avaliacao', '{"url": "https://g.page/r/teste/review"}', true) on conflict do nothing;
+set role anon;
+insert into r values ('av_1', public.avaliar_pedido((pg_temp.v('av_cod') #>> '{}')::uuid, 2, array['frio', 'atraso', 'inventado'], ' chegou frio '));
+insert into r values ('av_ex', public.extras_pedido_publico((pg_temp.v('av_cod') #>> '{}')::uuid));
+select from pg_temp.esperar_erro(format('select public.avaliar_pedido(%L, 9)', pg_temp.v('av_cod') #>> '{}'), '1 a 5');
+select from pg_temp.esperar_erro('select count(*) from public.avaliacoes_pedido', 'permission denied');
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('av_bd', public.resumo_manha((pg_temp.v('loja') #>> '{}')::uuid));
+insert into r values ('av_pn', public.avaliacoes_painel((pg_temp.v('loja') #>> '{}')::uuid, 30));
+select public.avaliacao_resolver((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('av_pn') -> 'lista' -> 0 ->> 'id')::uuid, true);
+insert into r values ('av_bd2', public.resumo_manha((pg_temp.v('loja') #>> '{}')::uuid));
+reset role;
+set role anon;
+insert into r values ('av_2', public.avaliar_pedido((pg_temp.v('av_cod') #>> '{}')::uuid, 5));
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a4');
+select from pg_temp.esperar_erro(format('select public.avaliacoes_painel(%L, 30)', pg_temp.v('loja') #>> '{}'), 'Só o dono');
+reset role;
+\o
+select case when pg_temp.v('av_1') ->> 'google' is null and pg_temp.v('av_2') ->> 'google' = 'https://g.page/r/teste/review'
+             and (pg_temp.v('av_ex') ->> 'avaliado')::int = 2
+             and (pg_temp.v('av_bd') ->> 'avaliacoes_ruins')::int = 1 and (pg_temp.v('av_bd2') ->> 'avaliacoes_ruins')::int = 0
+             and pg_temp.v('av_pn') -> 'lista' -> 0 -> 'problemas' = '["atraso", "frio"]' and pg_temp.v('av_pn') -> 'lista' -> 0 ->> 'comentario' = 'chegou frio'
+            then 'ok avaliação: cliente avalia pelo link, nota baixa no painel e no Bom dia, Google só na nota alta, corrige na 1ª hora'
+            else 'FALHOU avaliação ' || coalesce(pg_temp.v('av_pn')::text, '-') || ' bd=' || coalesce(pg_temp.v('av_bd')::text, '-') end;
