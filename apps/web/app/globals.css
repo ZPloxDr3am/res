@@ -1475,6 +1475,18 @@ button.mini[data-avisado] { color: #15803d; }
 .ia-prod { display: grid; grid-template-columns: auto 1fr auto; gap: 0.5rem; align-items: start; padding: 0.35rem 0; border-top: 1px solid var(--borda); }
 .ia-prod[data-off] { opacity: 0.5; }
 .ia-prod input[aria-invalid] { border-color: var(--erro); }
+.margem-ruim { color: var(--fin-despesa); }
+.margem-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.margem-lista li { display: grid; gap: 0.1rem; }
+.margem-alerta { border-left: 4px solid var(--fin-hoje); }
+.matriz-cardapio { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); }
+.matriz-quadro { display: grid; gap: 0.35rem; align-content: start; border-top: 4px solid var(--borda-forte); }
+.matriz-quadro[data-classe='estrela'] { border-top-color: #16a34a; }
+.matriz-quadro[data-classe='burro_de_carga'] { border-top-color: var(--fin-hoje); }
+.matriz-quadro[data-classe='quebra_cabeca'] { border-top-color: var(--presencial); }
+.matriz-quadro[data-classe='cao'] { border-top-color: var(--fin-despesa); }
+.matriz-quadro ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
+.matriz-quadro li { display: grid; gap: 0.05rem; }
 .bom-dia { display: grid; gap: 0.6rem; border-left: 4px solid var(--destaque); }
 .bom-dia-topo { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; align-items: center; }
 .bom-dia ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }

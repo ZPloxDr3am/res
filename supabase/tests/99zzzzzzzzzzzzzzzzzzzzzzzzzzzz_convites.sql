@@ -598,3 +598,23 @@ reset role;
 select case when pg_temp.v('ia_1') = '19' and pg_temp.v('ia_f') = '149'
             then 'ok IA: freio por dia por loja, tipo conferido, tabela fechada'
             else 'FALHOU IA ' || coalesce(pg_temp.v('ia_1')::text, '-') || ' ' || coalesce(pg_temp.v('ia_f')::text, '-') end;
+-- Margem e engenharia de cardápio (D-108): custo pelas fichas com o custo atual, insumo que subiu, CMV alvo
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select public.ajustar_estoque((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('ea_eans') #>> '{7891234567895,insumo_id}')::uuid, 'entrada', 10, 1.00, null);
+select public.ajustar_estoque((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('ea_eans') #>> '{7891234567895,insumo_id}')::uuid, 'entrada', 10, 2.00, null);
+select public.definir_cmv_alvo((pg_temp.v('loja') #>> '{}')::uuid, 30);
+select from pg_temp.esperar_erro(format('select public.definir_cmv_alvo(%L, 95)', pg_temp.v('loja') #>> '{}'), '5% a 90%');
+insert into r values ('mg', public.margem_cardapio((pg_temp.v('loja') #>> '{}')::uuid, 30));
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a4');
+select from pg_temp.esperar_erro(format('select public.definir_cmv_alvo(%L, 40)', pg_temp.v('loja') #>> '{}'), 'Só o dono');
+reset role;
+\o
+select case when (pg_temp.v('mg') ->> 'alvo')::numeric = 30
+             and (select (x ->> 'vendidos')::int >= 2 and (x ->> 'custo_conhecido')::boolean and (x ->> 'custo')::numeric > 0
+                    from jsonb_array_elements(pg_temp.v('mg') -> 'produtos') x where x ->> 'nome' = 'Xis KDS')
+             and (select (x ->> 'variacao')::numeric = 100 and x -> 'usado_em' ? 'Xis KDS'
+                    from jsonb_array_elements(pg_temp.v('mg') -> 'insumos_subiram') x where x ->> 'nome' = 'Pão auto')
+            then 'ok margem: custo atual pelas fichas, insumo que subiu com os itens que usam, CMV alvo só gestor'
+            else 'FALHOU margem ' || coalesce(pg_temp.v('mg')::text, '-') end;

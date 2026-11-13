@@ -16,13 +16,14 @@ import { Contagem } from '@/components/estoque/contagem';
 import { Fechamento } from '@/components/estoque/fechamento';
 import { SaboresPizza } from '@/components/estoque/sabores-pizza';
 
+import { Margens, type DadosMargem } from '@/components/estoque/margens';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // "Buscar agora" na SEFAZ (caixa de entrada de NF-e, D-102)
 
 
-export default async function Estoque({ searchParams }: { searchParams: Promise<{ aba?: string; insumo?: string; ver?: string; lojas?: string; mes?: string }> }) {
+export default async function Estoque({ searchParams }: { searchParams: Promise<{ aba?: string; insumo?: string; ver?: string; lojas?: string; mes?: string; dias?: string }> }) {
   const sp = await searchParams;
-  const aba = sp.aba === 'fichas' ? 'meu' : ['insumos', 'contagem', 'compras', 'nfe', 'movimentos', 'cmv'].includes(sp.aba ?? '') ? sp.aba! : 'meu';
+  const aba = sp.aba === 'fichas' ? 'meu' : ['insumos', 'contagem', 'compras', 'nfe', 'movimentos', 'cmv', 'margens'].includes(sp.aba ?? '') ? sp.aba! : 'meu';
   const sabores = sp.aba === 'fichas' || sp.ver === 'sabores';
   const todas = sp.lojas === 'todas';
   const ctx = await contextoLoja();
@@ -103,6 +104,10 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
         <Contagem lojaId={ctx.lojaId} insumos={p.insumos} painel={(c.data as ContagemPainel | null) ?? { de_nfe: [], ultima: {} }} eans={(eansC.data as MapaEans | null) ?? {}} />
       </div>
     );
+  } else if (aba === 'margens') {
+    const dias = [30, 60, 90].includes(Number(sp.dias)) ? Number(sp.dias) : 30;
+    const mg = await supabase.rpc('margem_cardapio', { p_loja: ctx.lojaId, p_dias: dias });
+    conteudo = mg.data ? <Margens dados={mg.data as DadosMargem} gestor={ctx.papel === 'dono' || ctx.papel === 'gerente'} /> : <p className="erro">{mg.error?.message ?? 'Não consegui carregar.'}</p>;
   } else if (aba === 'cmv') {
     const mesAtual = new Date(Date.now() - 5 * 3600_000).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }).slice(0, 7);
     const mes = /^\d{4}-\d{2}$/.test(sp.mes ?? '') && sp.mes! <= mesAtual ? sp.mes! : mesAtual;
@@ -138,6 +143,7 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
         <Link href="/estoque?aba=nfe" role="tab" aria-selected={aba === 'nfe'} className="aba-link">Entrada por NF-e</Link>
         <Link href="/estoque?aba=movimentos" role="tab" aria-selected={aba === 'movimentos'} className="aba-link">Movimentações</Link>
         <Link href="/estoque?aba=cmv" role="tab" aria-selected={aba === 'cmv'} className="aba-link">Fechamento / CMV</Link>
+        <Link href="/estoque?aba=margens" role="tab" aria-selected={aba === 'margens'} className="aba-link">Margem e cardápio</Link>
       </nav>
       {conteudo}
     </div>

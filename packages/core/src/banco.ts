@@ -298,6 +298,8 @@ export type BomDia = {
   estoque: { abaixo_minimo: number; pausados: number } | null;
   nfe_para_entrada: number;
   motoboys_pendentes: number;
+  /** insumos que ficaram 5% ou mais caros na última entrada, nos últimos 7 dias (D-108) */
+  insumos_subiram?: number;
 };
 
 const ROTULO_SEMANA = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
@@ -308,7 +310,7 @@ export function variacaoBomDia(d: BomDia): number | null {
   return a > 0 ? Math.round(((d.ontem.vendas - a) / a) * 100) : null;
 }
 
-export type PendenciaBomDia = { chave: 'vencidas' | 'hoje' | 'pausados' | 'compras' | 'nfe' | 'extrato' | 'motoboys' | 'agendados'; texto: string };
+export type PendenciaBomDia = { chave: 'vencidas' | 'hoje' | 'pausados' | 'compras' | 'nfe' | 'extrato' | 'motoboys' | 'agendados' | 'margem'; texto: string };
 
 /** O que precisa de atenção hoje, em ordem de urgência (para o cartão e para a mensagem). */
 export function pendenciasBomDia(d: BomDia): PendenciaBomDia[] {
@@ -317,6 +319,7 @@ export function pendenciasBomDia(d: BomDia): PendenciaBomDia[] {
   const f = d.financeiro;
   if (f?.vencidas) p.push({ chave: 'vencidas', texto: `⚠️ ${s(f.vencidas, 'conta vencida', 'contas vencidas')} (${formatarReais(f.valor_vencidas)})` });
   if (f?.vencem_hoje) p.push({ chave: 'hoje', texto: `📅 ${s(f.vencem_hoje, 'conta vence', 'contas vencem')} hoje (${formatarReais(f.valor_hoje)})` });
+  if (d.insumos_subiram) p.push({ chave: 'margem', texto: `📈 ${s(d.insumos_subiram, 'insumo ficou', 'insumos ficaram')} mais caro${d.insumos_subiram > 1 ? 's' : ''}: confira a margem` });
   if (d.estoque?.pausados) p.push({ chave: 'pausados', texto: `⏸️ ${s(d.estoque.pausados, 'produto pausado', 'produtos pausados')} por falta de insumo` });
   if (d.estoque?.abaixo_minimo) p.push({ chave: 'compras', texto: `🛒 ${s(d.estoque.abaixo_minimo, 'insumo', 'insumos')} abaixo do mínimo` });
   if (d.nfe_para_entrada) p.push({ chave: 'nfe', texto: `🧾 ${s(d.nfe_para_entrada, 'nota fiscal pronta', 'notas fiscais prontas')} para dar entrada` });

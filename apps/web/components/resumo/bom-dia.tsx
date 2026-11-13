@@ -10,6 +10,7 @@ const DESTINO: Record<PendenciaBomDia['chave'], string> = {
   extrato: '/financeiro?aba=extrato',
   motoboys: '/lojas',
   agendados: '/pedidos',
+  margem: '/estoque?aba=margens',
 };
 const SEMANA = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 

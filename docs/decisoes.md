@@ -909,3 +909,11 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - **Ficha técnica sugerida.** No editor da ficha (Estoque → Meu estoque/Fichas), **✨ Sugerir com IA** preenche as linhas com os **insumos da loja** e quantidades típicas para uma unidade vendida (sabor de pizza: pizza inteira). Só entra insumo que existe na loja (pelo id ou nome), com a unidade convertida (g→kg, ml→l); o que a loja não tem aparece como "sem cadastro". Nada é gravado até o dono conferir e clicar em Salvar ficha.
 - **Freio e custo:** `ia_registrar` confere a permissão (cardápio / estoque) e limita por loja: 20 leituras de cardápio e 150 sugestões de ficha a cada 24 h; o uso fica em `ia_uso` (fechada para o app). Sem chave ou sem crédito, as telas avisam em português e nada quebra.
 - Migração `20261113250000_ia_cardapio_ficha.sql`.
+
+## D-108 — Margem e engenharia de cardápio (13/11/2026)
+- Nova aba **Estoque → Margem e cardápio** (30, 60 ou 90 dias). O custo de cada produto vendido é calculado como a baixa do estoque (ficha do produto + fichas das opções escolhidas, meia pizza pela fração), mas **com o custo médio de hoje** dos insumos: a nota que trouxe o queijo mais caro já aparece no CMV.
+- **Insumos que subiram:** última entrada (NF-e ou manual) 5% ou mais acima da anterior, com os produtos e sabores que usam cada um.
+- **CMV alvo da loja** (padrão 35%, dono/gerente muda): itens acima dele aparecem com o CMV, o preço médio vendido e o **preço para voltar ao alvo** (custo ÷ alvo, arredondado para cima em ,90). Produto com ficha e sem vendas no período é avaliado pela ficha contra o preço do cardápio.
+- **Engenharia de cardápio** (matriz de Kasavana & Smith): popular = vendeu ao menos 70% da participação média; lucra bem = margem por unidade acima da média ponderada. ⭐ Estrelas, 🐴 Burros de carga, 🧩 Quebra-cabeças, 🐶 Cães, cada quadro com o que fazer. Produtos sem ficha ficam fora e são listados.
+- **Bom dia** ganha "📈 N insumos ficaram mais caros: confira a margem" (entradas dos últimos 7 dias), com link para a aba.
+- Código: `packages/core/src/margem.ts` (testado), `components/estoque/margens.tsx`, migração `20261113260000_margem_cardapio.sql` (coluna `lojas.cmv_alvo`, `margem_cardapio`, `definir_cmv_alvo`, `resumo_manha` atualizado).

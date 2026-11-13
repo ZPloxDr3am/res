@@ -273,3 +273,11 @@ export async function sugerirFichaIA(
     return { ok: false, erro: e instanceof ErroIA ? e.message : 'Não consegui falar com a IA agora.' };
   }
 }
+
+/** CMV alvo da loja (D-108): acima dele, o produto entra nos alertas de margem. */
+export async function definirCmvAlvo(alvo: number): Promise<R> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('definir_cmv_alvo', { p_loja: ctx.lojaId, p_alvo: alvo });
+  return error ? { ok: false, erro: error.message } : feito();
+}
