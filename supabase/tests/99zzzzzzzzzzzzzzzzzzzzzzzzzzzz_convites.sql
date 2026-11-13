@@ -497,3 +497,50 @@ select case when pg_temp.v('mb_info') ->> 'loja' is not null and jsonb_array_len
              and pg_temp.v('mb_tk2') <> pg_temp.v('mb_tk') and pg_temp.v('mb_info_velho') = 'null'
             then 'ok motoboy se cadastra: link, pedido só pelo servidor, aprovar vira motoboy, recusar devolve a conta, link trocado'
             else 'FALHOU motoboy ' || coalesce(pg_temp.v('mb_lista')::text, '-') || ' membro=' || coalesce(pg_temp.v('mb_membro')::text, '-') end;
+-- Financeiro automático (D-105): extrato OFX sem duplicar, baixa com o valor do banco, lançar/ignorar/desfazer e o Bom dia
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select public.preparar_financeiro((pg_temp.v('loja') #>> '{}')::uuid);
+insert into r values ('fx_lanc', to_jsonb(public.criar_lancamento((pg_temp.v('loja') #>> '{}')::uuid, jsonb_build_object('tipo', 'despesa', 'descricao', 'Atacadão', 'valor', 1200, 'vencimento', current_date - 1))));
+insert into r values ('fx_rec', to_jsonb(public.criar_lancamento((pg_temp.v('loja') #>> '{}')::uuid, jsonb_build_object('tipo', 'receita', 'descricao', 'Encomenda', 'valor', 50, 'vencimento', current_date))));
+insert into r values ('fx_itens', jsonb_build_array(
+  jsonb_build_object('chave', 'b|c|k1', 'data', current_date - 1, 'valor', -125000, 'descricao', 'PIX ATACADAO'),
+  jsonb_build_object('chave', 'b|c|k2', 'data', current_date - 1, 'valor', -2000, 'descricao', 'TARIFA'),
+  jsonb_build_object('chave', 'b|c|k3', 'data', current_date - 1, 'valor', 84530, 'descricao', 'REDE CARTOES'),
+  jsonb_build_object('chave', 'b|c|k4', 'data', current_date - 1, 'valor', -5000, 'descricao', 'PIX ENVIADO')));
+insert into r values ('fx_imp1', public.fin_extrato_importar((pg_temp.v('loja') #>> '{}')::uuid, null, pg_temp.v('fx_itens')));
+insert into r values ('fx_imp2', public.fin_extrato_importar((pg_temp.v('loja') #>> '{}')::uuid, null, pg_temp.v('fx_itens')));
+insert into r select 'fx_' || right(chave, 2), to_jsonb(id) from public.fin_extrato where loja_id = (pg_temp.v('loja') #>> '{}')::uuid;
+insert into r values ('fx_cat_desp', to_jsonb((select id from public.fin_categorias where loja_id = (pg_temp.v('loja') #>> '{}')::uuid and tipo = 'despesa' limit 1)));
+insert into r values ('fx_cat_rec', to_jsonb((select id from public.fin_categorias where loja_id = (pg_temp.v('loja') #>> '{}')::uuid and tipo = 'receita' limit 1)));
+select public.fin_extrato_baixar((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('fx_k1') #>> '{}')::uuid, (pg_temp.v('fx_lanc') #>> '{}')::uuid);
+insert into r values ('fx_pago', to_jsonb((select (pago_em = current_date - 1) || ':' || valor || ':' || observacao from public.fin_lancamentos where id = (pg_temp.v('fx_lanc') #>> '{}')::uuid)));
+select from pg_temp.esperar_erro(format('select public.fin_extrato_baixar(%L, %L, %L)', pg_temp.v('loja') #>> '{}', pg_temp.v('fx_k1') #>> '{}', pg_temp.v('fx_lanc') #>> '{}'), 'já foi conferida');
+select from pg_temp.esperar_erro(format('select public.fin_extrato_baixar(%L, %L, %L)', pg_temp.v('loja') #>> '{}', pg_temp.v('fx_k4') #>> '{}', pg_temp.v('fx_rec') #>> '{}'), 'Saída do banco');
+select from pg_temp.esperar_erro(format('select public.fin_extrato_lancar(%L, %L, %L)', pg_temp.v('loja') #>> '{}', pg_temp.v('fx_k4') #>> '{}', pg_temp.v('fx_cat_rec') #>> '{}'), 'Categoria inválida');
+insert into r values ('fx_novo', to_jsonb(public.fin_extrato_lancar((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('fx_k2') #>> '{}')::uuid, (pg_temp.v('fx_cat_desp') #>> '{}')::uuid, 'Tarifa do banco')));
+insert into r values ('fx_novo_ok', to_jsonb((select tipo || ':' || valor || ':' || (pago_em = current_date - 1) || ':' || descricao from public.fin_lancamentos where id = (pg_temp.v('fx_novo') #>> '{}')::uuid)));
+select public.fin_extrato_ignorar((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('fx_k3') #>> '{}')::uuid, 'venda');
+insert into r values ('fx_bd1', public.resumo_manha((pg_temp.v('loja') #>> '{}')::uuid));
+select public.fin_extrato_desfazer((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('fx_k1') #>> '{}')::uuid);
+select public.fin_extrato_desfazer((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('fx_k2') #>> '{}')::uuid);
+insert into r values ('fx_desf', to_jsonb((select coalesce(pago_em::text, 'aberto') from public.fin_lancamentos where id = (pg_temp.v('fx_lanc') #>> '{}')::uuid)
+                                          || ':' || (select count(*) from public.fin_lancamentos where id = (pg_temp.v('fx_novo') #>> '{}')::uuid)));
+insert into r values ('fx_bd2', public.resumo_manha((pg_temp.v('loja') #>> '{}')::uuid));
+select from pg_temp.esperar_erro($q$insert into public.fin_extrato (loja_id, chave, data, valor, descricao) select loja_id, 'x', current_date, 1, 'x' from public.fin_extrato limit 1$q$, 'permission denied');
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a4');
+select from pg_temp.esperar_erro(format('select public.fin_extrato_importar(%L, null, %L)', pg_temp.v('loja') #>> '{}', pg_temp.v('fx_itens')), 'Financeiro');
+select from pg_temp.esperar_erro(format('select public.resumo_manha(%L)', pg_temp.v('loja') #>> '{}'), 'Só o dono');
+insert into r values ('fx_func_ve', to_jsonb((select count(*) from public.fin_extrato)));
+reset role;
+\o
+select case when pg_temp.v('fx_imp1') = '{"novas": 4, "repetidas": 0}' and pg_temp.v('fx_imp2') = '{"novas": 0, "repetidas": 4}'
+             and pg_temp.v('fx_pago') = '"true:1250.00:valor original R$ 1200,00"'
+             and pg_temp.v('fx_novo_ok') = '"despesa:20.00:true:Tarifa do banco"'
+             and pg_temp.v('fx_desf') = '"aberto:0"' and pg_temp.v('fx_func_ve') = '0'
+             and (pg_temp.v('fx_bd1') #>> '{financeiro,extrato_pendente}')::int = 1 and (pg_temp.v('fx_bd2') #>> '{financeiro,extrato_pendente}')::int = 3
+             and (pg_temp.v('fx_bd2') #>> '{financeiro,vencidas}')::int >= 1 and pg_temp.v('fx_bd2') ? 'ontem' and pg_temp.v('fx_bd2') ? 'estoque'
+            then 'ok financeiro automático: extrato sem duplicar, baixa com o valor do banco, lançar/ignorar/desfazer, só gestor, Bom dia'
+            else 'FALHOU financeiro automático imp=' || coalesce(pg_temp.v('fx_imp1')::text, '-') || '/' || coalesce(pg_temp.v('fx_imp2')::text, '-') || ' pago=' || coalesce(pg_temp.v('fx_pago')::text, '-')
+                 || ' novo=' || coalesce(pg_temp.v('fx_novo_ok')::text, '-') || ' desf=' || coalesce(pg_temp.v('fx_desf')::text, '-') || ' bd=' || coalesce(pg_temp.v('fx_bd2')::text, '-') end;

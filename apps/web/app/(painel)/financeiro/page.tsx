@@ -24,6 +24,7 @@ import { FluxoCaixa } from '@/components/financeiro/fluxo';
 import { Categorias, Contas, Fornecedores, Taxas } from '@/components/financeiro/cadastros';
 import { BaixarCsv } from '@/components/financeiro/baixar';
 import { EscolhaModo } from '@/components/gestao/grupo';
+import { ExtratoBanco, type ContaEmAberto, type LinhaExtrato } from '@/components/financeiro/extrato';
 import { escopoFinanceiro } from '@/lib/financeiro-escopo';
 
 export const dynamic = 'force-dynamic';
@@ -31,6 +32,7 @@ export const dynamic = 'force-dynamic';
 const ABAS = [
   ['visao', 'Visão do mês'],
   ['contas', 'Contas a pagar e receber'],
+  ['extrato', 'Extrato do banco'],
   ['fluxo', 'Fluxo de caixa'],
   ['dre', 'DRE'],
   ['cadastros', 'Cadastros e taxas'],
@@ -190,6 +192,35 @@ export default async function Financeiro({ searchParams }: { searchParams: Promi
           <p className="dica" style={{ margin: 0 }}>
             Tudo do mês (inclusive o que já foi pago) em <Link href={qs({ aba: 'contas', mes })}>Contas a pagar e receber</Link>.
           </p>
+        </>
+      );
+    }
+  } else if (aba === 'extrato') {
+    if (soma) {
+      corpo = <p className="cartao dica" style={{ margin: 0 }}>O extrato é de cada loja: abra o financeiro de uma loja para importar e conferir.</p>;
+    } else {
+      // extrato dos últimos 6 meses; contas em aberto de 4 meses atrás até 2 meses à frente
+      const dia = (n: number) => new Date(Date.parse(`${hoje}T12:00:00Z`) + n * 86400_000).toISOString().slice(0, 10);
+      const [ext, abertas] = await Promise.all([
+        doDono(supabase.from('fin_extrato').select('id, conta_id, data, valor, descricao, lancamento_id, criou, ignorado, lanc:fin_lancamentos(descricao, valor, vencimento)'))
+          .gte('data', dia(-183))
+          .order('data', { ascending: false })
+          .limit(3000),
+        doDono(supabase.from('fin_lancamentos').select('id, tipo, descricao, valor, vencimento')).is('pago_em', null).gte('vencimento', dia(-120)).lte('vencimento', dia(60)).order('vencimento').limit(2000),
+      ]);
+      const linhas = ((ext.data ?? []) as Record<string, unknown>[]).map((x) => {
+        const lanc = (Array.isArray(x.lanc) ? x.lanc[0] : x.lanc) as { descricao: string; valor: number; vencimento: string } | null;
+        return { ...x, valor: Number(x.valor), lanc: lanc ? { ...lanc, valor: Number(lanc.valor) } : null } as LinhaExtrato;
+      });
+      corpo = (
+        <>
+          {ext.error && <p className="erro">{/fin_extrato/.test(ext.error.message) ? 'A atualização do banco desta tela ainda não foi aplicada (financeiro automático, D-105).' : ext.error.message}</p>}
+          <ExtratoBanco
+            linhas={linhas}
+            abertas={((abertas.data ?? []) as Record<string, unknown>[]).map((l) => ({ ...l, valor: Number(l.valor) }) as ContaEmAberto)}
+            categorias={cad.categorias}
+            contas={cad.contas}
+          />
         </>
       );
     }

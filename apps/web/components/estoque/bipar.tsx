@@ -8,12 +8,17 @@ type JanelaComDetector = Window & { BarcodeDetector?: new (o: { formats: string[
  * Bipar código de barras (D-103): leitor USB/Bluetooth (funciona como teclado: digita e dá Enter) ou a câmera do
  * celular, onde o navegador tem leitor de código de barras (Chrome no Android). Chama aoLer com os números.
  */
-export function Bipar({ aoLer, rotulo = 'Bipe ou digite o código de barras' }: { aoLer: (codigo: string) => void; rotulo?: string }) {
+export function Bipar({ aoLer, rotulo = 'Bipe ou digite o código de barras', botao }: { aoLer: (codigo: string) => void; rotulo?: string; /** botão para quem cola ou digita (além do Enter) */ botao?: string }) {
   const [texto, setTexto] = useState('');
   const [camera, setCamera] = useState(false);
   const [temCamera, setTemCamera] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const video = useRef<HTMLVideoElement>(null);
+  const enviar = () => {
+    const cod = texto.replace(/\D/g, '');
+    if (cod.length >= 8) aoLer(cod);
+    setTexto('');
+  };
   useEffect(() => setTemCamera(typeof (window as JanelaComDetector).BarcodeDetector === 'function' && !!navigator.mediaDevices?.getUserMedia), []);
 
   useEffect(() => {
@@ -67,11 +72,10 @@ export function Bipar({ aoLer, rotulo = 'Bipe ou digite o código de barras' }: 
           onKeyDown={(e) => {
             if (e.key !== 'Enter') return;
             e.preventDefault();
-            const cod = texto.replace(/\D/g, '');
-            if (cod.length >= 8) aoLer(cod);
-            setTexto('');
+            enviar();
           }}
         />
+        {botao && <button type="button" onClick={enviar} disabled={texto.replace(/\D/g, '').length < 8}>{botao}</button>}
         {temCamera && <button type="button" onClick={() => { setErro(null); setCamera((c) => !c); }} aria-pressed={camera}>{camera ? 'Fechar câmera' : '📷 Usar a câmera'}</button>}
       </div>
       {camera && <video ref={video} muted playsInline style={{ width: '100%', maxWidth: 420, borderRadius: 12, background: '#000' }} />}

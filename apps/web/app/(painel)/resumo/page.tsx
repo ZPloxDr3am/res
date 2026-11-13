@@ -19,6 +19,8 @@ import { GraficoLojas } from '@/components/resumo/grafico-lojas';
 import { corDaLoja } from '@/lib/cores';
 import { MetaMes } from '@/components/resumo/meta-mes';
 import type { DadosMeta } from '@/lib/meta';
+import { CartaoBomDia } from '@/components/resumo/bom-dia';
+import type { BomDia } from '@res/core';
 
 export const dynamic = 'force-dynamic';
 
@@ -78,6 +80,9 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
   ]);
   const { data: ms } = await supabase.from('membros').select('loja_id, papel').eq('user_id', eu.user?.id ?? '').eq('ativo', true).in('loja_id', ids);
   const podeMeta = (ms ?? []).filter((m) => m.papel === 'dono' || m.papel === 'gerente').map((m) => m.loja_id as string);
+  // ☀️ resumo da manhã (D-105): na tela de hoje, para quem gere a loja em uso
+  const { data: bomDia } =
+    preset === 'hoje' && (ctx.papel === 'dono' || ctx.papel === 'gerente') ? await supabase.rpc('resumo_manha', { p_loja: ctx.lojaId }) : { data: null };
 
   if (r.atual.length === 0) {
     return (
@@ -167,6 +172,8 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
         <button className="mini">Aplicar</button>
       </form>
       {erroPeriodo && <p className="erro">{erroPeriodo}</p>}
+
+      {bomDia ? <CartaoBomDia dados={bomDia as BomDia} loja={ctx.lojaNome} /> : null}
 
       {dm ? <MetaMes key={`${lojaFiltro}-${(dm as DadosMeta).mes}`} dados={dm as DadosMeta} podeEditar={podeMeta} /> : null}
 
