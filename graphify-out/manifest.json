@@ -162,9 +162,9 @@
     "semantic_hash": "37a083e8e04f109eef39ff287cee7496"
   },
   "apps/web/app/(painel)/lojas/actions.ts": {
-    "mtime": 1794165950.3334947,
-    "seen": 1794165955.2246459,
-    "ast_hash": "ba0cacafd237a0e289a26f1a186c03ba",
+    "mtime": 1794606174.710583,
+    "seen": 1794607013.0718887,
+    "ast_hash": "001e7a3055e12727745f6a9963ad2bb0",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/lojas/page.tsx": {
@@ -210,9 +210,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/resumo/page.tsx": {
-    "mtime": 1793586336.830227,
-    "seen": 1793586547.3897715,
-    "ast_hash": "7ab94d09961005b3f147cc072e6330c2",
+    "mtime": 1794606910.0490153,
+    "seen": 1794607013.0719051,
+    "ast_hash": "8b3dfd25d62d065d40bfcfb20b3b2419",
     "semantic_hash": ""
   },
   "apps/web/app/api/agente/parear/route.ts": {
@@ -870,14 +870,14 @@
     "semantic_hash": "dbeef416075d74e3b6c91519aa686f04"
   },
   "apps/web/middleware.ts": {
-    "mtime": 1794602819.1624477,
-    "seen": 1794602826.347934,
-    "ast_hash": "fcd086b3f2427b606d423fd4e95e4fa1",
+    "mtime": 1794606174.7241971,
+    "seen": 1794607013.0722249,
+    "ast_hash": "fa4df0ab2207d222d75267731c381945",
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1794605495.1891248,
-    "seen": 1794605499.6935935,
+    "mtime": 1794606976.6772122,
+    "seen": 1794607013.0722258,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": "8ccf37b0657b4213f1c10db5c78e039a"
   },
@@ -1026,9 +1026,9 @@
     "semantic_hash": "ca7ba0b48f2b641149acdba9eb74387d"
   },
   "packages/core/src/index.ts": {
-    "mtime": 1794602819.245403,
-    "seen": 1794602826.3485675,
-    "ast_hash": "c04540fc57ff967abb9b12aa557550a4",
+    "mtime": 1794606556.4706056,
+    "seen": 1794607013.0722666,
+    "ast_hash": "61fcbf357de7ca2c5c72d59a4bcc9952",
     "semantic_hash": ""
   },
   "packages/core/src/pedido.ts": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794605824.6425622,
-    "seen": 1794605833.246478,
-    "ast_hash": "88504b4335a9af7933b21ea931e21c04",
+    "mtime": 1794607002.8986323,
+    "seen": 1794607013.0725267,
+    "ast_hash": "e75c0a4566ed8b1a0da00521ac3ea2c7",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1884,9 +1884,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/equipe/equipe.tsx": {
-    "mtime": 1793228491.1001537,
-    "seen": 1793231974.5471191,
-    "ast_hash": "a0a6eee8ca037f6dab37309383d67b6d",
+    "mtime": 1794606195.4298272,
+    "seen": 1794607013.0720694,
+    "ast_hash": "3fe21b5b58b933cc1492c23504f85702",
     "semantic_hash": ""
   },
   "apps/web/components/equipe/funcoes.tsx": {
@@ -1992,15 +1992,15 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/financeiro/actions.ts": {
-    "mtime": 1793583968.0108776,
-    "seen": 1793584234.3447595,
-    "ast_hash": "b846ddf6de4471e31f3788fd5075baba",
+    "mtime": 1794606754.751179,
+    "seen": 1794607013.0718684,
+    "ast_hash": "af62e2c3ea4b464ba6f45c1e048adf59",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/financeiro/page.tsx": {
-    "mtime": 1793583968.0108776,
-    "seen": 1793584234.344762,
-    "ast_hash": "f6c4b2dc327a38cb0789ddc52a290086",
+    "mtime": 1794606812.3365595,
+    "seen": 1794607013.0718708,
+    "ast_hash": "d9731096906068060460b74fce170c73",
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/automaticos.tsx": {
@@ -2034,9 +2034,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/lancamentos.tsx": {
-    "mtime": 1793583968.0148776,
-    "seen": 1793584234.3448882,
-    "ast_hash": "711269c2f926f917828e6daa94ec6ffe",
+    "mtime": 1794606854.6897492,
+    "seen": 1794607013.0721073,
+    "ast_hash": "90415c593dafed72027b34ffae51a8c5",
     "semantic_hash": ""
   },
   "apps/web/lib/financeiro.ts": {
@@ -2520,9 +2520,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794605824.6545622,
-    "seen": 1794605833.2462204,
-    "ast_hash": "0c53741ad1cd773968262187f6c45945",
+    "mtime": 1794606703.2826145,
+    "seen": 1794607013.0725079,
+    "ast_hash": "cb5810059fa1668842e30436c95c1cbd",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/actions.ts": {
@@ -2790,9 +2790,9 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1794605824.6425622,
-    "seen": 1794605833.2464552,
-    "ast_hash": "3ef836f51677d411893221fa9ee4b74b",
+    "mtime": 1794607002.9197094,
+    "seen": 1794607013.0725238,
+    "ast_hash": "af081a8f84c9f6e927482951faf794d5",
     "semantic_hash": ""
   },
   "docs/comercial/README.md": {
@@ -2851,8 +2851,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794605499.6930578,
-    "ast_hash": "",
+    "seen": 1794607013.0717847,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -3129,6 +3129,108 @@
     "mtime": 1794602819.1624477,
     "seen": 1794605499.6939433,
     "ast_hash": "0746753e5c9e17adb7b5d3501df587e4",
+    "semantic_hash": ""
+  },
+  "apps/web/app/seja-motoboy/[token]/actions.ts": {
+    "mtime": 1794606174.7200148,
+    "seen": 1794607013.072007,
+    "ast_hash": "e817d8cf5ff644b691245e6628f55d7f",
+    "semantic_hash": ""
+  },
+  "apps/web/app/seja-motoboy/[token]/form.tsx": {
+    "mtime": 1794606174.7224576,
+    "seen": 1794607013.0720084,
+    "ast_hash": "8fafaebe0eab5cbef60e2aba58f865ab",
+    "semantic_hash": ""
+  },
+  "apps/web/app/seja-motoboy/[token]/page.tsx": {
+    "mtime": 1794606174.7212913,
+    "seen": 1794607013.0720096,
+    "ast_hash": "72ce48da262942db83d661efe000e64e",
+    "semantic_hash": ""
+  },
+  "apps/web/components/equipe/motoboy-link.tsx": {
+    "mtime": 1794606195.4126868,
+    "seen": 1794607013.0720727,
+    "ast_hash": "8d62d3d78640610499481a4f90557c66",
+    "semantic_hash": ""
+  },
+  "apps/web/components/estoque/bipar.tsx": {
+    "mtime": 1794606833.3192928,
+    "seen": 1794607013.0720742,
+    "ast_hash": "7d1424014e242b22e9fac9d589b39c85",
+    "semantic_hash": ""
+  },
+  "apps/web/components/estoque/compras.tsx": {
+    "mtime": 1794605824.6425622,
+    "seen": 1794607013.0720778,
+    "ast_hash": "626719592fbbd1995d9b4a1639f5f678",
+    "semantic_hash": ""
+  },
+  "apps/web/components/financeiro/extrato.tsx": {
+    "mtime": 1794606800.545559,
+    "seen": 1794607013.0721042,
+    "ast_hash": "2151084faa45114416fe714bc664481e",
+    "semantic_hash": ""
+  },
+  "apps/web/components/financeiro/ler-boleto.tsx": {
+    "mtime": 1794606844.0386229,
+    "seen": 1794607013.0721085,
+    "ast_hash": "392b7aac6447a85e91dafb813ce6488f",
+    "semantic_hash": ""
+  },
+  "apps/web/components/resumo/bom-dia.tsx": {
+    "mtime": 1794606910.0358963,
+    "seen": 1794607013.072161,
+    "ast_hash": "b7e845a57150a4e4f22d1b82461bd9a2",
+    "semantic_hash": ""
+  },
+  "packages/core/src/banco.ts": {
+    "mtime": 1794606903.441442,
+    "seen": 1794607013.0722501,
+    "ast_hash": "c21a082ddea405b41907b5a898f56a0a",
+    "semantic_hash": ""
+  },
+  "packages/core/test/banco.test.ts": {
+    "mtime": 1794606903.4420981,
+    "seen": 1794607013.0722892,
+    "ast_hash": "16c444f9c50bc3aabac654abba9cc408",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261113210000_estoque_automatico.sql": {
+    "mtime": 1794605824.6521034,
+    "seen": 1794607013.0724497,
+    "ast_hash": "d5be8a464a6baba0f55c78756aa53c72",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261113220000_motoboy_se_cadastra.sql": {
+    "mtime": 1794605953.2692747,
+    "seen": 1794607013.0724514,
+    "ast_hash": "7e9273011450e4c683ba9c2c98616b75",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261113230000_financeiro_automatico.sql": {
+    "mtime": 1794606663.786612,
+    "seen": 1794607013.0724523,
+    "ast_hash": "03b564583a32c3a29d148531289a3f47",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/estoque-automatico.md": {
+    "mtime": 1794605824.6425622,
+    "seen": 1794607013.0725555,
+    "ast_hash": "c32ae519568e0a2850e2808813ef111c",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/financeiro-automatico.md": {
+    "mtime": 1794607002.9234562,
+    "seen": 1794607013.072558,
+    "ast_hash": "a8f5ae7d0125106200c90f2ffc179d8c",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/motoboy-se-cadastra.md": {
+    "mtime": 1794606270.1075015,
+    "seen": 1794607013.072559,
+    "ast_hash": "b6bcbd5231513b017a3563a75272b71c",
     "semantic_hash": ""
   }
 }
