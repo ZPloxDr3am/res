@@ -881,3 +881,9 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - **Aba Compras.** Lista o que está no mínimo ou abaixo, agrupado pelo último fornecedor, com sugestão de quantidade (voltar a 2× o mínimo, editável), valor estimado pelo último preço e botões **Copiar pedido** e **Enviar no WhatsApp**.
 - **Produto pausado sem insumo (opcional, desligado por padrão).** Com a opção ligada, quando um insumo da ficha técnica zera, o produto fica "esgotado" no cardápio digital e volta sozinho quando o saldo sobe (guarda a etiqueta anterior). Só produtos com ficha; adicionais e sabores não pausam.
 - O cadastro por CNPJ e CEP (preenchimento automático) já existia desde a D-077, no cadastro e em Lojas e equipe → Dados da empresa.
+
+## D-104 — Motoboy se cadastra pelo link da loja (13/11/2026)
+- Em **Lojas e equipe → Equipe**, o dono/gerente vê "🛵 Motoboys se cadastram sozinhos": link e QR da loja, **Copiar**, **Mandar no WhatsApp** e **Trocar link** (o antigo para de funcionar).
+- O motoboy abre `/seja-motoboy/<código>`, preenche nome, WhatsApp, veículo, placa, chave Pix (opcionais os três) e **escolhe usuário e senha**; aceita que a loja guarde os dados para as entregas. A conta de login nasce na hora, mas sem acesso a nada.
+- O gerente **Aprova** (vira membro com a função Motoboy, contando o limite de aparelhos do plano) ou **Recusa** (a conta de login é apagada). Ninguém precisa repassar senha.
+- Freio: no máximo 20 cadastros esperando por loja; o pedido só é gravado pelo servidor (chave de serviço), nunca direto do navegador.

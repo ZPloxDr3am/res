@@ -3,6 +3,7 @@
 Uma seção por semana, escrita na revisão de sexta. Linguagem de cliente.
 
 ## Semana 46 (09–13/11/2026)
+- **Motoboy se cadastra sozinho**: mande o link (ou o QR) da loja; o motoboy preenche os dados, o Pix e escolhe a senha. Você só aprova.
 - **Estoque que trabalha sozinho**: a nota já vem com os itens ligados pelo código de barras, a contagem aceita bipar o produto, a aba Compras monta o pedido por fornecedor para mandar no WhatsApp, e o produto sem insumo sai do cardápio e volta sozinho (opcional).
 - **Notas de compra chegam sozinhas**: conecte o certificado A1 da empresa e o RES busca na SEFAZ, a cada hora, as notas que os fornecedores emitiram para o seu CNPJ. É só conferir e dar entrada no estoque, sem procurar XML no e-mail.
 - **Turbo-Vendas** (adicional; incluso no Completo): automações que trazem o cliente de volta (carrinho abandonado, boas-vindas, pedir avaliação no Google, cliente que passou do costume, cliente sumido), campanhas com cupom e agendamento, fila de WhatsApp com a mensagem pronta e quanto cada mensagem vendeu. Safras de clientes com LTV e perfil do cliente (favoritos, dia e hora, canal).
