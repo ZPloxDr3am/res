@@ -22,6 +22,7 @@ import { Gaveta } from './gaveta';
 import { EditorProduto, ETIQUETAS, resumoGrupo } from './editor-produto';
 import { AplicarGrupo } from './aplicar-grupo';
 import { ImportarCardapio } from './importar-cardapio';
+import { ImportarComIA } from './importar-ia';
 import { AreaFoto } from './foto-produto';
 import { EditorCombo } from './editor-combo';
 
@@ -33,6 +34,7 @@ type Painel =
   | { tipo: 'grupo'; id: string | null }
   | { tipo: 'aplicar'; id: string }
   | { tipo: 'importar' }
+  | { tipo: 'ia' }
   | null;
 
 const TODOS = '__todos';
@@ -82,6 +84,7 @@ export function EditorCardapio({ cardapio, marcas, lojaId, outrasLojas = [] }: {
         </div>
         <div className="linha" style={{ alignItems: 'center', gap: '0.5rem' }}>
         <Link href="/cardapio/organizar" className="botao" title="Arrastar para mudar a ordem e trocar produtos de categoria">⇅ Organizar ordem</Link>
+        <button type="button" onClick={() => setPainel({ tipo: 'ia' })} title="Fotos, PDF ou link do cardápio">✨ Importar com IA</button>
         {outrasLojas.length > 0 && (
           <button type="button" onClick={() => setPainel({ tipo: 'importar' })}>Importar de outra loja</button>
         )}
@@ -337,6 +340,11 @@ export function EditorCardapio({ cardapio, marcas, lojaId, outrasLojas = [] }: {
       {painel?.tipo === 'aplicar' && grupoEditando && (
         <Gaveta titulo={`Onde aparece "${grupoEditando.nome}"`} aoFechar={() => setPainel(null)}>
           <AplicarGrupo grupo={grupoEditando} setores={setores} produtos={produtos} aoFechar={() => setPainel(null)} />
+        </Gaveta>
+      )}
+      {painel?.tipo === 'ia' && (
+        <Gaveta titulo="✨ Importar cardápio com IA" aoFechar={() => setPainel(null)} largura={720}>
+          <ImportarComIA aoFechar={() => setPainel(null)} />
         </Gaveta>
       )}
       {painel?.tipo === 'importar' && (

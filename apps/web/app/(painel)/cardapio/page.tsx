@@ -3,6 +3,7 @@ import { carregarCardapio } from '@/lib/cardapio';
 import { TempoReal } from '@/components/tempo-real';
 import { EditorCardapio } from '@/components/cardapio/editor-cardapio';
 
+export const maxDuration = 60; // cardápio pela IA (D-107)
 export const dynamic = 'force-dynamic';
 
 export default async function Cardapio() {
