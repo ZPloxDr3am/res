@@ -114,14 +114,14 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/estoque/actions.ts": {
-    "mtime": 1794605355.2500145,
-    "seen": 1794605499.693135,
+    "mtime": 1794605824.6385622,
+    "seen": 1794605833.2363057,
     "ast_hash": "9c129ccf7d4f8709bb5cc84d98edfaec",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/estoque/page.tsx": {
-    "mtime": 1794605362.9019344,
-    "seen": 1794605499.6931372,
+    "mtime": 1794605824.6425622,
+    "seen": 1794605833.2363088,
     "ast_hash": "21be1264727b56dd153d5d3cd51d4ea7",
     "semantic_hash": ""
   },
@@ -492,8 +492,8 @@
     "semantic_hash": "9a2a97456f524eae9d1b690bf8c5e09d"
   },
   "apps/web/components/estoque/contagem.tsx": {
-    "mtime": 1794605409.7051196,
-    "seen": 1794605499.6934142,
+    "mtime": 1794605824.6425622,
+    "seen": 1794605833.2394469,
     "ast_hash": "fb1a41b09fd715b5406a2985b10ed69f",
     "semantic_hash": ""
   },
@@ -510,8 +510,8 @@
     "semantic_hash": "342d33d5feed104337837c56a912b2ea"
   },
   "apps/web/components/estoque/importar-nfe.tsx": {
-    "mtime": 1794605355.2504401,
-    "seen": 1794605499.6934197,
+    "mtime": 1794605824.6425622,
+    "seen": 1794605833.2394943,
     "ast_hash": "c78616f26db1cbdc3b49e27270ee1ac4",
     "semantic_hash": ""
   },
@@ -774,8 +774,8 @@
     "semantic_hash": "5cdfd4370fd28d758ecb20acb96116a4"
   },
   "apps/web/lib/estoque.ts": {
-    "mtime": 1794605355.250643,
-    "seen": 1794605499.6935308,
+    "mtime": 1794605824.6425622,
+    "seen": 1794605833.2412333,
     "ast_hash": "565d807663a6a51fbd1316089c6b1fbc",
     "semantic_hash": ""
   },
@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794605495.1971247,
-    "seen": 1794605499.693914,
+    "mtime": 1794605824.6425622,
+    "seen": 1794605833.246478,
     "ast_hash": "88504b4335a9af7933b21ea931e21c04",
     "semantic_hash": ""
   },
@@ -2520,8 +2520,8 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794605319.6405063,
-    "seen": 1794605499.6938946,
+    "mtime": 1794605824.6545622,
+    "seen": 1794605833.2462204,
     "ast_hash": "0c53741ad1cd773968262187f6c45945",
     "semantic_hash": ""
   },
@@ -2790,8 +2790,8 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1794605495.2111273,
-    "seen": 1794605499.6939113,
+    "mtime": 1794605824.6425622,
+    "seen": 1794605833.2464552,
     "ast_hash": "3ef836f51677d411893221fa9ee4b74b",
     "semantic_hash": ""
   },
@@ -2852,7 +2852,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1794605499.6930578,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -3083,22 +3083,10 @@
     "ast_hash": "7523cf716501920b8b72da92cb2a5dbe",
     "semantic_hash": ""
   },
-  "apps/web/components/estoque/bipar.tsx": {
-    "mtime": 1794605409.6926692,
-    "seen": 1794605499.6934097,
-    "ast_hash": "0346cc6e856593f8022de055ca237cbb",
-    "semantic_hash": ""
-  },
   "apps/web/components/estoque/caixa-nfe.tsx": {
     "mtime": 1794602819.1619377,
     "seen": 1794605499.6934114,
     "ast_hash": "d5e1bb47911dadd627b3809c21a7856f",
-    "semantic_hash": ""
-  },
-  "apps/web/components/estoque/compras.tsx": {
-    "mtime": 1794605409.7088246,
-    "seen": 1794605499.6934128,
-    "ast_hash": "626719592fbbd1995d9b4a1639f5f678",
     "semantic_hash": ""
   },
   "apps/web/lib/nfe/certificado.ts": {
@@ -3135,18 +3123,6 @@
     "mtime": 1794602819.245403,
     "seen": 1794605499.6938322,
     "ast_hash": "65c16a01c4d2e416ce6f1658318f1b1a",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261113210000_estoque_automatico.sql": {
-    "mtime": 1794605278.1325672,
-    "seen": 1794605499.6938336,
-    "ast_hash": "d5be8a464a6baba0f55c78756aa53c72",
-    "semantic_hash": ""
-  },
-  "docs/qualidade/roteiros/estoque-automatico.md": {
-    "mtime": 1794605495.2154834,
-    "seen": 1794605499.6939404,
-    "ast_hash": "c32ae519568e0a2850e2808813ef111c",
     "semantic_hash": ""
   },
   "docs/qualidade/roteiros/nfe-caixa-entrada.md": {
