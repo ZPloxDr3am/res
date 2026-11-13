@@ -128,6 +128,8 @@ export type NotaRecebida = {
   recebida_em: string;
 };
 export type SituacaoCaixaNFe = {
+  /** D-106 */
+  loja_id?: string;
   pode_configurar: boolean;
   cnpj_loja: string | null;
   uf_loja: string | null;
@@ -141,6 +143,10 @@ export type SituacaoCaixaNFe = {
     ultimo_status: string | null;
     ultimo_erro: string | null;
     em_dia: boolean;
+    /** quantas outras lojas usam este mesmo certificado (D-106) */
+    compartilhado?: number;
   } | null;
+  /** lojas que a pessoa gere com a mesma raiz de CNPJ (D-106) */
+  outras_lojas?: { id: string; nome: string; cnpj: string; uf: string | null; tem_certificado: boolean; mesmo_certificado: boolean }[];
   notas: NotaRecebida[];
 };

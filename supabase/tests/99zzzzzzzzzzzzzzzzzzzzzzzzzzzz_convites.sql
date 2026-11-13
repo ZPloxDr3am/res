@@ -544,3 +544,43 @@ select case when pg_temp.v('fx_imp1') = '{"novas": 4, "repetidas": 0}' and pg_te
             then 'ok financeiro automático: extrato sem duplicar, baixa com o valor do banco, lançar/ignorar/desfazer, só gestor, Bom dia'
             else 'FALHOU financeiro automático imp=' || coalesce(pg_temp.v('fx_imp1')::text, '-') || '/' || coalesce(pg_temp.v('fx_imp2')::text, '-') || ' pago=' || coalesce(pg_temp.v('fx_pago')::text, '-')
                  || ' novo=' || coalesce(pg_temp.v('fx_novo_ok')::text, '-') || ' desf=' || coalesce(pg_temp.v('fx_desf')::text, '-') || ' bd=' || coalesce(pg_temp.v('fx_bd2')::text, '-') end;
+-- Um certificado para tudo (D-106): filial do mesmo CNPJ usa o certificado da matriz; renovar vale para as duas; desconectar uma não apaga o segredo
+\o /dev/null
+reset role;
+insert into r values ('uc_filial', to_jsonb(gen_random_uuid()));
+insert into r values ('uc_outra', to_jsonb(gen_random_uuid()));
+insert into public.lojas select (jsonb_populate_record(null::public.lojas, to_jsonb(l) || jsonb_build_object('id', pg_temp.v('uc_filial') #>> '{}', 'slug', 'burger-filial-uc', 'nome', 'Burger Filial', 'cnpj', '11222333000352', 'conta_id', null))).*
+  from public.lojas l where l.id = (pg_temp.v('loja') #>> '{}')::uuid;
+insert into public.lojas select (jsonb_populate_record(null::public.lojas, to_jsonb(l) || jsonb_build_object('id', pg_temp.v('uc_outra') #>> '{}', 'slug', 'outro-cnpj-uc', 'nome', 'Outro CNPJ', 'cnpj', '99888777000166', 'conta_id', null))).*
+  from public.lojas l where l.id = (pg_temp.v('loja') #>> '{}')::uuid;
+insert into public.membros (loja_id, user_id, papel, ativo, nome) values
+  ((pg_temp.v('uc_filial') #>> '{}')::uuid, '00000000-0000-0000-0000-0000000005a2', 'dono', true, 'Ana'),
+  ((pg_temp.v('uc_outra') #>> '{}')::uuid, '00000000-0000-0000-0000-0000000005a2', 'dono', true, 'Ana')
+on conflict do nothing;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select public.nfe_auto_salvar_certificado((pg_temp.v('loja') #>> '{}')::uuid, repeat('P', 300), 'senha-1', '11222333000270', 'BURGER TESTE LTDA', now() + interval '1 year');
+insert into r values ('uc_sit1', public.nfe_auto_situacao((pg_temp.v('loja') #>> '{}')::uuid));
+select from pg_temp.esperar_erro(format('select public.nfe_auto_usar_certificado(%L, array[%L]::uuid[])', pg_temp.v('loja') #>> '{}', pg_temp.v('uc_outra') #>> '{}'), 'não é do mesmo CNPJ');
+insert into r values ('uc_n', to_jsonb(public.nfe_auto_usar_certificado((pg_temp.v('loja') #>> '{}')::uuid, array[(pg_temp.v('uc_filial') #>> '{}')::uuid])));
+select public.nfe_auto_salvar_certificado((pg_temp.v('loja') #>> '{}')::uuid, repeat('Q', 300), 'senha-nova', '11222333000270', 'BURGER TESTE LTDA', now() + interval '2 years');
+insert into r values ('uc_sit2', public.nfe_auto_situacao((pg_temp.v('uc_filial') #>> '{}')::uuid));
+select public.nfe_auto_remover((pg_temp.v('loja') #>> '{}')::uuid);
+reset role;
+insert into r values ('uc_cred', public.nfe_auto_credenciais((pg_temp.v('uc_filial') #>> '{}')::uuid));
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a4');
+select from pg_temp.esperar_erro(format('select public.nfe_auto_usar_certificado(%L, array[%L]::uuid[])', pg_temp.v('uc_filial') #>> '{}', pg_temp.v('loja') #>> '{}'), 'Só o dono');
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select public.nfe_auto_remover((pg_temp.v('uc_filial') #>> '{}')::uuid);
+reset role;
+insert into r values ('uc_segredos', to_jsonb((select count(*) from private.nfe_segredos)));
+\o
+select case when pg_temp.v('uc_sit1')::text like '%"nome": "Burger Filial"%' and pg_temp.v('uc_sit1')::text not like '%Outro CNPJ%'
+             and pg_temp.v('uc_n') = '1'
+             and (pg_temp.v('uc_sit2') #>> '{certificado,validade}')::timestamptz > now() + interval '23 months'
+             and (pg_temp.v('uc_sit2') #>> '{certificado,cnpj}') = '11222333000352' and (pg_temp.v('uc_sit2') #>> '{certificado,compartilhado}')::int = 1
+             and pg_temp.v('uc_cred') ->> 'pfx' = repeat('Q', 300) and pg_temp.v('uc_cred') ->> 'cnpj' = '11222333000352'
+             and pg_temp.v('uc_segredos') = '0'
+            then 'ok um certificado para tudo: filial do mesmo CNPJ usa o da matriz, renovação vale nas duas, desconectar não apaga o que outra usa'
+            else 'FALHOU um certificado ' || coalesce(pg_temp.v('uc_sit1') -> 'outras_lojas', 'null')::text || ' sit2=' || coalesce(pg_temp.v('uc_sit2') -> 'certificado', 'null')::text
+                 || ' cred=' || coalesce(pg_temp.v('uc_cred') ->> 'cnpj', '-') || ' seg=' || coalesce(pg_temp.v('uc_segredos')::text, '-') end;

@@ -1,7 +1,7 @@
 'use client';
 import { useRef, useState, useTransition } from 'react';
 import { formatarReais } from '@res/core';
-import { nfeBuscarAgora, nfeIgnorarRecebida, nfeRemoverCertificado, nfeSalvarCertificado, nfeXmlRecebida } from '@/app/(painel)/estoque/actions';
+import { nfeBuscarAgora, nfeIgnorarRecebida, nfeRemoverCertificado, nfeSalvarCertificado, nfeUsarCertificado, nfeXmlRecebida } from '@/app/(painel)/estoque/actions';
 import { salvando } from '@/components/tempo-real';
 import type { NotaRecebida, SituacaoCaixaNFe } from '@/lib/estoque';
 
@@ -30,6 +30,14 @@ export function CaixaEntradaNFe({ caixa, abrindo, darEntrada }: { caixa: Situaca
   const [verTodas, setVerTodas] = useState(false);
   const [pendente, iniciar] = useTransition();
   const c = caixa.certificado;
+  const outras = caixa.outras_lojas ?? [];
+  const usar = (origem: string, lojas: string[]) =>
+    iniciar(async () => {
+      setMsg(null);
+      const r = await salvando(nfeUsarCertificado(origem, lojas));
+      setMsg(r.ok ? { ok: true, t: r.mensagem } : { ok: false, t: r.erro });
+      if (r.ok) setTrocar(false);
+    });
 
   if (!c || trocar) {
     return (
@@ -51,6 +59,19 @@ export function CaixaEntradaNFe({ caixa, abrindo, darEntrada }: { caixa: Situaca
         ) : !caixa.uf_loja ? (
           <p className="aviso" style={{ margin: 0 }}>Antes, complete o endereço da loja (com a UF) nas configurações da loja.</p>
         ) : (
+          <>
+          {!c && outras.some((o) => o.tem_certificado) && (
+            <div className="boleto-lido">
+              <strong>🔑 Um certificado para tudo</strong>
+              <span>
+                A loja <b>{outras.find((o) => o.tem_certificado)!.nome}</b> já tem o certificado do mesmo CNPJ (matriz e filiais usam o mesmo e-CNPJ). Não precisa enviar o arquivo de
+                novo.
+              </span>
+              <button type="button" className="botao-primario" style={{ justifySelf: 'start' }} disabled={pendente} onClick={() => usar(outras.find((o) => o.tem_certificado)!.id, [caixa.loja_id ?? ''])}>
+                Usar o certificado da {outras.find((o) => o.tem_certificado)!.nome}
+              </button>
+            </div>
+          )}
           <FormCertificado
             cnpjLoja={caixa.cnpj_loja}
             pendente={pendente}
@@ -64,6 +85,7 @@ export function CaixaEntradaNFe({ caixa, abrindo, darEntrada }: { caixa: Situaca
             }
             cancelar={c ? () => setTrocar(false) : undefined}
           />
+          </>
         )}
         {msg && <p className={msg.ok ? 'aviso' : 'erro'} role="status" style={{ margin: 0 }}>{msg.t}</p>}
       </section>
@@ -82,7 +104,7 @@ export function CaixaEntradaNFe({ caixa, abrindo, darEntrada }: { caixa: Situaca
         <div className="grade" style={{ gap: '0.15rem' }}>
           <h2 style={{ margin: 0 }}>📥 Notas recebidas da SEFAZ{prontas ? ` · ${prontas} pronta(s)` : ''}</h2>
           <span className="dica">
-            {c.titular ?? 'Certificado'} · CNPJ {cnpjTexto(c.cnpj)} · válido até {data(c.validade)} · última busca {hora(c.ultima_consulta)}
+            {c.titular ?? 'Certificado'}{c.compartilhado ? ` · usado também em ${c.compartilhado} loja${c.compartilhado > 1 ? 's' : ''}` : ''} · CNPJ {cnpjTexto(c.cnpj)} · válido até {data(c.validade)} · última busca {hora(c.ultima_consulta)}
             {!podeBuscar && ` · próxima a partir de ${hora(c.proxima_consulta)}`}
           </span>
         </div>
@@ -124,6 +146,15 @@ export function CaixaEntradaNFe({ caixa, abrindo, darEntrada }: { caixa: Situaca
       </div>
       {vence < 30 * DIA && <p className={vence < 0 ? 'erro' : 'aviso'} style={{ margin: 0 }}>{vence < 0 ? 'O certificado venceu: envie o novo em "Trocar certificado".' : `O certificado vence em ${Math.ceil(vence / DIA)} dia(s). Renove e envie o novo em "Trocar certificado".`}</p>}
       {c.ultimo_erro && <p className="erro" style={{ margin: 0 }}>Última busca: {c.ultimo_erro}</p>}
+      {caixa.pode_configurar && outras.some((o) => !o.mesmo_certificado) && (
+        <div className="boleto-lido">
+          <strong>🔑 Este certificado também serve para {outras.filter((o) => !o.mesmo_certificado).map((o) => o.nome).join(', ')}</strong>
+          <span className="dica">Mesmo CNPJ (matriz e filiais). Ligando aqui, as notas de cada loja chegam sozinhas, e renovar o certificado numa loja renova em todas.</span>
+          <button type="button" style={{ justifySelf: 'start' }} disabled={pendente} onClick={() => usar(caixa.loja_id ?? '', outras.filter((o) => !o.mesmo_certificado).map((o) => o.id))}>
+            Usar {outras.filter((o) => !o.mesmo_certificado).length > 1 ? `nas ${outras.filter((o) => !o.mesmo_certificado).length} lojas` : 'lá também'}
+          </button>
+        </div>
+      )}
       {msg && <p className={msg.ok ? 'aviso' : 'erro'} role="status" style={{ margin: 0 }}>{msg.t}</p>}
 
       {lista.length === 0 ? (

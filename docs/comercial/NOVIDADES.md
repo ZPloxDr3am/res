@@ -3,6 +3,7 @@
 Uma seção por semana, escrita na revisão de sexta. Linguagem de cliente.
 
 ## Semana 46 (09–13/11/2026)
+- **Um certificado para todas as lojas**: matriz e filiais do mesmo CNPJ usam o mesmo certificado A1 com um clique; renovou numa, renovou em todas.
 - **Financeiro que se confere sozinho**: suba o extrato do banco (OFX) e o RES diz qual conta cada pagamento quitou — um clique confirma tudo. Boleto vira conta a pagar colando ou bipando o código (valor e vencimento já preenchidos). E o **Bom dia** no Resumo mostra como foi ontem e o que vence hoje, com botão para mandar no seu WhatsApp.
 - **Motoboy se cadastra sozinho**: mande o link (ou o QR) da loja; o motoboy preenche os dados, o Pix e escolhe a senha. Você só aprova.
 - **Estoque que trabalha sozinho**: a nota já vem com os itens ligados pelo código de barras, a contagem aceita bipar o produto, a aba Compras monta o pedido por fornecedor para mandar no WhatsApp, e o produto sem insumo sai do cardápio e volta sozinho (opcional).

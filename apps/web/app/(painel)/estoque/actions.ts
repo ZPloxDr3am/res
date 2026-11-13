@@ -164,6 +164,22 @@ export async function nfeSalvarCertificado(form: FormData): Promise<R<{ mensagem
   return { ok: true, mensagem: `Certificado de ${cert.titular} salvo (válido até ${cert.validoAte.toLocaleDateString('pt-BR')}). Primeira busca: ${r.mensagem}` };
 }
 
+/** Um certificado para tudo (D-106): usa o certificado de uma loja nas outras do mesmo CNPJ (sem enviar o arquivo de novo). */
+export async function nfeUsarCertificado(origem: string, lojas: string[]): Promise<R<{ mensagem: string }>> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('nfe_auto_usar_certificado', { p_origem: origem, p_lojas: lojas });
+  if (error) return { ok: false, erro: error.message };
+  let busca = '';
+  if (lojas.includes(ctx.lojaId)) {
+    const { sincronizarLoja } = await import('@/lib/nfe/sefaz');
+    busca = ` Primeira busca: ${(await sincronizarLoja(ctx.lojaId)).mensagem}`;
+  }
+  revalidatePath('/estoque');
+  const n = Number(data ?? 0);
+  return { ok: true, mensagem: `Certificado ligado em ${n} loja${n === 1 ? '' : 's'}. As notas começam a chegar na próxima busca automática.${busca}` };
+}
+
 export async function nfeRemoverCertificado(): Promise<R> {
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
