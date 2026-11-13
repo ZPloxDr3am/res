@@ -66,14 +66,14 @@
     "semantic_hash": "7c8c54427dc401e946d8e164c3538a21"
   },
   "apps/web/app/(painel)/cardapio/actions.ts": {
-    "mtime": 1794608947.603434,
-    "seen": 1794609116.6687925,
+    "mtime": 1794610291.9913938,
+    "seen": 1794610301.006986,
     "ast_hash": "5eecd62e597ef448b78e84c1bf1b9e5f",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/cardapio/page.tsx": {
-    "mtime": 1794609021.8356566,
-    "seen": 1794609116.6687975,
+    "mtime": 1794610291.995394,
+    "seen": 1794610301.0070174,
     "ast_hash": "221fb19edbd519357ba7d5a785ea5fc6",
     "semantic_hash": ""
   },
@@ -114,8 +114,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/estoque/actions.ts": {
-    "mtime": 1794608959.1901727,
-    "seen": 1794609116.668822,
+    "mtime": 1794610291.995394,
+    "seen": 1794610301.0072324,
     "ast_hash": "5ed73c6b6f9e442788f4ab9bca754af0",
     "semantic_hash": ""
   },
@@ -426,8 +426,8 @@
     "semantic_hash": "9fb3406c9aab789d0f557eadc2cf95bf"
   },
   "apps/web/components/cardapio/editor-cardapio.tsx": {
-    "mtime": 1794609021.827313,
-    "seen": 1794609116.6691408,
+    "mtime": 1794610291.995394,
+    "seen": 1794610301.0099921,
     "ast_hash": "e07b672161aac7c1e22d0c9d85e3216e",
     "semantic_hash": ""
   },
@@ -504,8 +504,8 @@
     "semantic_hash": "6c6a6e3a12aa2e4374ef8562486e880f"
   },
   "apps/web/components/estoque/fichas.tsx": {
-    "mtime": 1794608959.1907887,
-    "seen": 1794609116.6692233,
+    "mtime": 1794610291.995394,
+    "seen": 1794610301.0106072,
     "ast_hash": "59ed48bb75de904426013517d60a0891",
     "semantic_hash": ""
   },
@@ -882,8 +882,8 @@
     "semantic_hash": "8ccf37b0657b4213f1c10db5c78e039a"
   },
   "apps/web/next.config.mjs": {
-    "mtime": 1794609021.825891,
-    "seen": 1794609116.6694827,
+    "mtime": 1794610291.995394,
+    "seen": 1794610301.0131009,
     "ast_hash": "fdb64a66f254613f3d74816603b54bc1",
     "semantic_hash": ""
   },
@@ -1026,8 +1026,8 @@
     "semantic_hash": "ca7ba0b48f2b641149acdba9eb74387d"
   },
   "packages/core/src/index.ts": {
-    "mtime": 1794608861.351429,
-    "seen": 1794609116.6696103,
+    "mtime": 1794610292.0073938,
+    "seen": 1794610301.013767,
     "ast_hash": "ad7e3dbaeeda78a3ede78196f81f62b2",
     "semantic_hash": ""
   },
@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794609111.731444,
-    "seen": 1794609116.6700985,
+    "mtime": 1794610291.995394,
+    "seen": 1794610301.0177758,
     "ast_hash": "98849bc6d6e8e29f5a3197dd443e7b3b",
     "semantic_hash": ""
   },
@@ -2520,8 +2520,8 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794608902.5634315,
-    "seen": 1794609116.6700697,
+    "mtime": 1794610292.0073938,
+    "seen": 1794610301.0175333,
     "ast_hash": "7574c1235021fb322cba16c609904dec",
     "semantic_hash": ""
   },
@@ -2790,8 +2790,8 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1794609111.7508662,
-    "seen": 1794609116.670094,
+    "mtime": 1794610291.995394,
+    "seen": 1794610301.017753,
     "ast_hash": "5851dc9b4a5557ed50a91ba7e8d2ac3e",
     "semantic_hash": ""
   },
@@ -2852,7 +2852,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1794609116.6687248,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -3233,46 +3233,10 @@
     "ast_hash": "b6bcbd5231513b017a3563a75272b71c",
     "semantic_hash": ""
   },
-  "apps/web/components/cardapio/importar-ia.tsx": {
-    "mtime": 1794609021.8264697,
-    "seen": 1794609116.6691568,
-    "ast_hash": "7e9758949d24b98a9466c5a0404eb451",
-    "semantic_hash": ""
-  },
-  "apps/web/lib/ia.ts": {
-    "mtime": 1794608886.9914305,
-    "seen": 1794609116.669428,
-    "ast_hash": "2dd3d97baf19034db8db82f7fa4cc138",
-    "semantic_hash": ""
-  },
-  "packages/core/src/ia.ts": {
-    "mtime": 1794608847.9914281,
-    "seen": 1794609116.6696045,
-    "ast_hash": "4f6596bb0f8750a655d89f9b64d191f9",
-    "semantic_hash": ""
-  },
-  "packages/core/test/ia.test.ts": {
-    "mtime": 1794608859.391429,
-    "seen": 1794609116.6696837,
-    "ast_hash": "00a64036bfe72e97be4f182302b9d1f3",
-    "semantic_hash": ""
-  },
   "supabase/migrations/20261113240000_um_certificado.sql": {
     "mtime": 1794608773.5714238,
     "seen": 1794609116.6699758,
     "ast_hash": "bbfa67ba708876a7010506590535a202",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261113250000_ia_cardapio_ficha.sql": {
-    "mtime": 1794608895.987431,
-    "seen": 1794609116.669978,
-    "ast_hash": "a06fabd3c150eb933fe4a8e5a63b4a94",
-    "semantic_hash": ""
-  },
-  "docs/qualidade/roteiros/ia-cardapio-ficha.md": {
-    "mtime": 1794609111.7547352,
-    "seen": 1794609116.670148,
-    "ast_hash": "f763909c47ae42bcf6b1066f00ead527",
     "semantic_hash": ""
   }
 }
