@@ -114,15 +114,15 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/estoque/actions.ts": {
-    "mtime": 1794610291.995394,
-    "seen": 1794610301.0072324,
-    "ast_hash": "5ed73c6b6f9e442788f4ab9bca754af0",
+    "mtime": 1794610871.5092185,
+    "seen": 1794611016.232159,
+    "ast_hash": "5b75eb3dd6261f035c232255c3afe041",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/estoque/page.tsx": {
-    "mtime": 1794605824.6425622,
-    "seen": 1794605833.2363088,
-    "ast_hash": "21be1264727b56dd153d5d3cd51d4ea7",
+    "mtime": 1794610871.5074284,
+    "seen": 1794611016.2321603,
+    "ast_hash": "8e6483c0225d5e8a09f2537d9698a078",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/fidelidade/actions.ts": {
@@ -876,8 +876,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1794609082.279442,
-    "seen": 1794609116.6694806,
+    "mtime": 1794610989.6794353,
+    "seen": 1794611016.2325668,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": "8ccf37b0657b4213f1c10db5c78e039a"
   },
@@ -1026,9 +1026,9 @@
     "semantic_hash": "ca7ba0b48f2b641149acdba9eb74387d"
   },
   "packages/core/src/index.ts": {
-    "mtime": 1794610292.0073938,
-    "seen": 1794610301.013767,
-    "ast_hash": "ad7e3dbaeeda78a3ede78196f81f62b2",
+    "mtime": 1794610802.8474243,
+    "seen": 1794611016.2326615,
+    "ast_hash": "7c5258792dfabbbbb1722bc6b4de7d14",
     "semantic_hash": ""
   },
   "packages/core/src/pedido.ts": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794610291.995394,
-    "seen": 1794610301.0177758,
-    "ast_hash": "98849bc6d6e8e29f5a3197dd443e7b3b",
+    "mtime": 1794611011.4554367,
+    "seen": 1794611016.2329419,
+    "ast_hash": "c1adbfc43ad21c07753ac4fe6c452707",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2520,9 +2520,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794610292.0073938,
-    "seen": 1794610301.0175333,
-    "ast_hash": "7574c1235021fb322cba16c609904dec",
+    "mtime": 1794610819.4794252,
+    "seen": 1794611016.2329078,
+    "ast_hash": "ef928513be76f37c1b542f2a44306c9c",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/actions.ts": {
@@ -2790,9 +2790,9 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1794610291.995394,
-    "seen": 1794610301.017753,
-    "ast_hash": "5851dc9b4a5557ed50a91ba7e8d2ac3e",
+    "mtime": 1794611011.4720757,
+    "seen": 1794611016.2329345,
+    "ast_hash": "b04c675d515449b6bb5a066f51701add",
     "semantic_hash": ""
   },
   "docs/comercial/README.md": {
@@ -2851,8 +2851,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794609116.6687248,
-    "ast_hash": "",
+    "seen": 1794611016.2320979,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -3192,15 +3192,15 @@
     "semantic_hash": ""
   },
   "apps/web/components/resumo/bom-dia.tsx": {
-    "mtime": 1794607865.1534402,
-    "seen": 1794608647.528701,
-    "ast_hash": "b7e845a57150a4e4f22d1b82461bd9a2",
+    "mtime": 1794610901.8634498,
+    "seen": 1794611016.2324917,
+    "ast_hash": "d80d8d9bb026dbc46f5642fb61a13dc8",
     "semantic_hash": ""
   },
   "packages/core/src/banco.ts": {
-    "mtime": 1794607865.1626718,
-    "seen": 1794608647.5288255,
-    "ast_hash": "c21a082ddea405b41907b5a898f56a0a",
+    "mtime": 1794610901.862596,
+    "seen": 1794611016.2326396,
+    "ast_hash": "e759940e2547f87082ae941307abb297",
     "semantic_hash": ""
   },
   "packages/core/test/banco.test.ts": {
@@ -3237,6 +3237,72 @@
     "mtime": 1794608773.5714238,
     "seen": 1794609116.6699758,
     "ast_hash": "bbfa67ba708876a7010506590535a202",
+    "semantic_hash": ""
+  },
+  "apps/web/components/cardapio/importar-ia.tsx": {
+    "mtime": 1794610291.995394,
+    "seen": 1794611016.2323396,
+    "ast_hash": "7e9758949d24b98a9466c5a0404eb451",
+    "semantic_hash": ""
+  },
+  "apps/web/components/estoque/margens.tsx": {
+    "mtime": 1794610860.6874278,
+    "seen": 1794611016.2324088,
+    "ast_hash": "41aa3340fc1f74ddf7b893ef5ecdb9ae",
+    "semantic_hash": ""
+  },
+  "apps/web/lib/ia.ts": {
+    "mtime": 1794610291.995394,
+    "seen": 1794611016.232529,
+    "ast_hash": "2dd3d97baf19034db8db82f7fa4cc138",
+    "semantic_hash": ""
+  },
+  "packages/core/src/ia.ts": {
+    "mtime": 1794610292.0073938,
+    "seen": 1794611016.2326586,
+    "ast_hash": "4f6596bb0f8750a655d89f9b64d191f9",
+    "semantic_hash": ""
+  },
+  "packages/core/src/margem.ts": {
+    "mtime": 1794610792.9754236,
+    "seen": 1794611016.2326627,
+    "ast_hash": "1149a0d433ec02b9b762b62418951756",
+    "semantic_hash": ""
+  },
+  "packages/core/test/ia.test.ts": {
+    "mtime": 1794610292.0073938,
+    "seen": 1794611016.2327056,
+    "ast_hash": "00a64036bfe72e97be4f182302b9d1f3",
+    "semantic_hash": ""
+  },
+  "packages/core/test/margem.test.ts": {
+    "mtime": 1794610800.771424,
+    "seen": 1794611016.2327068,
+    "ast_hash": "64b23a20074e7c0eb938e704bd6c364b",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261113250000_ia_cardapio_ficha.sql": {
+    "mtime": 1794610292.0073938,
+    "seen": 1794611016.2328527,
+    "ast_hash": "a06fabd3c150eb933fe4a8e5a63b4a94",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261113260000_margem_cardapio.sql": {
+    "mtime": 1794610901.85943,
+    "seen": 1794611016.2328541,
+    "ast_hash": "7a6b69262f44f4721213e2710ec88e8f",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/ia-cardapio-ficha.md": {
+    "mtime": 1794610291.995394,
+    "seen": 1794611016.2329752,
+    "ast_hash": "f763909c47ae42bcf6b1066f00ead527",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/margem-cardapio.md": {
+    "mtime": 1794611011.475302,
+    "seen": 1794611016.2329772,
+    "ast_hash": "374ea3079ca92f6e11816f13a5a8c140",
     "semantic_hash": ""
   }
 }
