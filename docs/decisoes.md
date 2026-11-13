@@ -866,3 +866,11 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - **Cardápio digital**: com telefones diferentes, um script fez 100 pedidos falsos em 2 s. Freio por loja: 25 esperando aceite (30 min) ou 60 em 10 min.
 - **Carrinho abandonado**: no máximo 60 telefones novos por loja a cada 10 min (robô enchendo a fila / a conta da Meta).
 - **Gestão**: faturamento de 30 dias somado no banco (`faturamento_lojas`); antes a API cortava em 1.000 pedidos e o total saía menor.
+
+## D-102 — Caixa de entrada de NF-e pela SEFAZ (13/11/2026)
+- Em **Estoque → Entrada por NF-e**, o dono ou gerente conecta o **certificado A1 da empresa (e-CNPJ)**. Daí em diante, o RES busca sozinho, pela **Distribuição de DF-e do Ambiente Nacional**, as notas emitidas contra o CNPJ da loja (aceita matriz/filial com a mesma raiz), e mostra numa lista: fornecedor, emissão, valor e situação.
+- Para liberar o XML completo, o RES registra a **Ciência da Operação** (evento 210210, assinado com o certificado) nas notas dos últimos 30 dias; o XML chega numa próxima busca (até ~1 hora). Com o XML, **Dar entrada** abre a mesma conferência da importação por arquivo. Ciência não confirma nem recusa a compra.
+- Respeita a regra da SEFAZ contra consumo indevido (NT 2014.002): sem novidade (137) ou fila em dia, nova busca só depois de 1 hora; o agendador roda a cada 15 min e só chama as lojas que já podem. "Buscar agora" segue a mesma regra e avisa o horário.
+- Nota cancelada pelo fornecedor aparece como cancelada; nota que já entrou no estoque (por aqui ou pelo arquivo) sai da lista de pendentes; dá para ignorar uma nota.
+- **Segurança:** certificado e senha ficam no **Vault** do Supabase (criptografados), lidos só pela função de serviço que o servidor usa para falar com a SEFAZ; nenhuma tela recebe esses dados. O servidor abre o .pfx (inclusive os antigos RC2/3DES) e confere CNPJ e validade antes de salvar. A conexão com a SEFAZ confere o certificado do servidor pela cadeia da ICP-Brasil (`lib/nfe/icp-brasil.ts`).
+- Código: `packages/core/src/dfe.ts` (mensagens e leitura, testado), `apps/web/lib/nfe/` (certificado, assinatura, cliente da SEFAZ), `/api/nfe/sincronizar` (agendador), migração `20261113190000_nfe_caixa_entrada.sql`.

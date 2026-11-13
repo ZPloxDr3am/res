@@ -3,7 +3,8 @@ import { useRef, useState, useTransition } from 'react';
 import { entradaDoItem, ErroNFe, formatarReais, lerNFe, palpiteUnidade, sugerirInsumo, UNIDADES_ESTOQUE, type NFe, type UnidadeEstoque } from '@res/core';
 import { importarNFe, vinculosFornecedor, type ItemImportar } from '@/app/(painel)/estoque/actions';
 import { salvando } from '@/components/tempo-real';
-import { quantidadeTexto, type Insumo, type NotaImportada } from '@/lib/estoque';
+import { quantidadeTexto, type Insumo, type NotaImportada, type SituacaoCaixaNFe } from '@/lib/estoque';
+import { CaixaEntradaNFe } from '@/components/estoque/caixa-nfe';
 
 type Linha = {
   acao: 'vincular' | 'novo' | 'ignorar';
@@ -19,7 +20,7 @@ const dataTexto = (iso: string | null) => (iso ? new Date(iso).toLocaleDateStrin
 const lerFator = (t: string) => Number(t.replace(',', '.'));
 
 /** Entrada por NF-e (D-036): arraste o XML, confira o vínculo de cada item e dê entrada no estoque. */
-export function ImportarNFe({ insumos, notas }: { insumos: Insumo[]; notas: NotaImportada[] }) {
+export function ImportarNFe({ insumos, notas, caixa = null }: { insumos: Insumo[]; notas: NotaImportada[]; caixa?: SituacaoCaixaNFe | null }) {
   const ref = useRef<HTMLInputElement>(null);
   const [sobre, setSobre] = useState(false);
   const [nfe, setNfe] = useState<NFe | null>(null);
@@ -29,13 +30,14 @@ export function ImportarNFe({ insumos, notas }: { insumos: Insumo[]; notas: Nota
   const [lendo, iniciarLeitura] = useTransition();
   const [pendente, iniciar] = useTransition();
 
-  const abrir = (arquivo: File | undefined) =>
-    arquivo &&
+  const abrir = (arquivo: File | undefined) => arquivo && abrirXml(() => arquivo.text());
+  /** Abre um XML vindo do arquivo ou da caixa de entrada automática (D-102). */
+  const abrirXml = (carregar: () => Promise<string>) =>
     iniciarLeitura(async () => {
       setErro(null);
       setOk(null);
       try {
-        const n = lerNFe(await arquivo.text());
+        const n = lerNFe(await carregar());
         if (notas.some((x) => x.chave === n.chave)) return setErro(`A NF ${n.numero} de ${n.emitente.nome} já foi importada.`);
         const vinc = await vinculosFornecedor(n.emitente.cnpj);
         setNfe(n);
@@ -53,7 +55,7 @@ export function ImportarNFe({ insumos, notas }: { insumos: Insumo[]; notas: Nota
         );
       } catch (e) {
         setNfe(null);
-        setErro(e instanceof ErroNFe ? e.message : 'Não consegui ler o arquivo. Use o XML da NF-e (o arquivo .xml que o fornecedor manda).');
+        setErro(e instanceof ErroNFe ? e.message : e instanceof Error && e.name === 'ErroCaixa' ? e.message : 'Não consegui ler o arquivo. Use o XML da NF-e (o arquivo .xml que o fornecedor manda).');
       } finally {
         if (ref.current) ref.current.value = '';
       }
@@ -92,6 +94,7 @@ export function ImportarNFe({ insumos, notas }: { insumos: Insumo[]; notas: Nota
 
   return (
     <div className="grade">
+      {!nfe && caixa && <CaixaEntradaNFe caixa={caixa} abrindo={lendo} darEntrada={abrirXml} />}
       {!nfe && (
         <button
           type="button"

@@ -107,3 +107,36 @@ export const nomeMes = (ym: string) => {
   const t = new Date(Date.UTC(a, m - 1, 15)).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric', timeZone: 'UTC' });
   return t.charAt(0).toUpperCase() + t.slice(1);
 };
+
+/** Caixa de entrada de NF-e (D-102): o que a SEFAZ mandou para o CNPJ da loja. */
+export type NotaRecebida = {
+  id: string;
+  chave: string;
+  emitente_cnpj: string | null;
+  emitente_nome: string | null;
+  emissao: string | null;
+  valor_total: number | null;
+  situacao: 'autorizada' | 'denegada' | 'cancelada';
+  status: 'resumo' | 'ciencia' | 'disponivel' | 'importada' | 'ignorada';
+  tem_xml: boolean;
+  ciencia_em: string | null;
+  erro: string | null;
+  recebida_em: string;
+};
+export type SituacaoCaixaNFe = {
+  pode_configurar: boolean;
+  cnpj_loja: string | null;
+  uf_loja: string | null;
+  certificado: {
+    cnpj: string;
+    cnpj_certificado: string;
+    titular: string | null;
+    validade: string;
+    ultima_consulta: string | null;
+    proxima_consulta: string;
+    ultimo_status: string | null;
+    ultimo_erro: string | null;
+    em_dia: boolean;
+  } | null;
+  notas: NotaRecebida[];
+};
