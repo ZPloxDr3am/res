@@ -618,3 +618,24 @@ select case when (pg_temp.v('mg') ->> 'alvo')::numeric = 30
                     from jsonb_array_elements(pg_temp.v('mg') -> 'insumos_subiram') x where x ->> 'nome' = 'Pão auto')
             then 'ok margem: custo atual pelas fichas, insumo que subiu com os itens que usam, CMV alvo só gestor'
             else 'FALHOU margem ' || coalesce(pg_temp.v('mg')::text, '-') end;
+-- Maquininha e perdas (D-109): crédito de maquininha reconhecido no extrato; perda de produto pronto pela ficha
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('mq', public.conferencia_maquininha((pg_temp.v('loja') #>> '{}')::uuid, 3));
+insert into r values ('pp_n', to_jsonb(public.perda_produto((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('s_xis') #>> '{}')::uuid, 2, 'caiu no chão')));
+select from pg_temp.esperar_erro(format('select public.perda_produto(%L, %L, 1, %L)', pg_temp.v('loja') #>> '{}', pg_temp.v('s_refri') #>> '{}', 'venceu'), 'não tem ficha');
+select from pg_temp.esperar_erro(format('select public.perda_produto(%L, %L, 1, %L)', pg_temp.v('loja') #>> '{}', pg_temp.v('s_xis') #>> '{}', ''), 'motivo');
+insert into r values ('pp', public.perdas_periodo((pg_temp.v('loja') #>> '{}')::uuid, 30));
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a4');
+select from pg_temp.esperar_erro(format('select public.conferencia_maquininha(%L, 3)', pg_temp.v('loja') #>> '{}'), 'Financeiro');
+reset role;
+\o
+select case when pg_temp.v('mq') ->> 'ate' is not null
+             and (select sum((x ->> 'recebido')::numeric) from jsonb_array_elements(pg_temp.v('mq') -> 'meses') x) >= 84530
+             and pg_temp.v('mq')::text like '%REDE CARTOES%' and pg_temp.v('mq')::text not like '%TARIFA%'
+             and pg_temp.v('pp_n') = '1'
+             and (select (x ->> 'quantidade')::numeric = 2 and x ->> 'motivo' = 'Xis KDS × 2 — caiu no chão'
+                    from jsonb_array_elements(pg_temp.v('pp') -> 'perdas') x where x ->> 'insumo' = 'Pão auto' limit 1)
+            then 'ok maquininha e perdas: crédito da maquininha no extrato, perda de produto pela ficha, só gestor no financeiro'
+            else 'FALHOU maquininha/perdas mq=' || coalesce(pg_temp.v('mq')::text, '-') || ' pp=' || coalesce(pg_temp.v('pp')::text, '-') end;

@@ -3,6 +3,7 @@
 Uma seção por semana, escrita na revisão de sexta. Linguagem de cliente.
 
 ## Semana 46 (09–13/11/2026)
+- **Conferência da maquininha**: com o extrato importado, o RES compara o que devia cair (vendas menos as suas taxas) com o que caiu, e mostra a taxa real que a operadora está cobrando. E as **perdas** ganham motivo, resumo e a perda do produto pronto (a pizza que caiu) em dois cliques.
 - **Margem e engenharia de cardápio**: quando um insumo sobe, o RES mostra quais pratos passaram do seu CMV alvo e o preço para voltar à margem. E separa o cardápio em Estrelas, Burros de carga, Quebra-cabeças e Cães, com o que fazer em cada um.
 - **Inteligência artificial**: mande a foto, o PDF ou o link do seu cardápio e a IA monta categorias, produtos e preços para você revisar e criar em um clique. E no estoque, **✨ Sugerir com IA** monta a ficha técnica com os seus insumos.
 - **Um certificado para todas as lojas**: matriz e filiais do mesmo CNPJ usam o mesmo certificado A1 com um clique; renovou numa, renovou em todas.

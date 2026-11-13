@@ -25,6 +25,7 @@ import { Categorias, Contas, Fornecedores, Taxas } from '@/components/financeiro
 import { BaixarCsv } from '@/components/financeiro/baixar';
 import { EscolhaModo } from '@/components/gestao/grupo';
 import { ExtratoBanco, type ContaEmAberto, type LinhaExtrato } from '@/components/financeiro/extrato';
+import { ConferenciaMaquininha, type DadosMaquininha } from '@/components/financeiro/maquininha';
 import { escopoFinanceiro } from '@/lib/financeiro-escopo';
 
 export const dynamic = 'force-dynamic';
@@ -201,12 +202,13 @@ export default async function Financeiro({ searchParams }: { searchParams: Promi
     } else {
       // extrato dos últimos 6 meses; contas em aberto de 4 meses atrás até 2 meses à frente
       const dia = (n: number) => new Date(Date.parse(`${hoje}T12:00:00Z`) + n * 86400_000).toISOString().slice(0, 10);
-      const [ext, abertas] = await Promise.all([
+      const [ext, abertas, maq] = await Promise.all([
         doDono(supabase.from('fin_extrato').select('id, conta_id, data, valor, descricao, lancamento_id, criou, ignorado, lanc:fin_lancamentos(descricao, valor, vencimento)'))
           .gte('data', dia(-183))
           .order('data', { ascending: false })
           .limit(3000),
         doDono(supabase.from('fin_lancamentos').select('id, tipo, descricao, valor, vencimento')).is('pago_em', null).gte('vencimento', dia(-120)).lte('vencimento', dia(60)).order('vencimento').limit(2000),
+        supabase.rpc('conferencia_maquininha', { p_loja: ctx.lojaId, p_meses: 4 }),
       ]);
       const linhas = ((ext.data ?? []) as Record<string, unknown>[]).map((x) => {
         const lanc = (Array.isArray(x.lanc) ? x.lanc[0] : x.lanc) as { descricao: string; valor: number; vencimento: string } | null;
@@ -221,6 +223,7 @@ export default async function Financeiro({ searchParams }: { searchParams: Promi
             categorias={cad.categorias}
             contas={cad.contas}
           />
+          {maq.data ? <ConferenciaMaquininha dados={maq.data as DadosMaquininha} /> : null}
         </>
       );
     }
