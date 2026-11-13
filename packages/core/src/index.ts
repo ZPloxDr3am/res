@@ -27,3 +27,4 @@ export * from './resumo-quadro.js';
 export * from './whatsapp.js';
 export * from './dfe.js';
 export * from './banco.js';
+export * from './ia.js';

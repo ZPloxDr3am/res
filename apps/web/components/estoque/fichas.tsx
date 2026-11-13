@@ -1,7 +1,7 @@
 'use client';
 import { useMemo, useState, useTransition } from 'react';
 import { formatarReais, paraCentavos } from '@res/core';
-import { copiarFicha, salvarFicha } from '@/app/(painel)/estoque/actions';
+import { copiarFicha, salvarFicha, sugerirFichaIA } from '@/app/(painel)/estoque/actions';
 import { salvando } from '@/components/tempo-real';
 import { nomeOpcao, type GrupoRow, type ProdutoRow } from '@/lib/cardapio-dados';
 import { n, type Insumo, type ItemFicha } from '@/lib/estoque';
@@ -117,7 +117,31 @@ export function Editor({ alvo, insumos, atual, lojaId, outrasLojas = false, aoSa
           </div>
         );
       })}
-      <button type="button" style={{ justifySelf: 'start' }} onClick={() => setLinhas([...linhas, { insumo: '', qtd: '' }])}>+ Insumo</button>
+      <div className="linha" style={{ gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}>
+        <button type="button" onClick={() => setLinhas([...linhas, { insumo: '', qtd: '' }])}>+ Insumo</button>
+        <button
+          type="button"
+          disabled={pendente}
+          title="A IA monta uma ficha com os seus insumos, em porções típicas. Confira as quantidades antes de salvar."
+          onClick={() =>
+            iniciar(async () => {
+              setMsg(null);
+              const r = await sugerirFichaIA(
+                alvo.tipo === 'produto' ? { tipo: 'produto', nome: alvo.nome } : { tipo: 'opcao', nome: alvo.nome, grupo: alvo.grupo, pizza: alvo.pizza },
+                insumos.map((i) => ({ id: i.id, nome: i.nome, unidade: i.unidade })),
+              );
+              if (!r.ok) return setMsg({ ok: false, t: r.erro });
+              setLinhas(r.itens.map((i) => ({ insumo: i.insumo_id, qtd: String(i.quantidade).replace('.', ',') })));
+              setMsg({
+                ok: true,
+                t: `✨ Sugestão da IA${r.observacao ? ` (${r.observacao})` : ''}: confira as quantidades e salve.${r.faltam.length ? ` Sem cadastro na loja: ${r.faltam.join(', ')}.` : ''}`,
+              });
+            })
+          }
+        >
+          {pendente ? 'Pensando…' : '✨ Sugerir com IA'}
+        </button>
+      </div>
       <div className="fichas-total">
         <span>Custo da ficha <strong>{formatarReais(Math.round(total))}</strong></span>
         {alvo.tipo === 'produto' && alvo.preco != null && alvo.preco > 0 && total > 0 && (

@@ -584,3 +584,17 @@ select case when pg_temp.v('uc_sit1')::text like '%"nome": "Burger Filial"%' and
             then 'ok um certificado para tudo: filial do mesmo CNPJ usa o da matriz, renovação vale nas duas, desconectar não apaga o que outra usa'
             else 'FALHOU um certificado ' || coalesce(pg_temp.v('uc_sit1') -> 'outras_lojas', 'null')::text || ' sit2=' || coalesce(pg_temp.v('uc_sit2') -> 'certificado', 'null')::text
                  || ' cred=' || coalesce(pg_temp.v('uc_cred') ->> 'cnpj', '-') || ' seg=' || coalesce(pg_temp.v('uc_segredos')::text, '-') end;
+-- IA (D-107): freio por loja e permissão
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('ia_1', to_jsonb(public.ia_registrar((pg_temp.v('loja') #>> '{}')::uuid, 'cardapio')));
+select public.ia_registrar((pg_temp.v('loja') #>> '{}')::uuid, 'cardapio') from generate_series(1, 19);
+select from pg_temp.esperar_erro(format('select public.ia_registrar(%L, %L)', pg_temp.v('loja') #>> '{}', 'cardapio'), 'Limite de uso da IA');
+insert into r values ('ia_f', to_jsonb(public.ia_registrar((pg_temp.v('loja') #>> '{}')::uuid, 'ficha')));
+select from pg_temp.esperar_erro(format('select public.ia_registrar(%L, %L)', pg_temp.v('loja') #>> '{}', 'outro'), 'inválido');
+select from pg_temp.esperar_erro('select count(*) from public.ia_uso', 'permission denied');
+reset role;
+\o
+select case when pg_temp.v('ia_1') = '19' and pg_temp.v('ia_f') = '149'
+            then 'ok IA: freio por dia por loja, tipo conferido, tabela fechada'
+            else 'FALHOU IA ' || coalesce(pg_temp.v('ia_1')::text, '-') || ' ' || coalesce(pg_temp.v('ia_f')::text, '-') end;

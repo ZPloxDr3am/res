@@ -417,3 +417,87 @@ export async function salvarDetalheOpcao(opcaoId: string, descricao: string, sel
   revalidatePath('/cardapio');
   return { ok: true };
 }
+
+// ---------------------------------------------------------------- cardápio com IA (D-107)
+
+const TIPOS_IMAGEM = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+/** Lê um cardápio de fotos, PDF ou link com a IA. Não grava nada: devolve para o dono revisar. */
+export async function lerCardapioIA(form: FormData): Promise<
+  { ok: true; categorias: import('@res/core').CategoriaLida[]; existentes: string[]; restantes: number } | { ok: false; erro: string }
+> {
+  const ctx = await contextoLoja();
+  const { pedirIA, textoDaPagina, ErroIA } = await import('@/lib/ia');
+  const { FERRAMENTA_CARDAPIO, INSTRUCAO_CARDAPIO, normalizarCardapioLido } = await import('@res/core');
+  const arquivos = form.getAll('arquivos').filter((f): f is File => f instanceof File && f.size > 0);
+  const link = String(form.get('link') ?? '').trim();
+  if (!arquivos.length && !link) return { ok: false, erro: 'Envie fotos ou o PDF do cardápio, ou cole o link.' };
+  if (arquivos.length > 8) return { ok: false, erro: 'Até 8 fotos por vez.' };
+  let tamanho = 0;
+  for (const f of arquivos) {
+    tamanho += f.size;
+    if (!TIPOS_IMAGEM.includes(f.type) && f.type !== 'application/pdf') return { ok: false, erro: `"${f.name}" não é foto (JPG, PNG, WEBP) nem PDF.` };
+    if (f.type !== 'application/pdf' && f.size > 4_500_000) return { ok: false, erro: `A foto "${f.name}" passa de 4,5 MB. Mande uma menor (print da tela já serve).` };
+  }
+  if (tamanho > 18_000_000) return { ok: false, erro: 'Arquivos grandes demais (até 18 MB no total).' };
+
+  const supabase = await criarClienteServidor();
+  const uso = await supabase.rpc('ia_registrar', { p_loja: ctx.lojaId, p_tipo: 'cardapio' });
+  if (uso.error) return { ok: false, erro: mensagem(uso.error) };
+  try {
+    const conteudo: import('@/lib/ia').BlocoIA[] = [];
+    for (const f of arquivos) {
+      const data = Buffer.from(await f.arrayBuffer()).toString('base64');
+      conteudo.push(f.type === 'application/pdf' ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data } } : { type: 'image', source: { type: 'base64', media_type: f.type, data } });
+    }
+    if (link) conteudo.push({ type: 'text', text: `Texto da página ${link}:\n\n${await textoDaPagina(link)}` });
+    conteudo.push({ type: 'text', text: 'Leia este cardápio e registre todas as categorias e produtos.' });
+    const bruto = await pedirIA({ sistema: INSTRUCAO_CARDAPIO, conteudo, ferramenta: FERRAMENTA_CARDAPIO, maxTokens: 16000 });
+    const categorias = normalizarCardapioLido(bruto);
+    if (!categorias.length) return { ok: false, erro: 'Não encontrei produtos. Tente uma foto mais nítida, com os preços visíveis.' };
+    const { data: prods } = await supabase.from('produtos').select('nome').eq('loja_id', ctx.lojaId).limit(3000);
+    return { ok: true, categorias, existentes: (prods ?? []).map((p) => p.nome as string), restantes: Number(uso.data ?? 0) };
+  } catch (e) {
+    return { ok: false, erro: e instanceof ErroIA ? e.message : 'Não consegui ler o cardápio. Tente de novo.' };
+  }
+}
+
+/** Cria as categorias (ou usa a de mesmo nome) e os produtos revisados. Nascem em todas as marcas e canais. */
+export async function criarCardapioIA(categorias: { nome: string; produtos: { nome: string; descricao: string | null; preco: number | null }[] }[]): Promise<
+  { ok: true; categorias: number; produtos: number } | { ok: false; erro: string }
+> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data: setores, error } = await supabase.from('setores').select('id, nome').eq('loja_id', ctx.lojaId);
+  if (error) return { ok: false, erro: mensagem(error) };
+  const chave = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+  let nCat = 0;
+  let nProd = 0;
+  for (const c of categorias.slice(0, 40)) {
+    const nome = c.nome.trim().slice(0, 150);
+    if (!nome || !c.produtos.length) continue;
+    let setor = (setores ?? []).find((s) => chave(s.nome as string) === chave(nome))?.id as string | undefined;
+    if (!setor) {
+      const r = await supabase.rpc('salvar_setor', { p_loja: ctx.lojaId, p_id: null, p_nome: nome, p_nome_publico: null, p_delivery: true, p_presencial: true, p_marcas: null });
+      if (r.error) return { ok: false, erro: `${nCat} categorias e ${nProd} produtos criados; parou em "${nome}": ${mensagem(r.error)}` };
+      setor = r.data as string;
+      nCat++;
+    }
+    for (const p of c.produtos.slice(0, 200)) {
+      const pn = p.nome.trim().slice(0, 150);
+      if (!pn) continue;
+      const r = await supabase.rpc('criar_produto', {
+        p_loja: ctx.lojaId,
+        p_nome: pn,
+        p_setor: setor,
+        p_preco: p.preco != null && p.preco > 0 ? p.preco / 100 : null,
+        p_descricao: p.descricao?.trim().slice(0, 1000) || null,
+        p_marcas: null,
+      });
+      if (r.error) return { ok: false, erro: `${nCat} categorias e ${nProd} produtos criados; parou em "${pn}": ${mensagem(r.error)}` };
+      nProd++;
+    }
+  }
+  revalidatePath('/cardapio');
+  return { ok: true, categorias: nCat, produtos: nProd };
+}

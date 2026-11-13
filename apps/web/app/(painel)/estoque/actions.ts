@@ -230,3 +230,46 @@ export async function ligarEan(ean: string, insumoId: string): Promise<R> {
   const { error } = await supabase.rpc('ligar_ean', { p_loja: ctx.lojaId, p_ean: ean, p_insumo: insumoId });
   return error ? { ok: false, erro: error.message } : feito();
 }
+
+// ---- Ficha técnica sugerida pela IA (D-107)
+
+/** Sugere a ficha de um produto com os insumos da loja. Não grava: preenche o editor para o dono conferir. */
+export async function sugerirFichaIA(
+  alvo: { nome: string; tipo: 'produto' | 'opcao'; grupo?: string; pizza?: boolean },
+  lista: { id: string; nome: string; unidade: import('@res/core').UnidadeEstoque }[],
+): Promise<
+  R<{ itens: import('@res/core').ItemFichaSugerido[]; faltam: string[]; observacao: string | null }>
+> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const uso = await supabase.rpc('ia_registrar', { p_loja: ctx.lojaId, p_tipo: 'ficha' });
+  if (uso.error) return { ok: false, erro: uso.error.message };
+  // a lista vem da tela; a ficha só é gravada depois, por salvar_ficha, que confere os insumos da loja
+  const insumos = lista.slice(0, 400).map((i) => ({ id: String(i.id), nome: String(i.nome).slice(0, 80), unidade: i.unidade }));
+  if (!insumos.length) return { ok: false, erro: 'Cadastre os insumos primeiro (ou importe uma NF-e).' };
+  let descricao = '';
+  if (alvo.tipo === 'produto') {
+    const { data } = await supabase.from('produtos').select('descricao, setores(nome)').eq('loja_id', ctx.lojaId).eq('nome', alvo.nome).limit(1).maybeSingle();
+    const setor = (data?.setores as { nome?: string } | null)?.nome;
+    descricao = [setor ? `Categoria: ${setor}` : '', data?.descricao ? `Descrição: ${data.descricao}` : ''].filter(Boolean).join('\n');
+  }
+  const { pedirIA, ErroIA } = await import('@/lib/ia');
+  const { FERRAMENTA_FICHA, INSTRUCAO_FICHA, normalizarFichaSugerida } = await import('@res/core');
+  try {
+    const pedido =
+      alvo.tipo === 'produto'
+        ? `Produto: ${alvo.nome}\n${descricao}`
+        : `Opção "${alvo.nome}" do grupo "${alvo.grupo ?? ''}"${alvo.pizza ? ' (sabor de pizza: quantidades para uma pizza INTEIRA deste sabor)' : ' (quantidade gasta em cada uma escolhida)'}`;
+    const bruto = await pedirIA({
+      sistema: INSTRUCAO_FICHA,
+      conteudo: [{ type: 'text', text: `${pedido}\n\nInsumos da loja (id · nome · unidade):\n${insumos.map((i) => `${i.id} · ${i.nome} · ${i.unidade}`).join('\n')}` }],
+      ferramenta: FERRAMENTA_FICHA,
+      maxTokens: 2000,
+    });
+    const r = normalizarFichaSugerida(bruto, insumos);
+    if (!r.itens.length) return { ok: false, erro: r.faltam.length ? `A IA sugeriu ingredientes que a loja não tem cadastrados: ${r.faltam.join(', ')}.` : 'A IA não conseguiu sugerir uma ficha para este item.' };
+    return { ok: true, ...r };
+  } catch (e) {
+    return { ok: false, erro: e instanceof ErroIA ? e.message : 'Não consegui falar com a IA agora.' };
+  }
+}
