@@ -1458,6 +1458,25 @@ button.mini[data-avisado] { color: #15803d; }
 .fin-cats li[data-inativo] > span:first-child { opacity: 0.45; text-decoration: line-through; }
 .abas-metrica a[aria-current] { background: var(--superficie); box-shadow: var(--sombra); font-weight: 600; }
 
+/* ---------- Extrato do banco, boleto e Bom dia (D-105) */
+.fin-extrato-previa { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: space-between; align-items: center; padding: 0.6rem 0.75rem; border-radius: var(--raio-controle); background: var(--primaria-fundo); }
+.fin-ok { margin: 0; border-left: 4px solid var(--fin-receita); }
+.fin-extrato-linha { display: grid; gap: 0.5rem; border-left: 4px solid var(--fin-receita); padding: 0.7rem 0.9rem; }
+.fin-extrato-linha[data-saida] { border-left-color: var(--fin-despesa); }
+.fin-extrato-topo { display: grid; grid-template-columns: auto 1fr auto; gap: 0.6rem; align-items: baseline; }
+.fin-extrato-desc { overflow-wrap: anywhere; font-weight: 600; }
+.fin-extrato-valor { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--fin-receita); }
+.fin-extrato-linha[data-saida] .fin-extrato-valor { color: var(--fin-despesa); }
+.fin-extrato-sugestao { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: space-between; align-items: center; padding: 0.45rem 0.65rem; border-radius: var(--raio-controle); background: var(--primaria-fundo); }
+@media (max-width: 560px) { .fin-extrato-topo { grid-template-columns: 1fr auto; } .fin-extrato-topo > .dica { grid-column: 1 / -1; } }
+.boleto-lido { display: grid; gap: 0.2rem; padding: 0.6rem 0.75rem; border-radius: var(--raio-controle); background: var(--primaria-fundo); }
+.boleto-lido code { font-size: 0.8rem; overflow-wrap: anywhere; }
+.bom-dia { display: grid; gap: 0.6rem; border-left: 4px solid var(--destaque); }
+.bom-dia-topo { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; align-items: center; }
+.bom-dia ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
+.bom-dia li a { color: inherit; text-decoration: none; }
+.bom-dia li a:hover { text-decoration: underline; }
+
 /* ---------- Meta de vendas (D-064) */
 .meta-mes { border-left: 4px solid var(--primaria); }
 .meta-mes[data-ok] { border-left-color: #16a34a; }

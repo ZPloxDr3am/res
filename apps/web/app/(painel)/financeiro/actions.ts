@@ -179,3 +179,45 @@ export async function salvarContaFin(d: Omit<ContaFin, 'id'> & { id?: string }):
   refrescar();
   return { ok: true };
 }
+
+// ── Extrato do banco (D-105) ──────────────────────────────────────────────────────────────────────────
+
+/** Importa as transações do OFX (lidas no navegador). O mesmo extrato duas vezes não duplica. */
+export async function importarExtrato(conta: string, itens: { chave: string; data: string; valor: number; descricao: string }[]): Promise<R<{ novas: number; repetidas: number }>> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('fin_extrato_importar', { p_loja: ctx.lojaId, p_conta: conta || null, p_itens: itens });
+  if (error) return { ok: false, erro: msg(error.message) };
+  refrescar();
+  const d = data as { novas: number; repetidas: number };
+  return { ok: true, novas: Number(d.novas), repetidas: Number(d.repetidas) };
+}
+
+async function extrato(rpc: string, args: Record<string, unknown>): Promise<R> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc(rpc, { p_loja: ctx.lojaId, ...args });
+  if (error) return { ok: false, erro: msg(error.message) };
+  refrescar();
+  return { ok: true };
+}
+
+/** Dá baixa nas contas que as linhas do extrato pagaram (uma ou várias, das sugestões). */
+export async function baixarExtrato(pares: { extrato: string; lancamento: string }[]): Promise<R<{ n: number }>> {
+  let n = 0;
+  for (const p of pares.slice(0, 300)) {
+    const r = await extrato('fin_extrato_baixar', { p_extrato: p.extrato, p_lancamento: p.lancamento });
+    if (!r.ok) return n ? { ok: false, erro: `${n} baixa(s) feitas; parou numa: ${r.erro}` } : r;
+    n++;
+  }
+  return { ok: true, n };
+}
+export async function lancarExtrato(id: string, categoria: string, descricao: string): Promise<R> {
+  return extrato('fin_extrato_lancar', { p_extrato: id, p_categoria: categoria || null, p_descricao: descricao });
+}
+export async function ignorarExtrato(id: string, motivo: 'venda' | 'transferencia' | 'outro' | null): Promise<R> {
+  return extrato('fin_extrato_ignorar', { p_extrato: id, p_motivo: motivo });
+}
+export async function desfazerExtrato(id: string): Promise<R> {
+  return extrato('fin_extrato_desfazer', { p_extrato: id });
+}

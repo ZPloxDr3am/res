@@ -2,6 +2,7 @@
 import { useMemo, useState, useTransition } from 'react';
 import { criarLancamento, editarLancamento, excluirLancamento, marcarPago, type NovoLancamento } from '@/app/(painel)/financeiro/actions';
 import { salvando } from '@/components/tempo-real';
+import { LerBoleto } from '@/components/financeiro/ler-boleto';
 import { brl, dataBr, FORMAS_LANC, hojeSP, situacao, type Categoria, type ContaFin, type Fornecedor, type Lancamento, type Situacao, type TipoLanc } from '@/lib/financeiro';
 
 const ROTULO_SIT: Record<Situacao, string> = { vencido: 'Vencido', hoje: 'Vence hoje', aberto: 'A vencer', pago: 'Pago' };
@@ -24,7 +25,8 @@ export function Lancamentos({ lancamentos, cad, titulo, compacto = false, lojas 
   const [tipo, setTipo] = useState<'todos' | TipoLanc>('todos');
   const [sit, setSit] = useState<Situacao | 'todas'>('todas');
   const [busca, setBusca] = useState('');
-  const [form, setForm] = useState<{ novo: TipoLanc } | { editar: Lancamento } | null>(null);
+  const [form, setForm] = useState<Inicial | null>(null);
+  const [boleto, setBoleto] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [pendente, iniciar] = useTransition();
   const cat = useMemo(() => new Map(cad.categorias.map((c) => [c.id, c])), [cad.categorias]);
@@ -58,6 +60,7 @@ export function Lancamentos({ lancamentos, cad, titulo, compacto = false, lojas 
         {titulo ? <h2 style={{ margin: 0 }}>{titulo}</h2> : <span />}
         {podeCriar ? (
           <span className="linha" style={{ gap: '0.4rem' }}>
+            <button type="button" className="mini" onClick={() => setBoleto(true)} title="Cole, digite ou bipe o código do boleto">▦ Boleto</button>
             <button type="button" className="fin-btn-despesa" onClick={() => setForm({ novo: 'despesa' })}>− Despesa</button>
             <button type="button" className="fin-btn-receita" onClick={() => setForm({ novo: 'receita' })}>+ Receita</button>
           </span>
@@ -140,6 +143,28 @@ export function Lancamentos({ lancamentos, cad, titulo, compacto = false, lojas 
           </table>
         </div>
       )}
+      {boleto && (
+        <LerBoleto
+          fechar={() => setBoleto(false)}
+          jaLancado={(linha) => {
+            const l = lancamentos.find((x) => x.observacao?.includes(linha));
+            return l ? `${l.descricao}, vence ${dataBr(l.vencimento)}` : null;
+          }}
+          aoUsar={(b) => {
+            setBoleto(false);
+            setForm({
+              novo: 'despesa',
+              pre: {
+                descricao: b.emissor,
+                valor: b.valor != null ? (b.valor / 100).toFixed(2).replace('.', ',') : '',
+                vencimento: b.vencimento ?? hoje,
+                forma: 'Boleto',
+                observacao: `Linha digitável: ${b.linhaDigitavel}`,
+              },
+            });
+          }}
+        />
+      )}
       {form && <FormLancamento key={'novo' in form ? form.novo : form.editar.id} inicial={form} cad={lojas?.modo === 'soma' && 'editar' in form ? cadDa(cad, form.editar) : cad} lojasGrupo={lojas?.modo === 'grupo' ? lojas.lista : null} fechar={() => setForm(null)} />}
     </div>
   );
@@ -153,27 +178,30 @@ function cadDa(cad: Cad, l: Lancamento): Cad {
   return { categorias: daLoja(cad.categorias), fornecedores: daLoja(cad.fornecedores), contas: daLoja(cad.contas) };
 }
 
-function FormLancamento({ inicial, cad, fechar, lojasGrupo }: { inicial: { novo: TipoLanc } | { editar: Lancamento }; cad: Cad; fechar: () => void; lojasGrupo: { id: string; nome: string }[] | null }) {
+type Inicial = { novo: TipoLanc; pre?: { descricao: string; valor: string; vencimento: string; forma: string; observacao: string } } | { editar: Lancamento };
+
+function FormLancamento({ inicial, cad, fechar, lojasGrupo }: { inicial: Inicial; cad: Cad; fechar: () => void; lojasGrupo: { id: string; nome: string }[] | null }) {
   const ed = 'editar' in inicial ? inicial.editar : null;
   const tipo: TipoLanc = ed ? ed.tipo : (inicial as { novo: TipoLanc }).novo;
+  const pre = 'novo' in inicial ? inicial.pre : undefined;
   const hoje = hojeSP();
   const [d, setD] = useState({
-    descricao: ed?.descricao ?? '',
-    valor: ed ? ed.valor.toFixed(2).replace('.', ',') : '',
-    vencimento: ed?.vencimento ?? hoje,
+    descricao: ed?.descricao ?? pre?.descricao ?? '',
+    valor: ed ? ed.valor.toFixed(2).replace('.', ',') : (pre?.valor ?? ''),
+    vencimento: ed?.vencimento ?? pre?.vencimento ?? hoje,
     competencia: '', // AAAA-MM quando o usuário escolhe; vazio = mês do vencimento (ou o já salvo)
     categoria: ed?.categoria_id ?? '',
     fornecedor: ed?.fornecedor_id ?? '',
     conta: ed?.conta_id ?? cad.contas.find((c) => c.ativo)?.id ?? '',
-    forma: ed?.forma ?? '',
+    forma: ed?.forma ?? pre?.forma ?? '',
     pago: false,
     modo: 'unico' as NovoLancamento['modo'],
     vezes: '2',
-    observacao: ed?.observacao ?? '',
+    observacao: ed?.observacao ?? pre?.observacao ?? '',
     lojaRef: ed?.loja_ref ?? '',
   });
   const [erro, setErro] = useState<string | null>(null);
-  const [mais, setMais] = useState(false);
+  const [mais, setMais] = useState(!!pre);
   const [pendente, iniciar] = useTransition();
   const m = (x: Partial<typeof d>) => setD((v) => ({ ...v, ...x }));
   const cats = cad.categorias.filter((c) => c.tipo === tipo && (c.ativo || c.id === d.categoria));
