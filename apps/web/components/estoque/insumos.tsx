@@ -1,5 +1,6 @@
 'use client';
 import { useMemo, useState, useTransition } from 'react';
+import { MotivosPerda } from '@/components/estoque/perdas';
 import { formatarReais, situacaoEstoque, UNIDADES_ESTOQUE, type SituacaoEstoque, type UnidadeEstoque } from '@res/core';
 import { ajustarEstoque, excluirInsumo, salvarInsumo } from '@/app/(painel)/estoque/actions';
 import { salvando } from '@/components/tempo-real';
@@ -114,6 +115,7 @@ function Ajuste({ i }: { i: Insumo }) {
         <label style={{ flex: '1 1 14rem' }}>{tipo === 'perda' ? 'Motivo (obrigatório)' : 'Observação'}
           <input value={motivo} maxLength={200} onChange={(e) => setMotivo(e.target.value)} placeholder={tipo === 'perda' ? 'Ex.: venceu, caiu, estragou' : tipo === 'contagem' ? 'Ex.: inventário de segunda' : 'Ex.: compra no mercado'} />
         </label>
+        {tipo === 'perda' && <MotivosPerda valor={motivo} mudar={setMotivo} />}
         <button
           type="button"
           className="botao-primario"

@@ -17,6 +17,7 @@ import { Fechamento } from '@/components/estoque/fechamento';
 import { SaboresPizza } from '@/components/estoque/sabores-pizza';
 
 import { Margens, type DadosMargem } from '@/components/estoque/margens';
+import type { DadosPerdas } from '@/components/estoque/perdas';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // "Buscar agora" na SEFAZ (caixa de entrada de NF-e, D-102)
 
@@ -106,8 +107,8 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
     );
   } else if (aba === 'margens') {
     const dias = [30, 60, 90].includes(Number(sp.dias)) ? Number(sp.dias) : 30;
-    const mg = await supabase.rpc('margem_cardapio', { p_loja: ctx.lojaId, p_dias: dias });
-    conteudo = mg.data ? <Margens dados={mg.data as DadosMargem} gestor={ctx.papel === 'dono' || ctx.papel === 'gerente'} /> : <p className="erro">{mg.error?.message ?? 'Não consegui carregar.'}</p>;
+    const [mg, pd] = await Promise.all([supabase.rpc('margem_cardapio', { p_loja: ctx.lojaId, p_dias: dias }), supabase.rpc('perdas_periodo', { p_loja: ctx.lojaId, p_dias: dias })]);
+    conteudo = mg.data ? <Margens dados={mg.data as DadosMargem} gestor={ctx.papel === 'dono' || ctx.papel === 'gerente'} perdas={(pd.data as DadosPerdas | null) ?? null} /> : <p className="erro">{mg.error?.message ?? 'Não consegui carregar.'}</p>;
   } else if (aba === 'cmv') {
     const mesAtual = new Date(Date.now() - 5 * 3600_000).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }).slice(0, 7);
     const mes = /^\d{4}-\d{2}$/.test(sp.mes ?? '') && sp.mes! <= mesAtual ? sp.mes! : mesAtual;
@@ -143,7 +144,7 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
         <Link href="/estoque?aba=nfe" role="tab" aria-selected={aba === 'nfe'} className="aba-link">Entrada por NF-e</Link>
         <Link href="/estoque?aba=movimentos" role="tab" aria-selected={aba === 'movimentos'} className="aba-link">Movimentações</Link>
         <Link href="/estoque?aba=cmv" role="tab" aria-selected={aba === 'cmv'} className="aba-link">Fechamento / CMV</Link>
-        <Link href="/estoque?aba=margens" role="tab" aria-selected={aba === 'margens'} className="aba-link">Margem e cardápio</Link>
+        <Link href="/estoque?aba=margens" role="tab" aria-selected={aba === 'margens'} className="aba-link">Margem e perdas</Link>
       </nav>
       {conteudo}
     </div>

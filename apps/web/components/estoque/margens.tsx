@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from 'react';
 import { alertasMargem, CLASSES, engenhariaCardapio, formatarReais, type Classe, type ProdutoMargem } from '@res/core';
 import { definirCmvAlvo } from '@/app/(painel)/estoque/actions';
 import { salvando } from '@/components/tempo-real';
+import { Perdas, type DadosPerdas } from '@/components/estoque/perdas';
 
 export type DadosMargem = {
   alvo: number;
@@ -16,7 +17,7 @@ const pct = (v: number) => `${v.toLocaleString('pt-BR', { maximumFractionDigits:
 const ORDEM: Classe[] = ['estrela', 'burro_de_carga', 'quebra_cabeca', 'cao'];
 
 /** Margem e engenharia de cardápio (D-108): o que subiu, o que ficou caro demais e o que fazer com cada prato. */
-export function Margens({ dados, gestor }: { dados: DadosMargem; gestor: boolean }) {
+export function Margens({ dados, gestor, perdas }: { dados: DadosMargem; gestor: boolean; perdas?: DadosPerdas | null }) {
   const [alvo, setAlvo] = useState(String(Number(dados.alvo)).replace('.', ','));
   const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null);
   const [pendente, iniciar] = useTransition();
@@ -107,6 +108,8 @@ export function Margens({ dados, gestor }: { dados: DadosMargem; gestor: boolean
         )}
         <p className="dica" style={{ margin: 0 }}>Também dá para baixar o custo: trocar fornecedor, ajustar a porção na ficha ou tirar um ingrediente caro.</p>
       </section>
+
+      {perdas && <Perdas dados={perdas} dias={dados.dias} produtos={produtos.filter((p) => p.custo_ficha != null).map((p) => ({ id: p.id, nome: p.nome })).sort((a, b) => a.nome.localeCompare(b.nome))} />}
 
       <section className="grade" style={{ gap: '0.5rem' }}>
         <h3 style={{ margin: 0 }}>Engenharia de cardápio</h3>

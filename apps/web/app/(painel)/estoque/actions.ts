@@ -281,3 +281,11 @@ export async function definirCmvAlvo(alvo: number): Promise<R> {
   const { error } = await supabase.rpc('definir_cmv_alvo', { p_loja: ctx.lojaId, p_alvo: alvo });
   return error ? { ok: false, erro: error.message } : feito();
 }
+
+/** Perda de produto pronto (D-109): baixa como perda o que a ficha do produto usa. */
+export async function perdaProduto(produto: string, qtd: number, motivo: string): Promise<R> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('perda_produto', { p_loja: ctx.lojaId, p_produto: produto, p_qtd: qtd, p_motivo: motivo });
+  return error ? { ok: false, erro: error.message } : feito();
+}
