@@ -114,14 +114,14 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/estoque/actions.ts": {
-    "mtime": 1794611787.3074827,
-    "seen": 1794612899.6956425,
+    "mtime": 1794613010.6071675,
+    "seen": 1794613018.658453,
     "ast_hash": "2855c0abde50010bace254e8a9b6499e",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/estoque/page.tsx": {
-    "mtime": 1794612680.3076258,
-    "seen": 1794612899.6956449,
+    "mtime": 1794613010.6071675,
+    "seen": 1794613018.658462,
     "ast_hash": "8cf5997ca90944a9fc6ff3308b83fdfc",
     "semantic_hash": ""
   },
@@ -150,8 +150,8 @@
     "semantic_hash": "c18482a4354bf190ae112d2f406c259f"
   },
   "apps/web/app/(painel)/layout.tsx": {
-    "mtime": 1794612890.2896504,
-    "seen": 1794612899.6959436,
+    "mtime": 1794613010.6071675,
+    "seen": 1794613018.6589274,
     "ast_hash": "cd05c8a4039ae1376bb76131066f36a7",
     "semantic_hash": ""
   },
@@ -300,8 +300,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/c/[slug]/pedido/[codigo]/page.tsx": {
-    "mtime": 1794612890.2896504,
-    "seen": 1794612899.6969235,
+    "mtime": 1794613010.6071675,
+    "seen": 1794613018.660416,
     "ast_hash": "bcdf1cf2be0accbe5416aefa31874711",
     "semantic_hash": ""
   },
@@ -516,8 +516,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/estoque/insumos.tsx": {
-    "mtime": 1794611787.3074827,
-    "seen": 1794612899.6991038,
+    "mtime": 1794613010.6094012,
+    "seen": 1794613018.6629438,
     "ast_hash": "88eaf12eeb26391b84e7ba312c21e07a",
     "semantic_hash": ""
   },
@@ -642,8 +642,8 @@
     "semantic_hash": "e1a2ae124932452ed3b517ceefb9431a"
   },
   "apps/web/components/nav-painel.tsx": {
-    "mtime": 1794612890.2912166,
-    "seen": 1794612899.7001822,
+    "mtime": 1794613010.6094012,
+    "seen": 1794613018.66414,
     "ast_hash": "38d165b0141e8ef2a5e0e94d2c7637aa",
     "semantic_hash": ""
   },
@@ -672,8 +672,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/publico/acompanhar-pedido.tsx": {
-    "mtime": 1794612890.2912166,
-    "seen": 1794612899.7003047,
+    "mtime": 1794613010.6094012,
+    "seen": 1794613018.664298,
     "ast_hash": "db4fa8829bbe4fa9de68dd3c4dc88cfe",
     "semantic_hash": ""
   },
@@ -1026,8 +1026,8 @@
     "semantic_hash": "ca7ba0b48f2b641149acdba9eb74387d"
   },
   "packages/core/src/index.ts": {
-    "mtime": 1794612680.3076258,
-    "seen": 1794612899.7022545,
+    "mtime": 1794613010.6156454,
+    "seen": 1794613018.6665242,
     "ast_hash": "7a8aac369e823b75db7498ca750b5ff8",
     "semantic_hash": ""
   },
@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794612890.2912166,
-    "seen": 1794612899.7062607,
+    "mtime": 1794613010.6094012,
+    "seen": 1794613018.670571,
     "ast_hash": "34565e29bb842b57b9e5cb391328d32a",
     "semantic_hash": ""
   },
@@ -1998,8 +1998,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/financeiro/page.tsx": {
-    "mtime": 1794611787.3074827,
-    "seen": 1794612899.6957676,
+    "mtime": 1794613010.6071675,
+    "seen": 1794613018.6586568,
     "ast_hash": "90f8841b0e54fa204fda28a7522fc97b",
     "semantic_hash": ""
   },
@@ -2520,8 +2520,8 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794612890.2912166,
-    "seen": 1794612899.7060168,
+    "mtime": 1794613010.6225424,
+    "seen": 1794613018.6703007,
     "ast_hash": "5ce55417af9a34167454862b9e115507",
     "semantic_hash": ""
   },
@@ -2790,8 +2790,8 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1794612890.2912166,
-    "seen": 1794612899.7062397,
+    "mtime": 1794613010.6094012,
+    "seen": 1794613018.670548,
     "ast_hash": "4d6a9806954d9eb2415ec26b3b0ff5c8",
     "semantic_hash": ""
   },
@@ -2852,7 +2852,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1794612904.2848978,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -3192,14 +3192,14 @@
     "semantic_hash": ""
   },
   "apps/web/components/resumo/bom-dia.tsx": {
-    "mtime": 1794612890.2912166,
-    "seen": 1794612899.7005775,
+    "mtime": 1794613010.6094012,
+    "seen": 1794613018.664629,
     "ast_hash": "ce14f3c9dc5606f8e65961508cd1e228",
     "semantic_hash": ""
   },
   "packages/core/src/banco.ts": {
-    "mtime": 1794612890.2912166,
-    "seen": 1794612899.7020016,
+    "mtime": 1794613010.6156454,
+    "seen": 1794613018.6662354,
     "ast_hash": "c2055214c0c13c9a07d64311bb9120cc",
     "semantic_hash": ""
   },
@@ -3245,12 +3245,6 @@
     "ast_hash": "7e9758949d24b98a9466c5a0404eb451",
     "semantic_hash": ""
   },
-  "apps/web/components/estoque/margens.tsx": {
-    "mtime": 1794611787.3074827,
-    "seen": 1794612899.6991062,
-    "ast_hash": "47cc29d14f7fcad3576c4a2b3f1ed2d1",
-    "semantic_hash": ""
-  },
   "apps/web/lib/ia.ts": {
     "mtime": 1794610291.995394,
     "seen": 1794611016.232529,
@@ -3263,22 +3257,10 @@
     "ast_hash": "4f6596bb0f8750a655d89f9b64d191f9",
     "semantic_hash": ""
   },
-  "packages/core/src/margem.ts": {
-    "mtime": 1794610792.9754236,
-    "seen": 1794611016.2326627,
-    "ast_hash": "1149a0d433ec02b9b762b62418951756",
-    "semantic_hash": ""
-  },
   "packages/core/test/ia.test.ts": {
     "mtime": 1794610292.0073938,
     "seen": 1794611016.2327056,
     "ast_hash": "00a64036bfe72e97be4f182302b9d1f3",
-    "semantic_hash": ""
-  },
-  "packages/core/test/margem.test.ts": {
-    "mtime": 1794610800.771424,
-    "seen": 1794611016.2327068,
-    "ast_hash": "64b23a20074e7c0eb938e704bd6c364b",
     "semantic_hash": ""
   },
   "supabase/migrations/20261113250000_ia_cardapio_ficha.sql": {
@@ -3287,136 +3269,10 @@
     "ast_hash": "a06fabd3c150eb933fe4a8e5a63b4a94",
     "semantic_hash": ""
   },
-  "supabase/migrations/20261113260000_margem_cardapio.sql": {
-    "mtime": 1794610901.85943,
-    "seen": 1794611016.2328541,
-    "ast_hash": "7a6b69262f44f4721213e2710ec88e8f",
-    "semantic_hash": ""
-  },
   "docs/qualidade/roteiros/ia-cardapio-ficha.md": {
     "mtime": 1794610291.995394,
     "seen": 1794611016.2329752,
     "ast_hash": "f763909c47ae42bcf6b1066f00ead527",
-    "semantic_hash": ""
-  },
-  "docs/qualidade/roteiros/margem-cardapio.md": {
-    "mtime": 1794611011.475302,
-    "seen": 1794611016.2329772,
-    "ast_hash": "374ea3079ca92f6e11816f13a5a8c140",
-    "semantic_hash": ""
-  },
-  "apps/web/app/(painel)/avaliacoes/actions.ts": {
-    "mtime": 1794612890.2836382,
-    "seen": 1794612899.6951513,
-    "ast_hash": "27856237a1c2f1d30605a5a4c1086261",
-    "semantic_hash": ""
-  },
-  "apps/web/app/(painel)/avaliacoes/page.tsx": {
-    "mtime": 1794612890.2896504,
-    "seen": 1794612899.6951544,
-    "ast_hash": "79bf904df1fde08a1db627634dd07288",
-    "semantic_hash": ""
-  },
-  "apps/web/app/c/[slug]/pedido/[codigo]/actions.ts": {
-    "mtime": 1794612890.2896504,
-    "seen": 1794612899.6969206,
-    "ast_hash": "9b0f3bfbb106f8a87ff1e1be3038ac26",
-    "semantic_hash": ""
-  },
-  "apps/web/components/avaliacoes/aviso.tsx": {
-    "mtime": 1794612890.2896504,
-    "seen": 1794612899.6980045,
-    "ast_hash": "83bc420c7cbb45ac3628442c465a0e9a",
-    "semantic_hash": ""
-  },
-  "apps/web/components/avaliacoes/lista.tsx": {
-    "mtime": 1794612890.2912166,
-    "seen": 1794612899.698007,
-    "ast_hash": "cc9526412c11dd008cac4212b9a8da62",
-    "semantic_hash": ""
-  },
-  "apps/web/components/estoque/perdas.tsx": {
-    "mtime": 1794611787.3074827,
-    "seen": 1794612899.6991854,
-    "ast_hash": "e40d59bf18911c5c3b05b87f8e6f18e7",
-    "semantic_hash": ""
-  },
-  "apps/web/components/estoque/previsao.tsx": {
-    "mtime": 1794612680.3076258,
-    "seen": 1794612899.6991875,
-    "ast_hash": "8984b945b6f6b1b0afd022ed6b65bd01",
-    "semantic_hash": ""
-  },
-  "apps/web/components/financeiro/maquininha.tsx": {
-    "mtime": 1794611787.3074827,
-    "seen": 1794612899.699738,
-    "ast_hash": "f7538094b9c7427f279792cb84f96eb0",
-    "semantic_hash": ""
-  },
-  "apps/web/components/publico/avaliar-pedido.tsx": {
-    "mtime": 1794612890.2912166,
-    "seen": 1794612899.7003067,
-    "ast_hash": "0bd64e5bc45db5d5f5729a6245eb523d",
-    "semantic_hash": ""
-  },
-  "packages/core/src/perdas.ts": {
-    "mtime": 1794611787.3074827,
-    "seen": 1794612899.7023654,
-    "ast_hash": "c3753294d2d31491bd39c48f4cc753fe",
-    "semantic_hash": ""
-  },
-  "packages/core/src/previsao.ts": {
-    "mtime": 1794612680.3076258,
-    "seen": 1794612899.7024992,
-    "ast_hash": "641707cd7e52644acb66954c8447c77a",
-    "semantic_hash": ""
-  },
-  "packages/core/test/perdas.test.ts": {
-    "mtime": 1794611787.3074827,
-    "seen": 1794612899.703037,
-    "ast_hash": "a77c83c4f52ca1b6f0786ea3bc1906b6",
-    "semantic_hash": ""
-  },
-  "packages/core/test/previsao.test.ts": {
-    "mtime": 1794612680.3076258,
-    "seen": 1794612899.7031028,
-    "ast_hash": "dbcc815961dfa2c07ac1d1746a6db8c7",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261113270000_maquininha_perdas.sql": {
-    "mtime": 1794611787.3074827,
-    "seen": 1794612899.7052248,
-    "ast_hash": "c68c8dbcb4dd8b5712a61aceab1f0080",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261113280000_previsao_compras.sql": {
-    "mtime": 1794612680.3076258,
-    "seen": 1794612899.7052264,
-    "ast_hash": "b39eb2ddc411a0bf36c831743a366ec8",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261113290000_avaliacao_pedido.sql": {
-    "mtime": 1794612890.2912166,
-    "seen": 1794612899.7052279,
-    "ast_hash": "5ed015a1312273af92dc575c08119c6f",
-    "semantic_hash": ""
-  },
-  "docs/qualidade/roteiros/avaliacao-pedido.md": {
-    "mtime": 1794612890.2912166,
-    "seen": 1794612899.7066536,
-    "ast_hash": "0ebfd673e8e9233acf068b54daa73089",
-    "semantic_hash": ""
-  },
-  "docs/qualidade/roteiros/maquininha-perdas.md": {
-    "mtime": 1794611787.3074827,
-    "seen": 1794612899.7067416,
-    "ast_hash": "3d91e069922b3447f34a1eceeeea010e",
-    "semantic_hash": ""
-  },
-  "docs/qualidade/roteiros/previsao-compras.md": {
-    "mtime": 1794612680.3076258,
-    "seen": 1794612899.7068062,
-    "ast_hash": "e3db19121c22ef72e865ed6cb9935454",
     "semantic_hash": ""
   }
 }
