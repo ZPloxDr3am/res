@@ -50,6 +50,7 @@ export async function vinculosFornecedor(cnpj: string): Promise<Record<string, {
 export type ItemImportar = {
   n: number;
   codigo: string;
+  ean?: string | null;
   descricao: string;
   unidade: string;
   quantidade: number;
@@ -193,5 +194,23 @@ export async function nfeIgnorarRecebida(id: string, ignorar: boolean): Promise<
   const ctx = await contextoLoja();
   const supabase = await criarClienteServidor();
   const { error } = await supabase.rpc('nfe_auto_ignorar', { p_loja: ctx.lojaId, p_id: id, p_ignorar: ignorar });
+  return error ? { ok: false, erro: error.message } : feito();
+}
+
+// ---- Estoque automático (D-103)
+
+export async function definirPausaSemInsumo(ligado: boolean): Promise<R<{ pausados: number }>> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('definir_pausa_sem_insumo', { p_loja: ctx.lojaId, p_ligado: ligado });
+  if (error) return { ok: false, erro: error.message };
+  revalidatePath('/estoque');
+  return { ok: true, pausados: Number(data ?? 0) };
+}
+
+export async function ligarEan(ean: string, insumoId: string): Promise<R> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('ligar_ean', { p_loja: ctx.lojaId, p_ean: ean, p_insumo: insumoId });
   return error ? { ok: false, erro: error.message } : feito();
 }

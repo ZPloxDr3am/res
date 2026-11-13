@@ -4,7 +4,8 @@ import { formatarReais } from '@res/core';
 import { contextoLoja } from '@/lib/loja';
 import { carregarCardapio } from '@/lib/cardapio';
 import { criarClienteServidor } from '@/lib/supabase/server';
-import { n, type ContagemPainel, type FechamentoEstoque, type ItemFicha, type MeuEstoque, type NotaImportada, type PainelEstoque, type SituacaoCaixaNFe } from '@/lib/estoque';
+import { n, type ContagemPainel, type FechamentoEstoque, type ItemFicha, type MeuEstoque, type NotaImportada, type PainelEstoque, type SituacaoCaixaNFe, type ItemCompra, type MapaEans } from '@/lib/estoque';
+import { ListaCompras } from '@/components/estoque/compras';
 import { ListaInsumos } from '@/components/estoque/insumos';
 import { ImportarNFe } from '@/components/estoque/importar-nfe';
 import { Fichas } from '@/components/estoque/fichas';
@@ -21,7 +22,7 @@ export const maxDuration = 60; // "Buscar agora" na SEFAZ (caixa de entrada de N
 
 export default async function Estoque({ searchParams }: { searchParams: Promise<{ aba?: string; insumo?: string; ver?: string; lojas?: string; mes?: string }> }) {
   const sp = await searchParams;
-  const aba = sp.aba === 'fichas' ? 'meu' : ['insumos', 'contagem', 'nfe', 'movimentos', 'cmv'].includes(sp.aba ?? '') ? sp.aba! : 'meu';
+  const aba = sp.aba === 'fichas' ? 'meu' : ['insumos', 'contagem', 'compras', 'nfe', 'movimentos', 'cmv'].includes(sp.aba ?? '') ? sp.aba! : 'meu';
   const sabores = sp.aba === 'fichas' || sp.ver === 'sabores';
   const todas = sp.lojas === 'todas';
   const ctx = await contextoLoja();
@@ -96,10 +97,10 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
   } else if (aba === 'insumos') {
     conteudo = <ListaInsumos insumos={p.insumos} />;
   } else if (aba === 'contagem') {
-    const c = await supabase.rpc('contagem_painel', { p_loja: ctx.lojaId });
+    const [c, eansC] = await Promise.all([supabase.rpc('contagem_painel', { p_loja: ctx.lojaId }), supabase.rpc('eans_do_estoque', { p_loja: ctx.lojaId })]);
     conteudo = (
       <div className="ct-pagina">
-        <Contagem lojaId={ctx.lojaId} insumos={p.insumos} painel={(c.data as ContagemPainel | null) ?? { de_nfe: [], ultima: {} }} />
+        <Contagem lojaId={ctx.lojaId} insumos={p.insumos} painel={(c.data as ContagemPainel | null) ?? { de_nfe: [], ultima: {} }} eans={(eansC.data as MapaEans | null) ?? {}} />
       </div>
     );
   } else if (aba === 'cmv') {
@@ -108,8 +109,11 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
     const fc = await supabase.rpc('fechamento_estoque', { p_loja: ctx.lojaId, p_mes: `${mes}-01` });
     conteudo = fc.data ? <Fechamento f={fc.data as FechamentoEstoque} mesAtual={mesAtual} /> : <p className="erro">{fc.error?.message ?? 'Não consegui carregar.'}</p>;
   } else if (aba === 'nfe') {
-    const [notas, caixa] = await Promise.all([supabase.rpc('notas_importadas', { p_loja: ctx.lojaId }), supabase.rpc('nfe_auto_situacao', { p_loja: ctx.lojaId })]);
-    conteudo = <ImportarNFe insumos={p.insumos} notas={(notas.data as NotaImportada[] | null) ?? []} caixa={(caixa.data as SituacaoCaixaNFe | null) ?? null} />;
+    const [notas, caixa, eans] = await Promise.all([supabase.rpc('notas_importadas', { p_loja: ctx.lojaId }), supabase.rpc('nfe_auto_situacao', { p_loja: ctx.lojaId }), supabase.rpc('eans_do_estoque', { p_loja: ctx.lojaId })]);
+    conteudo = <ImportarNFe insumos={p.insumos} notas={(notas.data as NotaImportada[] | null) ?? []} caixa={(caixa.data as SituacaoCaixaNFe | null) ?? null} eans={(eans.data as MapaEans | null) ?? {}} />;
+  } else if (aba === 'compras') {
+    const [lista, loja] = await Promise.all([supabase.rpc('lista_compras', { p_loja: ctx.lojaId }), supabase.from('lojas').select('pausar_sem_insumo').eq('id', ctx.lojaId).maybeSingle()]);
+    conteudo = <ListaCompras itens={(lista.data as ItemCompra[] | null) ?? []} loja={ctx.lojaNome} pausar={!!loja.data?.pausar_sem_insumo} gestor={ctx.papel === 'dono' || ctx.papel === 'gerente'} semMinimo={p.insumos.filter((i) => i.minimo == null).length} />;
   } else {
     const prods = await supabase.from('produtos').select('id, nome').eq('loja_id', ctx.lojaId).eq('combo', false).order('nome');
     conteudo = <Movimentacoes insumos={p.insumos} produtos={(prods.data ?? []) as { id: string; nome: string }[]} inicial={{ insumo: sp.insumo ?? '' }} />;
@@ -130,6 +134,7 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
         <Link href="/estoque" role="tab" aria-selected={aba === 'meu'} className="aba-link">Meu estoque</Link>
         <Link href="/estoque?aba=insumos" role="tab" aria-selected={aba === 'insumos'} className="aba-link">Insumos</Link>
         <Link href="/estoque?aba=contagem" role="tab" aria-selected={aba === 'contagem'} className="aba-link">Contagem</Link>
+        <Link href="/estoque?aba=compras" role="tab" aria-selected={aba === 'compras'} className="aba-link">Compras</Link>
         <Link href="/estoque?aba=nfe" role="tab" aria-selected={aba === 'nfe'} className="aba-link">Entrada por NF-e</Link>
         <Link href="/estoque?aba=movimentos" role="tab" aria-selected={aba === 'movimentos'} className="aba-link">Movimentações</Link>
         <Link href="/estoque?aba=cmv" role="tab" aria-selected={aba === 'cmv'} className="aba-link">Fechamento / CMV</Link>

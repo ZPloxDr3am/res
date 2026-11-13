@@ -442,3 +442,24 @@ select case when pg_temp.v('nf_sit1') #>> '{certificado,cnpj}' = '11222333000181
              and pg_temp.v('nf_xml') = '"<nfeProc>B</nfeProc>"' and pg_temp.v('nf_segredos') = '0'
             then 'ok NF-e automática: certificado só do dono e do mesmo CNPJ, segredo fora do app, resumo/XML/cancelamento, ciência e nota importada saindo da fila'
             else 'FALHOU NF-e automática ' || coalesce(pg_temp.v('nf_sit2')::text, '-') || ' cienc=' || coalesce(pg_temp.v('nf_cienc')::text, '-') || ' reg=' || coalesce(pg_temp.v('nf_reg')::text, '-') end;
+-- Estoque automático (D-103): EAN da nota liga o insumo, lista de compras, produto pausado sem insumo
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select public.importar_nfe((pg_temp.v('loja') #>> '{}')::uuid, jsonb_build_object('chave', '42261155666777000188550010000000991000000991', 'numero', '99', 'emitente_cnpj', '55666777000188', 'emitente_nome', 'Padaria Auto', 'valor_total', 500,
+  'itens', jsonb_build_array(jsonb_build_object('n', 1, 'codigo', 'P1', 'descricao', 'PAO BRIOCHE', 'ean', '7891234567895', 'unidade', 'UN', 'quantidade', 5, 'custo_total', 500, 'acao', 'novo', 'novo', jsonb_build_object('nome', 'Pão auto', 'unidade', 'UN'), 'fator', 1))));
+insert into r values ('ea_eans', public.eans_do_estoque((pg_temp.v('loja') #>> '{}')::uuid));
+select public.salvar_insumo((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('ea_eans') #>> '{7891234567895,insumo_id}')::uuid, '{"nome": "Pão auto", "unidade": "UN", "minimo": "10"}');
+insert into r values ('ea_lista', public.lista_compras((pg_temp.v('loja') #>> '{}')::uuid));
+select public.salvar_ficha((pg_temp.v('loja') #>> '{}')::uuid, (pg_temp.v('s_xis') #>> '{}')::uuid, null, jsonb_build_array(jsonb_build_object('insumo_id', pg_temp.v('ea_eans') #>> '{7891234567895,insumo_id}', 'quantidade', 1)));
+insert into r values ('ea_lig', to_jsonb(public.definir_pausa_sem_insumo((pg_temp.v('loja') #>> '{}')::uuid, true)));
+reset role;
+update public.insumos set saldo = 0 where id = (pg_temp.v('ea_eans') #>> '{7891234567895,insumo_id}')::uuid;
+insert into r values ('ea_p1', to_jsonb((select etiqueta::text || ':' || pausado_estoque from public.produtos where id = (pg_temp.v('s_xis') #>> '{}')::uuid)));
+update public.insumos set saldo = 3 where id = (pg_temp.v('ea_eans') #>> '{7891234567895,insumo_id}')::uuid;
+insert into r values ('ea_p2', to_jsonb((select coalesce(etiqueta::text, '-') || ':' || pausado_estoque from public.produtos where id = (pg_temp.v('s_xis') #>> '{}')::uuid)));
+\o
+select case when (pg_temp.v('ea_eans') #>> '{7891234567895,fator}')::numeric = 1 and jsonb_array_length(pg_temp.v('ea_lista')) = 1
+             and pg_temp.v('ea_lista') #>> '{0,fornecedor}' = 'Padaria Auto' and (pg_temp.v('ea_lista') #>> '{0,sugestao}')::numeric = 15
+             and pg_temp.v('ea_lig') = '0' and pg_temp.v('ea_p1') = '"esgotado:true"' and pg_temp.v('ea_p2') = '"-:false"'
+            then 'ok estoque automático: EAN da nota liga o insumo, lista de compras com fornecedor e sugestão, produto pausa e volta com o saldo'
+            else 'FALHOU estoque automático ' || coalesce(pg_temp.v('ea_lista')::text, '-') || ' p1=' || coalesce(pg_temp.v('ea_p1')::text, '-') || ' p2=' || coalesce(pg_temp.v('ea_p2')::text, '-') end;

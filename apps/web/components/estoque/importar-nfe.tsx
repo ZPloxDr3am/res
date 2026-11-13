@@ -20,7 +20,7 @@ const dataTexto = (iso: string | null) => (iso ? new Date(iso).toLocaleDateStrin
 const lerFator = (t: string) => Number(t.replace(',', '.'));
 
 /** Entrada por NF-e (D-036): arraste o XML, confira o vínculo de cada item e dê entrada no estoque. */
-export function ImportarNFe({ insumos, notas, caixa = null }: { insumos: Insumo[]; notas: NotaImportada[]; caixa?: SituacaoCaixaNFe | null }) {
+export function ImportarNFe({ insumos, notas, caixa = null, eans = {} }: { insumos: Insumo[]; notas: NotaImportada[]; caixa?: SituacaoCaixaNFe | null; eans?: Record<string, { insumo_id: string; fator: number }> }) {
   const ref = useRef<HTMLInputElement>(null);
   const [sobre, setSobre] = useState(false);
   const [nfe, setNfe] = useState<NFe | null>(null);
@@ -43,7 +43,8 @@ export function ImportarNFe({ insumos, notas, caixa = null }: { insumos: Insumo[
         setNfe(n);
         setLinhas(
           n.itens.map((it) => {
-            const v = vinc[it.codigo];
+            // 1º o que este fornecedor já ensinou; 2º o código de barras do produto, visto em qualquer nota (D-103)
+            const v = vinc[it.codigo] ?? (it.ean ? eans[it.ean] : undefined);
             if (v && insumos.some((i) => i.id === v.insumo_id)) return { acao: 'vincular', insumoId: v.insumo_id, novoNome: '', novaUnidade: 'UN', fator: String(Number(v.fator)).replace('.', ','), lembrado: true, conferir: false };
             const p = palpiteUnidade(it.unidade);
             const s = sugerirInsumo(it.descricao, insumos);
@@ -73,6 +74,7 @@ export function ImportarNFe({ insumos, notas, caixa = null }: { insumos: Insumo[
         return {
           n: it.n,
           codigo: it.codigo,
+          ean: it.ean,
           descricao: it.descricao,
           unidade: it.unidade,
           quantidade: it.quantidade,

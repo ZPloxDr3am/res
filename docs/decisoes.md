@@ -874,3 +874,10 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - Nota cancelada pelo fornecedor aparece como cancelada; nota que já entrou no estoque (por aqui ou pelo arquivo) sai da lista de pendentes; dá para ignorar uma nota.
 - **Segurança:** certificado e senha ficam no **Vault** do Supabase (criptografados), lidos só pela função de serviço que o servidor usa para falar com a SEFAZ; nenhuma tela recebe esses dados. O servidor abre o .pfx (inclusive os antigos RC2/3DES) e confere CNPJ e validade antes de salvar. A conexão com a SEFAZ confere o certificado do servidor pela cadeia da ICP-Brasil (`lib/nfe/icp-brasil.ts`).
 - Código: `packages/core/src/dfe.ts` (mensagens e leitura, testado), `apps/web/lib/nfe/` (certificado, assinatura, cliente da SEFAZ), `/api/nfe/sincronizar` (agendador), migração `20261113190000_nfe_caixa_entrada.sql`.
+
+## D-103 — Estoque que trabalha sozinho: código de barras, lista de compras e pausa do cardápio (13/11/2026)
+- **Código de barras liga o insumo.** O EAN de cada item da nota fica guardado com o insumo (`insumo_eans`). Na próxima nota, de qualquer fornecedor, o item com o mesmo código já vem ligado, sem o dono escolher. As notas já importadas foram aproveitadas.
+- **Contagem bipando.** Na Contagem, o leitor de código de barras (ou a câmera, no Chrome do Android) acha o insumo e põe o cursor na quantidade. Código desconhecido: escolhe o insumo uma vez e ele fica ligado.
+- **Aba Compras.** Lista o que está no mínimo ou abaixo, agrupado pelo último fornecedor, com sugestão de quantidade (voltar a 2× o mínimo, editável), valor estimado pelo último preço e botões **Copiar pedido** e **Enviar no WhatsApp**.
+- **Produto pausado sem insumo (opcional, desligado por padrão).** Com a opção ligada, quando um insumo da ficha técnica zera, o produto fica "esgotado" no cardápio digital e volta sozinho quando o saldo sobe (guarda a etiqueta anterior). Só produtos com ficha; adicionais e sabores não pausam.
+- O cadastro por CNPJ e CEP (preenchimento automático) já existia desde a D-077, no cadastro e em Lojas e equipe → Dados da empresa.
