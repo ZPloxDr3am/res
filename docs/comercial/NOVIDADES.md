@@ -3,6 +3,7 @@
 Uma seção por semana, escrita na revisão de sexta. Linguagem de cliente.
 
 ## Semana 46 (09–13/11/2026)
+- **Notas de compra chegam sozinhas**: conecte o certificado A1 da empresa e o RES busca na SEFAZ, a cada hora, as notas que os fornecedores emitiram para o seu CNPJ. É só conferir e dar entrada no estoque, sem procurar XML no e-mail.
 - **Turbo-Vendas** (adicional; incluso no Completo): automações que trazem o cliente de volta (carrinho abandonado, boas-vindas, pedir avaliação no Google, cliente que passou do costume, cliente sumido), campanhas com cupom e agendamento, fila de WhatsApp com a mensagem pronta e quanto cada mensagem vendeu. Safras de clientes com LTV e perfil do cliente (favoritos, dia e hora, canal).
 - Planos por operação (Delivery, Salão, Completo), plano anual com 20% de desconto e tela **Assinatura** com fatura e Pix.
 - Cardápio fechado aceita pedido **para quando abrir**; resumo no topo do quadro; arrastar o pedido entre colunas; **Organizar cardápio** arrastando.

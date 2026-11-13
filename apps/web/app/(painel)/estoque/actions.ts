@@ -124,3 +124,74 @@ export async function salvarFichaSabor(opcaoIds: string[], itens: { insumo_id: s
   }
   return feito();
 }
+
+// ---- Caixa de entrada de NF-e (D-102): certificado A1 e busca automática na SEFAZ
+
+const MAX_PFX = 50 * 1024;
+
+/** Recebe o .pfx e a senha, confere no servidor (abre, CNPJ, validade) e guarda; já faz a primeira busca. */
+export async function nfeSalvarCertificado(form: FormData): Promise<R<{ mensagem: string }>> {
+  const ctx = await contextoLoja();
+  const arquivo = form.get('arquivo');
+  const senha = String(form.get('senha') ?? '');
+  if (!(arquivo instanceof File) || arquivo.size === 0) return { ok: false, erro: 'Escolha o arquivo do certificado (.pfx ou .p12).' };
+  if (arquivo.size > MAX_PFX) return { ok: false, erro: 'Arquivo grande demais para um certificado A1.' };
+  if (!senha) return { ok: false, erro: 'Digite a senha do certificado.' };
+  const { lerCertificado, ErroCertificado } = await import('@/lib/nfe/certificado');
+  const pfx = Buffer.from(await arquivo.arrayBuffer());
+  let cert;
+  try {
+    cert = lerCertificado(pfx, senha);
+  } catch (e) {
+    return { ok: false, erro: e instanceof ErroCertificado ? e.message : 'Não consegui abrir o certificado.' };
+  }
+  if (!cert.cnpj) return { ok: false, erro: 'Este certificado não é de empresa (e-CNPJ). A busca de notas precisa do A1 do CNPJ da loja.' };
+  if (cert.validoAte.getTime() < Date.now()) return { ok: false, erro: `Este certificado venceu em ${cert.validoAte.toLocaleDateString('pt-BR')}.` };
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('nfe_auto_salvar_certificado', {
+    p_loja: ctx.lojaId,
+    p_pfx_base64: pfx.toString('base64'),
+    p_senha: senha,
+    p_cnpj_certificado: cert.cnpj,
+    p_titular: cert.titular,
+    p_validade: cert.validoAte.toISOString(),
+  });
+  if (error) return { ok: false, erro: error.message };
+  const { sincronizarLoja } = await import('@/lib/nfe/sefaz');
+  const r = await sincronizarLoja(ctx.lojaId);
+  revalidatePath('/estoque');
+  return { ok: true, mensagem: `Certificado de ${cert.titular} salvo (válido até ${cert.validoAte.toLocaleDateString('pt-BR')}). Primeira busca: ${r.mensagem}` };
+}
+
+export async function nfeRemoverCertificado(): Promise<R> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('nfe_auto_remover', { p_loja: ctx.lojaId });
+  return error ? { ok: false, erro: error.message } : feito();
+}
+
+/** "Buscar agora": respeita a regra de 1 hora da SEFAZ (avisa quando pode). */
+export async function nfeBuscarAgora(): Promise<R<{ mensagem: string }>> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('nfe_auto_situacao', { p_loja: ctx.lojaId }); // confere o acesso
+  if (error) return { ok: false, erro: error.message };
+  const { sincronizarLoja } = await import('@/lib/nfe/sefaz');
+  const r = await sincronizarLoja(ctx.lojaId);
+  revalidatePath('/estoque');
+  return r.ok ? { ok: true, mensagem: r.mensagem } : { ok: false, erro: r.mensagem };
+}
+
+export async function nfeXmlRecebida(id: string): Promise<R<{ xml: string }>> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc('nfe_auto_xml', { p_loja: ctx.lojaId, p_id: id });
+  return error ? { ok: false, erro: error.message } : { ok: true, xml: data as string };
+}
+
+export async function nfeIgnorarRecebida(id: string, ignorar: boolean): Promise<R> {
+  const ctx = await contextoLoja();
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc('nfe_auto_ignorar', { p_loja: ctx.lojaId, p_id: id, p_ignorar: ignorar });
+  return error ? { ok: false, erro: error.message } : feito();
+}

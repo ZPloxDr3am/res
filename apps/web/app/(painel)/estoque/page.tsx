@@ -4,7 +4,7 @@ import { formatarReais } from '@res/core';
 import { contextoLoja } from '@/lib/loja';
 import { carregarCardapio } from '@/lib/cardapio';
 import { criarClienteServidor } from '@/lib/supabase/server';
-import { n, type ContagemPainel, type FechamentoEstoque, type ItemFicha, type MeuEstoque, type NotaImportada, type PainelEstoque } from '@/lib/estoque';
+import { n, type ContagemPainel, type FechamentoEstoque, type ItemFicha, type MeuEstoque, type NotaImportada, type PainelEstoque, type SituacaoCaixaNFe } from '@/lib/estoque';
 import { ListaInsumos } from '@/components/estoque/insumos';
 import { ImportarNFe } from '@/components/estoque/importar-nfe';
 import { Fichas } from '@/components/estoque/fichas';
@@ -16,6 +16,7 @@ import { Fechamento } from '@/components/estoque/fechamento';
 import { SaboresPizza } from '@/components/estoque/sabores-pizza';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // "Buscar agora" na SEFAZ (caixa de entrada de NF-e, D-102)
 
 
 export default async function Estoque({ searchParams }: { searchParams: Promise<{ aba?: string; insumo?: string; ver?: string; lojas?: string; mes?: string }> }) {
@@ -107,8 +108,8 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
     const fc = await supabase.rpc('fechamento_estoque', { p_loja: ctx.lojaId, p_mes: `${mes}-01` });
     conteudo = fc.data ? <Fechamento f={fc.data as FechamentoEstoque} mesAtual={mesAtual} /> : <p className="erro">{fc.error?.message ?? 'Não consegui carregar.'}</p>;
   } else if (aba === 'nfe') {
-    const notas = await supabase.rpc('notas_importadas', { p_loja: ctx.lojaId });
-    conteudo = <ImportarNFe insumos={p.insumos} notas={(notas.data as NotaImportada[] | null) ?? []} />;
+    const [notas, caixa] = await Promise.all([supabase.rpc('notas_importadas', { p_loja: ctx.lojaId }), supabase.rpc('nfe_auto_situacao', { p_loja: ctx.lojaId })]);
+    conteudo = <ImportarNFe insumos={p.insumos} notas={(notas.data as NotaImportada[] | null) ?? []} caixa={(caixa.data as SituacaoCaixaNFe | null) ?? null} />;
   } else {
     const prods = await supabase.from('produtos').select('id, nome').eq('loja_id', ctx.lojaId).eq('combo', false).order('nome');
     conteudo = <Movimentacoes insumos={p.insumos} produtos={(prods.data ?? []) as { id: string; nome: string }[]} inicial={{ insumo: sp.insumo ?? '' }} />;

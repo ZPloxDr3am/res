@@ -395,3 +395,50 @@ select case when (pg_temp.v('rv_fat') -> 0 ->> 'total')::numeric = (select sum(t
              and pg_temp.v('rv_fat_fora') = '[]'
             then 'ok raiva: QR com limite de quantidade; faturamento somado no banco e só para quem é da loja'
             else 'FALHOU raiva ' || coalesce(pg_temp.v('rv_fat')::text, '-') || ' ' || coalesce(pg_temp.v('rv_fat_fora')::text, '-') end;
+-- Caixa de entrada de NF-e (D-102): certificado só do dono/gerente e do mesmo CNPJ; segredo nunca volta ao app;
+-- servidor registra resumo, XML completo e cancelamento; ciência; nota importada sai da fila
+\o /dev/null
+update public.lojas set cnpj = '11222333000181', cpf = null, uf = 'SC' where id = (pg_temp.v('loja') #>> '{}')::uuid;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a4');
+select from pg_temp.esperar_erro(format($q$select public.nfe_auto_salvar_certificado('%s', repeat('A', 200), 'senha123', '11222333000181', 'BURGER', now() + interval '1 year')$q$, pg_temp.v('loja') #>> '{}'), 'Só o dono');
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+select from pg_temp.esperar_erro(format($q$select public.nfe_auto_salvar_certificado('%s', repeat('A', 200), 'senha123', '99888777000166', 'OUTRA', now() + interval '1 year')$q$, pg_temp.v('loja') #>> '{}'), 'não é o desta loja');
+select from pg_temp.esperar_erro(format($q$select public.nfe_auto_salvar_certificado('%s', repeat('A', 200), 'senha123', '11222333000181', 'BURGER', now() - interval '1 day')$q$, pg_temp.v('loja') #>> '{}'), 'vencido');
+select public.nfe_auto_salvar_certificado((pg_temp.v('loja') #>> '{}')::uuid, repeat('P', 300), 'senha-secreta-123', '11222333000270', 'BURGER TESTE LTDA', now() + interval '1 year');
+insert into r values ('nf_sit1', public.nfe_auto_situacao((pg_temp.v('loja') #>> '{}')::uuid));
+select from pg_temp.esperar_erro(format($q$select public.nfe_auto_credenciais('%s')$q$, pg_temp.v('loja') #>> '{}'), 'permission denied');
+reset role;
+set role service_role;
+insert into r values ('nf_cred', public.nfe_auto_credenciais((pg_temp.v('loja') #>> '{}')::uuid));
+insert into r values ('nf_reg', public.nfe_auto_registrar((pg_temp.v('loja') #>> '{}')::uuid, jsonb_build_array(
+  jsonb_build_object('tipo', 'resumo', 'nsu', '000000000000001', 'chave', '42261111222333000181550010000000011000000011', 'emitenteCnpj', '55666777000188', 'emitenteNome', 'Fornecedor A', 'emissao', now() - interval '2 days', 'valor', 31479, 'situacao', 'autorizada'),
+  jsonb_build_object('tipo', 'completa', 'nsu', '000000000000002', 'chave', '42261111222333000181550010000000021000000021', 'emitenteCnpj', '55666777000188', 'emitenteNome', 'Fornecedor B', 'emissao', now() - interval '1 day', 'valor', 82826, 'xml', '<nfeProc>B</nfeProc>'),
+  jsonb_build_object('tipo', 'resumo', 'nsu', '000000000000003', 'chave', '42261111222333000181550010000000031000000031', 'emitenteCnpj', '55666777000188', 'emitenteNome', 'Fornecedor C', 'emissao', now() - interval '3 days', 'valor', 1000, 'situacao', 'autorizada'),
+  jsonb_build_object('tipo', 'resumo', 'nsu', '000000000000004', 'chave', '42261111222333000181550010000000041000000041', 'emitenteCnpj', '55666777000188', 'emitenteNome', 'Antiga', 'emissao', now() - interval '60 days', 'valor', 1000, 'situacao', 'autorizada'),
+  jsonb_build_object('tipo', 'evento', 'chave', '42261111222333000181550010000000031000000031', 'tpEvento', '110111')),
+  '4', '9', '138', null, now() + interval '61 minutes'));
+insert into r values ('nf_cienc', to_jsonb(array(select public.nfe_auto_para_ciencia((pg_temp.v('loja') #>> '{}')::uuid, 30))));
+select public.nfe_auto_ciencia((pg_temp.v('loja') #>> '{}')::uuid, '[{"chave": "42261111222333000181550010000000011000000011", "ok": true}]');
+insert into r values ('nf_devidas', to_jsonb((select count(*) from public.nfe_auto_lojas_devidas() x where x = (pg_temp.v('loja') #>> '{}')::uuid)));
+reset role;
+insert into public.nfe_entradas (estoque, loja_id, chave, numero, itens)
+  values (private.estoque_da_loja((pg_temp.v('loja') #>> '{}')::uuid), (pg_temp.v('loja') #>> '{}')::uuid, '42261111222333000181550010000000021000000021', '2', '[]');
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('nf_sit2', public.nfe_auto_situacao((pg_temp.v('loja') #>> '{}')::uuid));
+insert into r values ('nf_xml', to_jsonb(public.nfe_auto_xml((pg_temp.v('loja') #>> '{}')::uuid, (select (x ->> 'id')::uuid from jsonb_array_elements(pg_temp.v('nf_sit2') -> 'notas') x where x ->> 'emitente_nome' = 'Fornecedor B'))));
+select public.nfe_auto_remover((pg_temp.v('loja') #>> '{}')::uuid);
+reset role;
+insert into r values ('nf_segredos', to_jsonb((select count(*) from private.nfe_segredos)));
+\o
+select case when pg_temp.v('nf_sit1') #>> '{certificado,cnpj}' = '11222333000181' and pg_temp.v('nf_sit1') #>> '{certificado,cnpj_certificado}' = '11222333000270'
+             and pg_temp.v('nf_sit1')::text not like '%senha-secreta%' and pg_temp.v('nf_sit1')::text not like '%PPPP%'
+             and pg_temp.v('nf_cred') ->> 'senha' = 'senha-secreta-123' and pg_temp.v('nf_cred') ->> 'pfx' = repeat('P', 300) and pg_temp.v('nf_cred') ->> 'ult_nsu' = '000000000000000'
+             and (pg_temp.v('nf_reg') ->> 'novas')::int = 4 and (pg_temp.v('nf_reg') ->> 'xmls')::int = 1
+             and pg_temp.v('nf_cienc') = '["42261111222333000181550010000000011000000011"]'
+             and pg_temp.v('nf_devidas') = '0'
+             and (select string_agg(x ->> 'emitente_nome' || ':' || (x ->> 'status') || ':' || (x ->> 'situacao'), ',' order by x ->> 'emitente_nome') from jsonb_array_elements(pg_temp.v('nf_sit2') -> 'notas') x)
+                 = 'Antiga:resumo:autorizada,Fornecedor A:ciencia:autorizada,Fornecedor B:importada:autorizada,Fornecedor C:resumo:cancelada'
+             and pg_temp.v('nf_xml') = '"<nfeProc>B</nfeProc>"' and pg_temp.v('nf_segredos') = '0'
+            then 'ok NF-e automática: certificado só do dono e do mesmo CNPJ, segredo fora do app, resumo/XML/cancelamento, ciência e nota importada saindo da fila'
+            else 'FALHOU NF-e automática ' || coalesce(pg_temp.v('nf_sit2')::text, '-') || ' cienc=' || coalesce(pg_temp.v('nf_cienc')::text, '-') || ' reg=' || coalesce(pg_temp.v('nf_reg')::text, '-') end;
