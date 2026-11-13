@@ -1,17 +1,30 @@
 'use client';
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { formatarReais, UNIDADES_ESTOQUE, type UnidadeEstoque } from '@res/core';
-import { ajustarEstoque, salvarContagem, salvarInsumo } from '@/app/(painel)/estoque/actions';
+import { ajustarEstoque, ligarEan, salvarContagem, salvarInsumo } from '@/app/(painel)/estoque/actions';
+import { Bipar } from '@/components/estoque/bipar';
 import { salvando } from '@/components/tempo-real';
-import { n, quantidadeTexto, type ContagemPainel, type Insumo } from '@/lib/estoque';
+import { n, quantidadeTexto, type ContagemPainel, type Insumo, type MapaEans } from '@/lib/estoque';
 
 const num = (t: string) => (t.trim() === '' ? NaN : Number(t.replace(/\./g, '').replace(',', '.')));
 const CHAVE = 'res_contagem_rascunho';
 type Origem = 'todos' | 'nfe' | 'manual';
 
 /** Contagem de estoque (D-038): conta tudo numa folha só, inclui itens à mão e salva de uma vez. */
-export function Contagem({ lojaId, insumos, painel }: { lojaId: string; insumos: Insumo[]; painel: ContagemPainel }) {
+export function Contagem({ lojaId, insumos, painel, eans = {} }: { lojaId: string; insumos: Insumo[]; painel: ContagemPainel; eans?: MapaEans }) {
   const [contado, setContado] = useState<Record<string, string>>({});
+  const [mapa, setMapa] = useState(eans);
+  const [bipado, setBipado] = useState<{ t: string; ean?: string } | null>(null);
+  /** Bipou (D-103): acha o insumo pelo código de barras e põe o cursor no campo dele; desconhecido, pede para ligar. */
+  const aoBipar = (cod: string) => {
+    const alvo = mapa[cod] && insumos.find((i) => i.id === mapa[cod]!.insumo_id);
+    if (!alvo) return setBipado({ t: `Código ${cod} ainda não está ligado a um insumo. Escolha o insumo:`, ean: cod });
+    setOrigem('todos');
+    setCategoria('');
+    setBusca(alvo.nome);
+    setBipado({ t: `${alvo.nome}: digite a quantidade contada.` });
+    setTimeout(() => document.querySelector<HTMLInputElement>(`.ct-campo input[data-insumo="${alvo.id}"]`)?.focus(), 60);
+  };
   const [origem, setOrigem] = useState<Origem>('todos');
   const [categoria, setCategoria] = useState('');
   const [busca, setBusca] = useState('');
@@ -50,6 +63,29 @@ export function Contagem({ lojaId, insumos, painel }: { lojaId: string; insumos:
 
   return (
     <div className="grade">
+      <Bipar aoLer={aoBipar} rotulo="Bipe o código de barras do produto (ou digite e Enter)" />
+      {bipado && (
+        <p className="aviso nao-imprimir" role="status" style={{ margin: 0 }}>
+          {bipado.t}{' '}
+          {bipado.ean && (
+            <select aria-label="Insumo deste código" defaultValue="" onChange={async (e) => {
+              const id = e.target.value;
+              const ean = bipado.ean!;
+              if (!id) return;
+              const r = await salvando(ligarEan(ean, id));
+              if (!r.ok) return setBipado({ t: r.erro });
+              setMapa((m) => ({ ...m, [ean]: { insumo_id: id, fator: 1 } }));
+              const alvo = insumos.find((i) => i.id === id);
+              setBusca(alvo?.nome ?? '');
+              setBipado({ t: `Pronto: o código agora abre ${alvo?.nome}. Digite a quantidade contada.` });
+              setTimeout(() => document.querySelector<HTMLInputElement>(`.ct-campo input[data-insumo="${id}"]`)?.focus(), 60);
+            }}>
+              <option value="">Escolher…</option>
+              {insumos.map((i) => <option key={i.id} value={i.id}>{i.nome}</option>)}
+            </select>
+          )}
+        </p>
+      )}
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <div className="seg-chips" role="tablist" aria-label="Origem">
           {([['todos', 'Todos', insumos.length], ['nfe', 'Importados de NF-e', insumos.filter((i) => deNfe.has(i.id)).length], ['manual', 'Cadastrados à mão', insumos.filter((i) => !deNfe.has(i.id)).length]] as const).map(([v, r, q]) => (
@@ -86,7 +122,7 @@ export function Contagem({ lojaId, insumos, painel }: { lojaId: string; insumos:
                     <td className={n(i.saldo) < 0 ? 'erro' : undefined}>{quantidadeTexto(n(i.saldo), i.unidade)}</td>
                     <td>
                       <span className="ct-campo">
-                        <input inputMode="decimal" value={contado[i.id] ?? ''} aria-label={`Contado de ${i.nome}`}
+                        <input inputMode="decimal" data-insumo={i.id} value={contado[i.id] ?? ''} aria-label={`Contado de ${i.nome}`}
                           onChange={(e) => setContado((c) => { const x = { ...c }; if (e.target.value === '') delete x[i.id]; else x[i.id] = e.target.value; return x; })}
                           onKeyDown={(e) => { if (e.key === 'Enter') { const ins = [...document.querySelectorAll<HTMLInputElement>('.ct-campo input')]; ins[ins.indexOf(e.currentTarget) + 1]?.focus(); } }}
                         />

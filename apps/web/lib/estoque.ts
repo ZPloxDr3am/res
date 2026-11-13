@@ -34,6 +34,10 @@ export type Movimento = {
   pedido: number | null;
   em: string;
 };
+/** Lista de compras (D-103): insumo no mínimo ou abaixo, com o último fornecedor. */
+export type ItemCompra = { id: string; nome: string; unidade: string; saldo: number; minimo: number; sugestao: number; custo: number | null; fornecedor: string | null; fornecedor_cnpj: string | null; ultima_compra: string | null };
+export type MapaEans = Record<string, { insumo_id: string; fator: number }>;
+
 export type NotaImportada = { id: string; chave: string; numero: string; emitente: string; emissao: string | null; valor: number; itens: number; loja: string; em: string };
 export type ItemFicha = { produto_id: string | null; opcao_id: string | null; insumo_id: string; insumo: string; unidade: UnidadeEstoque; quantidade: number; custo: number };
 
