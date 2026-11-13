@@ -24,7 +24,7 @@ export default async function PaginaAcompanhar({ params }: { params: Promise<{ s
   const ex = (extras.data as ExtrasPedido | null) ?? { pix: null, avaliacao: null };
   return (
     <>
-      <AcompanharPedido pedido={p} extras={ex} pixMp={mp ? { codigo, pago: !!ex.pix?.pago } : null} />
+      <AcompanharPedido pedido={p} extras={ex} pixMp={mp ? { codigo, pago: !!ex.pix?.pago } : null} codigo={codigo} />
       <Rastreamento config={(rastreio.data as ConfigRastreio | null) ?? {}} compra={p.status === 'cancelado' ? undefined : { codigo, numero: p.numero, valor: p.total }} />
     </>
   );

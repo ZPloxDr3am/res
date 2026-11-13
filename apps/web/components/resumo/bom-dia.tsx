@@ -11,6 +11,7 @@ const DESTINO: Record<PendenciaBomDia['chave'], string> = {
   motoboys: '/lojas',
   agendados: '/pedidos',
   margem: '/estoque?aba=margens',
+  avaliacoes: '/avaliacoes',
 };
 const SEMANA = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 

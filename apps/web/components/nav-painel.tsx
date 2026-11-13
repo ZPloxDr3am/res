@@ -45,6 +45,7 @@ const SECOES: { titulo: string; links: Link_[] }[] = [
       { href: '/clientes', rotulo: 'Clientes', icone: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' },
       { href: '/fidelidade', rotulo: 'Fidelidade', icone: 'M12 21l-8-8a5 5 0 0 1 7-7l1 1 1-1a5 5 0 0 1 7 7z' },
       { href: '/turbo', rotulo: 'Turbo-Vendas', icone: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z' },
+      { href: '/avaliacoes', rotulo: 'Avaliações', icone: 'M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z' },
     ],
   },
   {

@@ -928,3 +928,11 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - **👩‍🍳 Produção prevista**: escolhendo amanhã ou outro dia da semana, mostra quantos de cada produto a loja costuma vender nesse dia e quanto de cada insumo separar/preparar.
 - Estoque compartilhado do grupo: o consumo é o de todas as lojas do estoque; a produção é a da loja aberta.
 - Código: `packages/core/src/previsao.ts` (testado), `components/estoque/previsao.tsx`, migração `20261113280000_previsao_compras.sql` (`previsao_estoque`).
+
+## D-111 — Avaliação do pedido pelo cliente (13/11/2026)
+- Na página de acompanhamento, com o pedido **concluído há até 7 dias**, o cliente dá de 1 a 5 estrelas. Com nota 1–3, marca o que não foi bem (demorou, chegou frio, veio errado, faltou item, embalagem, sabor, atendimento, preço) e pode comentar. Dá para corrigir a avaliação na primeira hora.
+- **Nota 4 ou 5**: agradece e convida para avaliar no **Google** (o link de Aplicativos → Avaliação no Google). Nota baixa: agradece e avisa que a loja pode entrar em contato. O link do Google deixou de aparecer para quem ainda não avaliou.
+- **Painel → Clientes → Avaliações** (dono/gerente): nota média, % dos pedidos avaliados, distribuição das notas, o que mais reclamam e a lista, com **Falar no WhatsApp** (mensagem pronta) e **Marcar como resolvido**.
+- **Aviso na hora**: nota 1–3 aparece no topo de qualquer tela do painel (tempo real) para dono/gerente; e o **Bom dia** mostra "😟 N clientes deram nota baixa" (últimos 7 dias, não resolvidas).
+- Segurança: a avaliação só entra pelo código do pedido (o mesmo link que o cliente recebeu); a tabela é fechada para o app, com leitura direta só para quem gere a loja (para o tempo real).
+- Migração `20261113290000_avaliacao_pedido.sql` (`avaliacoes_pedido`, `avaliar_pedido`, `avaliacoes_painel`, `avaliacao_resolver`, `extras_pedido_publico` e `resumo_manha` atualizadas).

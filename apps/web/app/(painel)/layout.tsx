@@ -8,6 +8,7 @@ import { MenuRodape } from '@/components/menu-rodape';
 import { headers } from 'next/headers';
 import { moduloDaRota } from '@res/core';
 import { ModuloTravado } from '@/components/modulo-travado';
+import { AvisoAvaliacao } from '@/components/avaliacoes/aviso';
 
 export default async function PainelLayout({ children }: { children: React.ReactNode }) {
   const ctx = await contextoLoja();
@@ -57,6 +58,7 @@ export default async function PainelLayout({ children }: { children: React.React
       </aside>
       <main className="conteudo">
         {situacao && <FaixaConta s={situacao} />}
+        {(ctx.papel === 'dono' || ctx.papel === 'gerente') && <AvisoAvaliacao lojaId={ctx.lojaId} />}
         {telaTravada ? <ModuloTravado modulo={telaTravada} dono={ctx.papel === 'dono'} /> : children}
       </main>
     </div>

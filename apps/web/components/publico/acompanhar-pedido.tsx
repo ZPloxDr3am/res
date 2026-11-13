@@ -7,12 +7,13 @@ import type { Acompanhamento } from '@/lib/publico';
 import { MapaCliente } from './mapa-cliente';
 import { PagarPix } from './pagar-pix';
 import { PagarPixMp } from './pagar-pix-mp';
+import { AvaliarPedido } from './avaliar-pedido';
 
-export type ExtrasPedido = { pix: { chave: string; nome: string; cidade: string; valor: number; numero: number; pago: boolean } | null; avaliacao: string | null };
+export type ExtrasPedido = { pix: { chave: string; nome: string; cidade: string; valor: number; numero: number; pago: boolean } | null; avaliacao: string | null; avaliado?: number | null; pode_avaliar?: boolean };
 
 const hora = (iso: string | null) => (iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : null);
 
-export function AcompanharPedido({ pedido: p, extras, pixMp }: { pedido: Acompanhamento; extras: ExtrasPedido; pixMp?: { codigo: string; pago: boolean } | null }) {
+export function AcompanharPedido({ pedido: p, extras, pixMp, codigo }: { pedido: Acompanhamento; extras: ExtrasPedido; pixMp?: { codigo: string; pago: boolean } | null; codigo?: string }) {
   const router = useRouter();
   const final = p.status === 'concluido' || p.status === 'cancelado';
 
@@ -61,7 +62,9 @@ export function AcompanharPedido({ pedido: p, extras, pixMp }: { pedido: Acompan
           </ol>
         )}
         {pixMp && p.status !== 'cancelado' ? <PagarPixMp codigo={pixMp.codigo} pago={pixMp.pago} /> : extras.pix && p.status !== 'cancelado' && <PagarPix pix={extras.pix} />}
-        {extras.avaliacao && p.status === 'concluido' && (
+        {codigo && p.status === 'concluido' && (extras.pode_avaliar || extras.avaliado) ? (
+          <AvaliarPedido codigo={codigo} marca={p.marca} google={extras.avaliacao} jaAvaliado={extras.avaliado ?? null} />
+        ) : extras.avaliacao && p.status === 'concluido' && (
           <a className="cartao pub-avaliar" href={extras.avaliacao} target="_blank" rel="noopener noreferrer">
             <strong>Gostou? Avalie a {p.marca} no Google ⭐</strong>
             <span className="dica">Leva 10 segundos e ajuda muito a loja.</span>
