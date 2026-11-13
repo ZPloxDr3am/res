@@ -114,9 +114,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/estoque/actions.ts": {
-    "mtime": 1794605824.6385622,
-    "seen": 1794605833.2363057,
-    "ast_hash": "9c129ccf7d4f8709bb5cc84d98edfaec",
+    "mtime": 1794608542.2678254,
+    "seen": 1794608647.5283206,
+    "ast_hash": "dd6e095fdbd2962e08bc6eb4ce3fbe27",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/estoque/page.tsx": {
@@ -774,9 +774,9 @@
     "semantic_hash": "5cdfd4370fd28d758ecb20acb96116a4"
   },
   "apps/web/lib/estoque.ts": {
-    "mtime": 1794605824.6425622,
-    "seen": 1794605833.2412333,
-    "ast_hash": "565d807663a6a51fbd1316089c6b1fbc",
+    "mtime": 1794608583.7345364,
+    "seen": 1794608647.5287404,
+    "ast_hash": "0cf788cc36e65339d520373a643759be",
     "semantic_hash": ""
   },
   "apps/web/lib/fidelidade.ts": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794607865.154672,
-    "seen": 1794607872.720256,
-    "ast_hash": "e75c0a4566ed8b1a0da00521ac3ea2c7",
+    "mtime": 1794608643.059416,
+    "seen": 1794608647.5291524,
+    "ast_hash": "082d0fb80e3c88304ceb2d5952ccf25a",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2520,9 +2520,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzz_convites.sql": {
-    "mtime": 1794607865.2470436,
-    "seen": 1794607872.7200046,
-    "ast_hash": "cb5810059fa1668842e30436c95c1cbd",
+    "mtime": 1794608521.3154087,
+    "seen": 1794608647.529112,
+    "ast_hash": "22ee93335c6711f22225705a2ece73fc",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/actions.ts": {
@@ -2790,9 +2790,9 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1794607865.1534402,
-    "seen": 1794607872.7202334,
-    "ast_hash": "af081a8f84c9f6e927482951faf794d5",
+    "mtime": 1794608643.0762327,
+    "seen": 1794608647.5291498,
+    "ast_hash": "1911094a3c32194815f5eeddf489586b",
     "semantic_hash": ""
   },
   "docs/comercial/README.md": {
@@ -2851,8 +2851,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794607013.0717847,
-    "ast_hash": "",
+    "seen": 1794608647.5282502,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -3084,9 +3084,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/estoque/caixa-nfe.tsx": {
-    "mtime": 1794602819.1619377,
-    "seen": 1794605499.6934114,
-    "ast_hash": "d5e1bb47911dadd627b3809c21a7856f",
+    "mtime": 1794608579.4536185,
+    "seen": 1794608647.5285783,
+    "ast_hash": "479144184e492d8325656c6d5017629a",
     "semantic_hash": ""
   },
   "apps/web/lib/nfe/certificado.ts": {
@@ -3126,9 +3126,9 @@
     "semantic_hash": ""
   },
   "docs/qualidade/roteiros/nfe-caixa-entrada.md": {
-    "mtime": 1794602819.1624477,
-    "seen": 1794605499.6939433,
-    "ast_hash": "0746753e5c9e17adb7b5d3501df587e4",
+    "mtime": 1794608643.0762327,
+    "seen": 1794608647.5291853,
+    "ast_hash": "f2c74eef48c56efbcfd331dd0576da62",
     "semantic_hash": ""
   },
   "apps/web/components/estoque/bipar.tsx": {
@@ -3153,6 +3153,90 @@
     "mtime": 1794605824.6425622,
     "seen": 1794607013.0725555,
     "ast_hash": "c32ae519568e0a2850e2808813ef111c",
+    "semantic_hash": ""
+  },
+  "apps/web/app/seja-motoboy/[token]/actions.ts": {
+    "mtime": 1794607865.1532452,
+    "seen": 1794608647.5284941,
+    "ast_hash": "e817d8cf5ff644b691245e6628f55d7f",
+    "semantic_hash": ""
+  },
+  "apps/web/app/seja-motoboy/[token]/form.tsx": {
+    "mtime": 1794607865.1534402,
+    "seen": 1794608647.528496,
+    "ast_hash": "8fafaebe0eab5cbef60e2aba58f865ab",
+    "semantic_hash": ""
+  },
+  "apps/web/app/seja-motoboy/[token]/page.tsx": {
+    "mtime": 1794607865.1534402,
+    "seen": 1794608647.5284972,
+    "ast_hash": "72ce48da262942db83d661efe000e64e",
+    "semantic_hash": ""
+  },
+  "apps/web/components/equipe/motoboy-link.tsx": {
+    "mtime": 1794607865.1534402,
+    "seen": 1794608647.528574,
+    "ast_hash": "8d62d3d78640610499481a4f90557c66",
+    "semantic_hash": ""
+  },
+  "apps/web/components/financeiro/extrato.tsx": {
+    "mtime": 1794607865.1534402,
+    "seen": 1794608647.528623,
+    "ast_hash": "2151084faa45114416fe714bc664481e",
+    "semantic_hash": ""
+  },
+  "apps/web/components/financeiro/ler-boleto.tsx": {
+    "mtime": 1794607865.1534402,
+    "seen": 1794608647.5286279,
+    "ast_hash": "392b7aac6447a85e91dafb813ce6488f",
+    "semantic_hash": ""
+  },
+  "apps/web/components/resumo/bom-dia.tsx": {
+    "mtime": 1794607865.1534402,
+    "seen": 1794608647.528701,
+    "ast_hash": "b7e845a57150a4e4f22d1b82461bd9a2",
+    "semantic_hash": ""
+  },
+  "packages/core/src/banco.ts": {
+    "mtime": 1794607865.1626718,
+    "seen": 1794608647.5288255,
+    "ast_hash": "c21a082ddea405b41907b5a898f56a0a",
+    "semantic_hash": ""
+  },
+  "packages/core/test/banco.test.ts": {
+    "mtime": 1794607865.1626718,
+    "seen": 1794608647.528877,
+    "ast_hash": "16c444f9c50bc3aabac654abba9cc408",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261113220000_motoboy_se_cadastra.sql": {
+    "mtime": 1794607865.2426717,
+    "seen": 1794608647.5290613,
+    "ast_hash": "7e9273011450e4c683ba9c2c98616b75",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261113230000_financeiro_automatico.sql": {
+    "mtime": 1794607865.2426717,
+    "seen": 1794608647.529063,
+    "ast_hash": "03b564583a32c3a29d148531289a3f47",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261113240000_um_certificado.sql": {
+    "mtime": 1794608583.7205317,
+    "seen": 1794608647.529064,
+    "ast_hash": "bbfa67ba708876a7010506590535a202",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/financeiro-automatico.md": {
+    "mtime": 1794607865.154672,
+    "seen": 1794608647.5291824,
+    "ast_hash": "a8f5ae7d0125106200c90f2ffc179d8c",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/motoboy-se-cadastra.md": {
+    "mtime": 1794607865.154672,
+    "seen": 1794608647.5291836,
+    "ast_hash": "b6bcbd5231513b017a3563a75272b71c",
     "semantic_hash": ""
   }
 }
