@@ -18,6 +18,7 @@ import { SaboresPizza } from '@/components/estoque/sabores-pizza';
 
 import { Margens, type DadosMargem } from '@/components/estoque/margens';
 import type { DadosPerdas } from '@/components/estoque/perdas';
+import { Previsao, type DadosPrevisao } from '@/components/estoque/previsao';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // "Buscar agora" na SEFAZ (caixa de entrada de NF-e, D-102)
 
@@ -118,8 +119,17 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
     const [notas, caixa, eans] = await Promise.all([supabase.rpc('notas_importadas', { p_loja: ctx.lojaId }), supabase.rpc('nfe_auto_situacao', { p_loja: ctx.lojaId }), supabase.rpc('eans_do_estoque', { p_loja: ctx.lojaId })]);
     conteudo = <ImportarNFe insumos={p.insumos} notas={(notas.data as NotaImportada[] | null) ?? []} caixa={(caixa.data as SituacaoCaixaNFe | null) ?? null} eans={(eans.data as MapaEans | null) ?? {}} />;
   } else if (aba === 'compras') {
-    const [lista, loja] = await Promise.all([supabase.rpc('lista_compras', { p_loja: ctx.lojaId }), supabase.from('lojas').select('pausar_sem_insumo').eq('id', ctx.lojaId).maybeSingle()]);
-    conteudo = <ListaCompras itens={(lista.data as ItemCompra[] | null) ?? []} loja={ctx.lojaNome} pausar={!!loja.data?.pausar_sem_insumo} gestor={ctx.papel === 'dono' || ctx.papel === 'gerente'} semMinimo={p.insumos.filter((i) => i.minimo == null).length} />;
+    const [lista, loja, prev] = await Promise.all([
+      supabase.rpc('lista_compras', { p_loja: ctx.lojaId }),
+      supabase.from('lojas').select('pausar_sem_insumo').eq('id', ctx.lojaId).maybeSingle(),
+      supabase.rpc('previsao_estoque', { p_loja: ctx.lojaId }),
+    ]);
+    conteudo = (
+      <div className="grade">
+        <ListaCompras itens={(lista.data as ItemCompra[] | null) ?? []} loja={ctx.lojaNome} pausar={!!loja.data?.pausar_sem_insumo} gestor={ctx.papel === 'dono' || ctx.papel === 'gerente'} semMinimo={p.insumos.filter((i) => i.minimo == null).length} />
+        {prev.data ? <Previsao dados={prev.data as DadosPrevisao} loja={ctx.lojaNome} /> : null}
+      </div>
+    );
   } else {
     const prods = await supabase.from('produtos').select('id, nome').eq('loja_id', ctx.lojaId).eq('combo', false).order('nome');
     conteudo = <Movimentacoes insumos={p.insumos} produtos={(prods.data ?? []) as { id: string; nome: string }[]} inicial={{ insumo: sp.insumo ?? '' }} />;

@@ -30,3 +30,4 @@ export * from './banco.js';
 export * from './ia.js';
 export * from './margem.js';
 export * from './perdas.js';
+export * from './previsao.js';

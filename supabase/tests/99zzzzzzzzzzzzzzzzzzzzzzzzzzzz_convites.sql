@@ -639,3 +639,22 @@ select case when pg_temp.v('mq') ->> 'ate' is not null
                     from jsonb_array_elements(pg_temp.v('pp') -> 'perdas') x where x ->> 'insumo' = 'Pão auto' limit 1)
             then 'ok maquininha e perdas: crédito da maquininha no extrato, perda de produto pela ficha, só gestor no financeiro'
             else 'FALHOU maquininha/perdas mq=' || coalesce(pg_temp.v('mq')::text, '-') || ' pp=' || coalesce(pg_temp.v('pp')::text, '-') end;
+-- Previsão (D-110): consumo por dia da semana das vendas passadas
+\o /dev/null
+reset role;
+-- uma venda de 8 dias atrás (dentro das 4 semanas, fora de hoje)
+insert into public.estoque_movimentos (estoque, loja_id, insumo_id, tipo, quantidade, custo_unit, saldo_apos, criado_em)
+select i.estoque, (pg_temp.v('loja') #>> '{}')::uuid, i.id, 'venda', -4, i.custo_medio, i.saldo, now() - interval '8 days'
+  from public.insumos i where i.id = (pg_temp.v('ea_eans') #>> '{7891234567895,insumo_id}')::uuid;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a2');
+insert into r values ('pv', public.previsao_estoque((pg_temp.v('loja') #>> '{}')::uuid));
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000005a3');
+select from pg_temp.esperar_erro(format('select public.previsao_estoque(%L)', pg_temp.v('loja') #>> '{}'), 'acesso ao estoque');
+reset role;
+\o
+select case when (select (x -> 'dow' ->> extract(dow from ((now() - interval '8 days') at time zone 'America/Sao_Paulo'))::int)::numeric = 1
+                    from jsonb_array_elements(pg_temp.v('pv') -> 'insumos') x where x ->> 'nome' = 'Pão auto')
+             and jsonb_array_length(pg_temp.v('pv') -> 'insumos' -> 0 -> 'dow') = 7 and pg_temp.v('pv') ? 'produtos'
+            then 'ok previsão: consumo médio por dia da semana nas últimas 4 semanas'
+            else 'FALHOU previsão ' || coalesce(pg_temp.v('pv')::text, '-') end;
