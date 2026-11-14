@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { usePedidoFlutuante } from '@/components/pedido-flutuante';
 import { SeletorLoja } from '@/components/seletor-loja';
 import { rotaLiberada } from '@res/core';
+import { SeletorTema, useTema } from '@/components/tema';
 
 // Ícones simples em traço (sem biblioteca), 20×20, herdam a cor do texto.
 const Icone = ({ d }: { d: string }) => (
@@ -149,6 +150,7 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeiros
               </section>
             ))}
             <LinksESuporte marcas={marcas} lojaNome={lojaNome} />
+            <Aparencia />
             <form action="/auth/sair" method="post">
               <button className="menu-bloco menu-sair">Sair</button>
             </form>
@@ -157,6 +159,17 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeiros
         </div>
       )}
     </>
+  );
+}
+
+// Celular (D-112): Claro · Escuro · Automático na folha "Mais" (no computador fica no rodapé do menu)
+function Aparencia() {
+  const tema = useTema();
+  return (
+    <section className="menu-folha-secao" style={{ ['--cor' as string]: '#64748b' }}>
+      <h2>Aparência</h2>
+      <SeletorTema {...tema} />
+    </section>
   );
 }
 

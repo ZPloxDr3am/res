@@ -1,7 +1,8 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { SeletorTema, iconeTema, useTema, OPCOES_TEMA } from '@/components/tema';
 
-// Rodapé fixo do menu (D-081): Meus links, Suporte, Sair e a versão. Fica sempre visível, embaixo.
+// Rodapé fixo do menu (D-081): Meus links, Suporte, Aparência (D-112), Sair e a versão. Fica sempre visível, embaixo.
 const SUPORTE_WHATSAPP = (process.env.NEXT_PUBLIC_SUPORTE_WHATSAPP ?? '').replace(/\D/g, '');
 
 const Icone = ({ d }: { d: string }) => (
@@ -11,7 +12,8 @@ const Icone = ({ d }: { d: string }) => (
 );
 
 export function MenuRodape({ marcas, lojaNome, versao }: { marcas: { nome: string; slug: string }[]; lojaNome: string; versao: string | null }) {
-  const [aberto, setAberto] = useState<'links' | 'suporte' | null>(null);
+  const [aberto, setAberto] = useState<'links' | 'suporte' | 'tema' | null>(null);
+  const tema = useTema();
   const [copiado, setCopiado] = useState<string | null>(null);
   const caixa = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -35,7 +37,7 @@ export function MenuRodape({ marcas, lojaNome, versao }: { marcas: { nome: strin
       /* sem permissão */
     }
   };
-  const alternar = (q: 'links' | 'suporte') => setAberto((a) => (a === q ? null : q));
+  const alternar = (q: 'links' | 'suporte' | 'tema') => setAberto((a) => (a === q ? null : q));
 
   return (
     <div className="menu-rodape" ref={caixa}>
@@ -75,6 +77,17 @@ export function MenuRodape({ marcas, lojaNome, versao }: { marcas: { nome: strin
           )}
         </div>
       )}
+      {aberto === 'tema' && (
+        <div className="menu-pop" role="dialog" aria-label="Aparência">
+          <strong>Aparência</strong>
+          <SeletorTema {...tema} />
+          <span className="dica">Vale só para este aparelho. Automático segue o modo claro/escuro do computador ou celular.</span>
+        </div>
+      )}
+      <button type="button" className="menu-item" aria-expanded={aberto === 'tema'} onClick={() => alternar('tema')} title="Aparência">
+        <Icone d={iconeTema(tema.escolha)} />
+        <span>Tema: {OPCOES_TEMA.find((o) => o.valor === tema.escolha)?.rotulo}</span>
+      </button>
       <button type="button" className="menu-item" aria-expanded={aberto === 'links'} onClick={() => alternar('links')}>
         <Icone d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
         <span>Meus links</span>
