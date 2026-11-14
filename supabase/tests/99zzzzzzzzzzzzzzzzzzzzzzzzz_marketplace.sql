@@ -147,3 +147,40 @@ select case when pg_temp.id('pk') = pg_temp.id('pk2')
                     from public.marketplace_pedidos where pedido_id = pg_temp.id('pk'))
             then 'ok pedido canônico: Open Delivery pela conexão, origem do canal, telefone mascarado, item sem vínculo sinalizado, corpo guardado'
             else 'FALHOU canônico ' || coalesce((select to_jsonb(x)::text from public.marketplace_pedidos x where pedido_id = pg_temp.id('pk')), '-') end;
+
+-- iFood pronto para homologação (D-114): token do app no banco, KEEPALIVE, entregador/cancelamento, pedido alterado, pausa
+\o /dev/null
+-- um pedido novo do iFood (o anterior foi cancelado)
+update saida set v = jsonb_set(jsonb_set(v, '{externo_id}', '"ifd-2"'), '{externo_codigo}', '"4822"') where chave = 'p';
+insert into ids values ('ped3', public.simular_pedido_marketplace(pg_temp.id('loja'), pg_temp.v('p')));
+update public.marketplace_lojas set modo = 'producao', estado = 'conectado' where id = pg_temp.id('ml');
+update public.marcas set status_cardapio = 'aberto' where id = pg_temp.id('marca');
+set role service_role;
+select public.marketplace_app_token_gravar('ifood', 'tok-app', now() + interval '6 hours');
+insert into saida values ('tok', public.marketplace_app_token_ler('ifood'));
+insert into saida values ('ab1', to_jsonb(public.marketplace_abertas('ifood', array['merchant-teste', 'outra'])));
+select public.marketplace_evento_info('ifood', 'ifd-2', 'ADR', '{"entregador": {"nome": "Carlos", "veiculo": "MOTORCYCLE"}}');
+select public.marketplace_evento_info('ifood', 'ifd-2', 'CAR', '{"cancelamento": {"origem": "CUSTOMER", "motivo": "Demorou"}}');
+-- iFood alterou o pedido: tirou a pizza, ficou só o refri
+insert into saida values ('alt', to_jsonb(public.marketplace_atualizar_pedido(
+  jsonb_set(jsonb_set(jsonb_set(jsonb_set(pg_temp.v('p'), '{itens}', jsonb_build_array(pg_temp.v('p') -> 'itens' -> 1)), '{subtotal}', '12'), '{desconto}', '0'), '{acrescimo}', '0'))));
+reset role;
+update public.lojas set pausa_ate = now() + interval '1 hour' where id = pg_temp.id('loja');
+set role service_role;
+insert into saida values ('ab2', to_jsonb(public.marketplace_abertas('ifood', array['merchant-teste'])));
+reset role;
+update public.lojas set pausa_ate = null where id = pg_temp.id('loja');
+insert into saida values ('cfm', to_jsonb(private.aplicar_evento_externo('ifood', 'ifd-2', 'CFM')));
+\o
+select case when pg_temp.v('tok') ->> 'token' = 'tok-app' and pg_temp.v('ab1') = '["merchant-teste"]' and pg_temp.v('ab2') = '[]'
+             and (select entregador ->> 'nome' = 'Carlos' and entregador ->> 'etapa' = 'CAR' is not true and cancelamento_solicitado ->> 'motivo' = 'Demorou' and status_externo = 'CAR'
+                    from public.marketplace_pedidos where pedido_id = pg_temp.id('ped3'))
+             and pg_temp.v('alt') = '"atualizado"'
+             and (select total = 20 and subtotal = 12 from public.pedidos where id = pg_temp.id('ped3'))
+             and (select count(*) = 1 from public.pedido_itens where pedido_id = pg_temp.id('ped3'))
+             and (select string_agg(acao, ',' order by id) from public.marketplace_saida where marketplace_loja_id = pg_temp.id('ml') and pedido_id is null) = 'pausar,abrir'
+             and (select motivo from public.pedido_eventos where pedido_id = pg_temp.id('ped3') order by id desc limit 1) = 'iFood: CFM'
+            then 'ok iFood homologação: token do app no banco, KEEPALIVE só com loja aberta, entregador e cancelamento solicitado, pedido alterado, pausa avisa o app'
+            else 'FALHOU iFood homologação ab1=' || coalesce(pg_temp.v('ab1')::text, '-') || ' ab2=' || coalesce(pg_temp.v('ab2')::text, '-') || ' alt=' || coalesce(pg_temp.v('alt')::text, '-')
+                 || ' mp=' || coalesce((select to_jsonb(x)::text from public.marketplace_pedidos x where pedido_id = pg_temp.id('ped3')), '-')
+                 || ' saida=' || coalesce((select string_agg(acao, ',' order by id) from public.marketplace_saida where pedido_id is null), '-') end;

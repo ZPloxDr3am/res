@@ -949,3 +949,12 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - O mapa `marketplace_pedidos` guarda o **corpo original**, o total informado pelo app (conferência), o prazo prometido e a conexão.
 - O iFood passa a informar também balcão, telefone mascarado, prazo e total do app. Nada muda para quem usa o simulador.
 - Migração `20261114190000_pedido_canonico.sql` (base: D-074).
+
+## D-114 — Integrações, etapa 3: iFood pronto para a homologação (14/11/2026)
+- **Webhook rápido**: grava o evento e responde **202** na hora; o processamento roda depois da resposta (`after` do Next). Assinatura conferida antes do parse (401 se inválida). Falha ao gravar responde 503 (o iFood reenvia; o polling de reserva também pega).
+- **KEEPALIVE**: o RES responde com as lojas **abertas agora** (pausa D-034 + horário/estado da marca) — é assim que a loja fica online/offline no iFood sem chamada extra.
+- **Token do app** guardado no banco (`private.marketplace_app_tokens`): renovado 5 min antes de vencer ou em 401, valendo para todas as instâncias do servidor.
+- **Eventos**: resultado gravado (erro aparece no card e poderá ser reprocessado); `status_externo`; entregador do iFood (ADR/GTO/AAO/CLT/AAD); cancelamento solicitado (CAR) e negado (CARF); **pedido alterado (OPA) e endereço alterado (DAR)** relêem o pedido e refazem itens, valores e endereço enquanto não saiu para entrega. Mensagens de status com o nome do canal.
+- **Polling** em lotes de 100 lojas, com **ack só do que foi gravado**.
+- **Pausa**: pausar a loja no RES envia uma interrupção ao iFood (lojas em produção) e reabrir remove as interrupções ativas.
+- Passo a passo e critérios: `docs/integracoes/ifood-homologacao.md`. Migração `20261114200000_ifood_homologacao.sql`.
