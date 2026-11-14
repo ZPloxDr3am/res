@@ -10,7 +10,7 @@ export type PainelAplicativos = {
 };
 
 /** nativo: já faz parte do RES (abre a tela); config: liga aqui; link: link do grupo; breve: em breve; depois: combinado para mais tarde */
-export type App = { id: string; nome: string; desc: string; icone: string; tipo: 'nativo' | 'config' | 'link' | 'breve' | 'depois' | 'api' | 'mcp' | 'mp' | 'ifood'; href?: string; nota?: string };
+export type App = { id: string; nome: string; desc: string; icone: string; tipo: 'nativo' | 'config' | 'link' | 'breve' | 'depois' | 'api' | 'mcp' | 'mp' | 'ifood' | 'od'; href?: string; nota?: string };
 
 export const CATALOGO: { titulo: string; apps: App[] }[] = [
   {
@@ -47,7 +47,8 @@ export const CATALOGO: { titulo: string; apps: App[] }[] = [
       { id: 'cardapio', nome: 'Cardápio digital', desc: 'Link e QR do seu cardápio, sem taxa por pedido', icone: '📱', tipo: 'nativo', href: '/delivery' },
       { id: 'link', nome: 'Link único do grupo', desc: 'Um link com todos os cardápios das suas lojas', icone: '🔗', tipo: 'link' },
       { id: 'ifood', nome: 'iFood', desc: 'Pedidos do iFood direto no quadro', icone: '🛵', tipo: 'ifood' },
-      { id: 'marketplaces', nome: '99Food, Keeta, Rappi, Aiqfome', desc: 'Outros aplicativos de delivery', icone: '🧩', tipo: 'breve' },
+      { id: 'opendelivery', nome: '99Food, Keeta, aiqfome', desc: 'Pedidos pelo padrão Open Delivery', icone: '🧩', tipo: 'od' },
+      { id: 'marketplaces', nome: 'Rappi, Delivery Much', desc: 'Outros aplicativos de delivery', icone: '🧩', tipo: 'breve' },
     ],
   },
   {
@@ -112,3 +113,20 @@ export type PainelIfood = {
   /** eventos que deram erro (D-115), para reprocessar */
   eventosErro?: { id: number; codigo: string; externo_id: string | null; recebido_em: string; erro: string }[];
 };
+
+/** Open Delivery (D-116): conexões loja × cardápio × app (99Food, Keeta, aiqfome). */
+export type ConexaoODPainel = {
+  id: string;
+  canal: '99food' | 'keeta' | 'aiqfome';
+  marca_id: string;
+  merchant_id: string | null;
+  modo: 'teste' | 'producao';
+  estado: string;
+  config: { base_url?: string | null; token_url?: string | null; client_id?: string | null };
+  ultimo_evento_em: string | null;
+  ultimo_erro: string | null;
+  tem_segredo: boolean;
+  avisos: string[];
+  eventos_com_erro: { id: number; codigo: string; externo_id: string | null; recebido_em: string; erro: string }[];
+};
+export type PainelOD = { marcas: { id: string; nome: string }[]; conexoes: ConexaoODPainel[] };

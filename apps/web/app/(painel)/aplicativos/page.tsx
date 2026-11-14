@@ -1,7 +1,9 @@
 import { headers } from 'next/headers';
 import { contextoLoja } from '@/lib/loja';
 import { criarClienteServidor } from '@/lib/supabase/server';
-import type { PainelApi, PainelAplicativos, PainelIfood, StatusMp } from '@/lib/aplicativos';
+import { avisosMerchantOD, eCanalOD, type BaseMerchant } from '@res/core';
+import type { ConexaoODPainel, PainelApi, PainelAplicativos, PainelIfood, PainelOD, StatusMp } from '@/lib/aplicativos';
+import { clienteAdmin } from '@/lib/supabase/admin';
 import { Aplicativos } from '@/components/aplicativos/aplicativos';
 
 export const dynamic = 'force-dynamic';
@@ -18,6 +20,7 @@ export default async function PaginaAplicativos() {
   const modulos = (mods as { modulos?: string[] } | null)?.modulos ?? null;
   // iFood (D-074): só para dono/gerente; sem a migração, fica nulo
   let ifood: PainelIfood | null = null;
+  let od: PainelOD | null = null;
   if (ctx.papel === 'dono' || ctx.papel === 'gerente') {
     const [lojasMk, itens, prods, peds, saida, painelMk] = await Promise.all([
       supabase.from('marketplace_lojas').select('id, marca_id, merchant_id, modo, ativo, ultimo_evento_em').eq('loja_id', ctx.lojaId).eq('canal', 'ifood'),
@@ -27,8 +30,27 @@ export default async function PaginaAplicativos() {
       supabase.from('marketplace_saida').select('id, acao, situacao, erro, criado_em, pedidos(numero)').eq('loja_id', ctx.lojaId).order('criado_em', { ascending: false }).limit(10),
       supabase.rpc('marketplace_painel', { p_loja: ctx.lojaId }),
     ]);
-    type ConexaoPainel = { canal: string; eventos_com_erro: { id: number; codigo: string; externo_id: string | null; recebido_em: string; erro: string }[] };
-    const conexoes = ((painelMk.data as { conexoes?: ConexaoPainel[] } | null)?.conexoes ?? []).filter((c) => c.canal === 'ifood');
+    type ConexaoPainel = { id: string; canal: string; eventos_com_erro: { id: number; codigo: string; externo_id: string | null; recebido_em: string; erro: string }[] };
+    const todasConexoes = (painelMk.data as { conexoes?: ConexaoPainel[] } | null)?.conexoes ?? [];
+    const conexoes = todasConexoes.filter((c) => c.canal === 'ifood');
+    // Open Delivery (D-116): conexões desta loja (RLS de gestor); avisos do Merchant e "segredo salvo" pelo servidor
+    const { data: odLojas, error: odErro } = await supabase.from('marketplace_lojas').select('id, canal, marca_id, merchant_id, modo, estado, config, ultimo_evento_em, ultimo_erro').eq('loja_id', ctx.lojaId).in('canal', ['99food', 'keeta', 'aiqfome']).order('conectado_em');
+    if (!odErro) {
+      const admin = clienteAdmin();
+      const lista: ConexaoODPainel[] = [];
+      for (const c of odLojas ?? []) {
+        if (!eCanalOD(c.canal as string)) continue;
+        let avisos: string[] = [];
+        let temSegredo = false;
+        if (admin) {
+          const [base, cx] = await Promise.all([admin.rpc('od_merchant_base', { p_id: c.id }), admin.rpc('od_conexao', { p_id: c.id })]);
+          avisos = base.data ? avisosMerchantOD(base.data as BaseMerchant) : ['Não consegui montar o cardápio para o app (falta a migração 20261114220000?).'];
+          temSegredo = !!(cx.data as { segredos?: { client_secret?: string } } | null)?.segredos?.client_secret;
+        }
+        lista.push({ ...(c as unknown as ConexaoODPainel), config: (c.config ?? {}) as ConexaoODPainel['config'], tem_segredo: temSegredo, avisos, eventos_com_erro: todasConexoes.find((x) => x.id === c.id)?.eventos_com_erro ?? [] });
+      }
+      od = { marcas: ctx.marcas.filter((m) => !m.evento).map((m) => ({ id: m.id, nome: m.nome })), conexoes: lista };
+    }
     if (!lojasMk.error) {
       ifood = {
         configurado: !!process.env.IFOOD_CLIENT_ID && !!process.env.IFOOD_CLIENT_SECRET,
@@ -50,7 +72,7 @@ export default async function PaginaAplicativos() {
         <h1 style={{ marginBottom: 0 }}>Aplicativos</h1>
         <p className="dica" style={{ margin: 0 }}>Integrações de {ctx.lojaNome}: ligue o que fizer sentido para a sua operação.</p>
       </div>
-      {error || !data ? <p className="cartao dica">{error?.message ?? 'Sem acesso.'}</p> : <Aplicativos dados={data as PainelAplicativos} origem={origem} api={(api.data as PainelApi | null) ?? null} mp={(mp.data as StatusMp | null) ?? null} ifood={ifood} modulos={modulos} />}
+      {error || !data ? <p className="cartao dica">{error?.message ?? 'Sem acesso.'}</p> : <Aplicativos dados={data as PainelAplicativos} origem={origem} api={(api.data as PainelApi | null) ?? null} mp={(mp.data as StatusMp | null) ?? null} ifood={ifood} od={od} modulos={modulos} />}
     </div>
   );
 }

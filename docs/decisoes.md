@@ -964,3 +964,21 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - O quadro lê esses dados por `marketplace_info_pedidos` (qualquer pessoa da loja; sem o corpo original, que continua só para dono/gerente).
 - **Aplicativos → iFood**: lista de **eventos com erro** com **Reprocessar** (o servidor relê o evento guardado), ações novas na fila (pausar/reabrir, "falhou 6 vezes") e a lista da homologação atualizada.
 - Migração `20261114210000_painel_canais.sql`.
+
+## D-116 — Integrações, etapa 4: servidor Open Delivery 1.7.1 (99Food, Keeta, aiqfome) (14/11/2026)
+- O RES passa a ser **servidor do padrão Open Delivery (Abrasel) 1.7.1**. Cada conexão é loja × cardápio × app e tem a própria URL base: `https://res-iqzs.vercel.app/api/od/<conexão>/v1`.
+  - `GET /merchant` (com `X-API-KEY`): o cardápio no formato do padrão, montado do cardápio público. Inclui loja, horários, raio de entrega (Q-11: a maior faixa de km; o cardápio próprio continua por bairros e faixas, D-048), preços próprios do app (Q-14, `marketplace_precos`), grupos de opções (pizza: maior→MAX, média→AVG) e combos. Validado contra o schema oficial 1.7.1 sem erros.
+  - `GET /versions/merchant`: `1.7.1`.
+  - `POST /newEvent` e `/orderUpdate`: registra o evento sem repetir (pela conexão), responde 200 na hora e processa depois. Confere `X-App-MerchantId` quando o id da loja no app já está salvo, e `X-App-Signature` (HMAC-SHA256 do corpo) quando o app nos der um segredo de assinatura.
+  - Ao processar `CREATED`, o RES busca o pedido no app (a `orderURL` só é usada se for do mesmo host da URL do app) e cria o pedido canônico (D-113). Status, cancelamento, cancelamento solicitado e cancelamento negado seguem o mesmo caminho do iFood.
+- **Saída**: confirmar, preparar, pronto (aiqfome usa `ready-for-pickup`), saiu, **entregue** (só quando a entrega é da loja), cancelar (motivos do padrão: o quadro mostra a lista de 11 códigos), aceitar e negar cancelamento.
+  - O **merchantUpdate** é enviado quando o cardápio muda (um só pendente por conexão, 1 minuto depois) e quando a loja pausa ou reabre.
+  - Vai pela mesma fila e pelo mesmo reenvio (1/2/4/8/16 min). O agendador chama a fila do Open Delivery mesmo sem o iFood configurado.
+  - Token OAuth `client_credentials` (ou `refresh_token`) por conexão, guardado no cofre e renovado no 401.
+- **Aplicativos → 99Food, Keeta, aiqfome**:
+  - Criar a conexão gera a chave de acesso (mostrada uma vez; dá para gerar outra).
+  - Campos: URL do app, URL do token, client id, client secret e id da loja no app. O client secret é digitado pela loja e vai direto para o cofre: ninguém lê de volta.
+  - Modo teste ou produção. Avisos do que falta para o app aceitar (CNPJ, logo, raio…). Eventos com erro, com Reprocessar.
+  - Usa o módulo `ifood` do plano, que vale para todos os apps de delivery.
+- **Ficam para depois**: a autorização do aiqfome pelo ID Magalu (authorization_code), o `app_level_token` da Keeta e os clientes Delivery Much e Rappi.
+- Segurança: segredos só no servidor (`service_role`); a página só sabe se o segredo existe. Migração `20261114220000_open_delivery.sql`. Roteiro em `docs/qualidade/roteiros/open-delivery.md`; integração em `docs/integracoes/open-delivery.md`.

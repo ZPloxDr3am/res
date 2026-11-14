@@ -3,6 +3,7 @@
 Uma seção por semana, escrita na revisão de sexta. Linguagem de cliente.
 
 ## Semana 46 (09–13/11/2026)
+- **99Food, Keeta e aiqfome**: o RES fala o padrão Open Delivery. O app lê o seu cardápio direto do RES e os pedidos caem no quadro com o selo de cada app; aceitar, pronto, saiu e cancelar voltam para o app sozinhos. Em Aplicativos, crie a conexão e cole os dados que o app te passar.
 - **Avaliação do pedido**: depois da entrega, o cliente dá a nota na própria página do pedido. Nota baixa avisa você na hora, com o WhatsApp do cliente para resolver; nota alta vira convite para avaliar no Google.
 - **Previsão de compra e produção**: pelas vendas de cada dia da semana, o RES diz em que dia cada insumo acaba, quanto comprar para a semana e o que preparar para sexta.
 - **Conferência da maquininha**: com o extrato importado, o RES compara o que devia cair (vendas menos as suas taxas) com o que caiu, e mostra a taxa real que a operadora está cobrando. E as **perdas** ganham motivo, resumo e a perda do produto pronto (a pizza que caiu) em dois cliques.
