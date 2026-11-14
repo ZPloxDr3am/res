@@ -876,8 +876,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1794611725.9874792,
-    "seen": 1794612899.7016377,
+    "mtime": 1794691752.8413453,
+    "seen": 1794691787.2337406,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": "8ccf37b0657b4213f1c10db5c78e039a"
   },
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794691415.6973333,
-    "seen": 1794691419.7614152,
-    "ast_hash": "283a6ec12119af1941103090c549505e",
+    "mtime": 1794691783.6681058,
+    "seen": 1794691787.2340071,
+    "ast_hash": "9a4757565f4f7089e5d258334708b39f",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2112,8 +2112,8 @@
     "semantic_hash": ""
   },
   "apps/web/lib/relatorios.ts": {
-    "mtime": 1794691384.5929585,
-    "seen": 1794691419.7609828,
+    "mtime": 1794691549.313338,
+    "seen": 1794691555.895332,
     "ast_hash": "a931f19e7ea8fdd0a28858077ec28fcf",
     "semantic_hash": ""
   },
@@ -2244,9 +2244,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/api/marketplace/ifood/webhook/route.ts": {
-    "mtime": 1794010570.500055,
-    "seen": 1794014272.27631,
-    "ast_hash": "ae42c790aba943eb46e9eb04bb71a4f8",
+    "mtime": 1794691699.8649042,
+    "seen": 1794691787.23346,
+    "ast_hash": "54ca2c565b719870e0388cf35f544ac5",
     "semantic_hash": ""
   },
   "apps/web/components/aplicativos/ifood.tsx": {
@@ -2256,20 +2256,20 @@
     "semantic_hash": ""
   },
   "apps/web/lib/marketplace/ifood.ts": {
-    "mtime": 1794691134.9693232,
-    "seen": 1794691142.7973118,
-    "ast_hash": "7b14766c9c0b33fcd613f4d8724b384f",
+    "mtime": 1794691699.8599064,
+    "seen": 1794691787.233721,
+    "ast_hash": "8dafba26e41fd82ab0775d84f2eb789f",
     "semantic_hash": ""
   },
   "packages/core/src/marketplace.ts": {
-    "mtime": 1794691295.025002,
-    "seen": 1794691419.7610493,
+    "mtime": 1794691549.333338,
+    "seen": 1794691555.8960552,
     "ast_hash": "ea10711a524e8ab5c6538b0c9d07c559",
     "semantic_hash": ""
   },
   "packages/core/test/marketplace.test.ts": {
-    "mtime": 1794691372.513312,
-    "seen": 1794691419.7611322,
+    "mtime": 1794691549.333338,
+    "seen": 1794691555.896665,
     "ast_hash": "64f6523c193f9f9d9116453f8af21cc1",
     "semantic_hash": ""
   },
@@ -2280,9 +2280,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzz_marketplace.sql": {
-    "mtime": 1794691353.045331,
-    "seen": 1794691419.7613888,
-    "ast_hash": "8136be6b8c3fdc5411c06d041e8ff2e5",
+    "mtime": 1794691639.8653412,
+    "seen": 1794691787.2339888,
+    "ast_hash": "1247d129847bd554a2d7a1d42158914c",
     "semantic_hash": ""
   },
   "docs/planejamento/01-objetivo.md": {
@@ -2851,7 +2851,7 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794691419.7604177,
+    "seen": 1794691787.2333632,
     "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
@@ -3426,9 +3426,21 @@
     "semantic_hash": ""
   },
   "supabase/migrations/20261114190000_pedido_canonico.sql": {
-    "mtime": 1794691337.860735,
-    "seen": 1794691419.7613263,
+    "mtime": 1794691549.333338,
+    "seen": 1794691787.2339458,
     "ast_hash": "d84ad72409ddfe14c0706005882b8c6a",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261114200000_ifood_homologacao.sql": {
+    "mtime": 1794691623.8282647,
+    "seen": 1794691787.233947,
+    "ast_hash": "26456e689d06743fc8b3837ffdf706cb",
+    "semantic_hash": ""
+  },
+  "docs/integracoes/ifood-homologacao.md": {
+    "mtime": 1794691783.6681058,
+    "seen": 1794691787.2340152,
+    "ast_hash": "fee6809a857377f02e414b54f754b594",
     "semantic_hash": ""
   }
 }
