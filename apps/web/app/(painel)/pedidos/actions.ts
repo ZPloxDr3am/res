@@ -1,7 +1,7 @@
 'use server';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@supabase/supabase-js';
-import { DOMINIO_USUARIOS, MOTIVOS_CANCELAMENTO_PADRAO, normalizarUsuario, type RespostaNegociacao, type FormaPagamento, type StatusPedido, type TipoPedido } from '@res/core';
+import { DOMINIO_USUARIOS, eCanalOD, MOTIVOS_CANCELAMENTO_OD, MOTIVOS_CANCELAMENTO_PADRAO, normalizarUsuario, type RespostaNegociacao, type FormaPagamento, type StatusPedido, type TipoPedido } from '@res/core';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import { contextoLoja } from '@/lib/loja';
 import { carregarDadosNovoPedido, type DadosNovoPedido } from '@/lib/novo-pedido';
@@ -190,8 +190,10 @@ export async function responderNegociacao(id: string, resposta: RespostaNegociac
 /** Motivos de cancelamento do iFood para este pedido: ao vivo com o iFood ligado; senão a lista padrão. */
 export async function motivosCancelamentoPedido(pedidoId: string): Promise<{ codigo: string; descricao: string }[]> {
   const supabase = await criarClienteServidor();
-  const { data: p } = await supabase.from('pedidos').select('externo_id, loja_id, marca_id').eq('id', pedidoId).maybeSingle();
+  const { data: p } = await supabase.from('pedidos').select('externo_id, externo_canal, loja_id, marca_id').eq('id', pedidoId).maybeSingle();
   if (!p?.externo_id) return MOTIVOS_CANCELAMENTO_PADRAO;
+  // Open Delivery (99Food, Keeta, aiqfome): lista fixa do padrão 1.7.1 (D-116)
+  if (eCanalOD(p.externo_canal as string)) return MOTIVOS_CANCELAMENTO_OD;
   const { data: ml } = await supabase.from('marketplace_lojas').select('modo').eq('loja_id', p.loja_id as string).eq('marca_id', p.marca_id as string).eq('canal', 'ifood').maybeSingle();
   if (ml?.modo !== 'producao') return MOTIVOS_CANCELAMENTO_PADRAO;
   try {

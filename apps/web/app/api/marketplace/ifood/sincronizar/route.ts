@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { clienteAdmin } from '@/lib/supabase/admin';
 import { enviarSaida, ifoodConfigurado, sincronizarEventos } from '@/lib/marketplace/ifood';
+import { enviarSaidaOD } from '@/lib/marketplace/opendelivery';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +19,9 @@ export async function GET(req: Request) {
   if (!process.env.MARKETPLACE_CRON_SEGREDO || chave !== process.env.MARKETPLACE_CRON_SEGREDO) {
     return NextResponse.json({ erro: 'não autorizado' }, { status: 401 });
   }
-  if (!ifoodConfigurado()) return NextResponse.json({ ok: true, modo: 'teste' });
+  // Open Delivery (99Food, Keeta, aiqfome; D-116): a fila de saída vai também, com ou sem iFood ligado
+  const od = await enviarSaidaOD().catch((e: Error) => ({ enviados: 0, erros: 1, falha: e.message }));
+  if (!ifoodConfigurado()) return NextResponse.json({ ok: true, modo: 'teste', od });
   const db = clienteAdmin();
   const { data } = db ? await db.from('marketplace_lojas').select('merchant_id, loja_id').eq('canal', 'ifood').eq('ativo', true).eq('modo', 'producao') : { data: [] };
   // D-085: só lojas com o módulo iFood no plano
@@ -29,8 +32,8 @@ export async function GET(req: Request) {
     if (tem !== false) liberadas.add(l);
   }
   const merchants = lista.filter((m) => liberadas.has(m.loja_id)).map((m) => m.merchant_id);
-  if (merchants.length === 0) return NextResponse.json({ ok: true, merchants: 0 });
+  if (merchants.length === 0) return NextResponse.json({ ok: true, merchants: 0, od });
   const eventos = await sincronizarEventos(merchants);
   const saida = await enviarSaida();
-  return NextResponse.json({ ok: true, merchants: merchants.length, ...eventos, ...saida });
+  return NextResponse.json({ ok: true, merchants: merchants.length, ...eventos, ...saida, od });
 }

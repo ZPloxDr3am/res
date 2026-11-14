@@ -203,3 +203,42 @@ select case when pg_temp.v('info') -> 0 -> 'entregador' ->> 'nome' = 'Carlos' an
              and pg_temp.v('info2') = '0' and pg_temp.v('rep') -> 'corpo' ->> 'code' = 'CFM' and (pg_temp.v('rep') ->> 'loja_id')::uuid = pg_temp.id('loja')
             then 'ok painel dos canais: quadro lê entregador e cancelamento sem o corpo, outra loja não lê, reprocessar só pelo servidor'
             else 'FALHOU painel canais ' || coalesce(pg_temp.v('info')::text, '-') || ' ' || coalesce(pg_temp.v('info2')::text, '-') end;
+
+-- Open Delivery (D-116): conexão para o servidor, dados do Merchant, evento pela conexão, merchantUpdate e delivered
+\o /dev/null
+update public.marketplace_lojas set modo = 'producao', estado = 'conectado', config = '{"base_url": "https://app.exemplo/od"}' where id = pg_temp.id('mlk');
+insert into public.faixas_km (loja_id, marca_id, ate_km, taxa) values (pg_temp.id('loja'), pg_temp.id('marca'), 6, 7) on conflict do nothing;
+set role service_role;
+select public.marketplace_segredos_gravar(pg_temp.id('mlk'), '{"api_key": "chave-od"}');
+insert into saida values ('odc', public.od_conexao(pg_temp.id('mlk')));
+insert into saida values ('odm', public.od_merchant_base(pg_temp.id('mlk')));
+insert into saida values ('ode1', to_jsonb(public.marketplace_registrar_evento_conexao(pg_temp.id('mlk'), 'od-ev-1', 'CREATED', 'kt-9', '{"eventType": "CREATED"}')));
+insert into saida values ('ode2', to_jsonb(public.marketplace_registrar_evento_conexao(pg_temp.id('mlk'), 'od-ev-1', 'CREATED', 'kt-9', null)));
+reset role;
+-- duas edições do cardápio seguidas → um merchantUpdate só
+select from pg_temp.como('00000000-0000-0000-0000-0000000003f1');
+update public.produtos set descricao = 'nova' where id = pg_temp.id('pz');
+update public.produtos set descricao = 'nova 2' where id = pg_temp.id('pz');
+reset role;
+update public.lojas set pausa_ate = now() + interval '30 minutes' where id = pg_temp.id('loja');
+update public.lojas set pausa_ate = null where id = pg_temp.id('loja');
+-- pedido da Keeta de entrega própria concluído → delivered
+update saida set v = jsonb_set(jsonb_set(jsonb_set(v, '{externo_id}', '"kt-2"'), '{tipo}', '"entrega"'), '{endereco}', '{"logradouro": "Rua K", "bairro": "Centro"}') where chave = 'pk';
+set role service_role;
+insert into ids values ('pk3', public.marketplace_receber_pedido(pg_temp.v('pk')));
+reset role;
+update public.pedidos set status = 'em_preparo', aceito_em = now() where id = pg_temp.id('pk3');
+update public.pedidos set status = 'concluido', concluido_em = now() where id = pg_temp.id('pk3');
+select from pg_temp.como('00000000-0000-0000-0000-0000000003f2');
+select from pg_temp.esperar_erro(format($q$select public.od_conexao('%s')$q$, pg_temp.id('mlk')), 'permission denied');
+reset role;
+\o
+select case when pg_temp.v('odc') -> 'segredos' ->> 'api_key' = 'chave-od' and pg_temp.v('odc') ->> 'canal' = 'keeta'
+             and pg_temp.v('odm') #>> '{marca,nome}' = 'Pizza M' and (pg_temp.v('odm') ->> 'raio_km')::numeric = 6
+             and jsonb_typeof(pg_temp.v('odm') -> 'setores') = 'array' and pg_temp.v('odm') #>> '{conexao,atualizado_em}' like '20%Z'
+             and pg_temp.v('ode1') = 'true' and pg_temp.v('ode2') = 'false'
+             and (select count(*) from public.marketplace_saida where marketplace_loja_id = pg_temp.id('mlk') and acao = 'merchantUpdate' and payload = '{}') = 1
+             and (select string_agg(payload ->> 'merchantStatus', ',' order by id) from public.marketplace_saida where marketplace_loja_id = pg_temp.id('mlk') and acao = 'merchantUpdate' and payload <> '{}') = 'UNAVAILABLE,AVAILABLE'
+             and (select string_agg(acao, ',' order by id) from public.marketplace_saida where pedido_id = pg_temp.id('pk3')) = 'confirm,delivered'
+            then 'ok Open Delivery: conexão e Merchant só pelo servidor, evento pela conexão, merchantUpdate do cardápio (1) e da pausa, delivered'
+            else 'FALHOU Open Delivery odm=' || left(coalesce(pg_temp.v('odm')::text, '-'), 300) || ' saida=' || coalesce((select string_agg(acao || coalesce(payload::text, ''), ',' order by id) from public.marketplace_saida where marketplace_loja_id = pg_temp.id('mlk') or pedido_id = pg_temp.id('pk3')), '-') end;
