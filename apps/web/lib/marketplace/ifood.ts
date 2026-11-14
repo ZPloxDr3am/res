@@ -55,7 +55,7 @@ export function assinaturaValida(corpo: string, assinatura: string | null): bool
 export async function processarEvento(ev: EventoIfood): Promise<string> {
   const db = clienteAdmin();
   if (!db) throw new Error('SUPABASE_SERVICE_ROLE_KEY não configurada.');
-  const { data: novo, error } = await db.rpc('marketplace_registrar_evento', { p_canal: 'ifood', p_evento_id: ev.id, p_codigo: ev.code, p_externo_id: ev.orderId, p_merchant_id: ev.merchantId });
+  const { data: novo, error } = await db.rpc('marketplace_registrar_evento', { p_canal: 'ifood', p_evento_id: ev.id, p_codigo: ev.code, p_externo_id: ev.orderId, p_merchant_id: ev.merchantId, p_corpo: ev });
   if (error) throw new Error(error.message);
   if (!novo) return 'repetido';
   const acao = acaoDoEvento(ev.code);
@@ -122,7 +122,7 @@ const CAMINHO_ACAO: Record<string, string> = {
 export async function enviarSaida(): Promise<{ enviados: number; erros: number }> {
   const db = clienteAdmin();
   if (!db) throw new Error('SUPABASE_SERVICE_ROLE_KEY não configurada.');
-  const { data } = await db.from('marketplace_saida').select('id, externo_id, acao, payload, tentativas').in('situacao', ['pendente', 'erro']).lt('tentativas', 5).order('criado_em').limit(50);
+  const { data } = await db.from('marketplace_saida').select('id, externo_id, acao, payload, tentativas').eq('canal', 'ifood').in('situacao', ['pendente', 'erro']).lte('proxima_em', new Date().toISOString()).order('proxima_em').limit(50);
   let enviados = 0;
   let erros = 0;
   for (const s of data ?? []) {
