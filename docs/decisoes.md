@@ -942,3 +942,10 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - Decisões Q-11 a Q-16 (aceitas como sugeridas na spec): área de entrega nos apps por raio a partir da maior faixa de km (o cardápio próprio continua bairro primeiro, depois km — D-048); pedido de marketplace não credita fidelidade por padrão; item sem vínculo entra como texto e o pedido fica sinalizado; preço para os apps em `marketplace_precos` (sem linha = preço do delivery; tabela própria para não mexer em `produto_marcas`); entrega feita pelo app pula o QR do motoboy e não entra no fechamento; comissão lançada por repasse.
 - Nada muda no funcionamento atual do iFood (modo teste e simulador): as colunas novas têm padrão, a fila só passou a respeitar a hora da próxima tentativa.
 - Migração `20261114180000_canais_base.sql`.
+
+## D-113 — Integrações, etapa 2: pedido canônico (14/11/2026)
+- Todo canal traduz o pedido para o mesmo formato (`PedidoExterno` no `@res/core`) e entra por `marketplace_receber_pedido`. A função do banco deixou de ser só do iFood: acha a conexão pelo id da loja no app **ou** pela URL do Open Delivery (`marketplace_loja_id`), grava a origem do canal (99Food, Keeta, aiqfome, Delivery Much, Rappi), aceita balcão (`DINE_IN`/`INDOOR`), não guarda telefone mascarado (0800 do app — a tela não oferece WhatsApp) e não recalcula preço (o cliente já pagou no app).
+- **Item sem vínculo (Q-13):** entra como texto, sem baixar estoque, e o mapa do pedido guarda quantos itens ficaram sem vínculo (a sinalização no quadro vem na etapa do painel).
+- O mapa `marketplace_pedidos` guarda o **corpo original**, o total informado pelo app (conferência), o prazo prometido e a conexão.
+- O iFood passa a informar também balcão, telefone mascarado, prazo e total do app. Nada muda para quem usa o simulador.
+- Migração `20261114190000_pedido_canonico.sql` (base: D-074).

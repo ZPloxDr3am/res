@@ -4,7 +4,8 @@
  * (o banco do RES guarda numeric em reais). Testado em test/marketplace.test.ts.
  */
 
-export type CanalExterno = 'ifood';
+/** Canais do catálogo `canais` (D-112). */
+export type CanalExterno = 'ifood' | '99food' | 'keeta' | 'aiqfome' | 'deliverymuch' | 'rappi';
 
 // ---------- Pedido do iFood (só o que o RES usa) ----------
 export interface IfoodOpcao {
@@ -84,12 +85,18 @@ export interface IfoodPedido {
 
 // ---------- Formato do RES ----------
 export type FormaRes = 'dinheiro' | 'pix' | 'cartao_credito' | 'cartao_debito' | 'vale_refeicao' | 'online';
+/**
+ * Pedido canônico (D-113): todo canal traduz o seu pedido para este formato antes de chamar
+ * `marketplace_receber_pedido`. O preço é o do marketplace (o cliente já pagou lá) — o RES não recalcula.
+ */
 export interface PedidoExterno {
   canal: CanalExterno;
   externo_id: string;
   externo_codigo: string;
-  merchant_id: string;
-  tipo: 'entrega' | 'retirada';
+  /** id da loja no app; no Open Delivery a conexão vem pela URL e vai em marketplace_loja_id */
+  merchant_id: string | null;
+  marketplace_loja_id?: string | null;
+  tipo: 'entrega' | 'retirada' | 'balcao';
   agendado_para: string | null;
   cliente: { nome: string; telefone: string | null; localizador: string | null; documento: string | null };
   endereco: {
@@ -127,6 +134,15 @@ export interface PedidoExterno {
   entrega_pelo_marketplace: boolean;
   observacao: string | null;
   observacao_entrega: string | null;
+  /** telefone do app (0800 + localizador): a tela não oferece WhatsApp */
+  telefone_mascarado?: boolean;
+  /** prazo prometido ao cliente, em minutos a partir da criação */
+  prazo_min?: number | null;
+  url_detalhes?: string | null;
+  /** total que o app informou (conferência com o total do RES) */
+  total_externo?: number | null;
+  /** o pedido como chegou do app, para auditoria e disputa */
+  corpo_original?: unknown;
 }
 
 const r2 = (v: number) => Math.round((Number(v) || 0) * 100) / 100;
@@ -167,7 +183,7 @@ function telefoneReal(n: string | undefined): string | null {
 export function normalizarPedidoIfood(o: IfoodPedido): PedidoExterno {
   if (!o?.id || !o.merchant?.id) throw new Error('Pedido do iFood sem id ou loja.');
   if (!Array.isArray(o.items) || o.items.length === 0) throw new Error('Pedido do iFood sem itens.');
-  const tipo: 'entrega' | 'retirada' = o.orderType === 'DELIVERY' ? 'entrega' : 'retirada';
+  const tipo: 'entrega' | 'retirada' | 'balcao' = o.orderType === 'DELIVERY' ? 'entrega' : o.orderType === 'DINE_IN' || o.orderType === 'INDOOR' ? 'balcao' : 'retirada';
   const ad = o.delivery?.deliveryAddress;
   const itens = o.items.map((i) => {
     const qtd = Math.max(1, Math.round(Number(i.quantity) || 1));
@@ -251,7 +267,20 @@ export function normalizarPedidoIfood(o: IfoodPedido): PedidoExterno {
     entrega_pelo_marketplace: o.delivery?.deliveredBy === 'IFOOD',
     observacao: txt(o.extraInfo, 500),
     observacao_entrega: txt(o.delivery?.observations, 300),
+    telefone_mascarado: !!o.customer?.phone?.number && telefoneReal(o.customer.phone.number) === null,
+    prazo_min: minutosAte(o.createdAt, o.delivery?.deliveryDateTime ?? o.takeout?.takeoutDateTime),
+    total_externo: o.total?.orderAmount != null ? r2(o.total.orderAmount) : null,
+    corpo_original: o,
   };
+}
+
+/** Minutos entre a criação e o horário prometido (null se faltar ou não fizer sentido). */
+function minutosAte(de: string | undefined, ate: string | undefined): number | null {
+  const a = Date.parse(de ?? '');
+  const b = Date.parse(ate ?? '');
+  if (!Number.isFinite(a) || !Number.isFinite(b) || b <= a) return null;
+  const m = Math.round((b - a) / 60000);
+  return m > 0 && m <= 24 * 60 ? m : null;
 }
 
 // ---------- Eventos ----------
