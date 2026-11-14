@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794690449.3364558,
-    "seen": 1794690454.8027606,
+    "mtime": 1794691134.9693232,
+    "seen": 1794691142.802117,
     "ast_hash": "f0b41feddc25e0b8ba8ebe180a3832fb",
     "semantic_hash": ""
   },
@@ -2256,8 +2256,8 @@
     "semantic_hash": ""
   },
   "apps/web/lib/marketplace/ifood.ts": {
-    "mtime": 1794690302.0870824,
-    "seen": 1794690454.8024478,
+    "mtime": 1794691134.9693232,
+    "seen": 1794691142.7973118,
     "ast_hash": "7b14766c9c0b33fcd613f4d8724b384f",
     "semantic_hash": ""
   },
@@ -2280,8 +2280,8 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzz_marketplace.sql": {
-    "mtime": 1794690322.5924513,
-    "seen": 1794690454.802742,
+    "mtime": 1794691134.9813232,
+    "seen": 1794691142.8017957,
     "ast_hash": "9ebb7e4ca23cdf1a59fa0eed0eb81c3b",
     "semantic_hash": ""
   },
@@ -2852,7 +2852,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1794690454.8019993,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -3393,12 +3393,6 @@
     "mtime": 1794613010.6225424,
     "seen": 1794690454.8026943,
     "ast_hash": "5ed015a1312273af92dc575c08119c6f",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261114180000_canais_base.sql": {
-    "mtime": 1794690372.327809,
-    "seen": 1794690454.8026955,
-    "ast_hash": "d29c3986d60019bb4a99052b52eca0e7",
     "semantic_hash": ""
   },
   "docs/qualidade/roteiros/avaliacao-pedido.md": {
