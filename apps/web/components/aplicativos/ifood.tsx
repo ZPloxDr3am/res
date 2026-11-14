@@ -2,12 +2,12 @@
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { formatarReais } from '@res/core';
-import { desligarLojaIfood, ligarItemIfood, salvarLojaIfood, simularEventoIfood, simularNegociacaoIfood, simularPedidoIfood } from '@/app/(painel)/aplicativos/ifood-actions';
+import { desligarLojaIfood, ligarItemIfood, reprocessarEventoIfood, salvarLojaIfood, simularEventoIfood, simularNegociacaoIfood, simularPedidoIfood } from '@/app/(painel)/aplicativos/ifood-actions';
 import { salvando } from '@/components/tempo-real';
 import type { PainelIfood } from '@/lib/aplicativos';
 
-const ACAO: Record<string, string> = { confirm: 'Confirmar', readyToPickup: 'Pronto para retirar', dispatch: 'Saiu para entrega', requestCancellation: 'Cancelar', negociacao: 'Resposta da negociação' };
-const SITUACAO: Record<string, string> = { simulado: '🧪 simulado', pendente: '⏳ na fila', enviado: '✅ enviado', erro: '⚠️ erro' };
+const ACAO: Record<string, string> = { confirm: 'Confirmar', readyToPickup: 'Pronto para retirar', dispatch: 'Saiu para entrega', requestCancellation: 'Cancelar', negociacao: 'Resposta da negociação', pausar: 'Pausar a loja', abrir: 'Reabrir a loja' };
+const SITUACAO: Record<string, string> = { simulado: '🧪 simulado', pendente: '⏳ na fila', enviado: '✅ enviado', erro: '⚠️ erro (tenta de novo)', falhou: '❌ falhou 6 vezes' };
 const STATUS: Record<string, string> = { novo: 'Novo', em_preparo: 'Em preparo', pronto: 'Pronto', em_entrega: 'Saiu', concluido: 'Concluído', cancelado: 'Cancelado' };
 
 /** iFood no RES (D-074): ligar cardápio ↔ loja do iFood, simulador do modo teste, itens e fila de volta. */
@@ -153,6 +153,23 @@ export function PainelIfoodApp({ d }: { d: PainelIfood }) {
         </section>
       )}
 
+      {(d.eventosErro ?? []).length > 0 && (
+        <section className="grade" style={{ gap: '0.4rem' }}>
+          <strong>⚠️ Eventos do iFood com erro</strong>
+          <ul className="qp-fila">
+            {(d.eventosErro ?? []).map((e) => (
+              <li key={e.id}>
+                <span className="grade" style={{ gap: 0 }}>
+                  <span>{e.codigo} · pedido {e.externo_id ?? '—'} · {new Date(e.recebido_em).toLocaleString('pt-BR')}</span>
+                  <span className="dica">{e.erro}</span>
+                </span>
+                <button type="button" className="mini" disabled={pendente} onClick={() => fazer(reprocessarEventoIfood(e.id), (r) => `Reprocessado: ${r.resultado}`)}>Reprocessar</button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <details>
         <summary><strong>Pronto para a homologação do iFood</strong></summary>
         <ul className="dica">
@@ -165,6 +182,11 @@ export function PainelIfoodApp({ d }: { d: PainelIfood }) {
           <li>✅ Plataforma de Negociação: cancelamento após a entrega, no preparo, por atraso e reembolso parcial aparecem no topo do quadro com prazo, e a loja aceita, recusa ou faz contraproposta (reembolso ou mais tempo)</li>
           <li>✅ Motivos de cancelamento lidos ao vivo do iFood (lista padrão no modo teste)</li>
           <li>✅ Busca automática a cada 30 s assim que houver loja em produção (segredo guardado no Vault do Supabase)</li>
+          <li>✅ Webhook responde 202 na hora e processa depois; KEEPALIVE deixa online só a loja aberta (pausa e horário)</li>
+          <li>✅ Aviso no quadro do tempo que falta para aceitar (8 min) e faixa de cancelamento solicitado</li>
+          <li>✅ Pedido e endereço alterados pelo iFood atualizam o RES; entregador do iFood aparece no pedido</li>
+          <li>✅ Pausar a loja no RES pausa no iFood; eventos com erro podem ser reprocessados aqui</li>
+          <li>📄 Passo a passo da conta e da homologação: docs/integracoes/ifood-homologacao.md</li>
         </ul>
       </details>
     </div>

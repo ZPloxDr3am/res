@@ -285,7 +285,7 @@ export function QuadroPedidos({
     return s;
   };
   const localDe = (p: PedidoRow) => (todas ? p.loja_id : p.marca_id);
-  const canalDe = (p: PedidoRow) => (p.origem === 'cardapio_digital' ? 'online' : p.origem === 'ifood' ? 'ifood' : 'balcao');
+  const canalDe = (p: PedidoRow) => (p.externo_canal ? p.externo_canal : p.origem === 'cardapio_digital' ? 'online' : 'balcao');
   const passa = (p: PedidoRow) =>
     (!filtros.local.length || filtros.local.includes(localDe(p))) &&
     (!filtros.tipo.length || filtros.tipo.includes(p.tipo)) &&
@@ -376,7 +376,9 @@ export function QuadroPedidos({
         <span className="qp-sep" aria-hidden />
         {chip('canal', 'online', '📱 Cardápio digital', conta((p) => canalDe(p) === 'online'))}
         {chip('canal', 'balcao', '☎️ Lançado na loja', conta((p) => canalDe(p) === 'balcao'))}
-        {pedidos.some((p) => p.origem === 'ifood') && chip('canal', 'ifood', '🛵 iFood', conta((p) => canalDe(p) === 'ifood'))}
+        {[...new Set(pedidos.map((p) => p.externo_canal).filter((c): c is string => !!c))].map((c) => (
+          <span key={c}>{chip('canal', c, `🛵 ${nomeCanal(c)}`, conta((p) => canalDe(p) === c))}</span>
+        ))}
         <span className="qp-sep" aria-hidden />
         {chip('situacao', 'atrasado', '⚠️ Atrasados', conta((p) => situacoes(p).includes('atrasado')), 'erro')}
         {chip('situacao', 'sem_motoboy', '🛵 Prontos sem motoboy', conta((p) => situacoes(p).includes('sem_motoboy')), 'aviso')}
@@ -462,6 +464,49 @@ export function QuadroPedidos({
   );
 }
 
+/** Canais de marketplace (D-112): nome no selo e prazo para aceitar antes de o app cancelar sozinho. */
+const NOME_CANAL: Record<string, string> = { ifood: 'iFood', '99food': '99Food', keeta: 'Keeta', aiqfome: 'aiqfome', deliverymuch: 'Delivery Much', rappi: 'Rappi' };
+const PRAZO_ACEITE_MIN: Record<string, number> = { ifood: 8, deliverymuch: 15 };
+const nomeCanal = (c: string | null | undefined) => (c ? NOME_CANAL[c] ?? c : '');
+
+/** Minutos que faltam para o app cancelar um pedido não aceito (null se o canal não cancela sozinho). */
+function minutosParaAceitar(p: PedidoRow): number | null {
+  const lim = p.externo_canal ? PRAZO_ACEITE_MIN[p.externo_canal] : undefined;
+  if (!lim || p.status !== 'novo') return null;
+  return Math.ceil(lim - (Date.now() - Date.parse(p.criado_em)) / 60000);
+}
+const cancelamentoPendente = (p: PedidoRow) => !!p.canal_info?.cancelamento_solicitado && !p.canal_info.cancelamento_solicitado.negado && p.status !== 'cancelado';
+
+/** Avisos do canal no cartão (D-115): aceitar logo, cancelamento pedido pelo app, entregador do app, item sem vínculo. */
+function AvisosCanal({ p, compacto }: { p: PedidoRow; compacto?: boolean }) {
+  if (!p.externo_canal) return null;
+  const nome = nomeCanal(p.externo_canal);
+  const falta = minutosParaAceitar(p);
+  const c = p.canal_info;
+  const Tag = compacto ? 'span' : 'div';
+  return (
+    <>
+      {falta != null && (
+        <Tag className={`canal-aviso${falta <= 3 ? ' canal-aviso-urgente' : ''}`} role={falta <= 3 ? 'alert' : undefined}>
+          {falta > 0 ? `⏳ Aceite em até ${falta} min — senão o ${nome} cancela` : `⚠️ Passou do prazo de aceite do ${nome}`}
+        </Tag>
+      )}
+      {c && cancelamentoPendente(p) && (
+        <Tag className="canal-aviso canal-aviso-urgente" role="alert">
+          🚫 Cancelamento solicitado {c.cancelamento_solicitado?.origem === 'CUSTOMER' ? 'pelo cliente' : `no ${nome}`}
+          {c.cancelamento_solicitado?.motivo ? `: ${c.cancelamento_solicitado.motivo}` : ''}{!compacto && p.externo_canal === 'ifood' ? ' — o iFood decide; não prepare até a resposta.' : ''}
+        </Tag>
+      )}
+      {c?.entregador?.nome && p.entrega_marketplace && (
+        <Tag className="canal-info">🛵 {nome}: {c.entregador.nome}{c.entregador.veiculo ? ` (${c.entregador.veiculo.toLowerCase()})` : ''}</Tag>
+      )}
+      {!!c?.itens_sem_vinculo && !compacto && (
+        <Tag className="canal-info">⚠️ {c.itens_sem_vinculo} item(ns) sem vínculo com o cardápio: não baixam estoque. Ligue em Aplicativos → {nome}.</Tag>
+      )}
+    </>
+  );
+}
+
 const PAG_CURTO: Record<string, string> = { dinheiro: 'Dinheiro', pix: 'Pix', cartao_credito: 'Crédito', cartao_debito: 'Débito', vale_refeicao: 'VR', online: 'Online' };
 const CORES_LOCAL = ['#ea1d2c', '#16a34a', '#2563eb', '#9333ea', '#ea580c', '#0891b2', '#ca8a04', '#db2777'];
 const corLocal = (i: number) => (i < 0 ? '#64748b' : CORES_LOCAL[i % CORES_LOCAL.length]!);
@@ -490,10 +535,11 @@ function CartaoCompacto({ p, tempoPreparo, prazoMin, fuso, local, cor, onAbrir, 
         <span className="qk-topo">
           <span className="qk-icone" title={TIPO_ROTULO[p.tipo]} aria-hidden>{icone}</span>
           <strong>#{p.numero}</strong>
-          {p.origem === 'ifood' && <span className="selo selo-ifood">iFood{p.externo_codigo ? ` ${p.externo_codigo}` : ''}</span>}
+          {p.externo_canal && <span className={`selo selo-canal selo-${p.externo_canal}`}>{nomeCanal(p.externo_canal)}{p.externo_codigo ? ` ${p.externo_codigo}` : ''}</span>}
           {p.origem === 'cardapio_digital' && <span className="qk-tag">Online</span>}
           <span className="qk-mais" aria-hidden>⋮</span>
         </span>
+        <AvisosCanal p={p} compacto />
         {agendado && <span className="qk-linha qk-agendado">📅 {rotuloHorario(agendado, fuso)}</span>}
         {atrasado && aberto && <span className="qk-linha qk-atraso">⚠ Atrasado{sit?.estado === 'atrasado' ? ` ${sit.minutos} min` : ''}</span>}
         <span className="qk-linha qk-cliente">
@@ -504,8 +550,8 @@ function CartaoCompacto({ p, tempoPreparo, prazoMin, fuso, local, cor, onAbrir, 
         {p.entregador_nome && p.status === 'em_entrega' && <span className="qk-linha dica">🛵 {p.entregador_nome}</span>}
         <span className="qk-rodape">
           <span className="qk-tempo" title={`Pedido às ${new Date(p.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: fuso })}`}>⏱ {tempoDecorrido(new Date(p.criado_em)).replace(/^há /, '')}</span>
-          <span className={cobrar ? 'qk-pag qk-cobrar' : 'qk-pag'} title={cobrar ? `Cobrar na entrega · ${PAGAMENTO_ROTULO[p.pagamento]}` : p.origem === 'ifood' && p.pagamento === 'online' ? 'Pago no iFood' : 'Pago'}>
-            {cobrar ? '💰' : '✓'} {p.origem === 'ifood' && p.pagamento === 'online' ? 'iFood' : PAG_CURTO[p.pagamento] ?? PAGAMENTO_ROTULO[p.pagamento]}
+          <span className={cobrar ? 'qk-pag qk-cobrar' : 'qk-pag'} title={cobrar ? `Cobrar na entrega · ${PAGAMENTO_ROTULO[p.pagamento]}` : p.externo_canal && p.pagamento === 'online' ? `Pago no ${nomeCanal(p.externo_canal)}` : 'Pago'}>
+            {cobrar ? '💰' : '✓'} {p.externo_canal && p.pagamento === 'online' ? nomeCanal(p.externo_canal) : PAG_CURTO[p.pagamento] ?? PAGAMENTO_ROTULO[p.pagamento]}
           </span>
           <strong className="qk-total">{r$(p.total)}</strong>
         </span>
@@ -617,7 +663,7 @@ function CartaoPedido({
         <span className="pedido-numero">#{p.numero}</span>
         <span className={`selo ${p.tipo === 'entrega' ? 'selo-delivery' : 'selo-presencial'}`}>{TIPO_ROTULO[p.tipo]}</span>
         {p.origem === 'cardapio_digital' && <span className="selo selo-pizza" title="Feito pelo cliente no cardápio digital">Online</span>}
-        {p.origem === 'ifood' && <span className="selo selo-ifood" title="Pedido do iFood">iFood{p.externo_codigo ? ` #${p.externo_codigo}` : ''}</span>}
+        {p.externo_canal && <span className={`selo selo-canal selo-${p.externo_canal}`} title={`Pedido do ${nomeCanal(p.externo_canal)}`}>{nomeCanal(p.externo_canal)}{p.externo_codigo ? ` #${p.externo_codigo}` : ''}</span>}
         <span className={atrasado ? 'atrasado' : 'dica'} title={atrasado ? (agendado ? 'Passou do horário agendado' : `Passou de ${tempoPreparo} min`) : undefined}>
           {aberto ? tempoDecorrido(new Date(p.criado_em)) : STATUS_ROTULO[p.status]}
         </span>
@@ -697,10 +743,11 @@ function CartaoPedido({
         ))}
       </ul>
       {p.observacao && <div className="dica">Obs. do pedido: {p.observacao}</div>}
+      {p.externo_canal && <AvisosCanal p={p} />}
       {p.externo_canal && <InfoMarketplace p={p} />}
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center', gap: '0.4rem' }}>
         <span className="dica">
-          {p.origem === 'ifood' && p.pagamento === 'online' ? 'Pago no iFood' : PAGAMENTO_ROTULO[p.pagamento]}
+          {p.externo_canal && p.pagamento === 'online' ? `Pago no ${nomeCanal(p.externo_canal)}` : PAGAMENTO_ROTULO[p.pagamento]}
           {p.cartao_bandeira && ` · ${p.cartao_bandeira}`}
           {p.troco_para != null && ` · troco p/ ${r$(p.troco_para)} (${r$(Number(p.troco_para) - Number(p.total))})`}
         </span>
@@ -766,7 +813,7 @@ function CartaoPedido({
         >
           {p.externo_canal ? (
             <label>
-              Motivo (lista do iFood)
+              Motivo (lista do {nomeCanal(p.externo_canal)})
               <select value={motivo} onChange={(e) => setMotivo(e.target.value)} required autoFocus>
                 <option value="">— escolha —</option>
                 {motivosExt.map((m) => <option key={m.codigo} value={`${m.codigo} · ${m.descricao}`}>{m.descricao}</option>)}
@@ -1058,18 +1105,18 @@ function InfoMarketplace({ p }: { p: PedidoRow }) {
   return (
     <div className="qp-mkt">
       {p.codigo_retirada && (
-        <span className="qp-mkt-codigo" title={p.tipo === 'retirada' ? 'O cliente informa este código ao retirar' : 'Código de entrega/coleta do iFood'}>
+        <span className="qp-mkt-codigo" title={p.tipo === 'retirada' ? 'O cliente informa este código ao retirar' : `Código de entrega/coleta do ${nomeCanal(p.externo_canal)}`}>
           Código {p.tipo === 'retirada' ? 'de retirada' : 'de entrega'}: <b>{p.codigo_retirada}</b>
         </span>
       )}
-      {p.entrega_marketplace && <span className="selo">🛵 Entrega pelo iFood (não precisa de motoboy)</span>}
+      {p.entrega_marketplace && <span className="selo">🛵 Entrega pelo {nomeCanal(p.externo_canal)} (não precisa de motoboy)</span>}
       {p.agendado_para && <span>📅 Agendado: <b>{new Date(p.agendado_para).toLocaleString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</b></span>}
       {(p.beneficios ?? []).map((b, i) => (
-        <span key={i}>🎟️ {b.descricao ?? 'Cupom'}: −{r$(b.valor)} <span className="dica">({b.loja ? `loja paga ${r$(b.loja)}` : ''}{b.loja && b.marketplace ? ' · ' : ''}{b.marketplace ? `iFood paga ${r$(b.marketplace)}` : ''})</span></span>
+        <span key={i}>🎟️ {b.descricao ?? 'Cupom'}: −{r$(b.valor)} <span className="dica">({b.loja ? `loja paga ${r$(b.loja)}` : ''}{b.loja && b.marketplace ? ' · ' : ''}{b.marketplace ? `${nomeCanal(p.externo_canal)} paga ${r$(b.marketplace)}` : ''})</span></span>
       ))}
       {Number(p.acrescimo ?? 0) > 0 && <span>➕ Taxas adicionais: {r$(Number(p.acrescimo))}</span>}
       {p.documento_cliente && <span>CPF/CNPJ na nota: <b>{p.documento_cliente}</b></span>}
-      {p.localizador && <span className="dica">Contato pelo iFood · localizador {p.localizador}</span>}
+      {p.localizador && <span className="dica">Contato pelo {nomeCanal(p.externo_canal)} · localizador {p.localizador}</span>}
       {p.observacao_entrega && <span>📍 {p.observacao_entrega}</span>}
     </div>
   );

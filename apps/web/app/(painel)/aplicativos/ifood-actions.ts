@@ -88,3 +88,24 @@ export async function simularNegociacaoIfood(pedidoId: string, tipo: 'apos_entre
   fim();
   return { ok: true };
 }
+
+/** Reprocessa um evento do iFood que deu erro (D-115). Só dono/gerente da loja do evento. */
+export async function reprocessarEventoIfood(eventoId: number): Promise<R<{ resultado: string }>> {
+  const ctx = await contextoLoja();
+  if (ctx.papel !== 'dono' && ctx.papel !== 'gerente') return { ok: false, erro: 'Só o dono ou o gerente.' };
+  const { clienteAdmin } = await import('@/lib/supabase/admin');
+  const db = clienteAdmin();
+  if (!db) return { ok: false, erro: 'Servidor sem a chave de serviço.' };
+  const { data } = await db.rpc('marketplace_evento_para_reprocessar', { p_id: eventoId });
+  const ev = data as { canal: string; corpo: unknown; loja_id: string | null } | null;
+  if (!ev || ev.loja_id !== ctx.lojaId || ev.canal !== 'ifood' || !ev.corpo) return { ok: false, erro: 'Evento não encontrado.' };
+  const { tratarEvento } = await import('@/lib/marketplace/ifood');
+  try {
+    const resultado = await tratarEvento(ev.corpo as import('@/lib/marketplace/ifood').EventoIfood);
+    revalidatePath('/aplicativos');
+    return { ok: true, resultado };
+  } catch (e) {
+    revalidatePath('/aplicativos');
+    return { ok: false, erro: (e as Error).message };
+  }
+}

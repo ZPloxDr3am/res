@@ -184,3 +184,22 @@ select case when pg_temp.v('tok') ->> 'token' = 'tok-app' and pg_temp.v('ab1') =
             else 'FALHOU iFood homologação ab1=' || coalesce(pg_temp.v('ab1')::text, '-') || ' ab2=' || coalesce(pg_temp.v('ab2')::text, '-') || ' alt=' || coalesce(pg_temp.v('alt')::text, '-')
                  || ' mp=' || coalesce((select to_jsonb(x)::text from public.marketplace_pedidos x where pedido_id = pg_temp.id('ped3')), '-')
                  || ' saida=' || coalesce((select string_agg(acao, ',' order by id) from public.marketplace_saida where pedido_id is null), '-') end;
+
+-- Painel (D-115): o quadro lê o que é do canal sem o corpo original; outra loja não lê; reprocessar só pelo servidor
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000003f1');
+insert into saida values ('info', (select jsonb_agg(to_jsonb(x)) from public.marketplace_info_pedidos(pg_temp.id('loja'), array[pg_temp.id('ped3')]) x));
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000003f2');
+insert into saida values ('info2', to_jsonb((select count(*) from public.marketplace_info_pedidos(pg_temp.id('loja'), array[pg_temp.id('ped3')]))));
+select from pg_temp.esperar_erro('select public.marketplace_evento_para_reprocessar(1)', 'permission denied');
+reset role;
+insert into saida values ('ev2id', to_jsonb((select id from private.marketplace_eventos where evento_id = 'ev-2')));
+set role service_role;
+insert into saida values ('rep', public.marketplace_evento_para_reprocessar((pg_temp.v('ev2id') #>> '{}')::bigint));
+reset role;
+\o
+select case when pg_temp.v('info') -> 0 -> 'entregador' ->> 'nome' = 'Carlos' and not (pg_temp.v('info') -> 0 ? 'corpo_original')
+             and pg_temp.v('info2') = '0' and pg_temp.v('rep') -> 'corpo' ->> 'code' = 'CFM' and (pg_temp.v('rep') ->> 'loja_id')::uuid = pg_temp.id('loja')
+            then 'ok painel dos canais: quadro lê entregador e cancelamento sem o corpo, outra loja não lê, reprocessar só pelo servidor'
+            else 'FALHOU painel canais ' || coalesce(pg_temp.v('info')::text, '-') || ' ' || coalesce(pg_temp.v('info2')::text, '-') end;

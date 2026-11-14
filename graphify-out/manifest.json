@@ -42,9 +42,9 @@
     "semantic_hash": "6e12dc2be277b12b46eb819e8eeaa33d"
   },
   "apps/web/app/(painel)/aplicativos/page.tsx": {
-    "mtime": 1794351120.7548952,
-    "seen": 1794351126.0285926,
-    "ast_hash": "459f110229f61cbb948b7f915e3b6227",
+    "mtime": 1794692656.2740967,
+    "seen": 1794692755.2624688,
+    "ast_hash": "80866a1c3b36df751d79c93083ff4e8a",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/caixa/[id]/page.tsx": {
@@ -708,9 +708,9 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1794355880.8202977,
-    "seen": 1794355908.2160747,
-    "ast_hash": "9141d8d99eb5e5a24cc86f5afaffd4cb",
+    "mtime": 1794692626.7465057,
+    "seen": 1794692755.262812,
+    "ast_hash": "1fe773665f20f3a28eaff97aa86aa23a",
     "semantic_hash": ""
   },
   "apps/web/components/resumo/grafico-lojas.tsx": {
@@ -738,9 +738,9 @@
     "semantic_hash": "1fa4daebb637ee6ce32fb7eac945b984"
   },
   "apps/web/lib/aplicativos.ts": {
-    "mtime": 1794492793.5016563,
-    "seen": 1794492802.949405,
-    "ast_hash": "02b4eaf40ec3ee6f51396ddf1c47d50f",
+    "mtime": 1794692656.2732532,
+    "seen": 1794692755.262829,
+    "ast_hash": "076a79b5c70ff43f93a80b47ef3d1e36",
     "semantic_hash": ""
   },
   "apps/web/lib/caixa.ts": {
@@ -834,9 +834,9 @@
     "semantic_hash": "001a137a606e225f972739e75fc6c7aa"
   },
   "apps/web/lib/pedidos.ts": {
-    "mtime": 1794492793.5016563,
-    "seen": 1794492802.9502604,
-    "ast_hash": "f72938a9dc95b3693fd744135f64ceaa",
+    "mtime": 1794692586.1304183,
+    "seen": 1794692755.2628627,
+    "ast_hash": "4165447791f39679e142e0467ff5f240",
     "semantic_hash": ""
   },
   "apps/web/lib/publico.ts": {
@@ -876,8 +876,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1794691752.8413453,
-    "seen": 1794691787.2337406,
+    "mtime": 1794692716.8573306,
+    "seen": 1794692755.2628732,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": "8ccf37b0657b4213f1c10db5c78e039a"
   },
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794691783.6681058,
-    "seen": 1794691787.2340071,
-    "ast_hash": "9a4757565f4f7089e5d258334708b39f",
+    "mtime": 1794692750.9613318,
+    "seen": 1794692755.2631855,
+    "ast_hash": "b480c277a4e9263c7da4ac9217302af7",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2232,9 +2232,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/aplicativos/ifood-actions.ts": {
-    "mtime": 1794014419.422902,
-    "seen": 1794014424.1623626,
-    "ast_hash": "5911463adb0d620e44cfbbad9df36bb0",
+    "mtime": 1794692656.2744982,
+    "seen": 1794692755.2624674,
+    "ast_hash": "341e6532d5a43d18fdc2be1c35253345",
     "semantic_hash": ""
   },
   "apps/web/app/api/marketplace/ifood/sincronizar/route.ts": {
@@ -2244,20 +2244,20 @@
     "semantic_hash": ""
   },
   "apps/web/app/api/marketplace/ifood/webhook/route.ts": {
-    "mtime": 1794691699.8649042,
-    "seen": 1794691787.23346,
+    "mtime": 1794692546.2653246,
+    "seen": 1794692553.9938533,
     "ast_hash": "54ca2c565b719870e0388cf35f544ac5",
     "semantic_hash": ""
   },
   "apps/web/components/aplicativos/ifood.tsx": {
-    "mtime": 1794014419.422902,
-    "seen": 1794014424.1624856,
-    "ast_hash": "dad50d07a36a0363d601081ad4fd41a5",
+    "mtime": 1794692656.2748718,
+    "seen": 1794692755.262668,
+    "ast_hash": "f68c604a6ae29dd21cdc930634bba6bf",
     "semantic_hash": ""
   },
   "apps/web/lib/marketplace/ifood.ts": {
-    "mtime": 1794691699.8599064,
-    "seen": 1794691787.233721,
+    "mtime": 1794692546.2653246,
+    "seen": 1794692553.9980257,
     "ast_hash": "8dafba26e41fd82ab0775d84f2eb789f",
     "semantic_hash": ""
   },
@@ -2280,9 +2280,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzz_marketplace.sql": {
-    "mtime": 1794691639.8653412,
-    "seen": 1794691787.2339888,
-    "ast_hash": "1247d129847bd554a2d7a1d42158914c",
+    "mtime": 1794692722.3625917,
+    "seen": 1794692755.2631624,
+    "ast_hash": "f1630bc587e00ad9a06a45677ae739fc",
     "semantic_hash": ""
   },
   "docs/planejamento/01-objetivo.md": {
@@ -2851,7 +2851,7 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794691787.2333632,
+    "seen": 1794692755.262429,
     "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
@@ -3432,14 +3432,20 @@
     "semantic_hash": ""
   },
   "supabase/migrations/20261114200000_ifood_homologacao.sql": {
-    "mtime": 1794691623.8282647,
-    "seen": 1794691787.233947,
+    "mtime": 1794692546.3373246,
+    "seen": 1794692755.263113,
     "ast_hash": "26456e689d06743fc8b3837ffdf706cb",
     "semantic_hash": ""
   },
+  "supabase/migrations/20261114210000_painel_canais.sql": {
+    "mtime": 1794692577.3615532,
+    "seen": 1794692755.2631147,
+    "ast_hash": "1cacf78d75ce7ed758795eb9ea24cfd7",
+    "semantic_hash": ""
+  },
   "docs/integracoes/ifood-homologacao.md": {
-    "mtime": 1794691783.6681058,
-    "seen": 1794691787.2340152,
+    "mtime": 1794692546.2653246,
+    "seen": 1794692755.2631936,
     "ast_hash": "fee6809a857377f02e414b54f754b594",
     "semantic_hash": ""
   }

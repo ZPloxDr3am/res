@@ -109,4 +109,6 @@ export type PainelIfood = {
   produtos: { id: string; nome: string }[];
   pedidos: { id: string; numero: number; externo_codigo: string | null; status: string; tipo: string; total: number; criado_em: string }[];
   saida: { id: number; acao: string; situacao: string; erro: string | null; criado_em: string; pedido_numero: number | null }[];
+  /** eventos que deram erro (D-115), para reprocessar */
+  eventosErro?: { id: number; codigo: string; externo_id: string | null; recebido_em: string; erro: string }[];
 };
