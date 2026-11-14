@@ -119,3 +119,31 @@ select case when pg_temp.v('t1') = '1'
              and (select ultimo_erro like 'readyToPickup: HTTP 500%' from public.marketplace_lojas where id = pg_temp.id('ml'))
             then 'ok chamada de saída: reenvio exponencial e desiste na 6ª falha, avisando a conexão'
             else 'FALHOU reenvio ' || coalesce(pg_temp.v('t1')::text, '-') end;
+
+-- Pedido canônico (D-113): Open Delivery pela conexão (sem merchant), origem do canal, telefone mascarado, item sem vínculo sinalizado
+\o /dev/null
+insert into ids select 'mlk', id from public.marketplace_lojas where canal = 'keeta' and loja_id = pg_temp.id('loja');
+insert into saida values ('pk', jsonb_build_object(
+  'canal', 'keeta', 'externo_id', 'kt-1', 'externo_codigo', 'K77', 'merchant_id', null, 'marketplace_loja_id', pg_temp.id('mlk'),
+  'tipo', 'retirada', 'agendado_para', null,
+  'cliente', jsonb_build_object('nome', 'Bia', 'telefone', '08007654321', 'localizador', null, 'documento', null),
+  'endereco', null,
+  'itens', jsonb_build_array(
+    jsonb_build_object('externo_codigo', pg_temp.id('pz')::text, 'externo_id', 'k1', 'nome', 'Pizza G (Keeta)', 'quantidade', 1, 'preco_unitario', 70, 'total', 70, 'observacao', null, 'opcoes', '[]'::jsonb),
+    jsonb_build_object('externo_codigo', 'XYZ', 'externo_id', 'k2', 'nome', 'Item que não existe', 'quantidade', 1, 'preco_unitario', 9, 'total', 9, 'observacao', null, 'opcoes', '[]'::jsonb)),
+  'subtotal', 79, 'taxa_entrega', 0, 'acrescimo', 0, 'desconto', 0, 'total', 79, 'pagamento', 'online', 'pago_online', true, 'troco_para', null,
+  'cartao_bandeira', null, 'beneficios', '[]'::jsonb, 'codigo_retirada', null, 'entrega_pelo_marketplace', false, 'observacao', null, 'observacao_entrega', null,
+  'telefone_mascarado', true, 'prazo_min', 25, 'total_externo', 79, 'corpo_original', jsonb_build_object('id', 'kt-1', 'type', 'TAKEOUT')));
+set role service_role;
+insert into ids values ('pk', public.marketplace_receber_pedido(pg_temp.v('pk')));
+insert into ids values ('pk2', public.marketplace_receber_pedido(pg_temp.v('pk')));
+reset role;
+\o
+select case when pg_temp.id('pk') = pg_temp.id('pk2')
+             and (select origem::text = 'keeta' and cliente_telefone is null and pago_em is not null and total = 79 and externo_canal = 'keeta' from public.pedidos where id = pg_temp.id('pk'))
+             and (select produto_id from public.pedido_itens where pedido_id = pg_temp.id('pk') and ordem = 1) = pg_temp.id('pz')
+             and (select itens_sem_vinculo = 1 and telefone_mascarado and prazo_min = 25 and total_externo = 79 and corpo_original ->> 'type' = 'TAKEOUT'
+                         and marketplace_loja_id = pg_temp.id('mlk') and status_externo = 'CREATED'
+                    from public.marketplace_pedidos where pedido_id = pg_temp.id('pk'))
+            then 'ok pedido canônico: Open Delivery pela conexão, origem do canal, telefone mascarado, item sem vínculo sinalizado, corpo guardado'
+            else 'FALHOU canônico ' || coalesce((select to_jsonb(x)::text from public.marketplace_pedidos x where pedido_id = pg_temp.id('pk')), '-') end;

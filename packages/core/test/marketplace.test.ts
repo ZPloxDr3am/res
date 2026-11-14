@@ -26,6 +26,9 @@ const base: IfoodPedido = {
 test('pedido do iFood vira pedido do RES com os valores fechando', () => {
   const p = normalizarPedidoIfood(base);
   assert.equal(p.tipo, 'entrega');
+  assert.equal(p.total_externo, base.total.orderAmount);
+  assert.equal(p.corpo_original, base);
+  assert.equal(normalizarPedidoIfood({ ...base, orderType: 'DINE_IN' }).tipo, 'balcao');
   assert.equal(p.externo_codigo, '4821');
   assert.equal(p.subtotal, 142);
   assert.equal(p.taxa_entrega, 8);

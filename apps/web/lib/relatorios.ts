@@ -26,4 +26,4 @@ export function curvaAbc<T>(itens: T[], peso: (x: T) => number): LinhaAbc<T>[] {
 }
 
 export const ETAPA: Record<string, string> = { novo: 'Novo (antes de aceitar)', em_preparo: 'Em preparo', pronto: 'Pronto', em_entrega: 'Saiu para entrega', concluido: 'Concluído' };
-export const ORIGEM: Record<string, string> = { painel: 'Lançado na loja', cardapio_digital: 'Cardápio digital', ifood: 'iFood', whatsapp: 'WhatsApp' };
+export const ORIGEM: Record<string, string> = { painel: 'Lançado na loja', cardapio_digital: 'Cardápio digital', ifood: 'iFood', whatsapp: 'WhatsApp', '99food': '99Food', keeta: 'Keeta', aiqfome: 'aiqfome', deliverymuch: 'Delivery Much', rappi: 'Rappi' };
