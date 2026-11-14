@@ -876,9 +876,9 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1794690632.3322084,
-    "seen": 1794690734.306693,
-    "ast_hash": "ba64ff7d54714a8f64db89b1003207d8",
+    "mtime": 1794690739.400215,
+    "seen": 1794690788.9289896,
+    "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": ""
   },
   "apps/web/next.config.mjs": {
@@ -2850,9 +2850,9 @@
     "semantic_hash": ""
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
-    "mtime": 1794355880.8183694,
-    "seen": 1794612904.2848978,
-    "ast_hash": "",
+    "mtime": 1794690431.3125741,
+    "seen": 1794690788.9283106,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
