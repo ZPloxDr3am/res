@@ -1,6 +1,15 @@
 import type { FormaPagamento, StatusPedido, TipoPedido } from '@res/core';
 import { criarClienteServidor } from './supabase/server';
 
+export type InfoCanal = {
+  status_externo: string | null;
+  entregador: { nome?: string; telefone?: string; veiculo?: string; etapa?: string } | null;
+  cancelamento_solicitado: { origem?: string | null; motivo?: string | null; em?: string; negado?: string; negado_em?: string } | null;
+  itens_sem_vinculo: number;
+  telefone_mascarado: boolean;
+  prazo_min: number | null;
+};
+
 export type PedidoRow = {
   id: string;
   loja_id: string;
@@ -39,6 +48,8 @@ export type PedidoRow = {
   observacao_entrega?: string | null;
   beneficios?: { valor: number; alvo: string; loja: number; marketplace: number; descricao: string | null }[] | null;
   entrega_marketplace?: boolean;
+  /** o que é do canal (D-115): status no app, entregador do app, cancelamento solicitado, itens sem vínculo */
+  canal_info?: InfoCanal | null;
   /** etapas em que o cliente já foi avisado no WhatsApp (D-058): { em_entrega: '2026-…' } */
   avisos?: Record<string, string>;
   /** minutos a mais prometidos porque o pedido entrou no modo movimento (D-062) */
@@ -88,6 +99,16 @@ export async function carregarQuadro(lojaIds: string[], lojaPrincipal: string) {
   if (pedidos.error) throw new Error(pedidos.error.message);
   // salão (D-099): rodadas das mesas ficam na tela do Salão; no quadro só enquanto esperam alguém aceitar (pedido pelo QR)
   const lista = ((pedidos.data ?? []) as unknown as PedidoRow[]).filter((p) => !p.salao_conta_id || p.status === 'novo');
+  // o que é do canal (D-115): uma chamada por loja, só para pedidos de marketplace
+  const externos = lista.filter((p) => p.externo_canal);
+  if (externos.length) {
+    const porLoja = new Map<string, string[]>();
+    for (const p of externos) porLoja.set(p.loja_id, [...(porLoja.get(p.loja_id) ?? []), p.id]);
+    const infos = await Promise.all([...porLoja].map(([l, ids]) => supabase.rpc('marketplace_info_pedidos', { p_loja: l, p_pedidos: ids })));
+    const mapa = new Map<string, InfoCanal>();
+    for (const r of infos) for (const i of ((r.data ?? []) as (InfoCanal & { pedido_id: string })[])) mapa.set(i.pedido_id, i);
+    for (const p of externos) p.canal_info = mapa.get(p.id) ?? null;
+  }
   for (const p of lista) {
     p.pedido_itens.sort((a, b) => a.ordem - b.ordem);
     for (const i of p.pedido_itens) i.pedido_item_opcoes.sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0));

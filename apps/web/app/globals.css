@@ -1669,6 +1669,18 @@ button.mini[data-avisado] { color: #15803d; }
 
 /* ---------- iFood no quadro (D-074) */
 .selo-ifood { background: #ea1d2c; color: #fff; font-weight: 700; }
+/* canais de marketplace (D-115) */
+.selo-canal { background: #475569; color: #fff; font-weight: 700; }
+.selo-canal.selo-ifood { background: #ea1d2c; }
+.selo-canal.selo-99food { background: #ffb800; color: #1c1c1c; }
+.selo-canal.selo-keeta { background: #ffd100; color: #1c1c1c; }
+.selo-canal.selo-aiqfome { background: #7b1fa2; }
+.selo-canal.selo-deliverymuch { background: #e4002b; }
+.selo-canal.selo-rappi { background: #ff441f; }
+.canal-aviso { display: block; padding: 0.3rem 0.5rem; border-radius: var(--raio-controle); background: color-mix(in srgb, var(--fin-hoje, #d97706) 15%, transparent); font-size: 0.85rem; font-weight: 600; }
+.canal-aviso-urgente { background: color-mix(in srgb, var(--erro) 18%, transparent); color: var(--erro); }
+.canal-info { display: block; font-size: 0.85rem; color: var(--texto-suave, inherit); }
+
 .qp-mkt { display: grid; gap: 0.2rem; padding: 0.45rem 0.6rem; border-radius: 8px; font-size: 0.85rem; background: color-mix(in srgb, #ea1d2c 7%, var(--superficie)); border-left: 3px solid #ea1d2c; }
 .qp-mkt-codigo b { font-size: 1.15rem; letter-spacing: 0.08em; }
 

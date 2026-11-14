@@ -958,3 +958,9 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - **Polling** em lotes de 100 lojas, com **ack só do que foi gravado**.
 - **Pausa**: pausar a loja no RES envia uma interrupção ao iFood (lojas em produção) e reabrir remove as interrupções ativas.
 - Passo a passo e critérios: `docs/integracoes/ifood-homologacao.md`. Migração `20261114200000_ifood_homologacao.sql`.
+
+## D-115 — Integrações, etapa 5 (parte da homologação): quadro e card do iFood (14/11/2026)
+- **Quadro de pedidos**: selo com o nome e a cor de cada canal (iFood, 99Food, Keeta, aiqfome, Delivery Much, Rappi) e filtro por canal; "Pago no <app>"; **aviso do tempo que falta para aceitar** (iFood 8 min, Delivery Much 15 min — fica vermelho nos últimos 3); faixa **"Cancelamento solicitado"** (pelo cliente ou pelo app; no iFood, quem decide é o iFood); **entregador do app** quando a entrega é dele; **itens sem vínculo** (não baixam estoque). Os motivos de cancelamento e os textos de cupom/entrega usam o nome do canal.
+- O quadro lê esses dados por `marketplace_info_pedidos` (qualquer pessoa da loja; sem o corpo original, que continua só para dono/gerente).
+- **Aplicativos → iFood**: lista de **eventos com erro** com **Reprocessar** (o servidor relê o evento guardado), ações novas na fila (pausar/reabrir, "falhou 6 vezes") e a lista da homologação atualizada.
+- Migração `20261114210000_painel_canais.sql`.

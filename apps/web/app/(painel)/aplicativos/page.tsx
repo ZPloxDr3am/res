@@ -19,13 +19,16 @@ export default async function PaginaAplicativos() {
   // iFood (D-074): só para dono/gerente; sem a migração, fica nulo
   let ifood: PainelIfood | null = null;
   if (ctx.papel === 'dono' || ctx.papel === 'gerente') {
-    const [lojasMk, itens, prods, peds, saida] = await Promise.all([
+    const [lojasMk, itens, prods, peds, saida, painelMk] = await Promise.all([
       supabase.from('marketplace_lojas').select('id, marca_id, merchant_id, modo, ativo, ultimo_evento_em').eq('loja_id', ctx.lojaId).eq('canal', 'ifood'),
       supabase.from('marketplace_itens').select('chave, nome, tipo, produto_id, vezes').eq('loja_id', ctx.lojaId).eq('canal', 'ifood').order('vezes', { ascending: false }).limit(200),
       supabase.from('produtos').select('id, nome').eq('loja_id', ctx.lojaId).order('nome').limit(1000),
       supabase.from('pedidos').select('id, numero, externo_codigo, status, tipo, total, criado_em').eq('loja_id', ctx.lojaId).eq('externo_canal', 'ifood').order('criado_em', { ascending: false }).limit(8),
       supabase.from('marketplace_saida').select('id, acao, situacao, erro, criado_em, pedidos(numero)').eq('loja_id', ctx.lojaId).order('criado_em', { ascending: false }).limit(10),
+      supabase.rpc('marketplace_painel', { p_loja: ctx.lojaId }),
     ]);
+    type ConexaoPainel = { canal: string; eventos_com_erro: { id: number; codigo: string; externo_id: string | null; recebido_em: string; erro: string }[] };
+    const conexoes = ((painelMk.data as { conexoes?: ConexaoPainel[] } | null)?.conexoes ?? []).filter((c) => c.canal === 'ifood');
     if (!lojasMk.error) {
       ifood = {
         configurado: !!process.env.IFOOD_CLIENT_ID && !!process.env.IFOOD_CLIENT_SECRET,
@@ -34,6 +37,7 @@ export default async function PaginaAplicativos() {
         itens: (itens.data ?? []) as PainelIfood['itens'],
         produtos: (prods.data ?? []) as PainelIfood['produtos'],
         pedidos: (peds.data ?? []).map((p) => ({ ...p, total: Number(p.total) })) as PainelIfood['pedidos'],
+        eventosErro: conexoes.flatMap((c) => c.eventos_com_erro).sort((a, b) => b.recebido_em.localeCompare(a.recebido_em)).slice(0, 20),
         saida: (saida.data ?? []).map((s) => ({ id: s.id as number, acao: s.acao as string, situacao: s.situacao as string, erro: (s.erro as string | null) ?? null, criado_em: s.criado_em as string, pedido_numero: ((s.pedidos as unknown as { numero: number } | null)?.numero) ?? null })),
       };
     }
