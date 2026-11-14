@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import { CapturaErros } from '@/components/captura-erros';
+import { SCRIPT_TEMA } from '@/components/tema';
 
 // Uma família só: Onest tem números largos e legíveis (preços, pedidos, horários).
 // Fontes guardadas no projeto (D-089): o build não depende mais do Google Fonts (o CI falhava ao baixar).
@@ -16,7 +17,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${fonte.variable} ${display.variable}`}>
+    // suppressHydrationWarning: o script do tema põe data-tema no <html> antes do React (D-112)
+    <html lang="pt-BR" className={`${fonte.variable} ${display.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_TEMA }} />
+      </head>
       <body>
         <CapturaErros />
         {children}

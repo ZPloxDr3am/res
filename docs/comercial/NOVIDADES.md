@@ -2,6 +2,9 @@
 
 Uma seção por semana, escrita na revisão de sexta. Linguagem de cliente.
 
+## Semana 47 (16–20/11/2026)
+- **Tema claro ou escuro**: no menu (no celular, em **Mais → Aparência**) escolha Claro, Escuro ou Automático (segue o celular/computador). Cada aparelho guarda a sua escolha: a tela da cozinha pode ficar no escuro e a do escritório no claro.
+
 ## Semana 46 (09–13/11/2026)
 - **Avaliação do pedido**: depois da entrega, o cliente dá a nota na própria página do pedido. Nota baixa avisa você na hora, com o WhatsApp do cliente para resolver; nota alta vira convite para avaliar no Google.
 - **Previsão de compra e produção**: pelas vendas de cada dia da semana, o RES diz em que dia cada insumo acaba, quanto comprar para a semana e o que preparar para sexta.
