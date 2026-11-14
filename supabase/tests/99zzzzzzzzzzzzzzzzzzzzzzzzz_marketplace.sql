@@ -77,3 +77,45 @@ select case when (select d ->> 'externo_codigo' = '4821' and d ->> 'codigo_retir
                          and (d ->> 'desconto_loja')::int = 500 and (d ->> 'desconto_marketplace')::int = 1000 and d ->> 'observacao_entrega' = 'Portão azul'
                     from (select private.dados_cupom(pg_temp.id('ped')) d) x)
             then 'ok cupom do iFood leva número do app, código de retirada, acréscimo e desconto dividido' else 'FALHOU cupom iFood ' || private.dados_cupom(pg_temp.id('ped'))::text end;
+
+-- Canais (D-112, etapa 1): catálogo, Open Delivery sem merchant, segredos só do servidor, evento com loja e corpo,
+-- reenvio exponencial, mapa do pedido e painel
+\o /dev/null
+insert into ids select 'ml', id from public.marketplace_lojas where merchant_id = 'merchant-teste';
+insert into public.marketplace_lojas (loja_id, marca_id, canal, merchant_id, modo, estado)
+values (pg_temp.id('loja'), pg_temp.id('marca'), 'keeta', null, 'teste', 'aguardando_autorizacao');
+select from pg_temp.esperar_erro(format($q$insert into public.marketplace_lojas (loja_id, marca_id, canal, merchant_id) values ('%s', '%s', 'uber', 'x')$q$, pg_temp.id('loja'), pg_temp.id('marca')), 'marketplace_lojas_canal_fk');
+set role service_role;
+select public.marketplace_segredos_gravar(pg_temp.id('ml'), '{"access_token": "tok-1", "refresh_token": "ref-1"}', now() + interval '6 hours');
+select public.marketplace_segredos_gravar(pg_temp.id('ml'), '{"access_token": "tok-2", "refresh_token": null}');
+insert into saida values ('seg', public.marketplace_segredos_ler(pg_temp.id('ml')));
+insert into saida values ('e3', to_jsonb(public.marketplace_registrar_evento('ifood', 'ev-2', 'CFM', 'ifd-1', 'merchant-teste', '{"id": "ev-2", "code": "CFM"}')));
+reset role;
+select from pg_temp.como('00000000-0000-0000-0000-0000000003f1');
+select from pg_temp.esperar_erro(format($q$select public.marketplace_segredos_ler('%s')$q$, pg_temp.id('ml')), 'permission denied');
+select from pg_temp.esperar_erro('select * from private.marketplace_segredos', 'permission denied');
+insert into saida values ('painel', public.marketplace_painel(pg_temp.id('loja')));
+insert into saida values ('mp', (select to_jsonb(x) from public.marketplace_pedidos x where pedido_id = pg_temp.id('ped')));
+reset role;
+-- reenvio: erro em 1, 2, 4, 8, 16 min; na 6ª falha desiste e marca a conexão
+insert into public.marketplace_saida (loja_id, pedido_id, canal, externo_id, acao, marketplace_loja_id)
+values (pg_temp.id('loja'), pg_temp.id('ped'), 'ifood', 'ifd-1', 'readyToPickup', pg_temp.id('ml'));
+set role service_role;
+select public.marketplace_marcar_saida((select max(id) from public.marketplace_saida), false, 'HTTP 500');
+insert into saida values ('t1', (select to_jsonb(round(extract(epoch from proxima_em - now()) / 60)) from public.marketplace_saida where id = (select max(id) from public.marketplace_saida)));
+select public.marketplace_marcar_saida((select max(id) from public.marketplace_saida), false, 'HTTP 500') from generate_series(1, 5);
+reset role;
+\o
+select case when (select count(*) from public.canais) >= 6 and pg_temp.v('seg') = '{"access_token": "tok-2"}'
+             and (select token_expira_em > now() from public.marketplace_lojas where id = pg_temp.id('ml'))
+             and pg_temp.v('e3') = 'true'
+             and (select marketplace_loja_id = pg_temp.id('ml') and corpo ->> 'code' = 'CFM' from private.marketplace_eventos where evento_id = 'ev-2')
+             and pg_temp.v('mp') ->> 'canal' = 'ifood' and pg_temp.v('mp') ->> 'display_id' = '4821'
+             and jsonb_array_length(pg_temp.v('painel') -> 'conexoes') = 2
+            then 'ok canais: catálogo, conexão sem merchant, segredos só do servidor, evento com loja e corpo, mapa do pedido, painel'
+            else 'FALHOU canais seg=' || coalesce(pg_temp.v('seg')::text, '-') || ' mp=' || coalesce(pg_temp.v('mp')::text, '-') || ' painel=' || coalesce(pg_temp.v('painel')::text, '-') end;
+select case when pg_temp.v('t1') = '1'
+             and (select situacao = 'falhou' and tentativas = 6 from public.marketplace_saida where id = (select max(id) from public.marketplace_saida))
+             and (select ultimo_erro like 'readyToPickup: HTTP 500%' from public.marketplace_lojas where id = pg_temp.id('ml'))
+            then 'ok chamada de saída: reenvio exponencial e desiste na 6ª falha, avisando a conexão'
+            else 'FALHOU reenvio ' || coalesce(pg_temp.v('t1')::text, '-') end;
