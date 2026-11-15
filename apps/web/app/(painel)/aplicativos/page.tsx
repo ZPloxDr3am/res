@@ -2,7 +2,7 @@ import { headers } from 'next/headers';
 import { contextoLoja } from '@/lib/loja';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import { avisosMerchantOD, eCanalOD, type BaseMerchant } from '@res/core';
-import type { ConexaoODPainel, PainelApi, PainelAplicativos, PainelIfood, PainelOD, StatusMp } from '@/lib/aplicativos';
+import type { ConexaoClientePainel, ConexaoODPainel, PainelApi, PainelAplicativos, PainelCanaisCliente, PainelIfood, PainelOD, PedidoTeste, StatusMp } from '@/lib/aplicativos';
 import { clienteAdmin } from '@/lib/supabase/admin';
 import { Aplicativos } from '@/components/aplicativos/aplicativos';
 
@@ -21,6 +21,7 @@ export default async function PaginaAplicativos() {
   // iFood (D-074): só para dono/gerente; sem a migração, fica nulo
   let ifood: PainelIfood | null = null;
   let od: PainelOD | null = null;
+  let clientes: PainelCanaisCliente | null = null;
   if (ctx.papel === 'dono' || ctx.papel === 'gerente') {
     const [lojasMk, itens, prods, peds, saida, painelMk] = await Promise.all([
       supabase.from('marketplace_lojas').select('id, marca_id, merchant_id, modo, ativo, ultimo_evento_em').eq('loja_id', ctx.lojaId).eq('canal', 'ifood'),
@@ -49,7 +50,27 @@ export default async function PaginaAplicativos() {
         }
         lista.push({ ...(c as unknown as ConexaoODPainel), config: (c.config ?? {}) as ConexaoODPainel['config'], tem_segredo: temSegredo, avisos, eventos_com_erro: todasConexoes.find((x) => x.id === c.id)?.eventos_com_erro ?? [] });
       }
-      od = { marcas: ctx.marcas.filter((m) => !m.evento).map((m) => ({ id: m.id, nome: m.nome })), conexoes: lista };
+      // pedidos dos apps em modo teste (simulador; D-117)
+      const { data: pt } = await supabase.from('pedidos').select('id, numero, externo_canal, status, marca_id').eq('loja_id', ctx.lojaId).in('externo_canal', ['99food', 'keeta', 'aiqfome', 'deliverymuch', 'rappi']).order('criado_em', { ascending: false }).limit(12);
+      const pedidosTeste = (pt ?? []) as PedidoTeste[];
+      const marcas = ctx.marcas.filter((m) => !m.evento).map((m) => ({ id: m.id, nome: m.nome }));
+      od = { marcas, conexoes: lista, pedidosTeste };
+      const { data: cl } = await supabase.from('marketplace_lojas').select('id, canal, marca_id, merchant_id, modo, estado, ultimo_evento_em, ultimo_sinal, ultimo_erro').eq('loja_id', ctx.lojaId).in('canal', ['deliverymuch', 'rappi']).order('conectado_em');
+      const conexoesCliente: ConexaoClientePainel[] = [];
+      for (const c of cl ?? []) {
+        let temLogin = false;
+        if (admin && c.canal === 'deliverymuch') {
+          const { data: seg } = await admin.rpc('marketplace_segredos_ler', { p_marketplace_loja: c.id });
+          temLogin = !!(seg as { usuario?: string; senha?: string } | null)?.senha;
+        }
+        conexoesCliente.push({ ...(c as unknown as ConexaoClientePainel), tem_login: temLogin, eventos_com_erro: todasConexoes.find((x) => x.id === c.id)?.eventos_com_erro ?? [] });
+      }
+      clientes = {
+        configurado: { deliverymuch: !!(process.env.DELIVERYMUCH_CLIENT_ID && process.env.DELIVERYMUCH_CLIENT_SECRET), rappi: !!(process.env.RAPPI_CLIENT_ID && process.env.RAPPI_CLIENT_SECRET) },
+        marcas,
+        conexoes: conexoesCliente,
+        pedidosTeste,
+      };
     }
     if (!lojasMk.error) {
       ifood = {
@@ -72,7 +93,7 @@ export default async function PaginaAplicativos() {
         <h1 style={{ marginBottom: 0 }}>Aplicativos</h1>
         <p className="dica" style={{ margin: 0 }}>Integrações de {ctx.lojaNome}: ligue o que fizer sentido para a sua operação.</p>
       </div>
-      {error || !data ? <p className="cartao dica">{error?.message ?? 'Sem acesso.'}</p> : <Aplicativos dados={data as PainelAplicativos} origem={origem} api={(api.data as PainelApi | null) ?? null} mp={(mp.data as StatusMp | null) ?? null} ifood={ifood} od={od} modulos={modulos} />}
+      {error || !data ? <p className="cartao dica">{error?.message ?? 'Sem acesso.'}</p> : <Aplicativos dados={data as PainelAplicativos} origem={origem} api={(api.data as PainelApi | null) ?? null} mp={(mp.data as StatusMp | null) ?? null} ifood={ifood} od={od} clientes={clientes} modulos={modulos} />}
     </div>
   );
 }

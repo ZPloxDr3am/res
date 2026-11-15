@@ -459,3 +459,30 @@ export function montarMerchantOD(b: BaseMerchant, agora = new Date()) {
     availabilities: [],
   };
 }
+
+/** Pedido fictício no formato Open Delivery 1.7.1 (simulador do modo teste). */
+export function pedidoSimuladoOD(o: { tipo: 'entrega' | 'retirada'; pagamento: 'online' | 'dinheiro' | 'cartao_na_entrega'; cupom: boolean; itens: { nome: string; codigo: string; preco: number; quantidade: number; obs?: string }[]; agora?: Date }): OdPedido {
+  const agora = o.agora ?? new Date();
+  const id = typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${agora.getTime()}-${Math.random().toString(16).slice(2)}`;
+  const its = o.itens.length ? o.itens : [{ nome: 'Pizza Grande', codigo: 'simulado-pizza', preco: 69.9, quantidade: 1, obs: 'Sem cebola' }];
+  const sub = r2(its.reduce((a, i) => a + i.preco * i.quantidade, 0));
+  const taxa = o.tipo === 'entrega' ? 7 : 0;
+  const desc = o.cupom ? 10 : 0;
+  const total = r2(sub + taxa - desc);
+  const metodo = o.pagamento === 'online' ? { type: 'PREPAID', method: 'CREDIT', value: total, brand: 'VISA' } : o.pagamento === 'dinheiro' ? { type: 'PENDING', method: 'CASH', value: total, changeFor: Math.ceil(total / 50) * 50 } : { type: 'PENDING', method: 'CREDIT', value: total, brand: 'MASTERCARD' };
+  return {
+    id,
+    displayId: `S-${id.slice(0, 4).toUpperCase()}`,
+    createdAt: agora.toISOString(),
+    type: o.tipo === 'entrega' ? 'DELIVERY' : 'TAKEOUT',
+    orderTiming: 'INSTANT',
+    customer: { name: 'Cliente Simulado', phone: { number: '08007654321', extension: '123456' } },
+    delivery: o.tipo === 'entrega' ? { deliveredBy: 'MERCHANT', estimatedDeliveryDateTime: new Date(agora.getTime() + 45 * 60000).toISOString(), deliveryAddress: { street: 'Rua XV de Novembro', number: '100', district: 'Centro', city: 'Pomerode', state: 'SC', postalCode: '89107-000', coordinates: { latitude: -26.7408, longitude: -49.1769 } } } : undefined,
+    takeout: o.tipo === 'retirada' ? { takeoutDateTime: new Date(agora.getTime() + 30 * 60000).toISOString() } : undefined,
+    items: its.map((i, k) => ({ id: `${id.slice(0, 8)}-${k}`, externalCode: i.codigo, name: i.nome, quantity: i.quantidade, unitPrice: { value: i.preco }, totalPrice: { value: r2(i.preco * i.quantidade) }, specialInstructions: i.obs })),
+    otherFees: taxa ? [{ name: 'Entrega', type: 'DELIVERY_FEE', receivedBy: 'MERCHANT', price: { value: taxa } }] : [],
+    discounts: desc ? [{ amount: { value: desc }, target: 'CART', sponsorshipValues: [{ name: 'MARKETPLACE', amount: { value: 6 } }, { name: 'MERCHANT', amount: { value: 4 } }] }] : [],
+    total: { itemsPrice: { value: sub }, otherFees: { value: taxa }, discount: { value: desc }, orderAmount: { value: total } },
+    payments: { prepaid: metodo.type === 'PREPAID' ? total : 0, pending: metodo.type === 'PENDING' ? total : 0, methods: [metodo] },
+  };
+}

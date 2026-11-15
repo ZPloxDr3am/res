@@ -982,3 +982,17 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
   - Usa o módulo `ifood` do plano, que vale para todos os apps de delivery.
 - **Ficam para depois**: a autorização do aiqfome pelo ID Magalu (authorization_code), o `app_level_token` da Keeta e os clientes Delivery Much e Rappi.
 - Segurança: segredos só no servidor (`service_role`); a página só sabe se o segredo existe. Migração `20261114220000_open_delivery.sql`. Roteiro em `docs/qualidade/roteiros/open-delivery.md`; integração em `docs/integracoes/open-delivery.md`.
+
+## D-117 — Integrações, etapa 6: Delivery Much e Rappi (o RES como cliente) e simulador para todos os apps (14/11/2026)
+- **Delivery Much (OpenAPI v2)**: o agendador (30 s, o mesmo do iFood) busca `GET /orders?company.id=…&status=OPENED&stage=WAITING_COMPANY`. Pedido novo entra no quadro pelo pedido canônico (D-113) e recebe o `receive` (ack). Também busca os `CANCELED` para fechar no RES.
+  - Saída: aceitar → `accept`; pronto e saiu → `ready`, uma vez só; cancelar → `cancel`, que só vale antes do aceite (depois disso, o erro fica na fila); pausar e reabrir → `companies/{id}/offline|online`.
+  - Login por loja (password grant): o e-mail e a senha vão para o cofre. O uuid da loja sai do próprio token quando ele traz uma loja só.
+  - **Login recusado para a conexão** até a loja salvar o login de novo, porque o Delivery Much bloqueia por tentativa.
+- **Rappi**: token do aliado (uma credencial para todas as lojas), `GET orders?storeId=…`. Aceitar → `take/{tempo de preparo}`, pronto → `ready-for-pickup`, cancelar → `reject`. "Saiu" não vai: a entrega é da Rappi.
+  - Cancelamento e conclusão vêm de `orders/{id}/events`, olhando até 20 pedidos abertos por tique.
+  - Valores em centavos (como nos exemplos do portal); `RAPPI_VALORES_EM_CENTAVOS=0` desliga, se o Brasil vier em reais.
+- **Variáveis do servidor** (o integrador é o RES): `DELIVERYMUCH_CLIENT_ID`, `DELIVERYMUCH_CLIENT_SECRET`, `DELIVERYMUCH_API_URL`, `DELIVERYMUCH_TOKEN_URL` e `DELIVERYMUCH_AUDIENCE` (se pedirem); `RAPPI_CLIENT_ID`, `RAPPI_CLIENT_SECRET` e `RAPPI_API_URL`. Sem elas, só o modo teste. As URLs padrão são as de desenvolvimento de cada app.
+- **Simulador do modo teste para todos os apps** (99Food, Keeta, aiqfome, Delivery Much, Rappi): cria um pedido fictício **no formato do app**, com produtos da loja, e ele passa pela mesma tradução do pedido real. Dá para simular "cliente cancelou" e "concluído no app". O simulador acha a conexão pelo id dela.
+- Aplicativos ganha o card **"Delivery Much, Rappi"**: conexão por cardápio, login (DM) ou storeId (Rappi), modo, último erro, eventos com erro com Reprocessar, e o simulador. Usa o módulo `ifood` do plano, como o Open Delivery.
+- **Fica para depois**: a disponibilidade da Rappi (abrir/fechar), os webhooks da Rappi, os tempos `delivery_time`/`pickup_time` do Delivery Much (pedidos na homologação), o telefone/CPF do DM depois do aceite e os testes reais.
+- Migração `20261114230000_canais_cliente.sql`: pausa também no Delivery Much e simulador genérico.

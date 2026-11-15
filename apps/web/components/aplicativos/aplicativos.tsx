@@ -5,29 +5,30 @@ import QRCode from 'qrcode';
 import { normalizarChavePix, pixCopiaECola, type TipoChavePix } from '@res/core';
 import { removerIntegracao, salvarIntegracao, salvarLinkGrupo } from '@/app/(painel)/aplicativos/actions';
 import { salvando } from '@/components/tempo-real';
-import { CATALOGO, type App, type PainelAplicativos, type PainelApi, type PainelIfood, type PainelOD, type StatusMp, type TipoIntegracao } from '@/lib/aplicativos';
+import { CATALOGO, type App, type PainelAplicativos, type PainelApi, type PainelCanaisCliente as DadosCanaisCliente, type PainelIfood, type PainelOD, type StatusMp, type TipoIntegracao } from '@/lib/aplicativos';
 import { PainelMercadoPago } from '@/components/aplicativos/mercadopago';
 import { PainelApiAberta, PainelMcp } from '@/components/aplicativos/api';
 import { PainelIfoodApp } from '@/components/aplicativos/ifood';
 import { PainelOpenDelivery } from '@/components/aplicativos/opendelivery';
+import { PainelCanaisCliente } from '@/components/aplicativos/canais-cliente';
 import { ModuloTravado } from '@/components/modulo-travado';
 
 type Filtro = 'todos' | 'ligados' | 'disponiveis' | 'breve';
 
 /** Tela Aplicativos (D-042): o que já vem no RES, o que liga aqui e o que vem por aí. */
-export function Aplicativos({ dados, origem, api, mp, ifood = null, od = null, modulos = null }: { dados: PainelAplicativos; origem: string; api: PainelApi | null; mp: StatusMp | null; ifood?: PainelIfood | null; od?: PainelOD | null; modulos?: string[] | null }) {
+export function Aplicativos({ dados, origem, api, mp, ifood = null, od = null, clientes = null, modulos = null }: { dados: PainelAplicativos; origem: string; api: PainelApi | null; mp: StatusMp | null; ifood?: PainelIfood | null; od?: PainelOD | null; clientes?: DadosCanaisCliente | null; modulos?: string[] | null }) {
   // D-085: iFood e Pix automático dependem do plano
   const travado = (m: string) => !!modulos && !modulos.includes(m);
   const [filtro, setFiltro] = useState<Filtro>('todos');
   const [aberto, setAberto] = useState<App | null>(null);
   const ligado = (a: App) =>
     a.tipo === 'nativo' || (a.tipo === 'config' && !!dados.integracoes[a.id as TipoIntegracao]?.ativo) || (a.tipo === 'link' && !!dados.link) ||
-    (a.tipo === 'api' && !!api && (api.chaves.length > 0 || api.webhooks.length > 0)) || (a.tipo === 'mcp' && !!api && api.chaves.length > 0) || (a.tipo === 'mp' && !!mp?.conectado) || (a.tipo === 'ifood' && !!ifood?.lojas.some((l) => l.ativo)) || (a.tipo === 'od' && !!od?.conexoes.length);
+    (a.tipo === 'api' && !!api && (api.chaves.length > 0 || api.webhooks.length > 0)) || (a.tipo === 'mcp' && !!api && api.chaves.length > 0) || (a.tipo === 'mp' && !!mp?.conectado) || (a.tipo === 'ifood' && !!ifood?.lojas.some((l) => l.ativo)) || (a.tipo === 'od' && !!od?.conexoes.length) || (a.tipo === 'cliente' && !!clientes?.conexoes.length);
   const situacao = (a: App): { rotulo: string; tom: string } =>
     a.tipo === 'nativo' ? { rotulo: 'Incluso', tom: 'ok' } : ligado(a) ? { rotulo: 'Ligado', tom: 'ok' } : a.tipo === 'breve' ? { rotulo: 'Em breve', tom: 'breve' } : a.tipo === 'depois' ? { rotulo: 'Mais tarde', tom: 'breve' } : dados.integracoes[a.id as TipoIntegracao] ? { rotulo: 'Desligado', tom: 'off' } : { rotulo: 'Disponível', tom: 'livre' };
   const todos = CATALOGO.flatMap((c) => c.apps);
   const casa = (a: App, f: Filtro) =>
-    f === 'todos' || (f === 'ligados' && ligado(a)) || (f === 'disponiveis' && (a.tipo === 'config' || a.tipo === 'link' || a.tipo === 'api' || a.tipo === 'mcp' || a.tipo === 'mp' || a.tipo === 'ifood' || a.tipo === 'od') && !ligado(a)) || (f === 'breve' && (a.tipo === 'breve' || a.tipo === 'depois'));
+    f === 'todos' || (f === 'ligados' && ligado(a)) || (f === 'disponiveis' && (a.tipo === 'config' || a.tipo === 'link' || a.tipo === 'api' || a.tipo === 'mcp' || a.tipo === 'mp' || a.tipo === 'ifood' || a.tipo === 'od' || a.tipo === 'cliente') && !ligado(a)) || (f === 'breve' && (a.tipo === 'breve' || a.tipo === 'depois'));
   const conta = (f: Filtro) => todos.filter((a) => casa(a, f)).length;
 
   useEffect(() => {
@@ -94,6 +95,7 @@ export function Aplicativos({ dados, origem, api, mp, ifood = null, od = null, m
               {aberto.tipo === 'mp' && (travado('pix_online') ? <ModuloTravado modulo="pix_online" /> : <PainelMercadoPago mp={mp} />)}
               {aberto.tipo === 'ifood' && (travado('ifood') ? <ModuloTravado modulo="ifood" /> : ifood ? <PainelIfoodApp d={ifood} /> : <p className="dica">Só o dono ou o gerente da loja ligam o iFood (ou falta a atualização do banco: migração 20261106153000).</p>)}
               {aberto.tipo === 'od' && (travado('ifood') ? <ModuloTravado modulo="ifood" /> : od ? <PainelOpenDelivery d={od} origem={origem} /> : <p className="dica">Só o dono ou o gerente da loja ligam os aplicativos de delivery.</p>)}
+              {aberto.tipo === 'cliente' && (travado('ifood') ? <ModuloTravado modulo="ifood" /> : clientes ? <PainelCanaisCliente d={clientes} /> : <p className="dica">Só o dono ou o gerente da loja ligam os aplicativos de delivery.</p>)}
               {(aberto.tipo === 'api' || aberto.tipo === 'mcp') &&
                 (api ? (aberto.tipo === 'api' ? <PainelApiAberta api={api} origem={origem} /> : <PainelMcp api={api} origem={origem} />) : <p className="dica">Só gestores da loja mexem nas chaves de API.</p>)}
               {(aberto.tipo === 'breve' || aberto.tipo === 'depois') && (

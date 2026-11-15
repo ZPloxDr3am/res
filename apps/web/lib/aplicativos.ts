@@ -10,7 +10,7 @@ export type PainelAplicativos = {
 };
 
 /** nativo: já faz parte do RES (abre a tela); config: liga aqui; link: link do grupo; breve: em breve; depois: combinado para mais tarde */
-export type App = { id: string; nome: string; desc: string; icone: string; tipo: 'nativo' | 'config' | 'link' | 'breve' | 'depois' | 'api' | 'mcp' | 'mp' | 'ifood' | 'od'; href?: string; nota?: string };
+export type App = { id: string; nome: string; desc: string; icone: string; tipo: 'nativo' | 'config' | 'link' | 'breve' | 'depois' | 'api' | 'mcp' | 'mp' | 'ifood' | 'od' | 'cliente'; href?: string; nota?: string };
 
 export const CATALOGO: { titulo: string; apps: App[] }[] = [
   {
@@ -48,7 +48,7 @@ export const CATALOGO: { titulo: string; apps: App[] }[] = [
       { id: 'link', nome: 'Link único do grupo', desc: 'Um link com todos os cardápios das suas lojas', icone: '🔗', tipo: 'link' },
       { id: 'ifood', nome: 'iFood', desc: 'Pedidos do iFood direto no quadro', icone: '🛵', tipo: 'ifood' },
       { id: 'opendelivery', nome: '99Food, Keeta, aiqfome', desc: 'Pedidos pelo padrão Open Delivery', icone: '🧩', tipo: 'od' },
-      { id: 'marketplaces', nome: 'Rappi, Delivery Much', desc: 'Outros aplicativos de delivery', icone: '🧩', tipo: 'breve' },
+      { id: 'deliverymuch-rappi', nome: 'Delivery Much, Rappi', desc: 'Pedidos dos dois apps no quadro', icone: '🧩', tipo: 'cliente' },
     ],
   },
   {
@@ -129,4 +129,21 @@ export type ConexaoODPainel = {
   avisos: string[];
   eventos_com_erro: { id: number; codigo: string; externo_id: string | null; recebido_em: string; erro: string }[];
 };
-export type PainelOD = { marcas: { id: string; nome: string }[]; conexoes: ConexaoODPainel[] };
+export type PedidoTeste = { id: string; numero: number; externo_canal: string; status: string; marca_id: string };
+export type PainelOD = { marcas: { id: string; nome: string }[]; conexoes: ConexaoODPainel[]; pedidosTeste: PedidoTeste[] };
+
+/** Delivery Much e Rappi (D-117): o RES busca os pedidos (polling) com as credenciais de integrador do servidor. */
+export type ConexaoClientePainel = {
+  id: string;
+  canal: 'deliverymuch' | 'rappi';
+  marca_id: string;
+  merchant_id: string | null;
+  modo: 'teste' | 'producao';
+  estado: string;
+  ultimo_evento_em: string | null;
+  ultimo_sinal: string | null;
+  ultimo_erro: string | null;
+  tem_login: boolean;
+  eventos_com_erro: { id: number; codigo: string; externo_id: string | null; recebido_em: string; erro: string }[];
+};
+export type PainelCanaisCliente = { configurado: { deliverymuch: boolean; rappi: boolean }; marcas: { id: string; nome: string }[]; conexoes: ConexaoClientePainel[]; pedidosTeste: PedidoTeste[] };
