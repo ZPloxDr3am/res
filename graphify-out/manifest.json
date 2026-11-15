@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794702607.0846927,
-    "seen": 1794702614.9844534,
+    "mtime": 1794702720.9046967,
+    "seen": 1794702728.1500528,
     "ast_hash": "d185ffd35e928ff01c40d1b572327617",
     "semantic_hash": ""
   },
@@ -2852,7 +2852,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1794702619.1652255,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -3450,8 +3450,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/aplicativos/od-actions.ts": {
-    "mtime": 1794702521.6690807,
-    "seen": 1794702614.974657,
+    "mtime": 1794702720.9046967,
+    "seen": 1794702728.1401055,
     "ast_hash": "446888fda02eb7d00716dd1f0559057f",
     "semantic_hash": ""
   },
@@ -3468,8 +3468,8 @@
     "semantic_hash": ""
   },
   "apps/web/lib/marketplace/opendelivery.ts": {
-    "mtime": 1794702521.669449,
-    "seen": 1794702614.9798098,
+    "mtime": 1794702720.9046967,
+    "seen": 1794702728.145422,
     "ast_hash": "94db0df5d26226c4312bd346b37f6a09",
     "semantic_hash": ""
   },
@@ -3522,20 +3522,20 @@
     "semantic_hash": ""
   },
   "apps/web/lib/marketplace/canais-cliente.ts": {
-    "mtime": 1794702500.5363486,
-    "seen": 1794702614.9797876,
+    "mtime": 1794702720.9046967,
+    "seen": 1794702728.1453993,
     "ast_hash": "a6f9ace51199536cc095544c623b0da3",
     "semantic_hash": ""
   },
   "packages/core/src/canais-cliente.ts": {
-    "mtime": 1794702500.5366797,
-    "seen": 1794702614.9804976,
+    "mtime": 1794702720.9166968,
+    "seen": 1794702728.1461484,
     "ast_hash": "5698c67db5035fda103e61b840e22822",
     "semantic_hash": ""
   },
   "packages/core/test/canais-cliente.test.ts": {
-    "mtime": 1794702500.5368273,
-    "seen": 1794702614.9812598,
+    "mtime": 1794702720.9166968,
+    "seen": 1794702728.1467783,
     "ast_hash": "9fdbe759927643c69b5c04ea6ed5843c",
     "semantic_hash": ""
   },
