@@ -242,3 +242,43 @@ select case when pg_temp.v('odc') -> 'segredos' ->> 'api_key' = 'chave-od' and p
              and (select string_agg(acao, ',' order by id) from public.marketplace_saida where pedido_id = pg_temp.id('pk3')) = 'confirm,delivered'
             then 'ok Open Delivery: conexão e Merchant só pelo servidor, evento pela conexão, merchantUpdate do cardápio (1) e da pausa, delivered'
             else 'FALHOU Open Delivery odm=' || left(coalesce(pg_temp.v('odm')::text, '-'), 300) || ' saida=' || coalesce((select string_agg(acao || coalesce(payload::text, ''), ',' order by id) from public.marketplace_saida where marketplace_loja_id = pg_temp.id('mlk') or pedido_id = pg_temp.id('pk3')), '-') end;
+
+-- Delivery Much e Rappi (D-117): pausa vira offline/online no Delivery Much; simulador acha a conexão pelo id
+\o /dev/null
+with c as (insert into public.marketplace_lojas (loja_id, marca_id, canal, merchant_id, modo, estado)
+           values (pg_temp.id('loja'), pg_temp.id('marca'), 'deliverymuch', '0b0c0d0e-0000-4000-8000-000000000001', 'producao', 'conectado') returning id)
+insert into ids select 'mldm', id from c;
+with c as (insert into public.marketplace_lojas (loja_id, marca_id, canal, merchant_id, modo, estado)
+           values (pg_temp.id('loja'), pg_temp.id('marca'), 'rappi', null, 'teste', 'aguardando_autorizacao') returning id)
+insert into ids select 'mlrp', id from c;
+update public.lojas set pausa_ate = now() + interval '20 minutes' where id = pg_temp.id('loja');
+update public.lojas set pausa_ate = null where id = pg_temp.id('loja');
+update saida set v = jsonb_set(jsonb_set(jsonb_set(jsonb_set(v, '{canal}', '"rappi"'), '{externo_id}', '"rp-1"'), '{merchant_id}', 'null'), '{marketplace_loja_id}', to_jsonb(pg_temp.id('mlrp'))) where chave = 'pk';
+select from pg_temp.como('00000000-0000-0000-0000-0000000003f1');
+insert into ids values ('prp', public.simular_pedido_marketplace(pg_temp.id('loja'), pg_temp.v('pk')));
+reset role;
+update public.pedidos set status = 'em_preparo', aceito_em = now() where id = pg_temp.id('prp');
+select from pg_temp.como('00000000-0000-0000-0000-0000000003f2');
+select from pg_temp.esperar_erro(format($q$select public.simular_pedido_marketplace('%s', '%s'::jsonb)$q$, pg_temp.id('loja'), pg_temp.v('pk')), 'Só o dono');
+reset role;
+-- outra conexão (Delivery Much em produção) não serve para o simulador
+update saida set v = jsonb_set(jsonb_set(v, '{canal}', '"deliverymuch"'), '{marketplace_loja_id}', to_jsonb(pg_temp.id('mldm'))) where chave = 'pk';
+select from pg_temp.como('00000000-0000-0000-0000-0000000003f1');
+select from pg_temp.esperar_erro(format($q$select public.simular_pedido_marketplace('%s', '%s'::jsonb)$q$, pg_temp.id('loja'), pg_temp.v('pk')), 'modo teste');
+reset role;
+\o
+select case when (select string_agg(acao, ',' order by id) from public.marketplace_saida where marketplace_loja_id = pg_temp.id('mldm')) = 'pausar,abrir'
+             and (select count(*) from public.marketplace_saida where marketplace_loja_id = pg_temp.id('mlrp') and acao in ('pausar', 'abrir')) = 0
+             and (select externo_canal::text || '/' || origem::text from public.pedidos where id = pg_temp.id('prp')) = 'rappi/rappi'
+             and (select string_agg(acao || ':' || situacao, ',') from public.marketplace_saida where pedido_id = pg_temp.id('prp')) = 'confirm:simulado'
+            then 'ok Delivery Much e Rappi: pausa vira offline/online no Delivery Much, simulador pela conexão em teste (Rappi), produção recusada'
+            else 'FALHOU DM/Rappi saida=' || coalesce((select string_agg(canal || ':' || acao || ':' || situacao, ',' order by id) from public.marketplace_saida where marketplace_loja_id in (pg_temp.id('mldm'), pg_temp.id('mlrp')) or pedido_id = pg_temp.id('prp')), '-')
+                 || ' ped=' || coalesce((select externo_canal::text || '/' || origem::text from public.pedidos where id = pg_temp.id('prp')), '-') end;
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000003f1');
+insert into saida values ('sev', to_jsonb(public.simular_evento_marketplace(pg_temp.id('prp'), 'CANCELLED', 'Cliente desistiu (simulado)')));
+reset role;
+\o
+select case when (select status::text from public.pedidos where id = pg_temp.id('prp')) = 'cancelado'
+            then 'ok simulador: evento fictício da Rappi cancela o pedido de teste'
+            else 'FALHOU simulador evento ' || coalesce(pg_temp.v('sev')::text, '-') || ' status=' || coalesce((select status::text from public.pedidos where id = pg_temp.id('prp')), '-') end;

@@ -1,6 +1,7 @@
 'use client';
 import { useState, useTransition } from 'react';
 import { criarConexaoOD, excluirConexaoOD, novaChaveOD, reprocessarEventoOD, salvarConexaoOD } from '@/app/(painel)/aplicativos/od-actions';
+import { SimuladorCanal } from '@/components/aplicativos/simulador-canal';
 import { salvando } from '@/components/tempo-real';
 import type { ConexaoODPainel, PainelOD } from '@/lib/aplicativos';
 
@@ -37,7 +38,7 @@ export function PainelOpenDelivery({ d, origem }: { d: PainelOD; origem: string 
       )}
 
       {d.conexoes.map((c) => (
-        <Conexao key={c.id} c={c} origem={origem} nomeMarca={nomeMarca(c.marca_id)} pendente={pendente}
+        <Conexao key={c.id} c={c} origem={origem} pedidos={d.pedidosTeste} nomeMarca={nomeMarca(c.marca_id)} pendente={pendente}
           salvar={(v) => fazer(salvarConexaoOD({ id: c.id, ...v }), 'Conexão salva.')}
           novaChave={() => iniciar(async () => { const r = await salvando(novaChaveOD(c.id)); if (r.ok) setChave({ id: c.id, apiKey: r.apiKey }); setMsg(r.ok ? { ok: true, t: 'Nova chave gerada: a antiga parou de valer.' } : { ok: false, t: r.erro }); })}
           excluir={() => fazer(excluirConexaoOD(c.id), 'Conexão excluída.')}
@@ -65,7 +66,7 @@ export function PainelOpenDelivery({ d, origem }: { d: PainelOD; origem: string 
 
 type Valores = { baseUrl: string; tokenUrl: string; clientId: string; clientSecret: string; merchantId: string; modo: 'teste' | 'producao' };
 
-function Conexao({ c, origem, nomeMarca, pendente, salvar, novaChave, excluir, reprocessar }: { c: ConexaoODPainel; origem: string; nomeMarca: string; pendente: boolean; salvar: (v: Valores) => void; novaChave: () => void; excluir: () => void; reprocessar: (eventoId: number) => void }) {
+function Conexao({ c, origem, pedidos, nomeMarca, pendente, salvar, novaChave, excluir, reprocessar }: { c: ConexaoODPainel; origem: string; pedidos: PainelOD['pedidosTeste']; nomeMarca: string; pendente: boolean; salvar: (v: Valores) => void; novaChave: () => void; excluir: () => void; reprocessar: (eventoId: number) => void }) {
   const [v, setV] = useState<Valores>({ baseUrl: c.config.base_url ?? '', tokenUrl: c.config.token_url ?? '', clientId: c.config.client_id ?? '', clientSecret: '', merchantId: c.merchant_id ?? '', modo: c.modo });
   const url = `${origem}/api/od/${c.id}/v1`;
   return (
@@ -109,6 +110,7 @@ function Conexao({ c, origem, nomeMarca, pendente, salvar, novaChave, excluir, r
           </ul>
         </details>
       )}
+      {c.modo === 'teste' && <SimuladorCanal conexaoId={c.id} canal={c.canal} marcaId={c.marca_id} nome={NOME[c.canal] ?? c.canal} pedidos={pedidos} />}
     </section>
   );
 }

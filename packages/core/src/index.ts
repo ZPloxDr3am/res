@@ -32,3 +32,4 @@ export * from './margem.js';
 export * from './perdas.js';
 export * from './previsao.js';
 export * from './opendelivery.js';
+export * from './canais-cliente.js';
