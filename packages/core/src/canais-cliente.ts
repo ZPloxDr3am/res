@@ -206,13 +206,14 @@ export interface RappiPedido {
   store?: { internal_id?: string | number; external_id?: string | null };
 }
 
-const ONLINE_RAPPI = new Set(['rappi_pay', 'cc', 'paypal', 'google_pay', 'apple_pay', 'nequi', 'pse', 'online']);
+/**
+ * Forma da Rappi → forma do RES. Pago na entrega: cash (dinheiro), pos_terminal (maquininha da loja) e vales.
+ * Todo o resto (rappi_pay, cc, dc, PIX, carteiras) já foi pago no app → 'online'.
+ */
 export function formaDaRappi(m: string | undefined): FormaRes {
   const x = (m ?? '').toLowerCase();
   if (x === 'cash') return 'dinheiro';
-  if (x === 'pix') return 'pix';
   if (x === 'pos_terminal') return 'cartao_credito';
-  if (x === 'dc') return 'cartao_debito';
   if (/sodexo|alelo|ticket|vale|vr_|pluxee/.test(x)) return 'vale_refeicao';
   return 'online';
 }
@@ -264,7 +265,7 @@ export function normalizarPedidoRappi(o: RappiPedido, marketplaceLojaId: string,
     desconto: Math.min(desconto, r2(subtotal + taxa + acrescimo)),
     total: Math.max(0, r2(subtotal + taxa + acrescimo - desconto)),
     pagamento,
-    pago_online: pagamento === 'online' || ONLINE_RAPPI.has((d.payment_method ?? '').toLowerCase()),
+    pago_online: pagamento === 'online',
     troco_para: null,
     cartao_bandeira: null,
     beneficios,

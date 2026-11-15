@@ -64,7 +64,7 @@ test('Rappi → pedido canônico (centavos)', () => {
   assert.deepEqual([p.pagamento, p.pago_online, p.cliente.nome, p.cliente.telefone], ['online', true, 'Caio Rappi', '47988887777']);
   assert.equal(normalizarPedidoRappi({ ...PEDIDO_RAPPI, order_detail: { ...PEDIDO_RAPPI.order_detail, delivery_method: 'pickup' } }, ML, true).tipo, 'retirada');
   assert.equal(normalizarPedidoRappi({ ...PEDIDO_RAPPI, order_detail: { ...PEDIDO_RAPPI.order_detail, items: [{ name: 'X', price: 10, quantity: 2 }] } }, ML, false).subtotal, 20);
-  assert.deepEqual(['cash', 'pos_terminal', 'dc', 'PIX', 'sodexo', 'rappi_pay'].map(formaDaRappi), ['dinheiro', 'cartao_credito', 'cartao_debito', 'pix', 'vale_refeicao', 'online']);
+  assert.deepEqual(['cash', 'pos_terminal', 'dc', 'PIX', 'sodexo', 'rappi_pay', 'cc'].map(formaDaRappi), ['dinheiro', 'cartao_credito', 'online', 'online', 'vale_refeicao', 'online', 'online']);
 });
 
 test('Rappi: rotas de saída', () => {

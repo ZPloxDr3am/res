@@ -1005,3 +1005,11 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
   - O repasse esperado é: pago no app + subsídio − comissão − taxas. Pode dar negativo, quando a loja recebeu tudo na entrega e deve a comissão.
 - **Q-16**: conferência por repasse, **sem lançar a venda de novo** (ela já entra no DRE pelos pedidos). Lançar o repasse como conta a receber fica para quando houver repasses reais para comparar.
 - Migração `20261115010000_financeiro_canais.sql`.
+
+## D-119 — Revisão das integrações de 14/11 (correções) (15/11/2026)
+- **Delivery Much, trava do login**: o erro gravado na conexão era sobrescrito pela mensagem genérica, e a trava contra o bloqueio por tentativa nunca disparava. Agora a mensagem "Login no Delivery Much recusado" fica, e a conexão para até a loja salvar o login de novo.
+- **Delivery Much, ack**: se o `receive` falhar, o erro aparece no evento, e o aceite manda o `receive` de novo antes do `accept` (sem isso, o aceite podia ser recusado para sempre).
+- **Delivery Much, cancelados**: só confere os pedidos que ainda estão abertos no RES (antes, a cada 30 s, passava por todo o histórico de cancelados).
+- **Rappi, eventos**: o cancelamento e a conclusão vêm só dos campos de nome/tipo/status do evento. Antes, qualquer texto com "cancel" (por exemplo, um campo `cancel_reason` vazio) cancelaria o pedido. São até 10 pedidos por tique, por causa do limite de chamadas.
+- **Rappi, pagamento**: tudo o que não é dinheiro, maquininha da loja ou vale foi pago no app e entra como "online" (Pix, cartão no app, carteiras). Assim, o DRE, a conferência da maquininha e o repasse não esperam esse dinheiro na loja.
+- **Open Delivery**: salvar a conexão e gerar a chave agora só valem para conexões Open Delivery (antes, a mudança era aplicada a qualquer conexão da loja antes da conferência). URL do app vazia dá mensagem clara.

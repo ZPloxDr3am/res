@@ -876,8 +876,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1794701687.1780612,
-    "seen": 1794701711.3970456,
+    "mtime": 1794702585.084692,
+    "seen": 1794702614.9801428,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": "8ccf37b0657b4213f1c10db5c78e039a"
   },
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794701877.470068,
-    "seen": 1794701884.8741543,
-    "ast_hash": "92a2b9af7f3ff68e74211002af502345",
+    "mtime": 1794702607.0846927,
+    "seen": 1794702614.9844534,
+    "ast_hash": "d185ffd35e928ff01c40d1b572327617",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2851,8 +2851,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794701716.1874852,
-    "ast_hash": "",
+    "seen": 1794702619.1652255,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -3450,9 +3450,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/aplicativos/od-actions.ts": {
-    "mtime": 1794700136.2340057,
-    "seen": 1794701031.4257371,
-    "ast_hash": "8c9f192752c69c645e2df6ae87bc9c29",
+    "mtime": 1794702521.6690807,
+    "seen": 1794702614.974657,
+    "ast_hash": "446888fda02eb7d00716dd1f0559057f",
     "semantic_hash": ""
   },
   "apps/web/app/api/od/[conexao]/v1/[...rota]/route.ts": {
@@ -3468,9 +3468,9 @@
     "semantic_hash": ""
   },
   "apps/web/lib/marketplace/opendelivery.ts": {
-    "mtime": 1794700136.2357516,
-    "seen": 1794701031.4307938,
-    "ast_hash": "5d5d543511a57c6940352a53cbf32162",
+    "mtime": 1794702521.669449,
+    "seen": 1794702614.9798098,
+    "ast_hash": "94db0df5d26226c4312bd346b37f6a09",
     "semantic_hash": ""
   },
   "packages/core/src/opendelivery.ts": {
@@ -3522,21 +3522,21 @@
     "semantic_hash": ""
   },
   "apps/web/lib/marketplace/canais-cliente.ts": {
-    "mtime": 1794701210.698044,
-    "seen": 1794701711.3966568,
-    "ast_hash": "9b89f2a2ada700334ea7c337efcfbcf3",
+    "mtime": 1794702500.5363486,
+    "seen": 1794702614.9797876,
+    "ast_hash": "a6f9ace51199536cc095544c623b0da3",
     "semantic_hash": ""
   },
   "packages/core/src/canais-cliente.ts": {
-    "mtime": 1794701210.7060442,
-    "seen": 1794701711.397428,
-    "ast_hash": "942145875112c985f00761cc4dd1593a",
+    "mtime": 1794702500.5366797,
+    "seen": 1794702614.9804976,
+    "ast_hash": "5698c67db5035fda103e61b840e22822",
     "semantic_hash": ""
   },
   "packages/core/test/canais-cliente.test.ts": {
-    "mtime": 1794701210.7060442,
-    "seen": 1794701711.3980875,
-    "ast_hash": "7e484bc83909f45adc7275333f43c9a5",
+    "mtime": 1794702500.5368273,
+    "seen": 1794702614.9812598,
+    "ast_hash": "9fdbe759927643c69b5c04ea6ed5843c",
     "semantic_hash": ""
   },
   "supabase/migrations/20261114230000_canais_cliente.sql": {
@@ -3555,6 +3555,24 @@
     "mtime": 1794701210.698044,
     "seen": 1794701711.4019048,
     "ast_hash": "9be13beb260850a9001a7deeb7ada45b",
+    "semantic_hash": ""
+  },
+  "apps/web/components/financeiro/repasses.tsx": {
+    "mtime": 1794701877.466068,
+    "seen": 1794702614.978496,
+    "ast_hash": "bb506c36feb790a94b41cb70d92c3f09",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261115010000_financeiro_canais.sql": {
+    "mtime": 1794701877.486068,
+    "seen": 1794702614.9835312,
+    "ast_hash": "05a995a6a4b7d750968261a3a838f3f1",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/financeiro-canais.md": {
+    "mtime": 1794701877.470068,
+    "seen": 1794702614.9849372,
+    "ast_hash": "63d92f0b898b31782547ff23f1706cb8",
     "semantic_hash": ""
   }
 }
