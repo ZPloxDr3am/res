@@ -49,6 +49,7 @@ export async function salvarConexaoOD(d: { id: string; baseUrl: string; tokenUrl
       estado: baseUrl && d.clientId.trim() ? 'conectado' : 'aguardando_autorizacao',
     })
     .eq('id', d.id)
+    .in('canal', ['99food', 'keeta', 'aiqfome'])
     .select('id, canal')
     .maybeSingle();
   if (error) return { ok: false, erro: /marketplace_lojas_canal_merchant_id_key/.test(error.message) ? 'Esse id de loja já está ligado a outra conexão.' : error.message };
@@ -67,7 +68,7 @@ export async function novaChaveOD(id: string): Promise<R<{ apiKey: string }>> {
   const admin = clienteAdmin();
   if (!admin) return { ok: false, erro: 'Servidor sem a chave de serviço do banco.' };
   const supabase = await criarClienteServidor();
-  const { data } = await supabase.from('marketplace_lojas').update({ estado: 'aguardando_autorizacao' }).eq('id', id).select('id, canal').maybeSingle();
+  const { data } = await supabase.from('marketplace_lojas').update({ estado: 'aguardando_autorizacao' }).eq('id', id).in('canal', ['99food', 'keeta', 'aiqfome']).select('id, canal').maybeSingle();
   if (!data || !eCanalOD(data.canal as string)) return { ok: false, erro: 'Conexão não encontrada.' };
   const apiKey = `res_od_${randomBytes(24).toString('base64url')}`;
   const { error } = await admin.rpc('marketplace_segredos_gravar', { p_marketplace_loja: id, p_segredos: { api_key: apiKey } });

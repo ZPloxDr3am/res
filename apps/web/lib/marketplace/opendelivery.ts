@@ -109,7 +109,8 @@ export async function registrarEventoOD(c: ConexaoOD, ev: OdEvento): Promise<boo
 
 /** O pedido: orderURL só se for do mesmo app (mesmo host da URL base) — senão monta pelo id. */
 async function pedidoOD(c: ConexaoOD, ev: OdEvento): Promise<OdPedido> {
-  const base = new URL(c.config.base_url ?? 'https://invalido.local');
+  if (!c.config.base_url?.startsWith('https://')) throw new Error('Configure a URL base (https) do app na conexão.');
+  const base = new URL(c.config.base_url);
   let alvo = `/orders/${encodeURIComponent(ev.orderId)}`;
   if (ev.orderURL) {
     try {

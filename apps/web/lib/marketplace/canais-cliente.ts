@@ -80,8 +80,10 @@ async function token(c: Conexao, forcar = false): Promise<string> {
   if (process.env.DELIVERYMUCH_AUDIENCE) corpo.audience = process.env.DELIVERYMUCH_AUDIENCE;
   const r = await fetch(DM.tokenUrl(), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo), cache: 'no-store', signal: AbortSignal.timeout(15_000) });
   if (!r.ok) {
-    await db().from('marketplace_lojas').update({ estado: 'erro', ultimo_erro: `Login no Delivery Much recusado (HTTP ${r.status}). Confira o e-mail e a senha.` }).eq('id', c.id);
-    throw new Error(`token Delivery Much: HTTP ${r.status}`);
+    // a mensagem começa sempre igual: é ela que trava novas tentativas até a loja salvar o login de novo
+    const m = `Login no Delivery Much recusado (HTTP ${r.status}). Confira o e-mail e a senha.`;
+    await db().from('marketplace_lojas').update({ estado: 'erro', ultimo_erro: m }).eq('id', c.id);
+    throw new Error(m);
   }
   const j = (await r.json()) as { access_token: string; expires_in?: number };
   const expira = new Date(Date.now() + (j.expires_in ?? 3600) * 1000).toISOString();
@@ -152,6 +154,24 @@ export async function criarPedidoCliente(conexaoId: string, canal: CanalCliente,
   if (error) throw new Error(error.message);
 }
 
+/** externo_id dos pedidos deste app ainda abertos no RES (últimas 12 h). */
+async function abertosNoRes(c: Conexao, limite = 50): Promise<Set<string>> {
+  const { data } = await db().from('pedidos').select('externo_id').eq('loja_id', c.loja_id).eq('externo_canal', c.canal).in('status', ['novo', 'em_preparo', 'pronto', 'em_entrega']).gte('criado_em', new Date(Date.now() - 12 * 3600_000).toISOString()).order('criado_em', { ascending: false }).limit(limite);
+  return new Set((data ?? []).map((p) => p.externo_id as string).filter(Boolean));
+}
+
+/** Nomes de evento numa resposta de eventos da Rappi (só os campos de nome/tipo/status, nunca o resto). */
+export function nomesDeEvento(j: unknown, out: string[] = []): string[] {
+  if (Array.isArray(j)) for (const x of j) nomesDeEvento(x, out);
+  else if (j && typeof j === 'object') {
+    for (const [k, v] of Object.entries(j as Record<string, unknown>)) {
+      if (typeof v === 'string' && /^(event|event_type|type|name|status|state)$/i.test(k)) out.push(v.toUpperCase());
+      else if (v && typeof v === 'object') nomesDeEvento(v, out);
+    }
+  }
+  return out;
+}
+
 async function aplicar(c: Conexao, externoId: string, codigo: string) {
   const { error } = await db().rpc('marketplace_aplicar_evento', { p_canal: c.canal, p_externo_id: externoId, p_codigo: codigo, p_motivo: null });
   if (error) throw new Error(error.message);
@@ -173,17 +193,20 @@ async function pollingDM(c: Conexao): Promise<number> {
       await criarPedidoCliente(c.id, 'deliverymuch', o);
       // "receive" é o ack obrigatório antes do aceite
       const ack = chamadaDM('receive', { externoId: o.id })!;
-      await chamar(c, ack.caminho, { method: ack.metodo, body: JSON.stringify(ack.corpo) });
-      await resultado(c, ev, null);
+      const ra = await chamar(c, ack.caminho, { method: ack.metodo, body: JSON.stringify(ack.corpo) });
+      // o pedido já está no quadro; se o ack falhou, o aceite manda o "receive" de novo antes
+      await resultado(c, ev, ra.ok ? null : `receive: HTTP ${ra.status} (vai de novo no aceite)`);
       novos++;
     } catch (e) {
       await resultado(c, ev, (e as Error).message);
     }
   }
-  // cancelados pelo app/cliente (ou por tempo): fecham no RES
-  const rc = await chamar(c, `/orders?company.id=${empresa}&status=CANCELED`);
-  if (rc.ok) {
+  // cancelados pelo app/cliente (ou por tempo): fecham no RES — só os que ainda estão abertos aqui
+  const abertos = await abertosNoRes(c);
+  const rc = abertos.size ? await chamar(c, `/orders?company.id=${empresa}&status=CANCELED`) : null;
+  if (rc?.ok) {
     for (const o of lista<DmPedido>(await rc.json())) {
+      if (!abertos.has(o.id)) continue;
       const cod = eventoDoDM(o);
       if (!cod) continue;
       const ev = `dm:${o.id}:${cod}`;
@@ -217,14 +240,12 @@ async function pollingRappi(c: Conexao): Promise<number> {
       await resultado(c, ev, (e as Error).message);
     }
   }
-  // cancelamento pela Rappi: olha os eventos dos pedidos ainda abertos (até 20 por tique)
-  const { data: abertos } = await db().from('pedidos').select('externo_id').eq('loja_id', c.loja_id).eq('externo_canal', 'rappi').in('status', ['novo', 'em_preparo', 'pronto', 'em_entrega']).gte('criado_em', new Date(Date.now() - 12 * 3600_000).toISOString()).limit(20);
-  for (const p of abertos ?? []) {
-    const ex = p.externo_id as string;
+  // cancelamento e conclusão pela Rappi: olha os eventos dos pedidos ainda abertos (até 10 por tique, por causa do limite de chamadas)
+  for (const ex of await abertosNoRes(c, 10)) {
     const re = await chamar(c, `${CAMINHO_RAPPI}/orders/${encodeURIComponent(ex)}/events`);
     if (!re.ok) continue;
-    const texto = JSON.stringify(await re.json()).toUpperCase();
-    const cod = /CANCEL/.test(texto) ? 'CANCELLED' : /(DELIVERED|FINISHED|CLOSED)/.test(texto) ? 'CONCLUDED' : null;
+    const nomes = nomesDeEvento(await re.json());
+    const cod = nomes.some((n) => /(^|_)CANCEL(L?ED)?($|_)|^REJECTED$/.test(n)) ? 'CANCELLED' : nomes.some((n) => /^(DELIVERED|FINISHED|CLOSED|ORDER_DELIVERED)$/.test(n)) ? 'CONCLUDED' : null;
     if (!cod) continue;
     const ev = `rappi:${ex}:${cod}`;
     if (!(await registrar(c, ev, cod, ex, null))) continue;
@@ -279,6 +300,11 @@ async function enviarSaida(porId: Map<string, Conexao>): Promise<{ enviados: num
         await d.rpc('marketplace_marcar_saida', { p_id: s.id, p_ok: true, p_erro: null });
         continue;
       }
+      if (c.canal === 'deliverymuch' && s.acao === 'confirm') {
+        // o aceite exige o "receive" antes; repetir não faz mal
+        const ack = chamadaDM('receive', { externoId: (s.externo_id as string) ?? '' })!;
+        await chamar(c, ack.caminho, { method: ack.metodo, body: JSON.stringify(ack.corpo) }).catch(() => undefined);
+      }
       const r = await chamar(c, ch.caminho, { method: ch.metodo, body: JSON.stringify(ch.corpo) });
       await d.rpc('marketplace_marcar_saida', { p_id: s.id, p_ok: r.ok, p_erro: r.ok ? null : `HTTP ${r.status}` });
       if (r.ok) enviados++;
@@ -301,7 +327,8 @@ export async function sincronizarCanaisCliente(): Promise<{ conexoes: number; no
       // deu certo (o login também): conexão em ordem
       await db().from('marketplace_lojas').update({ ultimo_sinal: new Date().toISOString(), ultimo_erro: null, estado: 'conectado' }).eq('id', c.id);
     } catch (e) {
-      await db().from('marketplace_lojas').update({ ultimo_erro: (e as Error).message.slice(0, 300) }).eq('id', c.id);
+      const m = (e as Error).message.slice(0, 300);
+      await db().from('marketplace_lojas').update(/^Login no Delivery Much recusado/.test(m) ? { estado: 'erro', ultimo_erro: m } : { ultimo_erro: m }).eq('id', c.id);
     }
   }
   const saida = await enviarSaida(new Map(lista.map((c) => [c.id, c])));
