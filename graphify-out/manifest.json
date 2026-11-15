@@ -1638,8 +1638,8 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794701703.2620618,
-    "seen": 1794701711.4012983,
+    "mtime": 1794701877.470068,
+    "seen": 1794701884.8741543,
     "ast_hash": "92a2b9af7f3ff68e74211002af502345",
     "semantic_hash": ""
   },
@@ -1992,14 +1992,14 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/financeiro/actions.ts": {
-    "mtime": 1794701615.817642,
-    "seen": 1794701711.3920171,
+    "mtime": 1794701877.466068,
+    "seen": 1794701884.8645124,
     "ast_hash": "9ef182881703cbe8370bfc0c39bc47a3",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/financeiro/page.tsx": {
-    "mtime": 1794701615.8186767,
-    "seen": 1794701711.3920193,
+    "mtime": 1794701877.466068,
+    "seen": 1794701884.8645163,
     "ast_hash": "9f919b26afc00389ec00f5709e68213a",
     "semantic_hash": ""
   },
@@ -2016,8 +2016,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/cadastros.tsx": {
-    "mtime": 1794701615.8182292,
-    "seen": 1794701711.3951685,
+    "mtime": 1794701877.466068,
+    "seen": 1794701884.8678446,
     "ast_hash": "77f4f30d464299c6d46349b08902eb3f",
     "semantic_hash": ""
   },
@@ -2280,8 +2280,8 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzz_marketplace.sql": {
-    "mtime": 1794701565.132058,
-    "seen": 1794701711.4010448,
+    "mtime": 1794701877.486068,
+    "seen": 1794701884.8738952,
     "ast_hash": "85f46407d8e81845eeae52c60379af38",
     "semantic_hash": ""
   },
@@ -2790,8 +2790,8 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1794701703.2741542,
-    "seen": 1794701711.4012797,
+    "mtime": 1794701877.466068,
+    "seen": 1794701884.874134,
     "ast_hash": "5202b01e6bd1578c8b8a9ba362ea6627",
     "semantic_hash": ""
   },
@@ -2852,7 +2852,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1794701716.1874852,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -3521,12 +3521,6 @@
     "ast_hash": "6a3c85a2a3404383eb2ad28dbe91bb93",
     "semantic_hash": ""
   },
-  "apps/web/components/financeiro/repasses.tsx": {
-    "mtime": 1794701629.9540591,
-    "seen": 1794701711.395287,
-    "ast_hash": "bb506c36feb790a94b41cb70d92c3f09",
-    "semantic_hash": ""
-  },
   "apps/web/lib/marketplace/canais-cliente.ts": {
     "mtime": 1794701210.698044,
     "seen": 1794701711.3966568,
@@ -3551,22 +3545,10 @@
     "ast_hash": "74e39280d363db6c493d01a3a8b42d4e",
     "semantic_hash": ""
   },
-  "supabase/migrations/20261115010000_financeiro_canais.sql": {
-    "mtime": 1794701526.2787876,
-    "seen": 1794701711.4004066,
-    "ast_hash": "05a995a6a4b7d750968261a3a838f3f1",
-    "semantic_hash": ""
-  },
   "docs/integracoes/deliverymuch-rappi.md": {
     "mtime": 1794701210.698044,
     "seen": 1794701711.4014027,
     "ast_hash": "9ad09b0553e5ad0389d364ffb72fc1b7",
-    "semantic_hash": ""
-  },
-  "docs/qualidade/roteiros/financeiro-canais.md": {
-    "mtime": 1794701703.2773001,
-    "seen": 1794701711.4017565,
-    "ast_hash": "63d92f0b898b31782547ff23f1706cb8",
     "semantic_hash": ""
   },
   "docs/qualidade/roteiros/simulador-apps.md": {
