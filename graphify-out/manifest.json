@@ -876,8 +876,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1794700986.174036,
-    "seen": 1794701031.431101,
+    "mtime": 1794701687.1780612,
+    "seen": 1794701711.3970456,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": "8ccf37b0657b4213f1c10db5c78e039a"
   },
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1794701210.698044,
-    "seen": 1794701217.9856968,
-    "ast_hash": "47930453eefd0b42b27e738fbe8c5764",
+    "mtime": 1794701703.2620618,
+    "seen": 1794701711.4012983,
+    "ast_hash": "92a2b9af7f3ff68e74211002af502345",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1992,15 +1992,15 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/financeiro/actions.ts": {
-    "mtime": 1794607865.1506717,
-    "seen": 1794607872.7101436,
-    "ast_hash": "af62e2c3ea4b464ba6f45c1e048adf59",
+    "mtime": 1794701615.817642,
+    "seen": 1794701711.3920171,
+    "ast_hash": "9ef182881703cbe8370bfc0c39bc47a3",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/financeiro/page.tsx": {
-    "mtime": 1794613010.6071675,
-    "seen": 1794613018.6586568,
-    "ast_hash": "90f8841b0e54fa204fda28a7522fc97b",
+    "mtime": 1794701615.8186767,
+    "seen": 1794701711.3920193,
+    "ast_hash": "9f919b26afc00389ec00f5709e68213a",
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/automaticos.tsx": {
@@ -2016,9 +2016,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/cadastros.tsx": {
-    "mtime": 1793579443.7532597,
-    "seen": 1793580351.7837932,
-    "ast_hash": "060a4a1240bc22b14226359cdc5333ae",
+    "mtime": 1794701615.8182292,
+    "seen": 1794701711.3951685,
+    "ast_hash": "77f4f30d464299c6d46349b08902eb3f",
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/dre.tsx": {
@@ -2280,9 +2280,9 @@
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzz_marketplace.sql": {
-    "mtime": 1794701210.7060442,
-    "seen": 1794701217.9853802,
-    "ast_hash": "74bfc6006ab87879950ca557e34d5b7d",
+    "mtime": 1794701565.132058,
+    "seen": 1794701711.4010448,
+    "ast_hash": "85f46407d8e81845eeae52c60379af38",
     "semantic_hash": ""
   },
   "docs/planejamento/01-objetivo.md": {
@@ -2790,9 +2790,9 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1794701210.698044,
-    "seen": 1794701217.985676,
-    "ast_hash": "c21159010e3df07e7d78dc88a615f977",
+    "mtime": 1794701703.2741542,
+    "seen": 1794701711.4012797,
+    "ast_hash": "5202b01e6bd1578c8b8a9ba362ea6627",
     "semantic_hash": ""
   },
   "docs/comercial/README.md": {
@@ -2851,8 +2851,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1794701036.3086848,
-    "ast_hash": "",
+    "seen": 1794701716.1874852,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -3501,6 +3501,78 @@
     "mtime": 1794700136.2357516,
     "seen": 1794701031.4357054,
     "ast_hash": "1a10db23a9aef8062dc52e9ded406d95",
+    "semantic_hash": ""
+  },
+  "apps/web/app/(painel)/aplicativos/canais-actions.ts": {
+    "mtime": 1794701210.698044,
+    "seen": 1794701711.3914022,
+    "ast_hash": "2ac692a085c2c5655985dcc7cbabf99b",
+    "semantic_hash": ""
+  },
+  "apps/web/components/aplicativos/canais-cliente.tsx": {
+    "mtime": 1794701210.698044,
+    "seen": 1794701711.3938682,
+    "ast_hash": "9305a57d54eb71a6eec10abf84a2a4eb",
+    "semantic_hash": ""
+  },
+  "apps/web/components/aplicativos/simulador-canal.tsx": {
+    "mtime": 1794701210.698044,
+    "seen": 1794701711.3939273,
+    "ast_hash": "6a3c85a2a3404383eb2ad28dbe91bb93",
+    "semantic_hash": ""
+  },
+  "apps/web/components/financeiro/repasses.tsx": {
+    "mtime": 1794701629.9540591,
+    "seen": 1794701711.395287,
+    "ast_hash": "bb506c36feb790a94b41cb70d92c3f09",
+    "semantic_hash": ""
+  },
+  "apps/web/lib/marketplace/canais-cliente.ts": {
+    "mtime": 1794701210.698044,
+    "seen": 1794701711.3966568,
+    "ast_hash": "9b89f2a2ada700334ea7c337efcfbcf3",
+    "semantic_hash": ""
+  },
+  "packages/core/src/canais-cliente.ts": {
+    "mtime": 1794701210.7060442,
+    "seen": 1794701711.397428,
+    "ast_hash": "942145875112c985f00761cc4dd1593a",
+    "semantic_hash": ""
+  },
+  "packages/core/test/canais-cliente.test.ts": {
+    "mtime": 1794701210.7060442,
+    "seen": 1794701711.3980875,
+    "ast_hash": "7e484bc83909f45adc7275333f43c9a5",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261114230000_canais_cliente.sql": {
+    "mtime": 1794701210.7060442,
+    "seen": 1794701711.4004047,
+    "ast_hash": "74e39280d363db6c493d01a3a8b42d4e",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261115010000_financeiro_canais.sql": {
+    "mtime": 1794701526.2787876,
+    "seen": 1794701711.4004066,
+    "ast_hash": "05a995a6a4b7d750968261a3a838f3f1",
+    "semantic_hash": ""
+  },
+  "docs/integracoes/deliverymuch-rappi.md": {
+    "mtime": 1794701210.698044,
+    "seen": 1794701711.4014027,
+    "ast_hash": "9ad09b0553e5ad0389d364ffb72fc1b7",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/financeiro-canais.md": {
+    "mtime": 1794701703.2773001,
+    "seen": 1794701711.4017565,
+    "ast_hash": "63d92f0b898b31782547ff23f1706cb8",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/simulador-apps.md": {
+    "mtime": 1794701210.698044,
+    "seen": 1794701711.4019048,
+    "ast_hash": "9be13beb260850a9001a7deeb7ada45b",
     "semantic_hash": ""
   }
 }

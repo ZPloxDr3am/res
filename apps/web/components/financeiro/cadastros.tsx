@@ -1,6 +1,6 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { salvarCategoria, salvarContaFin, salvarFornecedor, salvarTaxas } from '@/app/(painel)/financeiro/actions';
+import { salvarCategoria, salvarContaFin, salvarFornecedor, salvarTaxas, salvarTaxasCanais, type TaxaCanal } from '@/app/(painel)/financeiro/actions';
 import { salvando } from '@/components/tempo-real';
 import { DICA_TAXA, FORMAS_VENDA, LINHAS, type Categoria, type ContaFin, type Fornecedor, type Linha, type Taxa } from '@/lib/financeiro';
 
@@ -56,6 +56,61 @@ export function Taxas({ inicial }: { inicial: Taxa[] }) {
       <div className="linha" style={{ alignItems: 'center' }}>
         <button type="button" className="botao-primario" disabled={pendente} onClick={() => rodar(() => salvarTaxas(t.map((r) => ({ forma: r.forma, percentual: num(r.percentual), fixa: num(r.fixa), dias: num(r.dias) }))), 'Taxas salvas.')}>
           Salvar taxas
+        </button>
+        {aviso}
+      </div>
+    </section>
+  );
+}
+
+const APPS: [string, string][] = [['ifood', 'iFood'], ['99food', '99Food'], ['keeta', 'Keeta'], ['aiqfome', 'aiqfome'], ['deliverymuch', 'Delivery Much'], ['rappi', 'Rappi']];
+
+/** Taxas dos apps de delivery (D-118): o DRE, o fluxo de caixa e a conferência do repasse usam estas. */
+export function TaxasApps({ inicial }: { inicial: TaxaCanal[] }) {
+  const [t, setT] = useState(() =>
+    APPS.map(([canal]) => {
+      const x = inicial.find((i) => i.canal === canal);
+      const br = (n: number | undefined) => String(n ?? 0).replace('.', ',');
+      return { canal, comissao_pct: br(x?.comissao_pct), comissao_entrega: x?.comissao_entrega ?? false, pagamento_pct: br(x?.pagamento_pct), fixa: br(x?.fixa), ciclo: x?.ciclo ?? ('semanal' as TaxaCanal['ciclo']), dias_repasse: String(x?.dias_repasse ?? 7) };
+    }),
+  );
+  const { pendente, rodar, aviso } = useSalvar();
+  const m = (i: number, x: Partial<(typeof t)[number]>) => setT((v) => v.map((r, k) => (k === i ? { ...r, ...x } : r)));
+  return (
+    <section className="cartao grade">
+      <h2 style={{ margin: 0 }}>Taxas dos apps de delivery</h2>
+      <p className="dica" style={{ margin: 0 }}>
+        A comissão e a taxa do pagamento online que cada app cobra estão no seu contrato ou no portal do parceiro. Com elas, o DRE desconta o custo real de cada pedido do app,
+        e o extrato do banco confere o repasse. Deixe zerado o app que você não usa: o pedido dele segue com as taxas da forma de pagamento, como antes.
+      </p>
+      <div className="tabela-rolagem">
+        <table className="tabela gc-tabela">
+          <thead>
+            <tr><th>App</th><th>Comissão %</th><th>Sobre a entrega também?</th><th>Pagamento online %</th><th>R$ fixo por pedido</th><th>Repasse</th><th>Cai (dias depois)</th></tr>
+          </thead>
+          <tbody>
+            {t.map((r, i) => (
+              <tr key={r.canal}>
+                <td>{APPS[i]![1]}</td>
+                <td><input inputMode="decimal" value={r.comissao_pct} onChange={(e) => m(i, { comissao_pct: e.target.value })} style={{ width: '4.5rem' }} aria-label={`Comissão ${APPS[i]![1]}`} /></td>
+                <td><input type="checkbox" checked={r.comissao_entrega} onChange={(e) => m(i, { comissao_entrega: e.target.checked })} aria-label={`Comissão sobre a entrega ${APPS[i]![1]}`} /></td>
+                <td><input inputMode="decimal" value={r.pagamento_pct} onChange={(e) => m(i, { pagamento_pct: e.target.value })} style={{ width: '4.5rem' }} aria-label={`Pagamento online ${APPS[i]![1]}`} /></td>
+                <td><input inputMode="decimal" value={r.fixa} onChange={(e) => m(i, { fixa: e.target.value })} style={{ width: '4.5rem' }} aria-label={`Fixo ${APPS[i]![1]}`} /></td>
+                <td>
+                  <select value={r.ciclo} onChange={(e) => m(i, { ciclo: e.target.value as TaxaCanal['ciclo'] })} aria-label={`Repasse ${APPS[i]![1]}`}>
+                    <option value="semanal">Semanal</option><option value="quinzenal">Quinzenal</option><option value="mensal">Mensal</option>
+                  </select>
+                </td>
+                <td><input inputMode="numeric" value={r.dias_repasse} onChange={(e) => m(i, { dias_repasse: e.target.value })} style={{ width: '4rem' }} aria-label={`Dias do repasse ${APPS[i]![1]}`} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="linha" style={{ alignItems: 'center' }}>
+        <button type="button" className="botao-primario" disabled={pendente}
+          onClick={() => rodar(() => salvarTaxasCanais(t.map((r) => ({ canal: r.canal, comissao_pct: num(r.comissao_pct), comissao_entrega: r.comissao_entrega, pagamento_pct: num(r.pagamento_pct), fixa: num(r.fixa), ciclo: r.ciclo, dias_repasse: num(r.dias_repasse) }))), 'Taxas dos apps salvas.')}>
+          Salvar taxas dos apps
         </button>
         {aviso}
       </div>
