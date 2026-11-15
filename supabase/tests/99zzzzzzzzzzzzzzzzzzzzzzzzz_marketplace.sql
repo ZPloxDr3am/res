@@ -282,3 +282,30 @@ reset role;
 select case when (select status::text from public.pedidos where id = pg_temp.id('prp')) = 'cancelado'
             then 'ok simulador: evento fictício da Rappi cancela o pedido de teste'
             else 'FALHOU simulador evento ' || coalesce(pg_temp.v('sev')::text, '-') || ' status=' || coalesce((select status::text from public.pedidos where id = pg_temp.id('prp')), '-') end;
+
+-- Financeiro por canal (D-118): comissão do app no DRE e no repasse; sem cadastro, nada muda; outra loja não vê
+\o /dev/null
+select from pg_temp.como('00000000-0000-0000-0000-0000000003f1');
+insert into saida values ('fdre0', (select (public.dre_financeiro(array[pg_temp.id('loja')], extract(year from now())::int) -> 'meses' -> (extract(month from now())::int - 1) ->> 'taxas')::jsonb));
+insert into public.canal_taxas (loja_id, canal, comissao_pct, comissao_entrega, pagamento_pct, fixa) values (pg_temp.id('loja'), 'keeta', 12, true, 3.2, 0.5)
+  on conflict (loja_id, canal) do update set comissao_pct = 12, comissao_entrega = true, pagamento_pct = 3.2, fixa = 0.5;
+insert into saida values ('frep', public.repasses_canais(pg_temp.id('loja'), 2));
+insert into saida values ('fdre1', (select (public.dre_financeiro(array[pg_temp.id('loja')], extract(year from now())::int) -> 'meses' -> (extract(month from now())::int - 1) ->> 'taxas')::jsonb));
+reset role;
+insert into saida values ('fesp', (select to_jsonb(round(((p.subtotal + p.taxa_entrega) * 0.12 + case when p.pagamento = 'online' then p.total * 0.032 else 0 end + 0.5) * 100))
+                                    from public.pedidos p where p.id = pg_temp.id('pk3')));
+insert into saida values ('ftx', (select to_jsonb(round(private.fin_taxa_venda(p.loja_id, p.externo_canal, p.pagamento, p.subtotal, p.taxa_entrega, p.total) * 100)) from public.pedidos p where p.id = pg_temp.id('pk3')));
+select from pg_temp.como('00000000-0000-0000-0000-0000000003f2');
+select from pg_temp.esperar_erro(format($q$select public.repasses_canais('%s')$q$, pg_temp.id('loja')), 'Financeiro');
+insert into saida values ('fct2', to_jsonb((select count(*) from public.canal_taxas)));
+reset role;
+\o
+select case when pg_temp.v('ftx') = pg_temp.v('fesp')
+             and (select (m ->> 'comissao')::numeric + (m ->> 'taxa')::numeric from jsonb_array_elements(pg_temp.v('frep') -> 'canais') c, jsonb_array_elements(c -> 'meses') m
+                   where c ->> 'canal' = 'keeta' and m ->> 'mes' = to_char(now(), 'YYYY-MM')) >= (pg_temp.v('fesp') #>> '{}')::numeric
+             and (pg_temp.v('fdre1') #>> '{}')::numeric > (pg_temp.v('fdre0') #>> '{}')::numeric
+             and pg_temp.v('fct2') = '0'
+             and (select c -> 'taxas' ->> 'comissao_pct' from jsonb_array_elements(pg_temp.v('frep') -> 'canais') c where c ->> 'canal' = 'keeta') = '12.00'
+            then 'ok financeiro por canal: comissão do app na taxa da venda, no DRE e no repasse; outra loja não vê'
+            else 'FALHOU financeiro canal tx=' || coalesce(pg_temp.v('ftx')::text, '-') || ' esp=' || coalesce(pg_temp.v('fesp')::text, '-')
+                 || ' dre0=' || coalesce(pg_temp.v('fdre0')::text, '-') || ' dre1=' || coalesce(pg_temp.v('fdre1')::text, '-') || ' rep=' || left(coalesce(pg_temp.v('frep')::text, '-'), 400) end;

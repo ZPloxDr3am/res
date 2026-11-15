@@ -996,3 +996,12 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - Aplicativos ganha o card **"Delivery Much, Rappi"**: conexão por cardápio, login (DM) ou storeId (Rappi), modo, último erro, eventos com erro com Reprocessar, e o simulador. Usa o módulo `ifood` do plano, como o Open Delivery.
 - **Fica para depois**: a disponibilidade da Rappi (abrir/fechar), os webhooks da Rappi, os tempos `delivery_time`/`pickup_time` do Delivery Much (pedidos na homologação), o telefone/CPF do DM depois do aceite e os testes reais.
 - Migração `20261114230000_canais_cliente.sql`: pausa também no Delivery Much e simulador genérico.
+
+## D-118 — Integrações, etapa 7: financeiro por canal (comissão, repasse e conferência) (15/11/2026)
+- **Cadastros e taxas → Taxas dos apps de delivery** (tabela `canal_taxas`, por loja e app): comissão em % dos itens (com ou sem a entrega), taxa do pagamento online, valor fixo por pedido, ciclo do repasse (semanal, quinzenal ou mensal) e em quantos dias cai.
+  - App sem cadastro (ou zerado): o pedido segue com as taxas da forma de pagamento, como antes. Nada muda para quem não preencher.
+- **DRE e fluxo de caixa**: a taxa de um pedido do app é comissão + pagamento online (quando pago no app) + fixo. Se foi pago na entrega, soma a taxa da maquininha daquela forma (`private.fin_taxa_venda`). `dre_financeiro` e `vendas_recentes_financeiro` foram recriadas só com essa troca.
+- **Extrato do banco → Repasses dos apps** (`repasses_canais`): por app e mês, mostra pedidos, vendido, pago no app, subsídio do app nos cupons (a parte "marketplace" dos benefícios), comissão, taxas e repasse esperado, contra o que caiu no extrato. O crédito é reconhecido pelo nome: iFood, 99Food/99 Tecnologia, Keeta/Meituan, aiqfome/Magalu, Delivery Much, Rappi.
+  - O repasse esperado é: pago no app + subsídio − comissão − taxas. Pode dar negativo, quando a loja recebeu tudo na entrega e deve a comissão.
+- **Q-16**: conferência por repasse, **sem lançar a venda de novo** (ela já entra no DRE pelos pedidos). Lançar o repasse como conta a receber fica para quando houver repasses reais para comparar.
+- Migração `20261115010000_financeiro_canais.sql`.

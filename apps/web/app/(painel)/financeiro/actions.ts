@@ -142,6 +142,31 @@ export async function salvarTaxas(taxas: Taxa[]): Promise<R> {
   return { ok: true };
 }
 
+export type TaxaCanal = { canal: string; comissao_pct: number; comissao_entrega: boolean; pagamento_pct: number; fixa: number; ciclo: 'semanal' | 'quinzenal' | 'mensal'; dias_repasse: number };
+
+/** Taxas dos apps de delivery (D-118): comissão, pagamento online, fixo por pedido e repasse. Linha zerada = apagar (volta às taxas da forma). */
+export async function salvarTaxasCanais(taxas: TaxaCanal[]): Promise<R> {
+  const ctx = await contextoLoja();
+  for (const t of taxas) {
+    if (!(t.comissao_pct >= 0 && t.comissao_pct <= 50) || !(t.pagamento_pct >= 0 && t.pagamento_pct <= 10) || !(t.fixa >= 0 && t.fixa <= 100) || !(t.dias_repasse >= 0 && t.dias_repasse <= 60) || !['semanal', 'quinzenal', 'mensal'].includes(t.ciclo)) {
+      return { ok: false, erro: 'Confira as taxas dos apps (comissão até 50%, pagamento online até 10%, R$ 100 fixos e 60 dias).' };
+    }
+  }
+  const supabase = await criarClienteServidor();
+  const vazias = taxas.filter((t) => t.comissao_pct === 0 && t.pagamento_pct === 0 && t.fixa === 0).map((t) => t.canal);
+  const cheias = taxas.filter((t) => !vazias.includes(t.canal));
+  if (cheias.length) {
+    const { error } = await supabase.from('canal_taxas').upsert(cheias.map((t) => ({ loja_id: ctx.lojaId, ...t, dias_repasse: Math.round(t.dias_repasse), atualizado_em: new Date().toISOString() })));
+    if (error) return { ok: false, erro: /canal_taxas/.test(error.message) ? 'Falta a atualização do banco do financeiro por canal (D-118).' : msg(error.message) };
+  }
+  if (vazias.length) {
+    const { error } = await supabase.from('canal_taxas').delete().eq('loja_id', ctx.lojaId).in('canal', vazias);
+    if (error) return { ok: false, erro: msg(error.message) };
+  }
+  refrescar();
+  return { ok: true };
+}
+
 export async function salvarCategoria(d: { id?: string; tipo: TipoLanc; linha: string; grupo: string; nome: string; ativo: boolean }): Promise<R> {
   if (!d.nome.trim() || !d.grupo.trim()) return { ok: false, erro: 'Preencha o nome e o grupo.' };
   const { supabase, dono } = await donoFin();

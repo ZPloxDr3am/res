@@ -21,7 +21,9 @@ import { Lancamentos } from '@/components/financeiro/lancamentos';
 import { CustosFixos, NotasPendentes } from '@/components/financeiro/automaticos';
 import { TabelaDre, csvDre } from '@/components/financeiro/dre';
 import { FluxoCaixa } from '@/components/financeiro/fluxo';
-import { Categorias, Contas, Fornecedores, Taxas } from '@/components/financeiro/cadastros';
+import { Categorias, Contas, Fornecedores, Taxas, TaxasApps } from '@/components/financeiro/cadastros';
+import { RepassesApps, type DadosRepasses } from '@/components/financeiro/repasses';
+import type { TaxaCanal } from '@/app/(painel)/financeiro/actions';
 import { BaixarCsv } from '@/components/financeiro/baixar';
 import { EscolhaModo } from '@/components/gestao/grupo';
 import { ExtratoBanco, type ContaEmAberto, type LinhaExtrato } from '@/components/financeiro/extrato';
@@ -210,6 +212,8 @@ export default async function Financeiro({ searchParams }: { searchParams: Promi
         doDono(supabase.from('fin_lancamentos').select('id, tipo, descricao, valor, vencimento')).is('pago_em', null).gte('vencimento', dia(-120)).lte('vencimento', dia(60)).order('vencimento').limit(2000),
         supabase.rpc('conferencia_maquininha', { p_loja: ctx.lojaId, p_meses: 4 }),
       ]);
+      // repasses dos apps de delivery (D-118); sem a migração, some sem erro
+      const rep = await supabase.rpc('repasses_canais', { p_loja: ctx.lojaId, p_meses: 4 });
       const linhas = ((ext.data ?? []) as Record<string, unknown>[]).map((x) => {
         const lanc = (Array.isArray(x.lanc) ? x.lanc[0] : x.lanc) as { descricao: string; valor: number; vencimento: string } | null;
         return { ...x, valor: Number(x.valor), lanc: lanc ? { ...lanc, valor: Number(lanc.valor) } : null } as LinhaExtrato;
@@ -224,6 +228,7 @@ export default async function Financeiro({ searchParams }: { searchParams: Promi
             contas={cad.contas}
           />
           {maq.data ? <ConferenciaMaquininha dados={maq.data as DadosMaquininha} /> : null}
+          {rep.data && ((rep.data as DadosRepasses).canais ?? []).length > 0 ? <RepassesApps dados={rep.data as DadosRepasses} /> : null}
         </>
       );
     }
@@ -268,7 +273,7 @@ export default async function Financeiro({ searchParams }: { searchParams: Promi
         {error && <p className="erro">{error.message}</p>}
         {meses.length > 0 && <TabelaDre meses={meses} ate={ate || 12} />}
         <p className="dica" style={{ margin: 0 }}>
-          Por competência (o mês a que a conta pertence). Vendas = pedidos concluídos no RES. Taxas calculadas pelas suas taxas em <Link href="/financeiro?aba=cadastros">Cadastros</Link>.
+          Por competência (o mês a que a conta pertence). Vendas = pedidos concluídos no RES. Taxas calculadas pelas suas taxas em <Link href="/financeiro?aba=cadastros">Cadastros</Link> (nos pedidos dos apps de delivery, pela comissão do app, quando cadastrada).
           Custo das vendas vem do <Link href="/estoque">estoque</Link> (CMV real, ⓔ) quando houver movimento no mês; senão, das contas lançadas em &quot;Custo das vendas&quot;. Contas sem categoria entram em despesas operacionais.
         </p>
       </>
@@ -278,6 +283,7 @@ export default async function Financeiro({ searchParams }: { searchParams: Promi
       <>
         {grupo && <p className="cartao dica" style={{ margin: 0 }}>Categorias, fornecedores e contas valem para o grupo todo. As taxas abaixo são de <b>{ctx.lojaNome}</b> (cada loja tem a sua maquininha): troque de loja no topo para ajustar as outras.</p>}
         <Taxas inicial={((taxas.data ?? []) as Taxa[]).map((t) => ({ ...t, percentual: Number(t.percentual), fixa: Number(t.fixa), dias: Number(t.dias) }))} />
+        <TaxasApps inicial={(((await supabase.from('canal_taxas').select('canal, comissao_pct, comissao_entrega, pagamento_pct, fixa, ciclo, dias_repasse').eq('loja_id', ctx.lojaId)).data ?? []) as TaxaCanal[]).map((t) => ({ ...t, comissao_pct: Number(t.comissao_pct), pagamento_pct: Number(t.pagamento_pct), fixa: Number(t.fixa), dias_repasse: Number(t.dias_repasse) }))} />
         <Categorias inicial={cad.categorias} />
         <Fornecedores inicial={cad.fornecedores} />
         <Contas inicial={cad.contas} />
