@@ -58,7 +58,7 @@ Regras aplicadas:
 - **Nesta fase, o tema escolhido vale para o menu e o Resumo.** As outras telas continuam seguindo o sistema até migrarem.
 
 ### Menu (todas as telas do painel do restaurante)
-- Fundo carvão nos dois temas, logotipo principal **oficial** (`public/marca/`, arquivos da pasta 01, sem alteração). No tablet aparece o símbolo oficial de 32 px.
+- **Branco no tema claro e carvão no escuro** (escolha do dono em 18/11/2026). O logotipo principal **oficial** (`public/marca/`, pasta 01, sem alteração) troca entre a versão cor e a negativa conforme o tema. No tablet aparece o símbolo oficial de 32 px, na versão do tema.
 - **"Loja em uso"** escrito acima do seletor.
 - **Famílias da marca**:
 

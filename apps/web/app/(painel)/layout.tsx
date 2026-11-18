@@ -43,10 +43,13 @@ export default async function PainelLayout({ children }: { children: React.React
     <div className="painel">
       <aside className="menu s-menu" aria-label="Menu principal">
         <div className="menu-topo">
-          {/* logotipo oficial SINO (arquivo da marca, nunca redesenhado); no tablet, o símbolo de 32 px */}
-          <div className="s-logo">
-            <img className="s-logo-principal" src="/marca/sino-logotipo-horizontal-negativo.svg" alt="SINO" width={128} height={42} />
-            <img className="s-logo-simbolo" src="/marca/sino-simbolo-32px-negativo.svg" alt="" width={32} height={32} />
+          {/* logotipo oficial SINO (arquivos da marca, nunca redesenhados): versão cor no menu claro, negativo no escuro;
+              no tablet, o símbolo de 32 px. O CSS mostra só o do tema em uso. */}
+          <div className="s-logo" role="img" aria-label="SINO">
+            <img className="s-logo-principal" data-fundo="claro" src="/marca/sino-logotipo-horizontal-cor.svg" alt="" width={128} height={42} />
+            <img className="s-logo-principal" data-fundo="escuro" src="/marca/sino-logotipo-horizontal-negativo.svg" alt="" width={128} height={42} />
+            <img className="s-logo-simbolo" data-fundo="claro" src="/marca/sino-simbolo-32px-cor.svg" alt="" width={32} height={32} />
+            <img className="s-logo-simbolo" data-fundo="escuro" src="/marca/sino-simbolo-32px-negativo.svg" alt="" width={32} height={32} />
           </div>
           {/* a loja em uso vale para operar; os relatórios podem somar outras lojas e dizem isso na própria tela */}
           <div className="s-loja-uso">
