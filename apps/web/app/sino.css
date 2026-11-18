@@ -423,10 +423,10 @@ body:has(.s-menu) .faixa-conta[data-tipo='ativa'] { background: var(--s-sucesso-
 .s-composicao-item { display: grid; gap: var(--s-2); align-content: start; padding: var(--s-3) var(--s-4); border-radius: var(--s-raio); background: var(--s-superficie-2); box-shadow: inset 0 0 0 1px var(--s-borda); min-width: 0; }
 .s-kpi-valor.s-kpi-valor-m { font-size: var(--s-t-24); }
 .s-composicao-lista { list-style: none; margin: 0; padding: var(--s-2) 0 0; border-top: 1px solid var(--s-borda); display: grid; gap: var(--s-1); font-size: var(--s-t-13); }
-.s-composicao-lista li { display: flex; justify-content: space-between; gap: var(--s-2); align-items: center; }
+.s-composicao-lista li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s-2); align-items: center; }
 .s-composicao-nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; color: var(--s-texto-2); }
 .s-composicao-lista .s-num { white-space: nowrap; display: inline-flex; gap: var(--s-1); align-items: center; }
-@media (max-width: 1180px) { .s-composicao { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1480px) { .s-composicao { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .s-composicao { grid-template-columns: 1fr; } }
 .s-tabela tbody th { font-size: inherit; font-weight: 500; color: var(--s-texto); background: none; border-radius: 0; }
 .s-tabela tbody tr:hover th { background: var(--s-superficie-2); }
