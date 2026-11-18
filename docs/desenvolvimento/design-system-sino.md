@@ -88,6 +88,16 @@ Mesmas RPCs, mesmos cálculos, mesmos componentes de gráfico e meta. Mudou só 
 5. Composição, desempenho por loja e faturamento por dia lado a lado; tabela compacta com cabeçalho de linha, números à direita e barra de participação neutra.
 6. Estados: sem acesso (vazio explicado) e período inválido (alerta com ícone, mostrando hoje).
 
+### Ajuste de 18/11 (pedido do dono)
+- **Cores e fonte em todo o painel**: todas as telas do painel do restaurante, mais login, cadastro, boas-vindas e erro, usam a paleta e a fonte SINO, redefinindo as variáveis antigas (`--primaria`, `--superficie`…) em `body:has(.s-menu)` e `.s-tela`. A estrutura de cada tela não mudou: o redesenho por módulo continua sendo a fase 5. Onde a cor antiga significava "deu certo" (variação boa, selo ok, conexão restabelecida), entra a cor de sucesso.
+- **Carregamento**: símbolo oficial de 48 px, na versão do tema, com a barra tomate.
+- **Nome**: "RES" vira "SINO" nos textos do painel, login, cadastro e erro, e no título da aba do painel.
+- **Ficam como estão**, por serem contratos ou exigirem nova versão:
+  - documentos jurídicos (termos e privacidade);
+  - nomes dos apps instalados (RES Motoboy, RES Impressão / .exe);
+  - cabeçalhos `X-RES-*` da API e o prefixo do Pix;
+  - cardápio do cliente e painel da empresa.
+
 ## 3. Riscos e como foram tratados
 
 | Risco | Tratamento |

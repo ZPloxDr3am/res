@@ -243,7 +243,7 @@ export function PainelMcp({ api, origem }: { api: PainelApi; origem: string }) {
   return (
     <div className="grade">
       <p style={{ margin: 0 }}>
-        Pergunte ao ChatGPT ou ao Claude coisas como <em>“quanto vendi ontem?”</em>, <em>“quais pizzas mais saem no sábado?”</em> ou <em>“quem são meus clientes fiéis que sumiram?”</em>. A IA só lê: não muda nada no RES.
+        Pergunte ao ChatGPT ou ao Claude coisas como <em>“quanto vendi ontem?”</em>, <em>“quais pizzas mais saem no sábado?”</em> ou <em>“quem são meus clientes fiéis que sumiram?”</em>. A IA só lê: não muda nada no SINO.
       </p>
       {link ? (
         <Segredo titulo="Seu link do MCP (aparece só agora)" valor={link} nota="Quem tiver este link vê os dados escolhidos. Não compartilhe; se vazar, revogue a chave." />

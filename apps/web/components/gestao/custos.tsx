@@ -25,7 +25,7 @@ export function PlanilhaCustos({
   faturamentoBase,
   faturamento30,
   escopo = { tipo: 'loja' },
-  rotulo30 = 'Usar últimos 30 dias no RES',
+  rotulo30 = 'Usar últimos 30 dias no SINO',
 }: {
   inicial: Custo[];
   faturamentoBase: number | null;

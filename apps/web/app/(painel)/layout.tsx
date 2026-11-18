@@ -13,6 +13,7 @@ import type { Metadata } from 'next';
 
 // Ícone da aba: favicon oficial SINO (Brand Book v1.2, pasta 07). Só no painel: o cardápio do cliente é da loja.
 export const metadata: Metadata = {
+  title: 'SINO — Gestão do restaurante',
   icons: { icon: [{ url: '/marca/favicon.ico', sizes: '16x16 32x32 48x48' }, { url: '/marca/favicon.svg', type: 'image/svg+xml' }], apple: '/marca/apple-touch-icon.png' },
 };
 
@@ -86,7 +87,7 @@ function FaixaConta({ s }: { s: { situacao: string; teste_ate: string | null; pa
   if (!s.liberada) {
     return (
       <div className="faixa-conta" data-tipo="pausada" role="alert">
-        <strong>Novos pedidos pausados.</strong> {s.situacao === 'teste' ? 'O teste grátis terminou.' : s.situacao === 'suspensa' ? 'A conta está suspensa.' : 'A assinatura venceu.'} Seus dados continuam aqui. {s.situacao === 'suspensa' ? 'Fale com o time do RES (Suporte, no menu) para reativar.' : <>Pague em <a href="/assinatura">Assinatura</a> e tudo volta na hora.</>}
+        <strong>Novos pedidos pausados.</strong> {s.situacao === 'teste' ? 'O teste grátis terminou.' : s.situacao === 'suspensa' ? 'A conta está suspensa.' : 'A assinatura venceu.'} Seus dados continuam aqui. {s.situacao === 'suspensa' ? 'Fale com o time do SINO (Suporte, no menu) para reativar.' : <>Pague em <a href="/assinatura">Assinatura</a> e tudo volta na hora.</>}
       </div>
     );
   }

@@ -234,6 +234,47 @@
 .menu-folha .s-logo-folha { width: 96px; height: auto; }
 
 /* ---------------------------------------------------------------------
+   Todas as telas do painel do restaurante (e login, cadastro, erro) com as cores e a fonte SINO
+   (pedido do dono em 18/11: nada de botão na cor antiga). Só variáveis:
+   a estrutura de cada tela continua a mesma até a fase 5 redesenhar.
+   O cardápio do cliente (/c) e o painel da empresa não entram.
+   As variáveis que dependem de outras (foco, sombras) são redefinidas
+   aqui também, porque o valor herdado já vem calculado.
+   --------------------------------------------------------------------- */
+body:has(.s-menu), .s-tela {
+  --fundo: var(--s-fundo); --superficie: var(--s-superficie); --superficie-2: var(--s-superficie-2);
+  --texto: var(--s-texto); --texto-suave: var(--s-texto-3); --texto-fraco: var(--s-texto-3);
+  --borda: var(--s-borda); --borda-forte: var(--s-borda-forte);
+  --primaria: var(--s-acao); --primaria-forte: var(--s-acao-hover); --primaria-texto: var(--s-acao-texto);
+  --primaria-fundo: var(--s-superficie-realce); --destaque: var(--s-atencao); --erro: var(--s-erro);
+  --foco: var(--s-foco);
+  --sombra: var(--s-sombra); --sombra-cartao: var(--s-sombra), 0 0 0 1px var(--s-borda); --sombra-alta: var(--s-sombra-camada);
+  --fonte: var(--fonte-inter); --fonte-display: var(--fonte-inter);
+  background: var(--s-fundo); color: var(--s-texto); font-family: var(--s-fonte);
+}
+/* login, cadastro e erro: fundo da página inteira no padrão SINO */
+body:has(.s-tela) { background: var(--s-fundo); }
+.s-tela { background: none; }
+/* onde a cor antiga queria dizer "deu certo", agora é a cor de sucesso (não a de ação) */
+body:has(.s-menu) .var.boa,
+body:has(.s-menu) .api-envios li[data-st='ok'] span:last-child { color: var(--s-sucesso); }
+body:has(.s-menu) .pr-selo.ok { background: var(--s-sucesso-fundo); color: var(--s-sucesso); }
+body:has(.s-menu) .faixa-conexao[data-ok] { background: var(--sino-sucesso); }
+body:has(.s-menu) .faixa-conta[data-tipo='ativa'] { background: var(--s-sucesso-fundo); box-shadow: inset 3px 0 0 var(--s-sucesso); }
+/* tela de carregamento: símbolo oficial SINO */
+.s-carregando { min-height: 60vh; display: grid; place-content: center; justify-items: center; gap: var(--s-4); opacity: 0; animation: s-aparece 0.2s ease-out 0.12s forwards; }
+.s-carregando-simbolo { width: 48px; height: 48px; }
+.s-carregando-simbolo[data-fundo='escuro'] { display: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-tema='claro']) .s-carregando-simbolo[data-fundo='claro'] { display: none; } :root:not([data-tema='claro']) .s-carregando-simbolo[data-fundo='escuro'] { display: block; } }
+:root[data-tema='escuro'] .s-carregando-simbolo[data-fundo='claro'] { display: none; }
+:root[data-tema='escuro'] .s-carregando-simbolo[data-fundo='escuro'] { display: block; }
+.s-carregando-barra { width: 8rem; height: 3px; border-radius: 999px; background: var(--s-borda); overflow: hidden; }
+.s-carregando-barra span { display: block; width: 40%; height: 100%; border-radius: 999px; background: var(--sino-tomate); animation: carregando-barra 1.1s ease-in-out infinite; }
+.s-carregando-texto { font-size: var(--s-t-13); color: var(--s-texto-3); }
+@keyframes s-aparece { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .s-carregando-barra span { animation: none; } }
+
+/* ---------------------------------------------------------------------
    Página no padrão SINO (.s-pagina): Resumo é a referência
    Os componentes antigos dentro dela (meta do mês, gráficos, resumo da
    manhã) recebem os tokens SINO pelos nomes antigos: mesma lógica,

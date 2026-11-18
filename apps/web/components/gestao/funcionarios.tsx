@@ -131,7 +131,7 @@ export function Funcionarios({ inicial, acessos, lojaId, lojaNome, meuPapel }: {
             <label>Telefone<input type="tel" value={editando.telefone} maxLength={20} onChange={(e) => campo('telefone', e.target.value)} /></label>
             <label className="gc-largo">Endereço<input value={editando.endereco} maxLength={200} onChange={(e) => campo('endereco', e.target.value)} /></label>
             <fieldset className="gc-largo eq-modos">
-              <legend>Acesso ao RES (usuário e senha para entrar)</legend>
+              <legend>Acesso ao SINO (usuário e senha para entrar)</legend>
               {!editando.membroId && editando.ativo && (
                 <div className="eq-modo" data-escolhido={modoAcesso === 'criar' || undefined}>
                   <input type="radio" id="ac-criar" name="acesso" checked={modoAcesso === 'criar'} onChange={() => setModoAcesso('criar')} />
@@ -140,7 +140,7 @@ export function Funcionarios({ inicial, acessos, lojaId, lojaNome, meuPapel }: {
                     {modoAcesso === 'criar' && (
                       <span className="gc-campos" style={{ marginTop: '0.4rem' }}>
                         <label>
-                          Função no RES
+                          Função no SINO
                           <select
                             value={papel}
                             onChange={(e) => {
@@ -197,14 +197,14 @@ export function Funcionarios({ inicial, acessos, lojaId, lojaNome, meuPapel }: {
               <div className="eq-modo" data-escolhido={modoAcesso === 'nenhum' || undefined}>
                 <input type="radio" id="ac-nenhum" name="acesso" checked={modoAcesso === 'nenhum'} onChange={() => setModoAcesso('nenhum')} />
                 <span>
-                  <label htmlFor="ac-nenhum"><b>Sem acesso ao RES</b></label>
+                  <label htmlFor="ac-nenhum"><b>Sem acesso ao SINO</b></label>
                   <span className="dica">Ex.: cozinheiro ou auxiliar que não usa o sistema.</span>
                 </span>
               </div>
             </fieldset>
             <label className="gc-check"><input type="checkbox" checked={editando.ativo} onChange={(e) => campo('ativo', e.target.checked)} /> Trabalhando na loja</label>
             {!editando.ativo && editando.membroId && acessoDe(editando.membroId)?.ativo && (
-              <label className="gc-check"><input type="checkbox" checked={editando.tirarAcesso ?? true} onChange={(e) => campo('tirarAcesso', e.target.checked)} /> Tirar também o acesso ao RES de {editando.nome.split(' ')[0] || 'quem saiu'}</label>
+              <label className="gc-check"><input type="checkbox" checked={editando.tirarAcesso ?? true} onChange={(e) => campo('tirarAcesso', e.target.checked)} /> Tirar também o acesso ao SINO de {editando.nome.split(' ')[0] || 'quem saiu'}</label>
             )}
           </div>
           <div className="linha">
@@ -221,7 +221,7 @@ export function Funcionarios({ inicial, acessos, lojaId, lojaNome, meuPapel }: {
         <div className="cartao tabela-rolagem">
           <table className="tabela">
             <thead>
-              <tr><th>Nome</th><th>CPF</th><th>Cargo</th><th>Admissão</th><th>Acesso ao RES</th><th>Situação</th><th /></tr>
+              <tr><th>Nome</th><th>CPF</th><th>Cargo</th><th>Admissão</th><th>Acesso ao SINO</th><th>Situação</th><th /></tr>
             </thead>
             <tbody>
               {inicial.map((f) => (

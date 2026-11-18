@@ -19,7 +19,7 @@ export function PainelMercadoPago({ mp }: { mp: StatusMp | null }) {
     <div className="grade">
       <p style={{ margin: 0 }}>
         O cliente que escolher <strong>Pix</strong> no cardápio digital recebe um QR com o valor exato. Quando ele paga, o pedido fica <strong>Pago</strong> sozinho e pode já ser <strong>aceito</strong>, sem conferir extrato.
-        O dinheiro cai direto na sua conta Mercado Pago, com a taxa do Mercado Pago para Pix. O RES não cobra nada a mais.
+        O dinheiro cai direto na sua conta Mercado Pago, com a taxa do Mercado Pago para Pix. O SINO não cobra nada a mais.
       </p>
       {mp.conectado ? (
         <section className="cartao grade" style={{ gap: '0.4rem' }}>

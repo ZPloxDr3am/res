@@ -120,7 +120,7 @@ function Explicacao({ temEvento }: { temEvento: boolean }) {
           </p>
           <ol className="ev-passos">
             <li><b>Crie o evento</b>: nome (ex.: &quot;Aniversário 5 anos&quot;), link e o período em que vale.</li>
-            <li><b>Escolha os produtos</b> do seu cardápio principal: o RES faz uma cópia de cada um, com fotos, sabores e adicionais.</li>
+            <li><b>Escolha os produtos</b> do seu cardápio principal: o SINO faz uma cópia de cada um, com fotos, sabores e adicionais.</li>
             <li><b>Ajuste a cópia</b>: preço, nome, quantos sabores, quais sabores ficam e o preço de cada opção.</li>
             <li><b>Divulgue o link</b> ou o QR. Fora do período, o link avisa que o evento não está valendo.</li>
           </ol>

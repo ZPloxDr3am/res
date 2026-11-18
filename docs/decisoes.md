@@ -1031,4 +1031,9 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
   - filtro de lojas que troca na hora sem perder o período;
   - pendências marcadas como da **loja em uso**.
   - Mesmas RPCs e cálculos; as telas antigas não mudam (aparência nova só em `.s-menu` e `.s-pagina`, `globals.css` intacto).
-- A expansão para os outros módulos espera a aprovação do Resumo. Plano, auditoria, riscos e reversão estão em `docs/desenvolvimento/design-system-sino.md`.
+- **Ajuste do mesmo dia (pedido do dono: "vários botões na cor antiga" e carregamento com "RES")**:
+  - todas as telas do painel do restaurante, mais login, cadastro, boas-vindas e erro, passam a usar as cores e a fonte SINO, só pelas variáveis (`body:has(.s-menu)` e `.s-tela`). A estrutura de cada tela não muda. Onde a cor antiga significava "deu certo", entra a cor de sucesso;
+  - a tela de carregamento mostra o símbolo oficial;
+  - os textos do painel trocam "RES" por "SINO";
+  - **não mudam** o cardápio do cliente (`/c`), o painel da empresa, os documentos jurídicos (termos e privacidade), os nomes dos apps instalados (RES Motoboy, RES Impressão), os cabeçalhos `X-RES-*` da API nem o identificador do Pix.
+- A reorganização visual de cada módulo (fase 5) espera a aprovação do Resumo. Plano, auditoria, riscos e reversão estão em `docs/desenvolvimento/design-system-sino.md`.

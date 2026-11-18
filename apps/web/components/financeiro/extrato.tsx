@@ -20,7 +20,7 @@ export type LinhaExtrato = {
 export type ContaEmAberto = { id: string; tipo: 'despesa' | 'receita'; descricao: string; valor: number; vencimento: string };
 
 const centavos = (v: number) => Math.round(v * 100);
-const IGNORADO: Record<string, string> = { venda: 'Venda (já está no RES)', transferencia: 'Transferência entre contas', outro: 'Ignorado' };
+const IGNORADO: Record<string, string> = { venda: 'Venda (já está no SINO)', transferencia: 'Transferência entre contas', outro: 'Ignorado' };
 
 /** O arquivo OFX vem em UTF-8 ou em Windows-1252 (a maioria dos bancos brasileiros). */
 async function lerArquivo(f: File): Promise<string> {
@@ -86,7 +86,7 @@ export function ExtratoBanco({ linhas, abertas, categorias, contas }: { linhas: 
       <div className="cartao grade" style={{ gap: '0.6rem' }}>
         <h2 style={{ margin: 0 }}>🏦 Importar extrato do banco</h2>
         <p className="dica" style={{ margin: 0 }}>
-          No app ou site do banco, procure <b>Extrato → Exportar → OFX</b> (às vezes chamado de &quot;Money&quot; ou &quot;arquivo para conciliação&quot;). O RES lê o arquivo e
+          No app ou site do banco, procure <b>Extrato → Exportar → OFX</b> (às vezes chamado de &quot;Money&quot; ou &quot;arquivo para conciliação&quot;). O SINO lê o arquivo e
           sugere qual conta a pagar cada saída pagou. Pode importar o mesmo período de novo: o que já entrou não duplica.
         </p>
         <div className="linha" style={{ gap: '0.5rem', alignItems: 'end', flexWrap: 'wrap' }}>
@@ -265,7 +265,7 @@ function LinhaConferir({
         <div className="linha" style={{ gap: '0.35rem', flexWrap: 'wrap' }}>
           {parecidas.length > 0 && <button type="button" className="mini" onClick={() => setModo('baixa')}>{sugestao ? 'Era outra conta' : `Dar baixa numa conta a ${saida ? 'pagar' : 'receber'}`}</button>}
           <button type="button" className="mini" onClick={() => setModo('lancar')}>Lançar como {saida ? 'despesa' : 'receita'}</button>
-          {!saida && <button type="button" className="mini" disabled={pendente} onClick={() => rodar(() => ignorarExtrato(l.id, 'venda'))}>É venda (já está no RES)</button>}
+          {!saida && <button type="button" className="mini" disabled={pendente} onClick={() => rodar(() => ignorarExtrato(l.id, 'venda'))}>É venda (já está no SINO)</button>}
           <button type="button" className="mini" disabled={pendente} onClick={() => rodar(() => ignorarExtrato(l.id, 'transferencia'))}>Transferência entre contas</button>
           <button type="button" className="mini" disabled={pendente} onClick={() => rodar(() => ignorarExtrato(l.id, 'outro'))}>Ignorar</button>
         </div>

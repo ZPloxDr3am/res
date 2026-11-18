@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { COMO_CONHECEU, PEDIDOS_DIA, QTD_LOJAS, SISTEMA_ATUAL, TIPOS_RESTAURANTE, formatarTelefone, slugValido, sugerirSlug } from '@res/core';
 import { cadastrarRestaurante, conferirEtapa, verificarSlug, type DadosCadastro } from '@/app/cadastro/actions';
 import { CamposEmpresa, type CamposEmpresaValor } from '@/components/cadastro/campos-empresa';
+import { LogoSino } from '@/components/logo-sino';
 
 const ETAPAS = ['Responsável', 'Empresa', 'Restaurante'] as const;
 const VAZIO: DadosCadastro = {
@@ -55,7 +56,7 @@ export function FormCadastro({ dominio, convite }: { dominio: string; convite: s
   return (
     <form ref={topo} className="cartao grade cad-form" onSubmit={avancar} noValidate>
       <div>
-        <div className="marca-res" style={{ fontSize: '1.6rem' }}>RES</div>
+        <LogoSino />
         <h1 style={{ margin: '0.3rem 0 0' }}>Cadastre seu restaurante</h1>
         <p className="dica" style={{ margin: 0 }}>Cardápio digital, pedidos, entregas e gestão num lugar só.</p>
       </div>
@@ -75,7 +76,7 @@ export function FormCadastro({ dominio, convite }: { dominio: string; convite: s
           <legend>Responsável pela conta</legend>
           <label>Nome completo<input value={d.nome} onChange={(e) => muda('nome', e.target.value)} required maxLength={120} autoComplete="name" /></label>
           <label>Celular / WhatsApp<input value={d.whatsapp} onChange={(e) => muda('whatsapp', formatarTelefone(e.target.value))} required inputMode="tel" autoComplete="tel" placeholder="(47) 99999-0000" />
-            <span className="dica">O time do RES fala com você por aqui.</span></label>
+            <span className="dica">O time do SINO fala com você por aqui.</span></label>
           <label>E-mail<input type="email" value={d.email} onChange={(e) => muda('email', e.target.value)} required autoComplete="email" autoCapitalize="none" spellCheck={false} /></label>
           <label>Senha<input type="password" value={d.senha} onChange={(e) => muda('senha', e.target.value)} required minLength={8} autoComplete="new-password" />
             <span className="dica">Pelo menos 8 caracteres.</span></label>
@@ -96,7 +97,7 @@ export function FormCadastro({ dominio, convite }: { dominio: string; convite: s
 
       {etapa === 3 && (
         <fieldset className="grade">
-          <legend>Seu restaurante no RES</legend>
+          <legend>Seu restaurante no SINO</legend>
           <label>Nome no cardápio<input value={d.restaurante} onChange={(e) => muda('restaurante', e.target.value)} maxLength={120} placeholder="Como o cliente conhece você" /></label>
           <div className="grade" style={{ gap: '0.3rem' }}>
             <span>Tipo</span>
@@ -124,9 +125,9 @@ export function FormCadastro({ dominio, convite }: { dominio: string; convite: s
           </div>
           <div className="cad-2">
             <label>Usa qual sistema hoje?<select value={d.sistemaAtual} onChange={(e) => muda('sistemaAtual', e.target.value)}><option value="">—</option>{SISTEMA_ATUAL.map((q) => <option key={q}>{q}</option>)}</select></label>
-            <label>Como conheceu o RES?<select value={d.comoConheceu} onChange={(e) => muda('comoConheceu', e.target.value)}><option value="">—</option>{COMO_CONHECEU.map((q) => <option key={q}>{q}</option>)}</select></label>
+            <label>Como conheceu o SINO?<select value={d.comoConheceu} onChange={(e) => muda('comoConheceu', e.target.value)}><option value="">—</option>{COMO_CONHECEU.map((q) => <option key={q}>{q}</option>)}</select></label>
           </div>
-          {d.qtdLojas && d.qtdLojas !== '1' && <p className="dica" style={{ margin: 0 }}>Você começa com esta loja; o time do RES fala com você para liberar as outras no mesmo grupo.</p>}
+          {d.qtdLojas && d.qtdLojas !== '1' && <p className="dica" style={{ margin: 0 }}>Você começa com esta loja; o time do SINO fala com você para liberar as outras no mesmo grupo.</p>}
           <label className="linha" style={{ gap: '0.5rem', alignItems: 'flex-start' }}>
             <input type="checkbox" checked={d.exemplo} onChange={(e) => muda('exemplo', e.target.checked)} style={{ width: 'auto', marginTop: '0.2rem' }} />
             <span>Começar com um cardápio de exemplo do meu tipo de restaurante <span className="dica">(dá para editar ou apagar tudo depois)</span></span>

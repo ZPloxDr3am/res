@@ -25,14 +25,14 @@ export function PainelOpenDelivery({ d, origem }: { d: PainelOD; origem: string 
   return (
     <div className="grade" style={{ gap: '1rem' }}>
       <p className="dica" style={{ margin: 0 }}>
-        99Food, Keeta e aiqfome usam o padrão aberto <strong>Open Delivery</strong> (Abrasel). O RES publica o seu cardápio no formato do padrão e recebe os pedidos direto no quadro. Cada app entrega à loja, no portal de parceiros, uma URL, um <em>client id</em> e um <em>client secret</em>; você cola aqui.
+        99Food, Keeta e aiqfome usam o padrão aberto <strong>Open Delivery</strong> (Abrasel). O SINO publica o seu cardápio no formato do padrão e recebe os pedidos direto no quadro. Cada app entrega à loja, no portal de parceiros, uma URL, um <em>client id</em> e um <em>client secret</em>; você cola aqui.
       </p>
 
       {chave && (
         <div className="cartao" style={{ borderColor: 'var(--sucesso, #2e7d32)' }}>
           <strong>Chave de acesso (X-API-KEY) — copie agora, ela não aparece de novo:</strong>
           <code style={{ display: 'block', wordBreak: 'break-all', margin: '0.4rem 0' }}>{chave.apiKey}</code>
-          <span className="dica">Informe ao app junto com a URL do RES abaixo. Se perder, gere outra.</span>
+          <span className="dica">Informe ao app junto com a URL do SINO abaixo. Se perder, gere outra.</span>
           <div><button type="button" className="mini" onClick={() => setChave(null)}>Já copiei</button></div>
         </div>
       )}
@@ -78,7 +78,7 @@ function Conexao({ c, origem, pedidos, nomeMarca, pendente, salvar, novaChave, e
         </span>
         <button type="button" className="mini" disabled={pendente} onClick={excluir}>Excluir</button>
       </div>
-      <label>URL do RES para o app (merchant e eventos)
+      <label>URL do SINO para o app (merchant e eventos)
         <input readOnly value={url} onFocus={(e) => e.currentTarget.select()} />
       </label>
       <div className="linha" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>

@@ -478,7 +478,7 @@ function ComposicaoVendas({
               </div>
               <p className="s-kpi-valor s-kpi-valor-m">{formatarReais(v)}</p>
               <p className="s-kpi-detalhe">
-                {c.campo ? <>antes {formatarReais(a)} ({quando}){total > 0 && c.campo !== 'produtos' ? <> · <b>{((v / total) * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%</b> do faturamento</> : null}</> : 'Ainda não lançado no RES.'}
+                {c.campo ? <>antes {formatarReais(a)} ({quando}){total > 0 && c.campo !== 'produtos' ? <> · <b>{((v / total) * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%</b> do faturamento</> : null}</> : 'Ainda não lançado no SINO.'}
               </p>
               {c.campo && grupos.length > 1 && (
                 <ul className="s-composicao-lista">
