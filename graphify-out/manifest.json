@@ -150,9 +150,9 @@
     "semantic_hash": "c18482a4354bf190ae112d2f406c259f"
   },
   "apps/web/app/(painel)/layout.tsx": {
-    "mtime": 1795018372.5013146,
-    "seen": 1795018397.0990593,
-    "ast_hash": "5757e4d381a5e9707e0ad21f7908a119",
+    "mtime": 1795018452.9653194,
+    "seen": 1795018458.146252,
+    "ast_hash": "936061e5c40c940ca9b684cc38bf7e05",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/loading.tsx": {
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1795018391.4922595,
-    "seen": 1795018397.0997994,
-    "ast_hash": "ec271146af586d9ab32f4edd36cf0e92",
+    "mtime": 1795018452.9653194,
+    "seen": 1795018458.1472895,
+    "ast_hash": "c5144696cae4d9526f6306595932378c",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -3636,15 +3636,9 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795018391.4932506,
-    "seen": 1795018397.099808,
-    "ast_hash": "1614b167f1390bdc58c3b8a2e27c396e",
-    "semantic_hash": ""
-  },
-  "apps/web/public/marca/sino-simbolo-32px-cor.svg": {
-    "mtime": 1795018359.8596957,
-    "seen": 1795018397.099892,
-    "ast_hash": "25477ac4d57d05e374a7c0f3307b7069",
+    "mtime": 1795018452.9653194,
+    "seen": 1795018458.147302,
+    "ast_hash": "67d71426b14c8b5efe0b39260d70220e",
     "semantic_hash": ""
   }
 }
