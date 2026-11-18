@@ -441,3 +441,15 @@ body:has(.s-menu) .faixa-conta[data-tipo='ativa'] { background: var(--s-sucesso-
 .s-pagina .meta-mes[data-ok] .meta-feito { background: var(--s-sucesso); }
 .s-pagina .meta-hoje { background: var(--s-destaque); }
 .s-pagina .meta-numeros b { font-family: var(--s-fonte); font-weight: 600; }
+
+/* cores fixas antigas de "selecionado" (laranja e branco): passam para a ação SINO,
+   com o texto que dá contraste nos dois temas (creme sobre carvão; carvão sobre tomate) */
+body:has(.s-menu) .qp-visao { border-color: var(--s-borda); }
+body:has(.s-menu) .qp-visao button[aria-checked='true'],
+:is(body:has(.s-menu), .s-tela) .cad-tipo[aria-checked='true'],
+:is(body:has(.s-menu), .s-tela) .cad-form .qp-chip[aria-checked='true'],
+:is(body:has(.s-menu), .s-tela) .cad-etapas li[data-atual] .cad-etapa-num { background: var(--s-acao); border-color: var(--s-acao); color: var(--s-acao-texto); }
+:is(body:has(.s-menu), .s-tela) .cad-etapas li[data-atual] button { border-color: var(--s-acao); background: var(--s-superficie-realce); }
+body:has(.s-menu) .pp-barra span { background: var(--sino-tomate); }
+body:has(.s-menu) .qk-acao:hover,
+body:has(.s-menu) .qk-cartao[data-status='novo'] .qk-acao { background: var(--s-acao); color: var(--s-acao-texto); }
