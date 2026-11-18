@@ -150,16 +150,16 @@
     "semantic_hash": "c18482a4354bf190ae112d2f406c259f"
   },
   "apps/web/app/(painel)/layout.tsx": {
-    "mtime": 1795018452.9653194,
-    "seen": 1795018458.146252,
-    "ast_hash": "936061e5c40c940ca9b684cc38bf7e05",
+    "mtime": 1795018752.9843564,
+    "seen": 1795018889.6295772,
+    "ast_hash": "b1b8ed314d6a3d7975b9ca23d8ec7d4c",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/loading.tsx": {
-    "mtime": 1793159819.029621,
-    "seen": 1793205238.7560213,
-    "ast_hash": "37a083e8e04f109eef39ff287cee7496",
-    "semantic_hash": "37a083e8e04f109eef39ff287cee7496"
+    "mtime": 1795018715.8169355,
+    "seen": 1795018889.6295793,
+    "ast_hash": "c761d992a464f3fe5560c8072824e515",
+    "semantic_hash": ""
   },
   "apps/web/app/(painel)/lojas/actions.ts": {
     "mtime": 1794607865.1506717,
@@ -210,9 +210,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/resumo/page.tsx": {
-    "mtime": 1795017942.7290702,
-    "seen": 1795017973.0097413,
-    "ast_hash": "4bf80858a286a3704894950bdef32ce4",
+    "mtime": 1795018742.7939541,
+    "seen": 1795018889.6296012,
+    "ast_hash": "fca6286c754ad2e22f4121967734e986",
     "semantic_hash": ""
   },
   "apps/web/app/api/agente/parear/route.ts": {
@@ -324,9 +324,9 @@
     "semantic_hash": "863bf5dde154fe10b8e75777f6c971dc"
   },
   "apps/web/app/login/page.tsx": {
-    "mtime": 1794330936.768484,
-    "seen": 1794330943.406454,
-    "ast_hash": "b389045059399b6cfd5a22435486e67a",
+    "mtime": 1795018856.6103687,
+    "seen": 1795018889.6296966,
+    "ast_hash": "15a7758e88aded1f3f7cdef1134f15f2",
     "semantic_hash": ""
   },
   "apps/web/app/m/actions.ts": {
@@ -366,9 +366,9 @@
     "semantic_hash": "592e54b91b837468d80f8be9fba1f699"
   },
   "apps/web/app/onboarding/page.tsx": {
-    "mtime": 1794329983.5851364,
-    "seen": 1794330002.1459236,
-    "ast_hash": "4f5d47b342e3ff5bd8fc71154efd2109",
+    "mtime": 1795018856.6091976,
+    "seen": 1795018889.6297338,
+    "ast_hash": "b5ef13cecc9f478e05205114d2e83385",
     "semantic_hash": ""
   },
   "apps/web/app/page.tsx": {
@@ -378,22 +378,22 @@
     "semantic_hash": "03c95911296f0b3165c1dd752f903733"
   },
   "apps/web/components/aplicativos/api.tsx": {
-    "mtime": 1793201896.3192706,
-    "seen": 1793205238.7560654,
-    "ast_hash": "fee4b85454ceb23edcdedcd503a769fa",
-    "semantic_hash": "fee4b85454ceb23edcdedcd503a769fa"
+    "mtime": 1795018762.5675523,
+    "seen": 1795018889.6297503,
+    "ast_hash": "8745244f9ffcb76497011d476e91d402",
+    "semantic_hash": ""
   },
   "apps/web/components/aplicativos/aplicativos.tsx": {
-    "mtime": 1794701210.698044,
-    "seen": 1794701217.9771214,
-    "ast_hash": "b9fc35685000cb8778ec2212fce3fe4c",
+    "mtime": 1795018762.5649128,
+    "seen": 1795018889.6297526,
+    "ast_hash": "a073fd312a3d0ffd392eb3e50f82a19d",
     "semantic_hash": ""
   },
   "apps/web/components/aplicativos/mercadopago.tsx": {
-    "mtime": 1793202552.2381096,
-    "seen": 1793205238.7560675,
-    "ast_hash": "5436c01b7315589bbfa00107c6cd0e05",
-    "semantic_hash": "5436c01b7315589bbfa00107c6cd0e05"
+    "mtime": 1795018762.568135,
+    "seen": 1795018889.6297581,
+    "ast_hash": "825eab0b476004a486b2dadaf15f93a1",
+    "semantic_hash": ""
   },
   "apps/web/components/botao-excluir.tsx": {
     "mtime": 1792786116.8316658,
@@ -876,8 +876,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1795017619.1247966,
-    "seen": 1795017632.7642667,
+    "mtime": 1795018844.7253428,
+    "seen": 1795018889.6301243,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": "8ccf37b0657b4213f1c10db5c78e039a"
   },
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1795018452.9653194,
-    "seen": 1795018458.1472895,
-    "ast_hash": "c5144696cae4d9526f6306595932378c",
+    "mtime": 1795018883.139683,
+    "seen": 1795018889.6304944,
+    "ast_hash": "17853fbc878124093cdd7971ccdb6f2a",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -1836,9 +1836,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/gestao/custos.tsx": {
-    "mtime": 1793579443.7532597,
-    "seen": 1793580351.7838109,
-    "ast_hash": "be6bdb2dbe7dfb5c9c2d4bfcd700c9ca",
+    "mtime": 1795018742.7965367,
+    "seen": 1795018889.6299524,
+    "ast_hash": "de4b7f6badc8b1b1e9cc6955759b833e",
     "semantic_hash": ""
   },
   "apps/web/components/gestao/empresa.tsx": {
@@ -1848,9 +1848,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/gestao/funcionarios.tsx": {
-    "mtime": 1793228491.1001537,
-    "seen": 1793231974.5471573,
-    "ast_hash": "00ca313f762df3da3e8051a9b565f60f",
+    "mtime": 1795018742.7960734,
+    "seen": 1795018889.6299558,
+    "ast_hash": "8672dcec7911bc3271cd33354d695728",
     "semantic_hash": ""
   },
   "apps/web/components/gestao/imprimir.tsx": {
@@ -1884,9 +1884,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/equipe/equipe.tsx": {
-    "mtime": 1794607865.1534402,
-    "seen": 1794607872.7131116,
-    "ast_hash": "3fe21b5b58b933cc1492c23504f85702",
+    "mtime": 1795018789.9664826,
+    "seen": 1795018889.6298363,
+    "ast_hash": "8b55296a2704b305e0b5e0e9475d2f85",
     "semantic_hash": ""
   },
   "apps/web/components/equipe/funcoes.tsx": {
@@ -1944,9 +1944,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/evento/evento.tsx": {
-    "mtime": 1793399672.680222,
-    "seen": 1793402179.2688122,
-    "ast_hash": "2d0262d8b025fed11457141499f1e59c",
+    "mtime": 1795018762.5558407,
+    "seen": 1795018889.6299174,
+    "ast_hash": "9d2ed11b667cab7c6e7d5b8478e1ead0",
     "semantic_hash": ""
   },
   "supabase/migrations/20261028000056_evento.sql": {
@@ -1998,9 +1998,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/financeiro/page.tsx": {
-    "mtime": 1794701877.466068,
-    "seen": 1794701884.8645163,
-    "ast_hash": "9f919b26afc00389ec00f5709e68213a",
+    "mtime": 1795018742.7950754,
+    "seen": 1795018889.6295588,
+    "ast_hash": "1824e3605de6f23b0811e0e0344f5870",
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/automaticos.tsx": {
@@ -2088,9 +2088,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/resumo/meta-mes.tsx": {
-    "mtime": 1793586336.830227,
-    "seen": 1793586547.3899152,
-    "ast_hash": "e314041104c320459bbef09a49f86738",
+    "mtime": 1795018742.795515,
+    "seen": 1795018889.6300232,
+    "ast_hash": "049f7ba410a5667d75c9ab13c1787b78",
     "semantic_hash": ""
   },
   "apps/web/lib/meta.ts": {
@@ -2250,9 +2250,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/aplicativos/ifood.tsx": {
-    "mtime": 1794696391.5895846,
-    "seen": 1794696400.1625783,
-    "ast_hash": "f68c604a6ae29dd21cdc930634bba6bf",
+    "mtime": 1795018762.5664513,
+    "seen": 1795018889.6297565,
+    "ast_hash": "543ffda7196191d8a73a953825174469",
     "semantic_hash": ""
   },
   "apps/web/lib/marketplace/ifood.ts": {
@@ -2394,15 +2394,15 @@
     "semantic_hash": ""
   },
   "apps/web/app/cadastro/confirme/page.tsx": {
-    "mtime": 1794101518.825778,
-    "seen": 1794165538.540547,
-    "ast_hash": "3f49d09545e7fa5133f1c7c2f1ad7767",
+    "mtime": 1795018856.6094213,
+    "seen": 1795018889.6296597,
+    "ast_hash": "16d9fc6bfb9910f9ab98e0710a9dffdb",
     "semantic_hash": ""
   },
   "apps/web/app/cadastro/page.tsx": {
-    "mtime": 1794329223.2565062,
-    "seen": 1794329230.0204108,
-    "ast_hash": "f602b62b8c836c842754b989f3e497c1",
+    "mtime": 1795018856.608845,
+    "seen": 1795018889.6296613,
+    "ast_hash": "e63a7a0b82101da8e13f5f17c3ceda6f",
     "semantic_hash": ""
   },
   "apps/web/app/privacidade/page.tsx": {
@@ -2418,9 +2418,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/cadastro/form-cadastro.tsx": {
-    "mtime": 1794329223.2605062,
-    "seen": 1794329230.0204465,
-    "ast_hash": "7af98d5f6dda7263d419478c1becc498",
+    "mtime": 1795018778.1475255,
+    "seen": 1795018889.6297824,
+    "ast_hash": "91882b89e98b9389830ecb84eed01c28",
     "semantic_hash": ""
   },
   "apps/web/components/cadastro/primeiros-passos.tsx": {
@@ -2502,9 +2502,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/equipe-res/painel.tsx": {
-    "mtime": 1794353635.1998873,
-    "seen": 1794353727.8498137,
-    "ast_hash": "37bc5d1fdc9646952b5b38fddf8585a9",
+    "mtime": 1795018762.5540733,
+    "seen": 1795018889.6298335,
+    "ast_hash": "6de9f3805eb10d227b50eb4e3d19e6d4",
     "semantic_hash": ""
   },
   "supabase/migrations/20261110170000_convites_e_teste.sql": {
@@ -2586,9 +2586,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/error.tsx": {
-    "mtime": 1794331820.4925365,
-    "seen": 1794348870.8106465,
-    "ast_hash": "04afa83ef73555ed4df347d4a37d2aa3",
+    "mtime": 1795018856.6099422,
+    "seen": 1795018889.6296835,
+    "ast_hash": "cfdd772f55a3c2626207fd885529f8d4",
     "semantic_hash": ""
   },
   "apps/web/app/global-error.tsx": {
@@ -2628,9 +2628,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/assinatura/page.tsx": {
-    "mtime": 1794353839.9158995,
-    "seen": 1794354777.7386458,
-    "ast_hash": "7b36876cabec8d4867e07e5db0f99912",
+    "mtime": 1795018742.7946894,
+    "seen": 1795018889.6294715,
+    "ast_hash": "4c65d2fa1476c9bd003d40f728b7de3b",
     "semantic_hash": ""
   },
   "apps/web/app/api/mercadopago/res/route.ts": {
@@ -2652,9 +2652,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/assinatura/assinatura.tsx": {
-    "mtime": 1794353839.9158995,
-    "seen": 1794354777.7388046,
-    "ast_hash": "c85af39c5a6556f05fc882174e7823b7",
+    "mtime": 1795018762.5702734,
+    "seen": 1795018889.6297648,
+    "ast_hash": "0c24321a0401dab5a23b32e91e89c186",
     "semantic_hash": ""
   },
   "apps/web/components/empresa/cobranca.tsx": {
@@ -2940,9 +2940,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/turbo/whatsapp.tsx": {
-    "mtime": 1794489310.5273597,
-    "seen": 1794490849.7849653,
-    "ast_hash": "fa4804cceb1b0f837a224bce0d6f97b4",
+    "mtime": 1795018762.5569363,
+    "seen": 1795018889.6300492,
+    "ast_hash": "5cb28a1e9f52f8a9a956f97dbe2e4260",
     "semantic_hash": ""
   },
   "apps/web/lib/whatsapp.ts": {
@@ -3084,9 +3084,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/estoque/caixa-nfe.tsx": {
-    "mtime": 1794608773.5634239,
-    "seen": 1794608781.3031518,
-    "ast_hash": "479144184e492d8325656c6d5017629a",
+    "mtime": 1795018762.5714216,
+    "seen": 1795018889.6298444,
+    "ast_hash": "26ccf5f02540f1ae44dc787360e64d04",
     "semantic_hash": ""
   },
   "apps/web/lib/nfe/certificado.ts": {
@@ -3180,9 +3180,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/extrato.tsx": {
-    "mtime": 1794607865.1534402,
-    "seen": 1794608647.528623,
-    "ast_hash": "2151084faa45114416fe714bc664481e",
+    "mtime": 1795018762.5722475,
+    "seen": 1795018889.629935,
+    "ast_hash": "69a924ca8a3fa140a8e7629b73f5951d",
     "semantic_hash": ""
   },
   "apps/web/components/financeiro/ler-boleto.tsx": {
@@ -3462,9 +3462,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/aplicativos/opendelivery.tsx": {
-    "mtime": 1794701210.698044,
-    "seen": 1794701217.9771752,
-    "ast_hash": "e954d43ed178ffdb09d3d23e1dd9f22a",
+    "mtime": 1795018762.568723,
+    "seen": 1795018889.6297607,
+    "ast_hash": "e9bacc2fdc8e731fbba1fcfb0fea81f3",
     "semantic_hash": ""
   },
   "apps/web/lib/marketplace/opendelivery.ts": {
@@ -3510,9 +3510,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/aplicativos/canais-cliente.tsx": {
-    "mtime": 1794701210.698044,
-    "seen": 1794701711.3938682,
-    "ast_hash": "9305a57d54eb71a6eec10abf84a2a4eb",
+    "mtime": 1795018762.569316,
+    "seen": 1795018889.6297545,
+    "ast_hash": "02960b32386273394a9d43afb3d4098e",
     "semantic_hash": ""
   },
   "apps/web/components/aplicativos/simulador-canal.tsx": {
@@ -3636,9 +3636,27 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795018452.9653194,
-    "seen": 1795018458.147302,
-    "ast_hash": "67d71426b14c8b5efe0b39260d70220e",
+    "mtime": 1795018883.141399,
+    "seen": 1795018889.630503,
+    "ast_hash": "f8ac36f09854665cb259f762eed01746",
+    "semantic_hash": ""
+  },
+  "apps/web/components/logo-sino.tsx": {
+    "mtime": 1795018789.9655988,
+    "seen": 1795018889.6299713,
+    "ast_hash": "70c3020740563c28350e239628e2a789",
+    "semantic_hash": ""
+  },
+  "apps/web/public/marca/sino-simbolo-48px-cor.svg": {
+    "mtime": 1795018715.814407,
+    "seen": 1795018889.6305895,
+    "ast_hash": "83975548f44de30b5e665c05b076be2a",
+    "semantic_hash": ""
+  },
+  "apps/web/public/marca/sino-simbolo-48px-negativo.svg": {
+    "mtime": 1795018715.814514,
+    "seen": 1795018889.6305912,
+    "ast_hash": "29478d3fd4db3842368fb2eec85e1b87",
     "semantic_hash": ""
   }
 }
