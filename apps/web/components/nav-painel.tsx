@@ -14,34 +14,41 @@ const Icone = ({ d }: { d: string }) => (
 );
 
 type Link_ = { href: string; rotulo: string; icone: string };
-// Agrupado pelo que a pessoa vai fazer: operar a noite, vender, cuidar dos clientes, configurar.
-const SECOES: { titulo: string; links: Link_[] }[] = [
+type Familia = 'operacao' | 'gestao' | 'inteligencia' | 'config' | 'comeco';
+// D-120: as três famílias da marca SINO (Brand Book p. 17) + Configurações. Só a ordem e o agrupamento mudaram:
+// as rotas, os ícones e as permissões são os mesmos.
+const SECOES: { titulo: string; familia: Familia; links: Link_[] }[] = [
   {
     titulo: 'Operação',
+    familia: 'operacao',
     links: [
-      { href: '/resumo', rotulo: 'Resumo', icone: 'M4 20V10M10 20V4M16 20v-7M22 20H2' },
       { href: '/pedidos', rotulo: 'Pedidos', icone: 'M4 5h16M4 12h16M4 19h10' },
       { href: '/pedidos/novo', rotulo: 'Novo pedido', icone: 'M12 5v14M5 12h14' },
       { href: '/salao', rotulo: 'Salão', icone: 'M3 10h18M5 10v10M19 10v10M8 10V6a4 4 0 0 1 8 0v4' },
       { href: '/kds', rotulo: 'Cozinha (KDS)', icone: 'M3 5h18v11H3zM8 20h8M12 16v4' },
       { href: '/caixa', rotulo: 'Caixa', icone: 'M3 8h18v12H3zM7 8V4h10v4M7 13h4M15 13h2M7 16h10' },
-      { href: '/estoque', rotulo: 'Estoque / CMV', icone: 'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8' },
       { href: '/entregas', rotulo: 'Entregas', icone: 'M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z' },
     ],
   },
   {
-    titulo: 'Vendas',
+    titulo: 'Gestão',
+    familia: 'gestao',
     links: [
-      { href: '/relatorios', rotulo: 'Relatórios', icone: 'M4 20V10M10 20V4M16 20v-7M22 20H2' },
       { href: '/cardapio', rotulo: 'Cardápio', icone: 'M6 3h12v18l-6-4-6 4zM9 8h6M9 12h6' },
-      { href: '/delivery', rotulo: 'Delivery', icone: 'M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z' },
+      { href: '/estoque', rotulo: 'Estoque / CMV', icone: 'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8' },
+      { href: '/financeiro', rotulo: 'Financeiro', icone: 'M3 6h18v12H3zM3 10h18M7 15h3M15 15h2' },
+      { href: '/gestao', rotulo: 'Gestão Empresarial', icone: 'M3 7h18v13H3zM8 7V4h8v3M3 12h18M11 12v2h2v-2' },
       { href: '/promocoes', rotulo: 'Promoções', icone: 'M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01' },
+      { href: '/delivery', rotulo: 'Delivery', icone: 'M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z' },
       { href: '/evento', rotulo: 'Evento / Aniversário', icone: 'M20 12v9H4v-9M2 7h20v5H2zM12 21V7M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z' },
     ],
   },
   {
-    titulo: 'Clientes',
+    titulo: 'Inteligência',
+    familia: 'inteligencia',
     links: [
+      { href: '/resumo', rotulo: 'Resumo', icone: 'M4 20V10M10 20V4M16 20v-7M22 20H2' },
+      { href: '/relatorios', rotulo: 'Relatórios', icone: 'M14 3v5h5M7 3h7l5 5v13H7zM10 17v-3M13 17v-5M16 17v-2' },
       { href: '/clientes', rotulo: 'Clientes', icone: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' },
       { href: '/fidelidade', rotulo: 'Fidelidade', icone: 'M12 21l-8-8a5 5 0 0 1 7-7l1 1 1-1a5 5 0 0 1 7 7z' },
       { href: '/turbo', rotulo: 'Turbo-Vendas', icone: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z' },
@@ -49,14 +56,8 @@ const SECOES: { titulo: string; links: Link_[] }[] = [
     ],
   },
   {
-    titulo: 'Gestão',
-    links: [
-      { href: '/financeiro', rotulo: 'Financeiro', icone: 'M3 6h18v12H3zM3 10h18M7 15h3M15 15h2' },
-      { href: '/gestao', rotulo: 'Gestão Empresarial', icone: 'M3 7h18v13H3zM8 7V4h8v3M3 12h18M11 12v2h2v-2' },
-    ],
-  },
-  {
-    titulo: 'Ajustes',
+    titulo: 'Configurações',
+    familia: 'config',
     links: [
       { href: '/aplicativos', rotulo: 'Aplicativos', icone: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z' },
       { href: '/impressoras', rotulo: 'Impressoras', icone: 'M7 8V3h10v5M7 17H4v-7h16v7h-3M7 14h10v7H7z' },
@@ -66,12 +67,13 @@ const SECOES: { titulo: string; links: Link_[] }[] = [
   },
 ];
 // loja nova (D-076): "Primeiros passos" no topo até o dono concluir
-const COMECO = { titulo: 'Começo', links: [{ href: '/comecar', rotulo: 'Primeiros passos', icone: 'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11' }] };
+const COMECO = { titulo: 'Começo', familia: 'comeco' as Familia, links: [{ href: '/comecar', rotulo: 'Primeiros passos', icone: 'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11' }] };
 const LINKS = [...COMECO.links, ...SECOES.flatMap((s) => s.links)];
 
 // celular (D-070): barra de baixo com os 4 mais usados + "Mais" (todas as telas, por seção e com cor)
 const BARRA = ['/pedidos', '/pedidos/novo', '/estoque', '/resumo'];
-const COR_SECAO: Record<string, string> = { Começo: '#ea580c', Operação: '#2563eb', Vendas: '#16a34a', Clientes: '#9333ea', Gestão: '#d97706', Ajustes: '#64748b' };
+// folha do celular: marcador de cada família em tomate (o único ponto de cor da marca), configurações em neutro
+const COR_SECAO: Record<string, string> = { Começo: '#F0532B', Operação: '#F0532B', Gestão: '#F0532B', Inteligência: '#F0532B', Configurações: '#6A6170' };
 
 export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeirosPassos = false, modulos = null, dono = false, marcas = [], versao = null }: { lojas?: { id: string; nome: string }[]; lojaAtual?: string; lojaNome?: string; primeirosPassos?: boolean; modulos?: string[] | null; dono?: boolean; marcas?: { nome: string; slug: string }[]; versao?: string | null }) {
   // Assinatura só para o dono; telas fora do plano aparecem com cadeado (D-085)
@@ -105,7 +107,7 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeiros
     <>
       <div className="menu-secoes">
         {secoes.map((s) => (
-          <section key={s.titulo} className="menu-secao" aria-label={s.titulo}>
+          <section key={s.titulo} className="menu-secao" aria-label={s.titulo} data-familia={s.familia} data-ativa={s.links.some((l) => l.href === ativo) ? '' : undefined}>
             <h2 className="menu-secao-titulo">{s.titulo}</h2>
             <ul className="menu-lista">{s.links.map(item)}</ul>
           </section>
@@ -124,7 +126,10 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeiros
         <div className="menu-folha-fundo" role="dialog" aria-modal="true" aria-label="Todas as telas" onClick={(e) => e.target === e.currentTarget && setMais(false)}>
           <div className="menu-folha">
             <div className="menu-folha-topo">
-              <span className="marca-res">RES</span>
+              <picture>
+                <source srcSet="/marca/sino-logotipo-horizontal-negativo.svg" media="(prefers-color-scheme: dark)" />
+                <img className="s-logo-folha" src="/marca/sino-logotipo-horizontal-cor.svg" alt="SINO" width={96} height={32} />
+              </picture>
               {lojas.length > 1 ? <SeletorLoja lojas={lojas} atual={lojaAtual} /> : <strong>{lojaNome}</strong>}
               <button type="button" className="mini" onClick={() => setMais(false)} aria-label="Fechar">✕</button>
             </div>
@@ -152,7 +157,7 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeiros
             <form action="/auth/sair" method="post">
               <button className="menu-bloco menu-sair">Sair</button>
             </form>
-            {versao && <p className="dica" style={{ margin: 0, textAlign: 'center' }}>RES · versão {versao}</p>}
+            {versao && <p className="dica" style={{ margin: 0, textAlign: 'center' }}>SINO · versão {versao}</p>}
           </div>
         </div>
       )}
@@ -174,7 +179,7 @@ function LinksESuporte({ marcas, lojaNome }: { marcas: { nome: string; slug: str
       /* sem permissão */
     }
   };
-  const msg = encodeURIComponent(`Olá! Sou da ${lojaNome} e preciso de ajuda com o RES.`);
+  const msg = encodeURIComponent(`Olá! Sou da ${lojaNome} e preciso de ajuda com o SINO.`);
   return (
     <section className="menu-folha-secao menu-folha-links" style={{ ['--cor' as string]: '#0891b2' }}>
       <h2>Meus links</h2>

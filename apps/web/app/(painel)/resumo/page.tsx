@@ -20,6 +20,7 @@ import { corDaLoja } from '@/lib/cores';
 import { MetaMes } from '@/components/resumo/meta-mes';
 import type { DadosMeta } from '@/lib/meta';
 import { CartaoBomDia } from '@/components/resumo/bom-dia';
+import { FiltroLojas } from '@/components/resumo/filtro-lojas';
 import type { BomDia } from '@res/core';
 
 export const dynamic = 'force-dynamic';
@@ -86,9 +87,17 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
 
   if (r.atual.length === 0) {
     return (
-      <div className="grade">
-        <h1>Resumo</h1>
-        <p className="cartao dica">Seu acesso não inclui relatórios de vendas. Peça ao dono ou gerente da loja.</p>
+      <div className="s-pagina">
+        <header className="s-cabecalho">
+          <div className="s-cabecalho-texto">
+            <p className="s-sobretitulo">Inteligência</p>
+            <h1 className="s-titulo">Resumo</h1>
+          </div>
+        </header>
+        <div className="s-vazio" role="status">
+          <strong>Seu acesso não inclui os números de vendas.</strong>
+          <span>Peça ao dono ou ao gerente da loja para liberar.</span>
+        </div>
       </div>
     );
   }
@@ -133,52 +142,83 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
     return `/resumo?${q.toString()}`;
   };
 
-  return (
-    <div className="grade">
-      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <div className="grade" style={{ gap: '0.1rem' }}>
-          <h1 style={{ margin: 0 }}>Resumo</h1>
-          <span className="dica">
-            {periodo.de === periodo.ate ? dataBR(periodo.de) : `${dataBR(periodo.de)} a ${dataBR(periodo.ate)}`}
-            {periodo.emAndamento && ' · até agora'} · {lojaFiltro === 'todas' ? (ctx.lojas.length > 1 ? `todas as ${ctx.lojas.length} lojas` : ctx.lojas[0]?.nome) : ctx.lojas.find((l) => l.id === lojaFiltro)?.nome}
-          </span>
-        </div>
-      </div>
+  // contexto explícito: a loja em uso (menu) pode ser outra; os números desta tela são das lojas do filtro
+  const lojaUnica = lojaFiltro === 'todas' ? (ctx.lojas.length === 1 ? ctx.lojas[0] : null) : ctx.lojas.find((l) => l.id === lojaFiltro) ?? null;
+  const consolidado = !lojaUnica;
+  const atualizadoAs = new Date().toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' });
+  const rotuloPeriodo = preset === 'personalizado' ? 'Período escolhido' : PRESET_ROTULO[preset];
+  const datas = periodo.de === periodo.ate ? dataBR(periodo.de) : `${dataBR(periodo.de)} a ${dataBR(periodo.ate)}`;
+  const filtroLoja = lojaFiltro === 'todas' ? undefined : lojaFiltro;
 
-      {/* filtros: uma linha acima de tudo */}
-      <form className="filtros" action="/resumo" method="get">
-        <div className="segmentos" role="group" aria-label="Período">
+  return (
+    <div className="s-pagina">
+      <header className="s-cabecalho">
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Inteligência</p>
+          <h1 className="s-titulo">Resumo</h1>
+          <p className="s-subtitulo">
+            <strong>{rotuloPeriodo}</strong> · {datas}
+            {periodo.emAndamento && ' · até agora'} · comparado com {quando}
+          </p>
+        </div>
+        <span className="s-contexto" title={consolidado ? 'Os números somam todas as lojas que você acessa. A loja em uso, no menu, continua a mesma.' : undefined}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M3 10l9-6 9 6M5 10v10h14V10M9 20v-6h6v6" />
+          </svg>
+          {consolidado ? (
+            <>
+              <strong>Consolidado</strong> · {ctx.lojas.length} lojas
+            </>
+          ) : (
+            <>
+              <strong>{lojaUnica!.nome}</strong>
+            </>
+          )}
+          <span aria-hidden="true">·</span> atualizado às {atualizadoAs}
+        </span>
+      </header>
+
+      {/* filtros: período (atalhos ou datas) e lojas; o título acima sempre mostra o que está aplicado */}
+      <div className="s-filtros" role="search" aria-label="Filtros do resumo">
+        <nav className="s-segmentos" aria-label="Período">
           {PRESETS.filter((p) => p !== 'personalizado').map((p) => (
             <Link key={p} href={href({ p, de: undefined, ate: undefined })} aria-current={preset === p ? 'true' : undefined}>
               {PRESET_ROTULO[p]}
             </Link>
           ))}
-        </div>
-        <input type="hidden" name="p" value="personalizado" />
-        <label className="linha" style={{ gap: '0.35rem', alignItems: 'center' }}>
-          <span className="dica">De</span>
-          <input type="date" name="de" defaultValue={preset === 'personalizado' ? sp.de : periodo.de} max={hoje} />
-        </label>
-        <label className="linha" style={{ gap: '0.35rem', alignItems: 'center' }}>
-          <span className="dica">até</span>
-          <input type="date" name="ate" defaultValue={preset === 'personalizado' ? sp.ate : periodo.ate} max={hoje} />
-        </label>
+        </nav>
+        <span className="s-separador" aria-hidden="true" />
+        <form action="/resumo" method="get" aria-label="Escolher datas">
+          <input type="hidden" name="p" value="personalizado" />
+          {filtroLoja && <input type="hidden" name="loja" value={filtroLoja} />}
+          <label className="s-campo">
+            De
+            <input type="date" name="de" defaultValue={periodo.de} max={hoje} required />
+          </label>
+          <label className="s-campo">
+            até
+            <input type="date" name="ate" defaultValue={periodo.ate} max={hoje} required />
+          </label>
+          <button className="s-botao">Ver período</button>
+        </form>
         {ctx.lojas.length > 1 && (
-          <select name="loja" defaultValue={lojaFiltro} aria-label="Loja">
-            <option value="todas">Todas as lojas</option>
-            {ctx.lojas.map((l) => <option key={l.id} value={l.id}>{l.nome}</option>)}
-          </select>
+          <>
+            <span className="s-separador" aria-hidden="true" />
+            <FiltroLojas lojas={ctx.lojas.map((l) => ({ id: l.id, nome: l.nome }))} atual={lojaFiltro} base={href({ loja: undefined })} />
+          </>
         )}
-        <button className="mini">Aplicar</button>
-      </form>
-      {erroPeriodo && <p className="erro">{erroPeriodo}</p>}
+      </div>
+      {erroPeriodo && (
+        <div className="s-alerta" data-tom="erro" role="alert">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M12 8v5M12 16.5v.5M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
+          <span>{erroPeriodo} Mostrando hoje.</span>
+        </div>
+      )}
 
-      {bomDia ? <CartaoBomDia dados={bomDia as BomDia} loja={ctx.lojaNome} /> : null}
-
-      {dm ? <MetaMes key={`${lojaFiltro}-${(dm as DadosMeta).mes}`} dados={dm as DadosMeta} podeEditar={podeMeta} /> : null}
-
-      <div className="kpis">
+      {/* o que o dono precisa ver em segundos: os quatro números, o faturamento em destaque */}
+      <section className="s-kpis" aria-label="Indicadores do período">
         <Kpi
+          principal
           rotulo="Faturamento"
           valor={formatarReais(fat)}
           atual={fat}
@@ -224,50 +264,73 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
           detalhe={canc > 0 ? <><b>{formatarReais(valCanc)}</b> que deixaram de entrar · <b>{Math.round((canc / (canc + ped)) * 100)}%</b> dos pedidos</> : null}
           ajuda="Cancelados não entram no faturamento. Menos é melhor."
         />
-      </div>
+      </section>
+
+      {/* atenção do dia (da loja em uso) ao lado da meta: alertas claros, sem tomar o lugar dos números */}
+      {(bomDia || dm) && (
+        <div className="s-dupla">
+          {bomDia ? (
+            <div className="grade" style={{ gap: 'var(--s-2)' }}>
+              <p className="s-cartao-nota">
+                Para hoje na loja em uso · <strong>{ctx.lojaNome}</strong>
+                {consolidado ? ' (o resto da tela soma as lojas do filtro)' : ''}
+              </p>
+              <CartaoBomDia dados={bomDia as BomDia} loja={ctx.lojaNome} />
+            </div>
+          ) : null}
+          {dm ? <MetaMes key={`${lojaFiltro}-${(dm as DadosMeta).mes}`} dados={dm as DadosMeta} podeEditar={podeMeta} /> : null}
+        </div>
+      )}
 
       {r.composicao && <ComposicaoVendas atual={r.composicao} anterior={r.composicao_anterior ?? []} lojas={lojasCor} porLoja={lojasCor.length > 1} quando={quando} />}
 
-      <section className="cartao grade" style={{ gap: '0.5rem' }}>
-        <h2 style={{ margin: 0, fontSize: '1rem' }}>Desempenho por loja</h2>
-        <GraficoLojas lojas={desempenho} comparacao={periodo.comparacao} />
-      </section>
-
-      {n > 1 && (
-        <section className="cartao grade" style={{ gap: '0.5rem' }}>
-          <h2 style={{ margin: 0, fontSize: '1rem' }}>Faturamento por dia{lojasCor.length > 1 ? ', por loja' : ''}</h2>
-          <GraficoDias serie={serie} lojas={lojasCor} />
+      <div className="s-dupla">
+        <section className="s-cartao" aria-labelledby="t-desempenho">
+          <h2 id="t-desempenho" className="s-cartao-titulo">Desempenho por loja</h2>
+          <GraficoLojas lojas={desempenho} comparacao={periodo.comparacao} />
         </section>
-      )}
+        {n > 1 && (
+          <section className="s-cartao" aria-labelledby="t-dias">
+            <h2 id="t-dias" className="s-cartao-titulo">Faturamento por dia{lojasCor.length > 1 ? ', por loja' : ''}</h2>
+            <GraficoDias serie={serie} lojas={lojasCor} />
+          </section>
+        )}
+      </div>
 
-      <section className="cartao grade" style={{ gap: '0.5rem' }}>
-        <h2 style={{ margin: 0, fontSize: '1rem' }}>Por loja</h2>
-        <div className="tabela-rolagem">
-          <table className="tabela">
+      <section className="s-cartao" aria-labelledby="t-lojas">
+        <div className="s-cartao-topo">
+          <h2 id="t-lojas" className="s-cartao-titulo">Por loja</h2>
+          <p className="s-cartao-nota">Faturamento = pedidos não cancelados (inclui taxa de entrega). Variação {periodo.comparacao}.</p>
+        </div>
+        <div className="s-tabela-rolagem">
+          <table className="s-tabela">
             <thead>
               <tr>
-                <th>Loja</th>
-                <th className="num">Faturamento</th>
-                <th className="num">Participação</th>
-                <th className="num">Variação</th>
-                <th className="num">Pedidos</th>
-                <th className="num">Ticket médio</th>
-                <th className="num">Entrega / Retirada / Balcão</th>
-                <th className="num">Online</th>
-                <th className="num">Cancelados</th>
+                <th scope="col">Loja</th>
+                <th scope="col" className="num">Faturamento</th>
+                <th scope="col" className="num">Participação</th>
+                <th scope="col" className="num">Variação</th>
+                <th scope="col" className="num">Pedidos</th>
+                <th scope="col" className="num">Ticket médio</th>
+                <th scope="col" className="num">Entrega / Retirada / Balcão</th>
+                <th scope="col" className="num">Online</th>
+                <th scope="col" className="num">Cancelados</th>
               </tr>
             </thead>
             <tbody>
               {[...r.atual].sort((a, b) => b.faturamento - a.faturamento).map((m) => {
                 const ant = r.anterior.find((x) => x.loja_id === m.loja_id);
                 const v = variacao(Number(m.faturamento), Number(ant?.faturamento ?? 0));
+                const part = fat ? (Number(m.faturamento) / fat) * 100 : 0;
                 return (
                   <tr key={m.loja_id}>
-                    <td><i className="cor-loja" style={{ background: cor(m.loja_id) }} />{m.loja}</td>
+                    <th scope="row">
+                      <span className="s-loja"><i className="cor-loja" style={{ background: cor(m.loja_id) }} aria-hidden="true" />{m.loja}</span>
+                    </th>
                     <td className="num">{formatarReais(Number(m.faturamento))}</td>
                     <td className="num">
-                      <span className="barra-part"><span style={{ width: `${fat ? (Number(m.faturamento) / fat) * 100 : 0}%` }} /></span>
-                      {fat ? Math.round((Number(m.faturamento) / fat) * 100) : 0}%
+                      <span className="s-barra-part" aria-hidden="true"><span style={{ width: `${part}%` }} /></span>
+                      {Math.round(part)}%
                     </td>
                     <td className="num"><Variacao v={v} /></td>
                     <td className="num">{m.pedidos}</td>
@@ -296,19 +359,32 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
             )}
           </table>
         </div>
-        <p className="dica" style={{ margin: 0 }}>
-          Faturamento = pedidos não cancelados (inclui taxa de entrega). Variação {periodo.comparacao}.
-        </p>
       </section>
     </div>
   );
 }
 
+/** Variação contra o período de comparação: seta + sinal + texto (a cor só reforça). */
 function Variacao({ v, inverso = false }: { v: number | null; inverso?: boolean }) {
   const t = formatarVariacao(v);
-  if (v === null || Math.round(v * 100) === 0) return <span className="var neutra">{v === null ? '— ' : '= '}{t}</span>;
+  if (v === null || Math.round(v * 100) === 0) {
+    return (
+      <span className="s-var" data-tom="neutro">
+        <span aria-hidden="true">{v === null ? '—' : '='}</span> {t}
+        <span className="s-so-leitor">{v === null ? ' sem base para comparar' : ' sem mudança'}</span>
+      </span>
+    );
+  }
   const bom = inverso ? v < 0 : v > 0;
-  return <span className={`var ${bom ? 'boa' : 'ruim'}`}>{v > 0 ? '▲' : '▼'} {t}</span>;
+  return (
+    <span className="s-var" data-tom={bom ? 'bom' : 'ruim'}>
+      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+        <path d={v > 0 ? 'M5 1.5 9 8H1z' : 'M5 8.5 1 2h8z'} fill="currentColor" />
+      </svg>
+      <span className="s-so-leitor">{v > 0 ? 'alta de ' : 'queda de '}</span>
+      {t}
+    </span>
+  );
 }
 
 function Kpi({
@@ -319,6 +395,7 @@ function Kpi({
   quando,
   dinheiro,
   inverso,
+  principal,
   detalhe,
   ajuda,
 }: {
@@ -329,19 +406,20 @@ function Kpi({
   quando: string;
   dinheiro?: boolean;
   inverso?: boolean;
+  principal?: boolean;
   detalhe?: ReactNode;
   ajuda: ReactNode;
 }) {
   const dif = atual - antes;
   const fmt = (x: number) => (dinheiro ? formatarReais(x) : String(x));
   return (
-    <div className="cartao kpi">
-      <div className="kpi-titulo">
-        <strong>{rotulo}</strong>
+    <article className="s-kpi" data-principal={principal ? '' : undefined} aria-label={rotulo}>
+      <div className="s-kpi-topo">
+        <h2 className="s-kpi-rotulo">{rotulo}</h2>
         <Variacao v={variacao(atual, antes)} inverso={inverso} />
       </div>
-      <span className="kpi-valor">{valor}</span>
-      <p className="kpi-frase">
+      <p className="s-kpi-valor">{valor}</p>
+      <p className="s-kpi-comparacao">
         {dif === 0 ? (
           <>Igual a {quando} ({fmt(antes)}).</>
         ) : (
@@ -350,9 +428,9 @@ function Kpi({
           </>
         )}
       </p>
-      {detalhe && <p className="kpi-frase">{detalhe}</p>}
-      <p className="kpi-ajuda">{ajuda}</p>
-    </div>
+      {detalhe && <p className="s-kpi-detalhe">{detalhe}</p>}
+      <p className="s-kpi-ajuda">{ajuda}</p>
+    </article>
   );
 }
 
@@ -385,39 +463,39 @@ function ComposicaoVendas({
   ];
 
   return (
-    <section className="cartao grade" style={{ gap: '0.6rem' }}>
-      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <h2 style={{ margin: 0, fontSize: '1rem' }}>Composição das vendas</h2>
-        <span className="kpi-frase">
+    <section className="s-cartao" aria-labelledby="t-composicao">
+      <div className="s-cartao-topo">
+        <h2 id="t-composicao" className="s-cartao-titulo">Composição das vendas</h2>
+        <p className="s-kpi-comparacao">
           Produtos + frete + acréscimos − descontos = <b>{formatarReais(total)}</b> faturados
-        </span>
+        </p>
       </div>
-      <div className="kpis">
+      <div className="s-composicao">
         {cartoes.map((c) => {
           const v = c.campo ? soma(atual, c.campo) : 0;
           const a = c.campo ? soma(anterior, c.campo) : 0;
           return (
-            <div key={c.rotulo} className="kpi" style={{ border: '1px solid var(--borda)', borderRadius: 'var(--raio)', padding: '0.75rem' }}>
-              <div className="kpi-titulo">
-                <strong>{c.sinal && <span className="dica">{c.sinal} </span>}{c.rotulo}</strong>
+            <div key={c.rotulo} className="s-composicao-item">
+              <div className="s-kpi-topo">
+                <h3 className="s-kpi-rotulo">{c.sinal && <span aria-hidden="true">{c.sinal} </span>}{c.rotulo}</h3>
                 {c.campo && <Variacao v={variacao(v, a)} inverso={c.inverso} />}
               </div>
-              <span className="kpi-valor" style={{ fontSize: '1.5rem' }}>{formatarReais(v)}</span>
-              <p className="kpi-frase">
+              <p className="s-kpi-valor s-kpi-valor-m">{formatarReais(v)}</p>
+              <p className="s-kpi-detalhe">
                 {c.campo ? <>antes {formatarReais(a)} ({quando}){total > 0 && c.campo !== 'produtos' ? <> · <b>{((v / total) * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%</b> do faturamento</> : null}</> : 'Ainda não lançado no RES.'}
               </p>
               {c.campo && grupos.length > 1 && (
-                <ul className="lista" style={{ margin: 0, fontSize: '0.85rem', borderTop: '1px solid var(--borda)', paddingTop: '0.4rem' }}>
+                <ul className="s-composicao-lista">
                   {grupos.map((g) => {
                     const gv = soma(atual, c.campo!, g.f);
                     const ga = soma(anterior, c.campo!, g.f);
                     return (
-                      <li key={g.id} className="linha" style={{ justifyContent: 'space-between', gap: '0.4rem', flexWrap: 'nowrap' }}>
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {g.cor ? <i className="cor-loja" style={{ background: g.cor }} /> : <span className="dica">• </span>}
+                      <li key={g.id}>
+                        <span className="s-composicao-nome">
+                          {g.cor ? <i className="cor-loja" style={{ background: g.cor }} aria-hidden="true" /> : <span aria-hidden="true">• </span>}
                           {g.nome}
                         </span>
-                        <span style={{ whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
+                        <span className="s-num">
                           {formatarReais(gv)} <Variacao v={variacao(gv, ga)} inverso={c.inverso} />
                         </span>
                       </li>
@@ -425,7 +503,7 @@ function ComposicaoVendas({
                   })}
                 </ul>
               )}
-              <p className="kpi-ajuda">{c.explica}</p>
+              <p className="s-kpi-ajuda">{c.explica}</p>
             </div>
           );
         })}

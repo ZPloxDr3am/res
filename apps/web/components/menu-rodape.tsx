@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { SeletorTema } from '@/components/seletor-tema';
 
 // Rodapé fixo do menu (D-081): Meus links, Suporte, Sair e a versão. Fica sempre visível, embaixo.
 const SUPORTE_WHATSAPP = (process.env.NEXT_PUBLIC_SUPORTE_WHATSAPP ?? '').replace(/\D/g, '');
@@ -39,6 +40,7 @@ export function MenuRodape({ marcas, lojaNome, versao }: { marcas: { nome: strin
 
   return (
     <div className="menu-rodape" ref={caixa}>
+      <SeletorTema />
       {aberto === 'links' && (
         <div className="menu-pop" role="dialog" aria-label="Meus links">
           <strong>Links do cardápio</strong>
@@ -57,13 +59,13 @@ export function MenuRodape({ marcas, lojaNome, versao }: { marcas: { nome: strin
       )}
       {aberto === 'suporte' && (
         <div className="menu-pop" role="dialog" aria-label="Suporte">
-          <strong>Suporte do RES</strong>
+          <strong>Suporte do SINO</strong>
           {SUPORTE_WHATSAPP ? (
             <>
               <span className="dica">Fale com o time pelo WhatsApp. Diga a loja e o que aconteceu; um print ajuda.</span>
               <a
                 className="botao botao-primario"
-                href={`https://wa.me/${SUPORTE_WHATSAPP}?text=${encodeURIComponent(`Olá! Sou da ${lojaNome} e preciso de ajuda com o RES: `)}`}
+                href={`https://wa.me/${SUPORTE_WHATSAPP}?text=${encodeURIComponent(`Olá! Sou da ${lojaNome} e preciso de ajuda com o SINO: `)}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -71,7 +73,7 @@ export function MenuRodape({ marcas, lojaNome, versao }: { marcas: { nome: strin
               </a>
             </>
           ) : (
-            <span className="dica">O canal de suporte está sendo configurado. Enquanto isso, fale direto com quem implantou o RES na sua loja.</span>
+            <span className="dica">O canal de suporte está sendo configurado. Enquanto isso, fale direto com quem implantou o SINO na sua loja.</span>
           )}
         </div>
       )}
@@ -89,7 +91,7 @@ export function MenuRodape({ marcas, lojaNome, versao }: { marcas: { nome: strin
           <span>Sair</span>
         </button>
       </form>
-      {versao && <span className="menu-versao">RES · versão {versao}</span>}
+      {versao && <span className="menu-versao">SINO · versão {versao}</span>}
     </div>
   );
 }
