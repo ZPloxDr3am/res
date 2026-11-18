@@ -1023,7 +1023,7 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
   - **Este trabalho não vai para a main antes da decisão sobre C1**: o pacote da marca proíbe C1 em produção antes de aprovado.
 - **Tema** claro/escuro com escolha por aparelho (Auto · Claro · Escuro, no rodapé do menu), aplicado antes de pintar. Nesta fase vale para o menu e o Resumo.
 - **Menu** nas famílias da marca, mais Configurações: Operação, Gestão, Inteligência e Configurações. Só muda o agrupamento: rotas, permissões, planos e barra do celular são os mesmos.
-  - O menu é branco no tema claro e carvão no escuro (escolha do dono em 18/11; o logotipo troca entre a versão cor e a negativa). Ele mostra "Loja em uso" e marca o ativo por peso, marcador tomate e fundo.
+  - O menu é carvão nos dois temas, mostra "Loja em uso" e marca o ativo por peso, marcador tomate e fundo.
 - **Resumo** é a página de referência:
   - indicadores primeiro, com o faturamento em destaque;
   - etiqueta de contexto (consolidado × uma loja) e a hora da atualização;

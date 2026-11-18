@@ -85,17 +85,14 @@
   --s-sombra: 0 1px 2px rgb(28 26 31 / 0.06);
   --s-sombra-camada: 0 16px 40px -16px rgb(28 26 31 / 0.32), 0 0 0 1px var(--s-borda);
 
-  /* menu lateral: claro no tema claro (aprovado em 18/11), carvão no escuro */
-  --s-menu-fundo: var(--sino-branco);
-  --s-menu-borda: var(--sino-carvao-200);
-  --s-menu-texto: var(--sino-carvao-700);   /* 11,8 : 1 */
-  --s-menu-texto-forte: var(--sino-carvao-900);
-  --s-menu-rotulo: var(--sino-carvao-500);  /* 5,9 : 1 */
-  --s-menu-hover: #F7F4F1;
-  --s-menu-ativo: #EFEAE5;
-  --s-menu-campo: var(--s-borda-forte);     /* borda do seletor de loja: 3,5 : 1 */
-  --s-logo-claro: block;                    /* qual logotipo aparece: cor (fundo claro) ou negativo (fundo escuro) */
-  --s-logo-escuro: none;
+  /* menu lateral: carvão nos dois temas (Brand Book p. 18) */
+  --s-menu-fundo: var(--sino-carvao-900);
+  --s-menu-borda: #2E2A33;
+  --s-menu-texto: var(--sino-carvao-300);   /* 8,5 : 1 */
+  --s-menu-texto-forte: var(--sino-creme);
+  --s-menu-rotulo: var(--sino-carvao-400);  /* 6,6 : 1 */
+  --s-menu-hover: #29252E;
+  --s-menu-ativo: #2F2A34;
 }
 
 /* tema escuro: pelo sistema (sem escolha) ou escolhido */
@@ -126,14 +123,6 @@
     --s-sombra-camada: 0 16px 40px -12px rgb(0 0 0 / 0.6), 0 0 0 1px var(--s-borda);
     --s-menu-fundo: var(--sino-carvao-950);
     --s-menu-borda: #2A262F;
-    --s-menu-texto: var(--sino-carvao-300);   /* 8,5 : 1 */
-    --s-menu-texto-forte: var(--sino-creme);
-    --s-menu-rotulo: var(--sino-carvao-400);  /* 6,6 : 1 */
-    --s-menu-hover: #29252E;
-    --s-menu-ativo: #2F2A34;
-    --s-menu-campo: #6E6676;
-    --s-logo-claro: none;
-    --s-logo-escuro: block;
     color-scheme: dark;
   }
 }
@@ -163,14 +152,6 @@
   --s-sombra-camada: 0 16px 40px -12px rgb(0 0 0 / 0.6), 0 0 0 1px var(--s-borda);
   --s-menu-fundo: var(--sino-carvao-950);
   --s-menu-borda: #2A262F;
-  --s-menu-texto: var(--sino-carvao-300);   /* 8,5 : 1 */
-  --s-menu-texto-forte: var(--sino-creme);
-  --s-menu-rotulo: var(--sino-carvao-400);  /* 6,6 : 1 */
-  --s-menu-hover: #29252E;
-  --s-menu-ativo: #2F2A34;
-  --s-menu-campo: #6E6676;
-  --s-logo-claro: none;
-  --s-logo-escuro: block;
   color-scheme: dark;
 }
 :root[data-tema='claro'] { color-scheme: light; }
@@ -188,20 +169,18 @@
    --------------------------------------------------------------------- */
 .menu.s-menu {
   background: var(--s-menu-fundo); border-right: 1px solid var(--s-menu-borda); color: var(--s-menu-texto);
-  font-family: var(--s-fonte); padding: var(--s-4) var(--s-3) var(--s-3); gap: var(--s-4);
+  font-family: var(--s-fonte); color-scheme: dark; padding: var(--s-4) var(--s-3) var(--s-3); gap: var(--s-4);
 }
 .s-menu .menu-topo { gap: var(--s-3); padding: var(--s-1) var(--s-2) 0; border: 0; }
 .s-menu .s-logo { display: block; line-height: 0; }
 .s-menu .s-logo img { width: 128px; height: auto; }          /* logotipo principal: mínimo 120 px */
 .s-menu .s-logo .s-logo-simbolo { display: none; width: 32px; height: 32px; }
-.s-menu .s-logo .s-logo-principal[data-fundo='claro'] { display: var(--s-logo-claro); }
-.s-menu .s-logo .s-logo-principal[data-fundo='escuro'] { display: var(--s-logo-escuro); }
 .s-menu .s-loja-uso { display: grid; gap: 2px; }
 .s-menu .s-loja-uso > .s-rotulo { font-size: var(--s-t-12); font-weight: 500; color: var(--s-menu-rotulo); }
 .s-menu .menu-loja { color: var(--s-menu-texto-forte); font-weight: 600; font-size: var(--s-t-14); padding: 0; }
 .s-menu .menu-marcas { color: var(--s-menu-rotulo); font-size: var(--s-t-12); }
 .s-menu .seletor-loja select {
-  background: var(--s-menu-hover); color: var(--s-menu-texto-forte); border: 1px solid var(--s-menu-campo); border-radius: var(--s-raio);
+  background: var(--s-menu-hover); color: var(--s-menu-texto-forte); border: 1px solid #4A4450; border-radius: var(--s-raio);
   height: 36px; font: 600 var(--s-t-14) var(--s-fonte);
 }
 .s-menu .seletor-loja select:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--sino-tomate); }
@@ -223,7 +202,7 @@
 .s-menu .menu-item:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--sino-tomate); }
 .s-menu .menu-item[data-travado] { opacity: 0.6; }
 .s-menu .menu-item[data-pendente] { color: var(--sino-tomate); }
-.s-menu nav { scrollbar-color: var(--s-menu-campo) transparent; scrollbar-width: thin; }
+.s-menu nav { scrollbar-color: #4A4450 transparent; scrollbar-width: thin; }
 .s-menu .menu-rodape { border-top: 1px solid var(--s-menu-borda); padding-top: var(--s-2); }
 .s-menu .menu-rodape .menu-item[aria-expanded='true'] { background: var(--s-menu-hover); color: var(--s-menu-texto-forte); }
 .s-menu .menu-versao { color: var(--s-menu-rotulo); font-family: var(--s-fonte); }
@@ -239,9 +218,8 @@
 
 /* tablet: só ícones */
 @media (max-width: 1000px) and (min-width: 701px) {
-  .s-menu .s-logo img.s-logo-principal[data-fundo] { display: none; }
-  .s-menu .s-logo .s-logo-simbolo[data-fundo='claro'] { display: var(--s-logo-claro); margin: 0 auto; }
-  .s-menu .s-logo .s-logo-simbolo[data-fundo='escuro'] { display: var(--s-logo-escuro); margin: 0 auto; }
+  .s-menu .s-logo img.s-logo-principal { display: none; }
+  .s-menu .s-logo .s-logo-simbolo { display: block; margin: 0 auto; }
   .s-menu .s-loja-uso { display: none; }
   .s-menu .menu-item[aria-current='page']::before { left: -0.5rem; }
   .s-menu .s-tema { display: none; }
