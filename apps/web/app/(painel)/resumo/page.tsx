@@ -187,7 +187,9 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
             </Link>
           ))}
         </nav>
-        <span className="s-separador" aria-hidden="true" />
+        {ctx.lojas.length > 1 && (
+          <FiltroLojas lojas={ctx.lojas.map((l) => ({ id: l.id, nome: l.nome }))} atual={lojaFiltro} base={href({ loja: undefined })} />
+        )}
         <form action="/resumo" method="get" aria-label="Escolher datas">
           <input type="hidden" name="p" value="personalizado" />
           {filtroLoja && <input type="hidden" name="loja" value={filtroLoja} />}
@@ -201,12 +203,6 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
           </label>
           <button className="s-botao">Ver período</button>
         </form>
-        {ctx.lojas.length > 1 && (
-          <>
-            <span className="s-separador" aria-hidden="true" />
-            <FiltroLojas lojas={ctx.lojas.map((l) => ({ id: l.id, nome: l.nome }))} atual={lojaFiltro} base={href({ loja: undefined })} />
-          </>
-        )}
       </div>
       {erroPeriodo && (
         <div className="s-alerta" data-tom="erro" role="alert">

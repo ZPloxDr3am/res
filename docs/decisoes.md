@@ -1013,3 +1013,22 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - **Rappi, eventos**: o cancelamento e a conclusão vêm só dos campos de nome/tipo/status do evento. Antes, qualquer texto com "cancel" (por exemplo, um campo `cancel_reason` vazio) cancelaria o pedido. São até 10 pedidos por tique, por causa do limite de chamadas.
 - **Rappi, pagamento**: tudo o que não é dinheiro, maquininha da loja ou vale foi pago no app e entra como "online" (Pix, cartão no app, carteiras). Assim, o DRE, a conferência da maquininha e o repasse não esperam esse dinheiro na loja.
 - **Open Delivery**: salvar a conexão e gerar a chave agora só valem para conexões Open Delivery (antes, a mudança era aplicada a qualquer conexão da loja antes da conferência). URL do app vazia dá mensagem clara.
+
+## D-120 — Design System SINO no software: fundação, menu e página Resumo (18/11/2026)
+- **Marca**: o software adota a identidade SINO (Brand Book v1.2).
+  - Logotipo e favicon **oficiais**, copiados sem alteração para `apps/web/public/marca`; o favicon fica só no painel, nunca no cardápio do cliente.
+  - Inter em toda a interface nova; Outfit só para telas de marca (fontes locais, licença OFL).
+- **Cores** (`apps/web/app/sino.css`) em três camadas: marca aprovada → interface **C1 (em avaliação)** → semânticos `--s-*`.
+  - C1 e a proposta para o tema escuro ficam num bloco só.
+  - **Este trabalho não vai para a main antes da decisão sobre C1**: o pacote da marca proíbe C1 em produção antes de aprovado.
+- **Tema** claro/escuro com escolha por aparelho (Auto · Claro · Escuro, no rodapé do menu), aplicado antes de pintar. Nesta fase vale para o menu e o Resumo.
+- **Menu** nas famílias da marca, mais Configurações: Operação, Gestão, Inteligência e Configurações. Só muda o agrupamento: rotas, permissões, planos e barra do celular são os mesmos.
+  - O menu é carvão nos dois temas, mostra "Loja em uso" e marca o ativo por peso, marcador tomate e fundo.
+- **Resumo** é a página de referência:
+  - indicadores primeiro, com o faturamento em destaque;
+  - etiqueta de contexto (consolidado × uma loja) e a hora da atualização;
+  - período com o atalho ativo e "comparado com…";
+  - filtro de lojas que troca na hora sem perder o período;
+  - pendências marcadas como da **loja em uso**.
+  - Mesmas RPCs e cálculos; as telas antigas não mudam (aparência nova só em `.s-menu` e `.s-pagina`, `globals.css` intacto).
+- A expansão para os outros módulos espera a aprovação do Resumo. Plano, auditoria, riscos e reversão estão em `docs/desenvolvimento/design-system-sino.md`.
