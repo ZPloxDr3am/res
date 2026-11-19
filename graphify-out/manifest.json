@@ -19,8 +19,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1795063121.787155,
-    "ast_hash": "",
+    "seen": 1795063743.4447525,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/ISSUE_TEMPLATE/teste.yml": {
@@ -1302,9 +1302,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/kds/kds.tsx": {
-    "mtime": 1794495630.59221,
-    "seen": 1795062708.6630611,
-    "ast_hash": "921c6ac242173056df52797f02382b82",
+    "mtime": 1795063690.2361357,
+    "seen": 1795063743.4451272,
+    "ast_hash": "e73123305308045638fb5aa51a72e029",
     "semantic_hash": ""
   },
   "apps/web/components/logo-sino.tsx": {
@@ -1776,8 +1776,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1795063110.167784,
-    "seen": 1795063121.7875168,
+    "mtime": 1795063739.8233302,
+    "seen": 1795063743.4452658,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": ""
   },
@@ -3288,9 +3288,9 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795063653.6273272,
-    "seen": 1795063660.7911422,
-    "ast_hash": "430ee28eb0f638ab3f8bfb83d22f5608",
+    "mtime": 1795063708.010567,
+    "seen": 1795063743.445797,
+    "ast_hash": "5eaa0830fe4d2e697c99e469f0fbf306",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/whatsapp-api.md": {
