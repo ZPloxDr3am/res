@@ -152,10 +152,18 @@ Ordem sugerida, pelo uso no pico:
 
 Em cada tela: trocar a classe da raiz para `s-pagina`, os componentes para os `s-*` e tirar o CSS antigo que ficar sem uso. Também fica para a fase 5 trocar o nome "RES" que ainda aparece no título da aba, no login, no cupom, nas mensagens e nos e-mails, e decidir o domínio.
 
-### 5.2 Caixa (em validação)
+### 5.2 Caixa — aprovado pelo dono em 19/11/2026 (PR #145)
 
 - `painel-caixa.tsx` dentro de `.s-pagina .s-caixa`: cabeçalho "Operação · Caixa"; cartões de caixa em `s-cartao` com selo `s-status` (aberto = sucesso, fechado = neutro — antes "fechado" aparecia em vermelho, como se fosse erro); caixa aberto ganha uma faixa verde à esquerda.
 - Botões Abrir / Sangria / Suprimento / Fechar com 44 px de altura (toque no balcão).
 - Tabelas do resumo e dos fechamentos em `s-tabela`; diferença: conferiu = sucesso, faltou = erro, sobrou = atenção (sobra também é gaveta que não bateu).
 - Calculadora de cédulas com campos de 40 px e total em 24 px; relatório `/caixa/[id]` só troca o selo de situação (o resto fica igual por causa da impressão).
 - Nenhuma conta, rota ou chamada ao banco mudou.
+
+### 5.3 Cozinha / KDS (em validação)
+
+- `kds.tsx` dentro de `.s-pagina .s-kds`: cabeçalho "Operação · Cozinha" com o nome da estação; selo de conexão com ponto colorido (sem emoji de bolinha).
+- Cores de tempo mantidas (no prazo / metade / atrasado), agora em sucesso / atenção / erro do C1; cartão atrasado ganha contorno vermelho; pronto fica esmaecido.
+- Itens e botões com 48 px de altura (toque com luva/mão molhada); controles do topo com 44 px; botão de som diz "Som ligado/desligado".
+- No escuro, o texto sobre as faixas coloridas fica carvão (contraste AA com as cores claras do C1-escuro).
+- Lógica da fila, bip, modo sem internet e estações sem nenhuma mudança.

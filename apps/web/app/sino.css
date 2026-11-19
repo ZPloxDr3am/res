@@ -642,3 +642,37 @@ body:has(.s-menu) .qp-selo-cliente[data-tipo='fiel'] { background: var(--s-info-
 .s-caixa .calc-sub { color: var(--s-texto-3); }
 .s-caixa .calc-total { border-top: 1px dashed var(--s-borda-forte); padding-top: var(--s-3); }
 .s-caixa .calc-total strong { font-size: var(--s-t-24); color: var(--s-texto); }
+
+/* ───────────── Fase 5 · Cozinha / KDS (D-120 §5.3) — só apresentação ─────────────
+   Lida de longe: cores de tempo mantidas (no prazo / metade do prazo / atrasado), agora nas cores C1. */
+.s-kds { gap: var(--s-4); }
+.s-kds .kds-topo { gap: var(--s-3) var(--s-4); align-items: flex-end; }
+.s-kds .kds-topo select, .s-kds .kds-topo button, .s-kds .kds-topo input { min-height: 44px; }
+.s-kds .kds-conexao { display: inline-flex; align-items: center; gap: 8px; padding: 6px var(--s-4); font-size: var(--s-t-14); font-weight: 600; }
+.s-kds .kds-conexao::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+.s-kds .kds-conexao[data-estado='ok'] { background: var(--s-sucesso-fundo); color: var(--s-sucesso); }
+.s-kds .kds-conexao[data-estado='instavel'] { background: var(--s-atencao-fundo); color: var(--s-atencao); }
+.s-kds .kds-conexao[data-estado='caiu'] { background: var(--s-erro); color: #fff; }
+.s-kds .kds-queda { background: var(--s-erro); color: #fff; border-radius: 10px; }
+.s-kds .kds-voltou { background: var(--s-sucesso); color: #fff; border-radius: 10px; }
+:where(:root[data-tema='escuro']) .s-kds .kds-conexao[data-estado='caiu'], :where(:root[data-tema='escuro']) .s-kds .kds-queda, :where(:root[data-tema='escuro']) .s-kds .kds-voltou { color: var(--sino-carvao); }
+@media (prefers-color-scheme: dark) { :where(:root:not([data-tema='claro'])) .s-kds .kds-conexao[data-estado='caiu'], :where(:root:not([data-tema='claro'])) .s-kds .kds-queda, :where(:root:not([data-tema='claro'])) .s-kds .kds-voltou { color: var(--sino-carvao); } }
+
+.s-kds .kds-grade { gap: var(--s-4); grid-template-columns: repeat(auto-fill, minmax(min(270px, 100%), 1fr)); }
+.s-kds .kds-cartao { --kds-cor: var(--s-sucesso); border: 0; border-radius: 10px; background: var(--s-superficie); box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda); }
+.s-kds .kds-cartao[data-atraso='medio'] { --kds-cor: var(--s-atencao); }
+.s-kds .kds-cartao[data-atraso='alto'] { --kds-cor: var(--s-erro); box-shadow: var(--s-sombra), inset 0 0 0 2px var(--s-erro); }
+.s-kds .kds-cartao[data-pronto='1'] { --kds-cor: var(--s-texto-3); opacity: 0.6; }
+.s-kds .kds-cab, .s-kds .kds-cartao[data-atraso] .kds-cab { background: var(--kds-cor); color: #fff; padding: var(--s-2) var(--s-4); align-items: center; }
+:where(:root[data-tema='escuro']) .s-kds .kds-cab { color: var(--sino-carvao) !important; }
+@media (prefers-color-scheme: dark) { :where(:root:not([data-tema='claro'])) .s-kds .kds-cab { color: var(--sino-carvao) !important; } }
+.s-kds .kds-cab b { font-size: var(--s-t-20); }
+.s-kds .kds-tempo { font-size: var(--s-t-20); }
+.s-kds .kds-item { min-height: 48px; padding: var(--s-3) var(--s-4); color: var(--s-texto); border-bottom-color: var(--s-borda); font-size: var(--s-t-16); }
+.s-kds .kds-item:hover { background: var(--s-superficie-2); }
+.s-kds .kds-item:focus-visible { outline: 2px solid var(--s-foco); outline-offset: -2px; }
+.s-kds .kds-item .kds-obs, .s-kds .kds-obs { color: var(--s-erro); }
+.s-kds .kds-rodape { padding: var(--s-3) var(--s-4); }
+.s-kds .kds-rodape button { min-height: 48px; }
+.s-kds.kds-tela-cheia { background: var(--s-fundo); padding: var(--s-4); }
+.s-kds .pub-folha .cartao { background: var(--s-superficie-2); }

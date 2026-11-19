@@ -168,14 +168,15 @@ export function Kds({ inicial, gestor, lojaId }: { inicial: FilaKds; gestor: boo
   const nomeEstacao = fila.estacoes.find((e) => e.id === estacao)?.nome ?? 'Todas as estações';
 
   return (
-    <div className={`kds${cheia ? ' kds-tela-cheia' : ''}`}>
+    <div className={`s-pagina s-kds kds${cheia ? ' kds-tela-cheia' : ''}`}>
       <div className="kds-topo">
-        <div>
-          <h1 style={{ margin: 0 }}>👨‍🍳 {nomeEstacao}</h1>
-          <span className="dica">{pedidos.filter((p) => p.status === 'em_preparo').length} em preparo · toque no item quando ficar pronto</span>
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Operação · Cozinha</p>
+          <h1 className="s-titulo">{nomeEstacao}</h1>
+          <p className="s-subtitulo">{pedidos.filter((p) => p.status === 'em_preparo').length} em preparo · toque no item quando ficar pronto</p>
         </div>
         <span className="kds-conexao" data-estado={conexao} role="status" aria-live="polite" title={`Última atualização há ${semResposta} s`}>
-          {conexao === 'ok' ? '🟢 Conexão estável' : conexao === 'instavel' ? '🟠 Conexão instável…' : '🔴 Sem conexão'}
+          {conexao === 'ok' ? 'Conexão estável' : conexao === 'instavel' ? 'Conexão instável…' : 'Sem conexão'}
         </span>
         <div className="linha" style={{ gap: '0.4rem', flexWrap: 'wrap' }}>
           <select value={estacao ?? ''} aria-label="Estação" onChange={(e) => { const v = e.target.value || null; setEstacao(v); gravar(CHAVE, v ?? ''); }}>
@@ -185,7 +186,7 @@ export function Kds({ inicial, gestor, lojaId }: { inicial: FilaKds; gestor: boo
           <label className="linha" style={{ gap: '0.25rem', alignItems: 'center' }} title="Minutos até o cartão ficar vermelho">⏱
             <input type="number" min={3} max={120} value={alerta} style={{ width: '4rem' }} onChange={(e) => { const n = Math.max(3, Number(e.target.value) || 15); setAlerta(n); gravar(ALERTA, String(n)); }} aria-label="Minutos para alerta" />
           </label>
-          <button type="button" onClick={() => setSom((s) => !s)} aria-pressed={som}>{som ? '🔔' : '🔕'}</button>
+          <button type="button" onClick={() => setSom((s) => !s)} aria-pressed={som}>{som ? '🔔 Som ligado' : '🔕 Som desligado'}</button>
           {gestor && <button type="button" onClick={() => setConfig(true)}>⚙️ Estações</button>}
           <button type="button" onClick={telaCheia}>{cheia ? 'Sair da tela cheia' : '⛶ Tela cheia'}</button>
         </div>
