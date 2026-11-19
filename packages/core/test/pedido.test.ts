@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { acaoAvancar, ErroPedido, proximosStatus, tempoDecorrido, totalizar, transicaoValida, troco } from '../src/pedido.js';
+import { acaoAvancar, duracaoCurta, ErroPedido, proximosStatus, tempoDecorrido, totalizar, transicaoValida, troco } from '../src/pedido.js';
 
 test('fluxo de entrega passa por "saiu para entrega"', () => {
   assert.deepEqual(proximosStatus('pronto', 'entrega'), ['em_entrega', 'cancelado']);
@@ -38,4 +38,6 @@ test('tempo decorrido', () => {
   assert.equal(tempoDecorrido(t0, new Date('2026-10-21T12:00:30Z')), 'agora');
   assert.equal(tempoDecorrido(t0, new Date('2026-10-21T12:12:00Z')), 'há 12 min');
   assert.equal(tempoDecorrido(t0, new Date('2026-10-21T13:05:00Z')), 'há 1h05');
+  assert.equal(tempoDecorrido(t0, new Date('2026-10-30T16:00:00Z')), 'há 9 d 4 h');
+  assert.deepEqual([duracaoCurta(7), duracaoCurta(65), duracaoCurta(14174), duracaoCurta(2880)], ['7 min', '1h05', '9 d 20 h', '2 d']);
 });

@@ -102,7 +102,15 @@ export function troco(total: Centavos, pagamento: FormaPagamento, trocoPara: Cen
 export function tempoDecorrido(desde: Date, agora: Date = new Date()): string {
   const min = Math.max(0, Math.floor((agora.getTime() - desde.getTime()) / 60000));
   if (min < 1) return 'agora';
-  if (min < 60) return `há ${min} min`;
-  const h = Math.floor(min / 60);
-  return `há ${h}h${String(min % 60).padStart(2, '0')}`;
+  return `há ${duracaoCurta(min)}`;
+}
+
+/** Minutos legíveis em pé, no pico: "12 min", "1h05", "2 d 4 h" (D-120: "14174 min" não se lê). */
+export function duracaoCurta(minutos: number): string {
+  const min = Math.max(0, Math.round(minutos));
+  if (min < 60) return `${min} min`;
+  if (min < 1440) return `${Math.floor(min / 60)}h${String(min % 60).padStart(2, '0')}`;
+  const d = Math.floor(min / 1440);
+  const h = Math.floor((min % 1440) / 60);
+  return h ? `${d} d ${h} h` : `${d} d`;
 }
