@@ -20,7 +20,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1795063980.7870705,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/ISSUE_TEMPLATE/teste.yml": {
@@ -240,8 +240,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/estoque/page.tsx": {
-    "mtime": 1795063905.779596,
-    "seen": 1795063980.787117,
+    "mtime": 1795064131.7273443,
+    "seen": 1795064138.6516325,
     "ast_hash": "fd7bcdd30e981e0595723614dfbb3f8a",
     "semantic_hash": ""
   },
@@ -276,8 +276,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/financeiro/page.tsx": {
-    "mtime": 1795063905.77921,
-    "seen": 1795063980.7871232,
+    "mtime": 1795064131.7273443,
+    "seen": 1795064138.6517355,
     "ast_hash": "b579a52c9713c34ed6be3b8be883c01f",
     "semantic_hash": ""
   },
@@ -3288,8 +3288,8 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795063945.5240402,
-    "seen": 1795063980.7877405,
+    "mtime": 1795064131.7273443,
+    "seen": 1795064138.6608956,
     "ast_hash": "fe87cd32567a811e57bf61c32a6abf7c",
     "semantic_hash": ""
   },
