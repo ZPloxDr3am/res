@@ -33,7 +33,7 @@ export default async function RelatorioCaixa({ params, searchParams }: { params:
       <section className="cartao grade" style={{ gap: '0.6rem' }}>
         <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
           <h1 style={{ margin: 0 }}>{r.caixa} · fechamento #{r.numero}</h1>
-          <span className={`pub-status ${r.status === 'aberto' ? 'aberto' : 'fechado'}`}>{r.status === 'aberto' ? 'Ainda aberto (parcial)' : 'Fechado'}</span>
+          <span className="s-status" data-tom={r.status === 'aberto' ? 'bom' : 'neutro'}>{r.status === 'aberto' ? 'Ainda aberto (parcial)' : 'Fechado'}</span>
         </div>
         <div className="linha" style={{ gap: '0.3rem 2rem' }}>
           <span><span className="dica">Abertura: </span>{dataHora(r.aberto_em)} · {r.aberto_por ?? '—'}</span>
