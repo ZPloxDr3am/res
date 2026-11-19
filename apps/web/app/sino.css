@@ -852,3 +852,5 @@ body:has(.s-menu) :is(.seg-n, .est-toque-dica, .est-sit, .vt-foto .mini, .salao-
 /* tabelas que rolam no cartão: contenção de pintura impede que o cabeçalho "grudado" (sticky) da tabela
    alargue a página no celular (achado da auditoria D-121: o Resumo abria com 490 px numa tela de 320) */
 .s-pagina :is(.s-tabela-rolagem, .tabela-rolagem) { contain: paint; }
+.s-gestao .tabela-empilha .selo { white-space: nowrap; }
+@media (max-width: 700px) { .s-quadro .qp-visao button { display: block; text-align: center; padding-inline: var(--s-2); } }
