@@ -108,7 +108,7 @@ export function GraficoLojas({ lojas, comparacao }: { lojas: LojaDesempenho[]; c
 
       <details className="dica">
         <summary>Ver em tabela</summary>
-        <table className="tabela">
+        <div className="tabela-rolagem"><table className="tabela">
           <thead><tr><th>Loja</th><th className="num">{info.rotulo}</th><th className="num">Período anterior</th><th className="num">Variação</th></tr></thead>
           <tbody>
             {ordenadas.map((l) => (
@@ -120,7 +120,7 @@ export function GraficoLojas({ lojas, comparacao }: { lojas: LojaDesempenho[]; c
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       </details>
     </div>
   );
