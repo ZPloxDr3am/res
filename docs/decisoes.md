@@ -1077,6 +1077,26 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
   - Erro de hidratação do React (#418) no quadro de Pedidos: já existia em produção antes desta etapa, provavelmente por um texto de tempo calculado diferente no servidor e no navegador. Não afeta o uso; está registrado como pendência.
 - **Validação:**
   - Typecheck, build, testes de regras (126 de 127; a falha é anterior a esta mudança) e testes do banco (97).
-  - Auditoria automática em 320, 375, 390, 428, 768, 1280 e 1440 px, sem rolagem lateral involuntária.
+  - Auditoria automática em 320 e 375 px em todas as 23 telas e em 768 e 1280 px nas telas alteradas, sem rolagem lateral involuntária. 390, 428 e 1440 px não tiveram passada tela a tela (corrigido em D-122).
   - Verificação de contraste, tamanho de texto, alvo de toque e nome acessível.
   - Roteiro manual: `docs/qualidade/roteiros/responsividade-sino.md`.
+
+## D-122 — Auditoria de engenharia: isolamento testado, reprocesso automático dos apps e conferência de produção (19/11/2026)
+- **Relatório:** documento "SINO — Auditoria de engenharia, segurança e confiabilidade (etapa 1)". Sem P0; 3 P1, 8 P2, 6 P3, com evidência e plano de homologação.
+- **Isolamento entre empresas (PR #154):**
+  - Teste `supabase/tests/99z…_isolamento.sql`, que roda por último. Cada usuário dos testes e o anônimo leem e tentam escrever em todas as tabelas.
+  - Chama todas as funções `SECURITY DEFINER` com ids de outra empresa.
+  - Falha se aparecer ou mudar dado alheio. Controles positivo e negativo conferidos.
+- **Reprocesso automático (P1):**
+  - Antes, evento do iFood ou do Open Delivery gravado e não processado ficava parado até alguém clicar em Reprocessar.
+  - O agendador (a cada 30 s, `api/marketplace/ifood/sincronizar`) agora chama `marketplace_eventos_parados`, que reserva e devolve os eventos parados.
+  - Critérios: evento parado entre 2 min e 6 h, com menos de 5 tentativas e com corpo gravado; a reserva dura 2 min.
+  - Cada evento é refeito com `tratarEvento` (iFood) ou `tratarEventoOD`. O processamento já era idempotente.
+  - Eventos de mais de 6 h não voltam sozinhos, para não refazer o histórico.
+  - Delivery Much e Rappi ficam de fora: o próprio SINO busca os pedidos nesses apps.
+  - Migração `20261119160000_reprocesso_eventos_apps.sql`. Até ela rodar, a rota só registra a falha no próprio JSON, sem afetar o resto.
+- **Conferência de produção (P1):** `scripts/conferencia/conferir-producao.sql` é um SELECT só de leitura para o SQL Editor.
+  - Compara funções, tabelas, RLS, políticas e gatilhos de `public` e `private` com as migrações do repositório.
+  - Resultado vazio = produção igual ao repositório.
+  - Gerado por `scripts/conferencia/gerar.sh`, que se autotesta. Rodar de novo a cada migração nova.
+
