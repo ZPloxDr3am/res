@@ -62,9 +62,10 @@ export default async function Delivery() {
   );
 
   return (
-    <div className="grade">
-      <h1>Delivery e cardápio digital</h1>
-      <p className="dica" style={{ margin: 0 }}>
+    <div className="s-pagina s-gestao grade">
+      <p className="s-sobretitulo">Gestão</p>
+      <h1 className="s-titulo">Delivery e cardápio digital</h1>
+      <p className="s-subtitulo">
         O cliente abre o link (ou lê o QR), monta o pedido e envia. O pedido cai direto no quadro de Pedidos, com alerta sonoro.
       </p>
       {lista.map((m) => (

@@ -77,10 +77,11 @@ export function PainelPromocoes(props: {
     { id: 'balcao', nome: 'Desconto no balcão', resumo: props.limiteDesconto == null ? 'Sem limite' : `Limite ${props.limiteDesconto}% sem gerente` },
   ];
   return (
-    <div className="grade">
-      <div>
-        <h1 style={{ marginBottom: 0 }}>Promoções e descontos</h1>
-        <p className="dica" style={{ margin: 0 }}>Tudo o que baixa o preço, num lugar só · {props.lojaNome}</p>
+    <div className="s-pagina s-gestao grade">
+      <div className="s-cabecalho-texto">
+        <p className="s-sobretitulo">Gestão</p>
+        <h1 className="s-titulo">Promoções e descontos</h1>
+        <p className="s-subtitulo">Tudo o que baixa o preço, num lugar só · {props.lojaNome}</p>
       </div>
       <div className="pr-abas" role="tablist">
         {abas.map((a) => (

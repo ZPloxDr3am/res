@@ -22,10 +22,11 @@ export default async function Turbo({ searchParams }: { searchParams: Promise<{ 
   ]);
   const { aba } = await searchParams;
   return (
-    <div className="grade">
-      <div>
-        <h1 style={{ marginBottom: 0 }}>⚡ Turbo-Vendas · {ctx.lojaNome}</h1>
-        <p className="dica" style={{ margin: 0 }}>Traga o cliente de volta no momento certo: automações, campanhas com cupom e quanto cada mensagem vendeu.</p>
+    <div className="s-pagina s-gestao grade">
+      <div className="s-cabecalho-texto">
+        <p className="s-sobretitulo">Inteligência</p>
+        <h1 className="s-titulo">Turbo-Vendas · {ctx.lojaNome}</h1>
+        <p className="s-subtitulo">Traga o cliente de volta no momento certo: automações, campanhas com cupom e quanto cada mensagem vendeu.</p>
       </div>
       {painel.error ? (
         <p className="cartao dica">{painel.error.message}</p>

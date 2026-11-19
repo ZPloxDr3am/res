@@ -19,11 +19,12 @@ export default async function QrMesas() {
   const locais = (data as MapaSalao).locais.filter((l) => l.tipo === 'mesa');
   const qrs = await Promise.all(locais.map(async (l) => ({ l, svg: await QRCode.toString(`${origem}/mesa/${l.qr}`, { type: 'svg', margin: 1, width: 180, errorCorrectionLevel: 'M' }) })));
   return (
-    <div className="grade">
-      <div className="linha nao-imprimir" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-        <div>
-          <h1 style={{ margin: 0 }}>QR code das mesas</h1>
-          <p className="dica" style={{ margin: 0 }}>Imprima, recorte e cole em cada mesa. Trocou o QR de uma mesa em Configurar? Imprima ela de novo.</p>
+    <div className="s-pagina s-gestao grade">
+      <div className="s-cabecalho nao-imprimir">
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Operação · Salão</p>
+          <h1 className="s-titulo">QR code das mesas</h1>
+          <p className="s-subtitulo">Imprima, recorte e cole em cada mesa. Trocou o QR de uma mesa em Configurar? Imprima ela de novo.</p>
         </div>
         <BotaoImprimir />
       </div>

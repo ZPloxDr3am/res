@@ -703,3 +703,10 @@ body:has(.s-menu) .qp-selo-cliente[data-tipo='fiel'] { background: var(--s-info-
 .s-gestao .abas > a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 var(--s-3); border-radius: var(--s-raio-p); color: var(--s-texto-2); font-size: var(--s-t-14); font-weight: 500; text-decoration: none; white-space: nowrap; }
 .s-gestao .abas > a:hover { color: var(--s-texto); }
 .s-gestao .abas > a[aria-current] { background: var(--s-superficie); color: var(--s-texto); font-weight: 600; box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda), inset 0 -2px 0 var(--s-destaque); }
+
+/* ───────────── Fase 5 · Acabamento das demais telas (D-120 §5.6) ─────────────
+   Telas cujo título fica solto na página (sem bloco de cabeçalho): aproxima sobretítulo, título e subtítulo. */
+.s-pagina > .s-sobretitulo + .s-titulo { margin-top: calc(var(--s-1) - var(--s-6)); }
+.s-pagina > .s-titulo + .s-subtitulo { margin-top: calc(var(--s-1) - var(--s-6)); }
+.s-pagina span.s-subtitulo { display: block; }
+.s-gestao .pr-abas button[aria-selected='true'] span { color: inherit; opacity: 0.85; }

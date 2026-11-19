@@ -40,10 +40,11 @@ export default async function Fidelidade({ searchParams }: { searchParams: Promi
 
   const ligado = [p.config?.cashbackAtivo && `cashback ${p.config.cashbackPct}%`, p.config?.pontosAtivo && 'pontos'].filter(Boolean).join(' + ');
   return (
-    <div className="grade">
-      <div>
-        <h1 style={{ marginBottom: 0 }}>Fidelidade · {ctx.lojaNome}</h1>
-        <p className="dica" style={{ margin: 0 }}>
+    <div className="s-pagina s-gestao grade">
+      <div className="s-cabecalho-texto">
+        <p className="s-sobretitulo">Inteligência</p>
+        <h1 className="s-titulo">Fidelidade · {ctx.lojaNome}</h1>
+        <p className="s-subtitulo">
           {ligado ? `Ligado: ${ligado}. ` : 'Programa desligado nesta loja. '}Cada loja tem o seu programa, saldo e resultados — troque de loja no menu para ver as outras. O cliente ganha quando o pedido é concluído e usa nesta loja, no balcão ou no cardápio digital.
         </p>
       </div>

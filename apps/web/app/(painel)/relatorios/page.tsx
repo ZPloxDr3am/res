@@ -432,10 +432,11 @@ export default async function Relatorios({ searchParams }: { searchParams: Promi
   }
 
   return (
-    <div className="grade">
-      <div className="grade" style={{ gap: '0.1rem' }}>
-        <h1 style={{ margin: 0 }}>Relatórios</h1>
-        <span className="dica">
+    <div className="s-pagina s-gestao grade">
+      <div className="s-cabecalho-texto">
+        <p className="s-sobretitulo">Inteligência</p>
+        <h1 className="s-titulo">Relatórios</h1>
+        <span className="s-subtitulo">
           {aba === 'calendario' ? `${MESES[Number(mes.slice(5, 7)) - 1]} de ${mes.slice(0, 4)}` : periodo.de === periodo.ate ? dataBR(periodo.de) : `${dataBR(periodo.de)} a ${dataBR(periodo.ate)}`} ·{' '}
           {lojaFiltro === 'todas' ? (ctx.lojas.length > 1 ? `todas as ${ctx.lojas.length} lojas` : ctx.lojas[0]?.nome) : nomeLoja(lojaFiltro)}
         </span>

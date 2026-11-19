@@ -30,10 +30,11 @@ export function PrimeirosPassos({ estado, tipo, ocultos, link, qr, lojaNome }: {
   };
 
   return (
-    <div className="grade" style={{ gap: '1rem', maxWidth: 760 }}>
-      <header className="grade" style={{ gap: '0.4rem' }}>
-        <h1 style={{ margin: 0 }}>Primeiros passos{pronto ? ' 🎉' : ''}</h1>
-        <p className="dica" style={{ margin: 0 }}>
+    <div className="s-pagina s-gestao grade" style={{ gap: '1rem', maxWidth: 760 }}>
+      <header className="s-cabecalho-texto">
+        <p className="s-sobretitulo">Começar</p>
+        <h1 className="s-titulo">Primeiros passos{pronto ? ' 🎉' : ''}</h1>
+        <p className="s-subtitulo">
           {pronto ? `${lojaNome} está pronta para vender. Divulgue o link e acompanhe os pedidos no quadro.` : `Faltam ${obrigatorios - obrigatoriosFeitos} passo(s) para ${lojaNome} começar a vender.`}
         </p>
         <div className="pp-barra" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label="Progresso"><span style={{ width: `${pct}%` }} /></div>

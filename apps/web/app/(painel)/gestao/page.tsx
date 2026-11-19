@@ -26,8 +26,9 @@ export default async function Gestao({ searchParams }: { searchParams: Promise<{
   const ctx = await contextoLoja();
   if (ctx.papel !== 'dono' && ctx.papel !== 'gerente') {
     return (
-      <div className="grade">
-        <h1>Gestão Empresarial</h1>
+      <div className="s-pagina s-gestao grade">
+        <p className="s-sobretitulo">Gestão</p>
+        <h1 className="s-titulo">Gestão Empresarial</h1>
         <p className="cartao dica">Só o dono ou o gerente da loja acessam esta área (custos e dados dos funcionários).</p>
       </div>
     );
@@ -142,8 +143,9 @@ export default async function Gestao({ searchParams }: { searchParams: Promise<{
   }
 
   return (
-    <div className="grade">
-      <h1>Gestão Empresarial</h1>
+    <div className="s-pagina s-gestao grade">
+      <p className="s-sobretitulo">Gestão</p>
+      <h1 className="s-titulo">Gestão Empresarial</h1>
       <nav className="abas nao-imprimir" aria-label="Gestão Empresarial">
         {ABAS.map(([k, r]) => (
           <Link key={k} href={k === 'custos' ? '/gestao' : `/gestao?aba=${k}`} role="tab" aria-selected={aba === k} className="aba-link">

@@ -76,11 +76,12 @@ export function EditorCardapio({ cardapio, marcas, lojaId, outrasLojas = [] }: {
   const grupoEditando = (painel?.tipo === 'grupo' || painel?.tipo === 'aplicar') && painel.id ? grupos[painel.id] : undefined;
 
   return (
-    <div className="grade">
-      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 style={{ marginBottom: 0 }}>Cardápio</h1>
-          <p className="dica" style={{ margin: 0 }}>{produtos.length} produto(s) · {promosValendo} promoção(ões) valendo agora</p>
+    <div className="s-pagina s-gestao grade">
+      <div className="s-cabecalho">
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Gestão</p>
+          <h1 className="s-titulo">Cardápio</h1>
+          <p className="s-subtitulo">{produtos.length} produto(s) · {promosValendo} promoção(ões) valendo agora</p>
         </div>
         <div className="linha" style={{ alignItems: 'center', gap: '0.5rem' }}>
         <Link href="/cardapio/organizar" className="botao" title="Arrastar para mudar a ordem e trocar produtos de categoria">⇅ Organizar ordem</Link>
