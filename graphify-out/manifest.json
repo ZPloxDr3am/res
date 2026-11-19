@@ -876,8 +876,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1795018844.7253428,
-    "seen": 1795018889.6301243,
+    "mtime": 1795058258.855122,
+    "seen": 1795058261.2324626,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": "8ccf37b0657b4213f1c10db5c78e039a"
   },
@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1795018883.139683,
-    "seen": 1795018889.6304944,
-    "ast_hash": "17853fbc878124093cdd7971ccdb6f2a",
+    "mtime": 1795058211.5174785,
+    "seen": 1795058261.2328367,
+    "ast_hash": "4bd9cb6c6290c5c00cdd64a036df175d",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -3582,9 +3582,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/seletor-tema.tsx": {
-    "mtime": 1795017450.9865966,
-    "seen": 1795017632.7641573,
-    "ast_hash": "38596d1c0b57f132965bd49697759936",
+    "mtime": 1795058211.5150764,
+    "seen": 1795058261.2323856,
+    "ast_hash": "ce9cea952e456d3c50686d1383023854",
     "semantic_hash": ""
   },
   "apps/web/app/fontes/LICENSE-Inter.txt": {
@@ -3636,9 +3636,9 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795018883.141399,
-    "seen": 1795018889.630503,
-    "ast_hash": "f8ac36f09854665cb259f762eed01746",
+    "mtime": 1795058211.5177357,
+    "seen": 1795058261.232844,
+    "ast_hash": "82daabf9eea5028af228b3096967c609",
     "semantic_hash": ""
   },
   "apps/web/components/logo-sino.tsx": {
