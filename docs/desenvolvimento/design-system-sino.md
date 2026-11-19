@@ -182,7 +182,7 @@ Em cada tela: trocar a classe da raiz para `s-pagina`, os componentes para os `s
 - Abas (inclusive as de Impressoras, que usam `aria-current`) no padrão SINO; cartões, tabelas e selos herdam o visual das telas de Gestão.
 - Nenhuma integração, impressora, permissão de equipe ou cobrança mudou.
 
-### 5.6 Acabamento das demais telas (em validação)
+### 5.6 Acabamento das demais telas — aprovado pelo dono em 19/11/2026 (PR #150)
 
 - Salão (e QR das mesas), Entregas, Novo pedido, Cardápio (editor e organizar), Delivery, Promoções, Evento, Gestão Empresarial, Relatórios, Clientes, Fidelidade, Turbo-Vendas, Avaliações e Primeiros passos ganham o cabeçalho SINO (sobretítulo da família do menu + título + subtítulo) e o escopo `.s-pagina .s-gestao` (abas, cartões, tabelas e cores iguais às telas já aprovadas).
 - Emojis saem do começo dos títulos (o menu já tem ícone). O documento impresso de advertência/falta não muda.
