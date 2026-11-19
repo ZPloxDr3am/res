@@ -593,7 +593,7 @@ body:has(.s-menu) .qp-selo-cliente[data-tipo='fiel'] { background: var(--s-info-
 .s-quadro .qk-pag { color: var(--s-texto-3); font-size: var(--s-t-12); }
 .s-quadro .qk-cobrar { color: var(--s-atencao); font-weight: 600; }
 .s-quadro .qk-total { font: 700 var(--s-t-16) var(--s-fonte); font-variant-numeric: tabular-nums; }
-.s-quadro .qk-loja { border-top: 0; padding-top: 0; color: var(--s-texto-2); font-size: 0.6875rem; letter-spacing: 0.04em; }
+.s-quadro .qk-loja { border-top: 0; padding-top: 0; color: var(--s-texto-2); font-size: var(--s-t-12); letter-spacing: 0.04em; }
 /* ação do cartão: alvo de toque de 44 px */
 .s-quadro .qk-acao { min-height: 44px; border-top: 1px solid var(--s-borda); background: var(--s-superficie); color: var(--s-texto); font: 600 var(--s-t-14) var(--s-fonte); }
 .s-quadro .qk-acao:hover:not(:disabled) { background: var(--s-acao); color: var(--s-acao-texto); }
@@ -804,3 +804,39 @@ body:has(.s-menu) :is(a, button, input, select, textarea, summary, [tabindex]):f
   .s-filtros .s-campo:has(select) { width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr); }
   .s-filtros .s-campo select { width: 100%; min-width: 0; }
 }
+/* selos pequenos: nunca abaixo de 12 px; iFood num vermelho que passa AA com texto branco */
+body:has(.s-menu) .selo { font-size: var(--s-t-12); }
+body:has(.s-menu) .selo-ifood, body:has(.s-menu) .selo-canal.selo-ifood { background: #C8101E; }
+/* Pedidos no celular: escolha "loja em uso / todas" ocupa a largura e não sai da tela */
+@media (max-width: 700px) {
+  .s-quadro .qp-visao { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+  .s-quadro .qp-visao button { min-width: 0; min-height: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+/* Salão: mesas nas cores de estado do SINO (livre = sucesso, ocupada = erro); selos e textos legíveis */
+.s-pagina .salao-mesa { border-width: 1.5px; border-radius: var(--s-raio); }
+.s-pagina .salao-mesa[data-estado='livre'] { border-color: color-mix(in srgb, var(--s-sucesso) 55%, transparent); background: var(--s-sucesso-fundo); color: var(--s-sucesso); }
+.s-pagina .salao-mesa:not([data-estado='livre']) { border-color: color-mix(in srgb, var(--s-erro) 55%, transparent); background: var(--s-erro-fundo); color: var(--s-erro); }
+.s-pagina .salao-mesa :is(.salao-info, .salao-nome) { font-size: var(--s-t-12); opacity: 1; color: var(--s-texto-2); }
+.s-pagina .salao-mesa .salao-selo { font-size: var(--s-t-12); font-weight: 700; color: var(--s-fundo); background: var(--s-texto); }
+.s-pagina .salao-mesa[data-estado='pronto'] .salao-selo { background: var(--s-sucesso); }
+.s-pagina .salao-mesa[data-estado='conta'] .salao-selo { background: var(--s-atencao); }
+.s-pagina .salao-mesa[data-estado='confirmar'] .salao-selo { background: var(--s-erro); }
+:where(:root[data-tema='escuro']) .s-pagina .salao-mesa:is([data-estado='pronto'], [data-estado='conta'], [data-estado='confirmar']) .salao-selo { color: var(--sino-carvao); }
+@media (prefers-color-scheme: dark) { :where(:root:not([data-tema='claro'])) .s-pagina .salao-mesa:is([data-estado='pronto'], [data-estado='conta'], [data-estado='confirmar']) .salao-selo { color: var(--sino-carvao); } }
+.s-pagina .salao-resumo .salao-pronto { color: var(--s-sucesso); }
+/* Relatórios: porcentagens, curva ABC e textos de apoio nas cores de estado do SINO (contraste AA) */
+.s-gestao .rel-pct[data-cor='verde'] { background: var(--s-sucesso-fundo); color: var(--s-sucesso); }
+.s-gestao .rel-pct[data-cor='laranja'] { background: var(--s-atencao-fundo); color: var(--s-atencao); }
+.s-gestao .rel-pct[data-cor='vermelho'] { background: var(--s-erro-fundo); color: var(--s-erro); }
+.s-gestao .rel-classe { color: #fff; background: var(--s-texto-3); }
+.s-gestao .rel-classe[data-classe='A'] { background: var(--s-sucesso); }
+.s-gestao .rel-classe[data-classe='B'] { background: var(--s-atencao); }
+.s-gestao .rel-abc-resumo [data-classe='A'] { border-left-color: var(--s-sucesso); }
+.s-gestao .rel-abc-resumo [data-classe='B'] { border-left-color: var(--s-atencao); }
+.s-gestao .cartao :is(b, strong)[style*='color'] { color: var(--s-texto) !important; }
+.s-gestao .tabela :is(th, td) { font-size: max(var(--s-t-12), 0.8125rem); }
+/* textos auxiliares que ficavam abaixo de 12 px */
+body:has(.s-menu) :is(.seg-n, .est-toque-dica, .est-sit, .vt-foto .mini, .salao-info, .ap-sit, .plano-selo) { font-size: var(--s-t-12); }
+/* Clientes/Aplicativos: chips de segmento mantêm o fundo de cor, mas o texto é sempre o do tema (AA) */
+.s-pagina .seg-chip { color: var(--s-texto); font-size: var(--s-t-13); }
+.s-pagina .seg-chip[aria-selected='true'] { box-shadow: inset 0 0 0 1.5px var(--s-texto); }

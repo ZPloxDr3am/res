@@ -1470,9 +1470,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/resumo/grafico-lojas.tsx": {
-    "mtime": 1792786116.834038,
-    "seen": 1795062708.6630847,
-    "ast_hash": "0eb4d32fcb1077a4342ebaf7b5c847c4",
+    "mtime": 1795067359.156497,
+    "seen": 1795067412.6057053,
+    "ast_hash": "654a5155ec89309de1d289237aa9c5ff",
     "semantic_hash": ""
   },
   "apps/web/components/resumo/meta-mes.tsx": {
@@ -1776,8 +1776,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1795066964.8761318,
-    "seen": 1795066969.5375273,
+    "mtime": 1795067408.4761477,
+    "seen": 1795067412.6057649,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": ""
   },
