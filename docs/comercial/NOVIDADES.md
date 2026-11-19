@@ -3,6 +3,7 @@
 Uma seção por semana, escrita na revisão de sexta. Linguagem de cliente.
 
 ## Semana 46 (09–13/11/2026)
+- **Todas as telas usáveis no celular** (D-121): nada anda para os lados; no quadro de Pedidos, uma barra de status leva a cada coluna; o Resumo diz de quais lojas são os números; relatórios mais limpos; vitrine do Delivery mostra se a loja está aberta ou fechada de verdade.
 - **Todas as telas no padrão SINO**: Caixa, Cozinha, Financeiro, Estoque, Configurações e as demais telas ganharam o mesmo cabeçalho, abas e cartões; na cozinha e no caixa os botões ficaram maiores para tocar no balcão, e o caixa fechado não aparece mais em vermelho.
 - **Quadro de pedidos de cara nova (SINO)**: pedido novo, atrasado e cancelado se distinguem de longe, os números do turno ficam no topo, o botão do cartão está maior para o tablet e o atraso longo aparece em dias e horas.
 - **Nova marca: SINO.** O sistema ganhou a identidade SINO: novo logotipo, cores e fonte em todas as telas, menu organizado em Operação, Gestão e Inteligência, e a escolha de tema claro, escuro ou automático no rodapé do menu. O Resumo foi redesenhado: os números principais vêm primeiro, e a tela mostra se você está vendo uma loja ou todas somadas.

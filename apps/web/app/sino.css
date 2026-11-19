@@ -843,3 +843,7 @@ body:has(.s-menu) :is(.seg-n, .est-toque-dica, .est-sit, .vt-foto .mini, .salao-
 /* Cardápio: busca no começo da linha (antes ficava sozinha à direita, abrindo um vão acima da lista) */
 .s-gestao .cdn-busca { order: -1; flex-basis: 100%; margin-left: 0; }
 .s-gestao .cdn-busca input { width: min(100%, 360px); min-width: 0; }
+/* telas de 320–400 px: o selo "Consolidado · 3 lojas · atualizado às…" quebra linha em vez de passar da borda */
+@media (max-width: 420px) {
+  .s-contexto { white-space: normal; flex-wrap: wrap; row-gap: 0; min-height: 0; padding-block: var(--s-1); border-radius: var(--s-raio); max-width: 100%; }
+}

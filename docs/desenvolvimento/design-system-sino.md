@@ -188,3 +188,13 @@ Em cada tela: trocar a classe da raiz para `s-pagina`, os componentes para os `s
 - Emojis saem do começo dos títulos (o menu já tem ícone). O documento impresso de advertência/falta não muda.
 - Novo pedido dentro do Salão (embutido) continua sem o escopo da página, para não mudar o espaçamento da folha.
 - Só marcação de título e CSS; nenhuma lógica mudou.
+
+## 6. Auditoria final de UI/UX (D-121, 19/11/2026)
+
+Regras que valem daqui em diante para qualquer tela nova:
+- Página e cartões com `min-width: 0`. Tabela larga sempre dentro de `.tabela-rolagem` ou `.s-tabela-rolagem`.
+- Botão que funciona como cartão: incluir a classe na lista de "botões que são cartões" do `sino.css`, ou usar `justify-content: normal; white-space: normal`.
+- Link com cara de botão: usar a classe `botao` ou `botao-primario`, nunca só `style`.
+- Texto mínimo: `var(--s-t-12)`, que nunca fica abaixo de 12 px.
+- Fila que rola de lado no celular ganha a máscara de borda (ver o bloco "filas que rolam de lado").
+- Antes de juntar uma tela, rodar a auditoria descrita no roteiro `docs/qualidade/roteiros/responsividade-sino.md`.
