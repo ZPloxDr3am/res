@@ -22,5 +22,7 @@ Pré-condição: usuário dono ou gerente, com pelo menos uma loja que tenha ped
 | 16 | Delivery, fora do horário | A vitrine e o bloco do link mostram os dois "Fechado agora" | |
 | 17 | Teclado: Tab pelas telas | Todo item focado ganha um contorno visível | |
 | 18 | Tema escuro nas mesmas telas | Selos, mesas do Salão e botões legíveis | |
+| 19 | Busca do menu (notebook): digitar "motoboy", "ficha", "senha"; Ctrl+K ou "/" fora de um campo | Mostra só Entregas, Estoque / CMV, Lojas e equipe; Enter abre a primeira; Ctrl+K e "/" põem o cursor na busca; "xyz" mostra "Nenhuma tela com…" | |
+| 20 | Busca do menu (celular): Mais → digitar "caixa" | Ficam só Caixa e Financeiro, sem rolagem lateral | |
 
 Observações: o programa instalado no computador da impressora ainda se chama "RES Impressão" até sair uma versão nova.

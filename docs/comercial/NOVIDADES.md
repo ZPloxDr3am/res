@@ -3,6 +3,7 @@
 Uma seção por semana, escrita na revisão de sexta. Linguagem de cliente.
 
 ## Semana 47 (16–20/11/2026)
+- **Busca no menu**: digite o que procura ("motoboy", "cupom", "ficha técnica", "senha") e o menu mostra só as telas certas; Enter abre. No computador, Ctrl+K leva direto à busca; no celular, ela fica no topo do "Mais".
 - **Pedido de app não se perde mais**: se um pedido do iFood, 99Food, Keeta ou aiqfome chegar e der erro ao entrar, o SINO tenta de novo sozinho nos minutos seguintes, sem ninguém precisar clicar em Reprocessar.
 
 ## Semana 46 (09–13/11/2026)

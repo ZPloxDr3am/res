@@ -854,3 +854,17 @@ body:has(.s-menu) :is(.seg-n, .est-toque-dica, .est-sit, .vt-foto .mini, .salao-
 .s-pagina :is(.s-tabela-rolagem, .tabela-rolagem) { contain: paint; }
 .s-gestao .tabela-empilha .selo { white-space: nowrap; }
 @media (max-width: 700px) { .s-quadro .qp-visao button { display: block; text-align: center; padding-inline: var(--s-2); } }
+
+/* Busca do menu (D-126) */
+.menu-busca { position: sticky; top: 0; z-index: 2; background: inherit; padding-bottom: var(--s-2, 8px); }
+.s-menu .menu-busca { background: var(--s-menu-fundo, var(--s-superficie)); }
+.menu-busca input { width: 100%; min-height: 40px; }
+.menu-busca-vazio { margin: var(--s-2, 8px) 0 0; font-size: var(--s-t-12, 12px); color: var(--s-texto-2); }
+.menu-folha .menu-busca { position: static; background: none; }
+.s-menu .menu-secoes .menu-busca input {
+  background: var(--s-menu-hover); color: var(--s-menu-texto-forte); border: 1px solid #4A4450; border-radius: var(--s-raio);
+  min-height: 36px; height: 36px; font: 500 var(--s-t-14) var(--s-fonte); padding: 0 var(--s-3, 12px);
+}
+.s-menu .menu-secoes .menu-busca input::placeholder { color: var(--s-menu-rotulo); }
+.s-menu .menu-secoes .menu-busca input:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--sino-tomate); }
+.s-menu .menu-secoes .menu-busca-vazio { color: var(--s-menu-rotulo); }

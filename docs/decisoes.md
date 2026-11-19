@@ -1134,3 +1134,15 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 | Contar todos os pedidos visíveis | 5,2 s | 0,02 s |
 | Relatório de Operação, 30 dias | 2,6 s | 0,77 s |
 | Resumo, 90 dias | 0,25 s | 0,17 s |
+
+## D-126 — Busca de tela no menu (19/11/2026)
+- **Pedido do dono:** busca no menu lateral.
+- **Onde fica:**
+  - No computador, no topo do menu lateral, fixa ao rolar.
+  - No celular, no topo da folha "Mais".
+- **Como busca:**
+  - Filtra as telas pelo nome e por palavras do que tem dentro de cada uma (`PALAVRAS` em `nav-painel.tsx`), por exemplo motoboy → Entregas, ficha técnica → Estoque e senha → Lojas e equipe.
+  - Ignora acento e maiúsculas. Com várias palavras, todas precisam combinar.
+  - Seções sem resultado somem e, se nada combinar, aparece "Nenhuma tela com…".
+- **Teclado:** Enter abre a primeira tela da lista ("Novo pedido" abre a janela flutuante), Esc limpa, e Ctrl+K ou "/" (fora de campos de texto) levam à busca.
+- Rotas, permissões e cadeados de plano continuam iguais: a busca só esconde ou mostra itens que já estavam no menu. Peça compartilhada (`nav-painel.tsx`): revisão dos dois.
