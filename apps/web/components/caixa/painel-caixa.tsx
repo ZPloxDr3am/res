@@ -36,11 +36,14 @@ export function PainelCaixa({
 }) {
   const abertos = meus.caixas.filter((c) => c.sessao);
   return (
-    <div className="grade">
-      <div className="grade" style={{ gap: '0.15rem' }}>
-        <h1 style={{ margin: 0 }}>Caixa</h1>
-        <span className="dica">Abra no começo do expediente com o troco contado; os pedidos concluídos entram sozinhos; no fim, conte e feche.</span>
-      </div>
+    <div className="s-pagina s-caixa">
+      <header className="s-cabecalho">
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Operação</p>
+          <h1 className="s-titulo">Caixa</h1>
+          <p className="s-subtitulo">Abra no começo do expediente com o troco contado; os pedidos concluídos entram sozinhos; no fim, conte e feche.</p>
+        </div>
+      </header>
 
       {meus.sem_caixa > 0 && (
         <div className="aviso grade" style={{ gap: '0.4rem' }}>
@@ -59,13 +62,13 @@ export function PainelCaixa({
         ))}
       </div>
 
-      <section className="cartao grade" style={{ gap: '0.5rem' }}>
-        <h2 style={{ margin: 0, fontSize: '1rem' }}>Fechamentos recentes</h2>
+      <section className="s-cartao" aria-labelledby="t-fechamentos">
+        <h2 id="t-fechamentos" className="s-cartao-titulo">Fechamentos recentes</h2>
         {historico.length === 0 ? (
           <p className="dica" style={{ margin: 0 }}>Nenhum caixa fechado ainda.</p>
         ) : (
-          <div className="tabela-rolagem">
-            <table className="tabela">
+          <div className="s-tabela-rolagem">
+            <table className="s-tabela">
               <thead>
                 <tr><th>Nº</th><th>Caixa</th><th>Aberto</th><th>Fechado</th><th>Quem fechou</th><th className="num">Resultado</th><th></th></tr>
               </thead>
@@ -94,8 +97,9 @@ export function PainelCaixa({
 
 function Diferenca({ valor }: { valor: number }) {
   const c = Math.round(valor * 100);
-  if (c === 0) return <span className="var neutra">✓ conferiu</span>;
-  return <span className={`var ${c > 0 ? 'boa' : 'ruim'}`}>{c > 0 ? 'sobrou' : 'faltou'} {formatarReais(Math.abs(c))}</span>;
+  if (c === 0) return <span className="s-var" data-tom="bom">✓ conferiu</span>;
+  // sobra e falta são diferença: falta em erro, sobra em atenção (a gaveta não bateu)
+  return <span className="s-var" data-tom={c > 0 ? 'atencao' : 'ruim'}>{c > 0 ? 'sobrou' : 'faltou'} {formatarReais(Math.abs(c))}</span>;
 }
 
 function TrazerSemCaixa({ caixa }: { caixa: CaixaLista }) {
@@ -136,10 +140,10 @@ function CartaoCaixa({ caixa, resumo }: { caixa: CaixaLista; resumo: ResumoCaixa
     });
 
   return (
-    <article className="cartao grade caixa-cartao" data-aberto={aberto ? 'sim' : undefined} style={{ gap: '0.6rem' }}>
-      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 style={{ margin: 0 }}>{caixa.nome}</h2>
-        <span className={`pub-status ${aberto ? 'aberto' : 'fechado'}`}>{aberto ? `Aberto · #${caixa.sessao!.numero}` : 'Fechado'}</span>
+    <article className="s-cartao caixa-cartao" data-aberto={aberto ? 'sim' : undefined}>
+      <div className="s-cartao-topo">
+        <h2 className="s-cartao-titulo">{caixa.nome}</h2>
+        <span className="s-status" data-tom={aberto ? 'bom' : 'neutro'}>{aberto ? `Aberto · #${caixa.sessao!.numero}` : 'Fechado'}</span>
       </div>
       <span className="dica">
         {caixa.operadores.length ? `Opera: ${caixa.operadores.join(', ')}` : 'Qualquer pessoa da equipe com acesso ao caixa pode operar.'}
@@ -157,7 +161,7 @@ function CartaoCaixa({ caixa, resumo }: { caixa: CaixaLista; resumo: ResumoCaixa
       {!caixa.pode_operar && <p className="dica" style={{ margin: 0 }}>Você não opera este caixa.</p>}
 
       {caixa.pode_operar && modo === 'nada' && (
-        <div className="linha" style={{ gap: '0.4rem' }}>
+        <div className="linha caixa-acoes">
           {!aberto && <button type="button" className="botao-primario" onClick={() => { setModo('abrir'); setM(null); }}>Abrir caixa</button>}
           {aberto && (
             <>
@@ -195,8 +199,8 @@ function CartaoCaixa({ caixa, resumo }: { caixa: CaixaLista; resumo: ResumoCaixa
 function ResumoAberto({ r }: { r: ResumoCaixa }) {
   const formas = r.formas.filter((f) => f.quantidade > 0 || f.forma === 'dinheiro');
   return (
-    <div className="grade" style={{ gap: '0.35rem' }}>
-      <table className="tabela">
+    <div className="grade" style={{ gap: 'var(--s-2)' }}>
+      <table className="s-tabela">
         <thead>
           <tr><th>Forma</th><th className="num">Pedidos</th>{r.ve_valores && <><th className="num">Vendas</th><th className="num">Deve ter</th></>}</tr>
         </thead>

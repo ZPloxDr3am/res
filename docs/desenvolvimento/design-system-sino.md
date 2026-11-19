@@ -151,3 +151,11 @@ Ordem sugerida, pelo uso no pico:
 5. Configurações.
 
 Em cada tela: trocar a classe da raiz para `s-pagina`, os componentes para os `s-*` e tirar o CSS antigo que ficar sem uso. Também fica para a fase 5 trocar o nome "RES" que ainda aparece no título da aba, no login, no cupom, nas mensagens e nos e-mails, e decidir o domínio.
+
+### 5.2 Caixa (em validação)
+
+- `painel-caixa.tsx` dentro de `.s-pagina .s-caixa`: cabeçalho "Operação · Caixa"; cartões de caixa em `s-cartao` com selo `s-status` (aberto = sucesso, fechado = neutro — antes "fechado" aparecia em vermelho, como se fosse erro); caixa aberto ganha uma faixa verde à esquerda.
+- Botões Abrir / Sangria / Suprimento / Fechar com 44 px de altura (toque no balcão).
+- Tabelas do resumo e dos fechamentos em `s-tabela`; diferença: conferiu = sucesso, faltou = erro, sobrou = atenção (sobra também é gaveta que não bateu).
+- Calculadora de cédulas com campos de 40 px e total em 24 px; relatório `/caixa/[id]` só troca o selo de situação (o resto fica igual por causa da impressão).
+- Nenhuma conta, rota ou chamada ao banco mudou.
