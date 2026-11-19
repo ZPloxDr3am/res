@@ -1,4 +1,4 @@
--- SINO · conferência do banco de produção contra o repositório (929 definições das migrações, gerado em 19/11/2026)
+-- SINO · conferência do banco de produção contra o repositório (936 definições das migrações, gerado em 19/11/2026)
 -- SÓ LEITURA: um único SELECT. Não cria, altera nem apaga nada.
 -- Como usar: cole tudo no SQL Editor do Supabase e clique em Run.
 -- Resultado vazio = produção igual ao repositório. Cada linha = um objeto que falta, sobra ou está diferente.
@@ -530,7 +530,13 @@ with f as (
 ('função','private.loja_pausa_para_marketplace()','9306f7431d1bc1ed7e2fd3b23ccb8489'),
 ('função','private.fin_taxa_venda(p_loja uuid, p_canal text, p_pagamento forma_pagamento, p_subtotal numeric, p_taxa_entrega numeric, p_total numeric)','a3130f95d9af926ce8972376f2e61d05'),
 ('função','public.marketplace_eventos_parados(p_limite integer)','8d3f65f1f739b9509580741cdb17d5d0'),
+('função','private.alertas_pendentes(p_agora timestamp with time zone)','a00fb42b9d9a6c31ff07becbf7a17fe5'),
+('função','private.alerta_enviar(p_assunto text, p_texto text)','bb81e13adfba9f784411402b01d91416'),
+('função','private.alertas_tique()','5ce4458b321b202727f30c9d75e19f79'),
+('função','public.testar_alertas()','8aa1fe7f9b6474d42fd3f424de46e477'),
+('função','private.alertas_limpar()','a3fa04cb96d49fccc93009605db33a23'),
 ('tabela','private.agente_codigos','a6137d477b4d2067af31765a08c36f69'),
+('tabela','private.alertas_enviados','afbaa29581e46a6ce04fff619fc365b0'),
 ('tabela','private.cardapios_importados','97b26f9afafd43c4dd10f24c86cd35f6'),
 ('tabela','private.config_plataforma','769df8a8693bc1e04c0159363c4b39dd'),
 ('tabela','private.contador_pedidos','4aec5b70b6c133b47c765aa906b02ec5'),
@@ -767,6 +773,7 @@ with f as (
 ('rls','private.marketplace_segredos','b326b5062b2f0e69046810717534cb09'),
 ('rls','public.canal_taxas','b326b5062b2f0e69046810717534cb09'),
 ('rls','private.motoboy_links','b326b5062b2f0e69046810717534cb09'),
+('rls','private.alertas_enviados','b326b5062b2f0e69046810717534cb09'),
 ('política','public.lojas.lojas_ler','d6f30d5fbe050ef232daa2bac85d8a94'),
 ('política','public.lojas.lojas_editar','4e5adc58d295a77ed835159090d63b58'),
 ('política','public.marcas.marcas_ler','f34871d0b540cd632e7fea7d13c40cd1'),

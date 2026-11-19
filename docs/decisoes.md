@@ -1105,3 +1105,13 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
     - **Mais seguro que o código:** 13 tabelas de `private` estão com RLS ligada em produção (não há acesso pelo navegador). A migração `20261119170000_rls_tabelas_privadas.sql` alinha o repositório; em produção ela não muda nada.
     - **Só quebra de linha:** 15 funções diferem apenas pelo fim de linha do Windows (CRLF), coladas assim em outubro. O tamanho em produção é exatamente o do repositório mais o número de linhas. A conferência agora ignora o `\r`.
 
+
+## D-123 — Avisos de erro para a equipe por e-mail e WhatsApp (19/11/2026)
+- **Por quê:** P2 da auditoria. Erros só ficavam em `private.erros_app` e apareciam em Empresa → Erros; ninguém era avisado.
+- **O que avisa, a cada 5 min (`private.alertas_tique`, pg_cron `res-alertas`):**
+  - erro novo, que não aparecia havia 7 dias;
+  - impressão parada há mais de 5 min numa impressora ligada ao agente (no máximo 1 aviso por hora por loja);
+  - pedido de app que a nova tentativa automática (D-122) não resolveu em 15 min.
+- **Como avisa:** uma mensagem com tudo junto, por **e-mail (Resend)** e **WhatsApp (CallMeBot)**. Cada aviso sai uma vez (`private.alertas_enviados`, guardado 30 dias). O texto traz só o resumo, sem dado de cliente.
+- **Configuração:** as chaves ficam no **Vault do Supabase** e são cadastradas pelo dono. Sem chave, nada sai e o aviso espera. `public.testar_alertas()` manda um teste (equipe RES ou o SQL Editor). Passo a passo: `docs/desenvolvimento/alertas-equipe.md`.
+- **Escolha do WhatsApp:** o CallMeBot é gratuito e serve para aviso interno, sem conta na Meta. Quando o WhatsApp oficial estiver ligado, dá para trocar.
