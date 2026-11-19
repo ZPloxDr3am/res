@@ -1021,7 +1021,7 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - **Cores** (`apps/web/app/sino.css`) em três camadas: marca aprovada → interface **C1 (em avaliação)** → semânticos `--s-*`.
   - C1 e a proposta para o tema escuro ficam num bloco só.
   - **Este trabalho não vai para a main antes da decisão sobre C1**: o pacote da marca proíbe C1 em produção antes de aprovado.
-- **Tema** claro/escuro com escolha por aparelho (Auto · Claro · Escuro, no rodapé do menu), aplicado antes de pintar. Nesta fase vale para o menu e o Resumo.
+- **Tema** claro/escuro com escolha por aparelho (Auto · Claro · Escuro, no rodapé do menu), aplicado antes de pintar, em todas as telas: os blocos de tema escuro do `globals.css` passam a obedecer à escolha, sem mudar a especificidade de nenhuma regra.
 - **Menu** nas famílias da marca, mais Configurações: Operação, Gestão, Inteligência e Configurações. Só muda o agrupamento: rotas, permissões, planos e barra do celular são os mesmos.
   - O menu é carvão nos dois temas, mostra "Loja em uso" e marca o ativo por peso, marcador tomate e fundo.
 - **Resumo** é a página de referência:

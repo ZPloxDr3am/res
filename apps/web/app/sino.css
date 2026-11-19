@@ -10,9 +10,10 @@
       C1 só define o tema claro.
    3. Semânticos (--s-*): o que os componentes usam. Nenhum componente usa cor solta.
 
-   Escopo desta fase: menu lateral (todas as telas do painel) e a página Resumo.
-   As outras telas continuam com o tema antigo (globals.css) até a aprovação.
-   Tema: html[data-tema="claro" | "escuro"]; sem atributo = segue o sistema.
+   Escopo: menu lateral e página Resumo redesenhados; nas outras telas do painel, só as
+   cores e a fonte (variáveis antigas apontam para as SINO). Redesenho por módulo: fase 5.
+   Tema: html[data-tema="claro" | "escuro"]; sem atributo = segue o sistema. Os blocos de
+   tema escuro do globals.css também obedecem à escolha.
    ===================================================================== */
 
 :root {

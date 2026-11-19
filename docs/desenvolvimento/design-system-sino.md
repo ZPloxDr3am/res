@@ -55,7 +55,7 @@ Regras aplicadas:
 - `html[data-tema="claro" | "escuro"]`; sem atributo, segue o sistema.
 - Escolha no rodapé do menu (Auto · Claro · Escuro), guardada no aparelho. Um script no layout raiz aplica a escolha antes de pintar, sem piscar.
 - Nenhuma dependência nova.
-- **Nesta fase, o tema escolhido vale para o menu e o Resumo.** As outras telas continuam seguindo o sistema até migrarem.
+- **O tema escolhido vale para todas as telas.** Os 20 blocos `@media (prefers-color-scheme: dark)` do `globals.css` passaram a obedecer à escolha (`:where(...)`, sem mudar a especificidade de nenhuma regra). O conteúdo de cada bloco é o mesmo de antes; quando o escuro é escolhido, ele se repete logo depois do bloco.
 
 ### Menu (todas as telas do painel do restaurante)
 - Fundo carvão nos dois temas, logotipo principal **oficial** (`public/marca/`, arquivos da pasta 01, sem alteração). No tablet aparece o símbolo oficial de 32 px.
@@ -102,7 +102,7 @@ Mesmas RPCs, mesmos cálculos, mesmos componentes de gráfico e meta. Mudou só 
 
 | Risco | Tratamento |
 |---|---|
-| Quebrar telas antigas | Aparência nova só em `.s-menu` e `.s-pagina`; variáveis antigas redefinidas só dentro do Resumo. `globals.css` não foi alterado. |
+| Quebrar telas antigas | Estrutura nova só em `.s-menu` e `.s-pagina`. Nas outras telas, só as variáveis de cor e fonte mudam. No `globals.css`, só os seletores dos blocos de tema escuro, por script, sem mudar o conteúdo nem a especificidade. |
 | Painel da empresa (equipe SINO) | Usa outro layout: o menu dele não ganha `s-menu`. |
 | Impressão | O menu continua escondido no `@media print`. |
 | Celular e tablet | Mesma estrutura (barra de baixo, menu de ícones); só cores e alvos de 48 px na barra. |

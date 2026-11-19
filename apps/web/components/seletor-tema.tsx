@@ -6,8 +6,8 @@ const OPCOES: [Tema, string][] = [['sistema', 'Auto'], ['claro', 'Claro'], ['esc
 
 /**
  * Tema da interface SINO (D-120): segue o sistema ou fica fixo em claro/escuro, por aparelho.
- * Guardado no navegador; o script do layout raiz aplica antes de pintar. Nesta fase vale para o
- * menu e as telas já no padrão SINO (Resumo); as outras seguem o sistema até migrarem.
+ * Guardado no navegador; o script do layout raiz aplica antes de pintar. Vale para todas as telas:
+ * os blocos de tema escuro do CSS antigo também obedecem à escolha (globals.css, D-120).
  */
 export function SeletorTema() {
   const [tema, setTema] = useState<Tema>('sistema');
