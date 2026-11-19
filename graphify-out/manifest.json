@@ -3252,9 +3252,9 @@
     "semantic_hash": ""
   },
   "docs/decisoes.md": {
-    "mtime": 1795103736.8805044,
-    "seen": 1795103739.341682,
-    "ast_hash": "78cb470d7d6a6242207f879d0c3d60e5",
+    "mtime": 1795103803.8186443,
+    "seen": 1795103808.0762472,
+    "ast_hash": "98e842cd0ecf477f893ab2fb3329e13f",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/COMECE-AQUI.md": {
@@ -3672,9 +3672,9 @@
     "semantic_hash": ""
   },
   "scripts/conferencia/conferir-producao.sql": {
-    "mtime": 1795103736.530452,
-    "seen": 1795103739.3414304,
-    "ast_hash": "afae0d776d621b83f3d1ecfccab249bc",
+    "mtime": 1795103798.523677,
+    "seen": 1795103808.075993,
+    "ast_hash": "167a765cc8f6ec54b1bc72a85aa2811d",
     "semantic_hash": ""
   },
   "scripts/conferencia/gerar.sh": {
@@ -3705,6 +3705,12 @@
     "mtime": 1795102825.2850761,
     "seen": 1795103102.9512906,
     "ast_hash": "35d93794a818d27d6112f1ca862e6272",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261119170000_rls_tabelas_privadas.sql": {
+    "mtime": 1795103755.285503,
+    "seen": 1795103808.0761118,
+    "ast_hash": "613692f73040185b6f8990ff9e8dc256",
     "semantic_hash": ""
   }
 }
