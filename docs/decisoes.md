@@ -1102,6 +1102,6 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
   - **Primeira rodada em produção (19/11):** 32 diferenças, assim divididas:
     - **Defeito real:** a migração `20261111040000_organizar_cardapio.sql` (D-094) nunca rodou, e "Organizar o cardápio" dava erro no ar.
     - **Esperado:** 2 linhas da migração deste PR.
-    - **Mais seguro que o código:** 13 tabelas de `private` estão com RLS ligada em produção (não há acesso pelo navegador).
+    - **Mais seguro que o código:** 13 tabelas de `private` estão com RLS ligada em produção (não há acesso pelo navegador). A migração `20261119170000_rls_tabelas_privadas.sql` alinha o repositório; em produção ela não muda nada.
     - **Só quebra de linha:** 15 funções diferem apenas pelo fim de linha do Windows (CRLF), coladas assim em outubro. O tamanho em produção é exatamente o do repositório mais o número de linhas. A conferência agora ignora o `\r`.
 

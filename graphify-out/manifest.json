@@ -3252,9 +3252,9 @@
     "semantic_hash": ""
   },
   "docs/decisoes.md": {
-    "mtime": 1795103038.4757178,
-    "seen": 1795103102.9515626,
-    "ast_hash": "850febb8a3d86c19e6951352bea6e31b",
+    "mtime": 1795103736.8805044,
+    "seen": 1795103739.341682,
+    "ast_hash": "78cb470d7d6a6242207f879d0c3d60e5",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/COMECE-AQUI.md": {
@@ -3672,9 +3672,9 @@
     "semantic_hash": ""
   },
   "scripts/conferencia/conferir-producao.sql": {
-    "mtime": 1795103019.955524,
-    "seen": 1795103102.9483109,
-    "ast_hash": "a588d4c157c5ebaf1d553b468fb97626",
+    "mtime": 1795103736.530452,
+    "seen": 1795103739.3414304,
+    "ast_hash": "afae0d776d621b83f3d1ecfccab249bc",
     "semantic_hash": ""
   },
   "scripts/conferencia/gerar.sh": {
@@ -3684,9 +3684,9 @@
     "semantic_hash": ""
   },
   "scripts/conferencia/impressao-digital.sql": {
-    "mtime": 1795103013.6870718,
-    "seen": 1795103102.9483142,
-    "ast_hash": "4d5da1fbeeb0fa8ff954e945951a40eb",
+    "mtime": 1795103728.81768,
+    "seen": 1795103739.341436,
+    "ast_hash": "d091308a9d4e619da9382d2e248433c0",
     "semantic_hash": ""
   },
   "supabase/migrations/20261119160000_reprocesso_eventos_apps.sql": {
