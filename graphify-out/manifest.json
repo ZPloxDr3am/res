@@ -708,8 +708,8 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1795061090.6957119,
-    "seen": 1795061098.598184,
+    "mtime": 1795062571.5477648,
+    "seen": 1795062577.6983936,
     "ast_hash": "e3b1a8edd687d5925c06263da036b77d",
     "semantic_hash": ""
   },
@@ -1032,8 +1032,8 @@
     "semantic_hash": ""
   },
   "packages/core/src/pedido.ts": {
-    "mtime": 1795061090.707712,
-    "seen": 1795061098.5998878,
+    "mtime": 1795062571.555765,
+    "seen": 1795062577.7009082,
     "ast_hash": "e640b6b12b5b10b2290f499afb4beda3",
     "semantic_hash": ""
   },
@@ -1146,8 +1146,8 @@
     "semantic_hash": "06f3caba10d485b4a94ed7f0ecb0c795"
   },
   "packages/core/test/pedido.test.ts": {
-    "mtime": 1795061090.707712,
-    "seen": 1795061098.6004963,
+    "mtime": 1795062571.555765,
+    "seen": 1795062577.7017827,
     "ast_hash": "d0012d92893971cd11c1e4dc433c1e3f",
     "semantic_hash": ""
   },
@@ -2852,7 +2852,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1795062544.466227,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -3606,8 +3606,8 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795062540.7804055,
-    "seen": 1795062544.4669137,
+    "mtime": 1795062571.5477648,
+    "seen": 1795062577.706233,
     "ast_hash": "843ebc5aae0a9a137ffbd19066873fc9",
     "semantic_hash": ""
   },
