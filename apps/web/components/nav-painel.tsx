@@ -1,7 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { usePedidoFlutuante } from '@/components/pedido-flutuante';
 import { SeletorLoja } from '@/components/seletor-loja';
 import { rotaLiberada } from '@res/core';
@@ -70,6 +70,40 @@ const SECOES: { titulo: string; familia: Familia; links: Link_[] }[] = [
 const COMECO = { titulo: 'Começo', familia: 'comeco' as Familia, links: [{ href: '/comecar', rotulo: 'Primeiros passos', icone: 'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11' }] };
 const LINKS = [...COMECO.links, ...SECOES.flatMap((s) => s.links)];
 
+// Busca do menu (D-126): além do nome da tela, palavras que as pessoas usam para o que está dentro dela.
+const PALAVRAS: Record<string, string> = {
+  '/pedidos': 'quadro pedido ifood apps atrasado cancelar aceitar',
+  '/pedidos/novo': 'balcao telefone lancar venda',
+  '/salao': 'mesa comanda garcom qr conta',
+  '/kds': 'cozinha tela tv tablet preparo',
+  '/caixa': 'abrir fechar sangria suprimento troco dinheiro',
+  '/entregas': 'motoboy entregador rota mapa bairro taxa km frete',
+  '/cardapio': 'produto categoria preco sabor pizza combo foto opcao adicional borda',
+  '/estoque': 'insumo ficha tecnica cmv contagem compra nota nfe perda margem',
+  '/financeiro': 'contas pagar receber dre fluxo caixa banco extrato maquininha',
+  '/gestao': 'funcionario custo empresa falta advertencia ponto equilibrio',
+  '/promocoes': 'cupom desconto frete gratis oferta',
+  '/delivery': 'cardapio digital link qr horario vitrine pedido minimo pausa',
+  '/evento': 'aniversario festa pre venda encomenda',
+  '/resumo': 'vendas faturamento meta hoje graficos',
+  '/relatorios': 'curva abc cancelamentos tempos pico operacao calendario',
+  '/clientes': 'segmento telefone historico lgpd exportar',
+  '/fidelidade': 'cashback pontos recompensa',
+  '/turbo': 'whatsapp campanha carrinho abandonado mensagem',
+  '/avaliacoes': 'nota estrelas google opiniao',
+  '/aplicativos': 'ifood integracao pix mercado pago api webhook pixel google 99food keeta rappi',
+  '/impressoras': 'impressao cupom termica agente programa',
+  '/lojas': 'equipe usuario senha funcao permissao convite loja marca',
+  '/assinatura': 'plano fatura pagamento mensalidade',
+  '/comecar': 'primeiros passos inicio',
+};
+const sem = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const casa = (l: Link_, termo: string) => {
+  if (!termo) return true;
+  const palavras = sem(`${l.rotulo} ${PALAVRAS[l.href] ?? ''}`).split(/[\s/()]+/);
+  return termo.split(/\s+/).every((t) => palavras.some((p) => p.startsWith(t)));
+};
+
 // celular (D-070): barra de baixo com os 4 mais usados + "Mais" (todas as telas, por seção e com cor)
 const BARRA = ['/pedidos', '/pedidos/novo', '/estoque', '/resumo'];
 // folha do celular: marcador de cada família em tomate (o único ponto de cor da marca), configurações em neutro
@@ -81,7 +115,23 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeiros
   const travado = (href: string) => (modulos && !rotaLiberada(href, modulos) ? true : undefined);
   const atual = usePathname();
   const [mais, setMais] = useState(false);
-  useEffect(() => setMais(false), [atual]);
+  const [busca, setBusca] = useState('');
+  const campo = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  useEffect(() => { setMais(false); setBusca(''); }, [atual]);
+  // "/" ou Ctrl+K levam à busca do menu (fora de campos de texto)
+  useEffect(() => {
+    const tecla = (e: KeyboardEvent) => {
+      const alvo = e.target as HTMLElement | null;
+      const digitando = !!alvo && (alvo.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(alvo.tagName));
+      if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && !digitando)) {
+        const c = campo.current;
+        if (c && c.offsetParent) { e.preventDefault(); c.focus(); c.select(); }
+      }
+    };
+    window.addEventListener('keydown', tecla);
+    return () => window.removeEventListener('keydown', tecla);
+  }, []);
   const { abrir, estado } = usePedidoFlutuante();
   // o link mais específico que casa com a rota atual fica marcado
   const ativo = LINKS.filter((l) => atual === l.href || atual.startsWith(l.href + '/')).sort((a, b) => b.href.length - a.href.length)[0]?.href;
@@ -101,12 +151,41 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeiros
       )}
     </li>
   );
+  const termo = sem(busca.trim());
+  const filtradas = secoes.map((s) => ({ ...s, links: s.links.filter((l) => casa(l, termo)) })).filter((s) => s.links.length > 0);
+  const primeiro = filtradas[0]?.links[0];
+  const ir = (l: Link_) => {
+    setBusca('');
+    setMais(false);
+    if (l.href === '/pedidos/novo') abrir();
+    else router.push(l.href);
+  };
+  const campoBusca = (rotulo: string) => (
+    <div className="menu-busca" role="search">
+      <input
+        ref={rotulo === 'menu' ? campo : undefined}
+        type="search"
+        value={busca}
+        onChange={(e) => setBusca(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && primeiro) { e.preventDefault(); ir(primeiro); }
+          if (e.key === 'Escape') setBusca('');
+        }}
+        placeholder="Buscar tela…"
+        aria-label="Buscar tela no menu"
+        aria-keyshortcuts={rotulo === 'menu' ? 'Control+K /' : undefined}
+        autoComplete="off"
+      />
+      {termo && filtradas.length === 0 && <p className="menu-busca-vazio">Nenhuma tela com “{busca.trim()}”.</p>}
+    </div>
+  );
   const naBarra = BARRA.map((h) => LINKS.find((l) => l.href === h)).filter((l): l is Link_ => !!l);
   const ativoForaDaBarra = !!ativo && !BARRA.includes(ativo);
   return (
     <>
       <div className="menu-secoes">
-        {secoes.map((s) => (
+        {campoBusca('menu')}
+        {filtradas.map((s) => (
           <section key={s.titulo} className="menu-secao" aria-label={s.titulo} data-familia={s.familia} data-ativa={s.links.some((l) => l.href === ativo) ? '' : undefined}>
             <h2 className="menu-secao-titulo">{s.titulo}</h2>
             <ul className="menu-lista">{s.links.map(item)}</ul>
@@ -133,7 +212,8 @@ export function NavPainel({ lojas = [], lojaAtual = '', lojaNome = '', primeiros
               {lojas.length > 1 ? <SeletorLoja lojas={lojas} atual={lojaAtual} /> : <strong>{lojaNome}</strong>}
               <button type="button" className="mini" onClick={() => setMais(false)} aria-label="Fechar">✕</button>
             </div>
-            {secoes.map((s) => (
+            {campoBusca('folha')}
+            {filtradas.map((s) => (
               <section key={s.titulo} className="menu-folha-secao" style={{ ['--cor' as string]: COR_SECAO[s.titulo] ?? '#64748b' }}>
                 <h2>{s.titulo}</h2>
                 <div className="menu-folha-grade">
