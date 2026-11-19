@@ -840,3 +840,6 @@ body:has(.s-menu) :is(.seg-n, .est-toque-dica, .est-sit, .vt-foto .mini, .salao-
 /* Clientes/Aplicativos: chips de segmento mantêm o fundo de cor, mas o texto é sempre o do tema (AA) */
 .s-pagina .seg-chip { color: var(--s-texto); font-size: var(--s-t-13); }
 .s-pagina .seg-chip[aria-selected='true'] { box-shadow: inset 0 0 0 1.5px var(--s-texto); }
+/* Cardápio: busca no começo da linha (antes ficava sozinha à direita, abrindo um vão acima da lista) */
+.s-gestao .cdn-busca { order: -1; flex-basis: 100%; margin-left: 0; }
+.s-gestao .cdn-busca input { width: min(100%, 360px); min-width: 0; }
