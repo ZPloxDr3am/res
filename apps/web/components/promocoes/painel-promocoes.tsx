@@ -471,7 +471,7 @@ function AbaBalcao({ limite }: { limite: number | null }) {
               <td><strong>Caixa / atendente</strong></td>
               <td>
                 <span className="linha" style={{ alignItems: 'center', gap: '0.3rem' }}>
-                  <input inputMode="decimal" value={txt} onChange={(e) => setTxt(e.target.value)} placeholder="sem limite" aria-label="Limite em %" style={{ width: '6rem' }} /> % do pedido
+                  <input inputMode="decimal" value={txt} onChange={(e) => setTxt(e.target.value)} placeholder="sem limite" aria-label="Limite em %" style={{ width: '8rem' }} /> % do pedido
                 </span>
               </td>
               <td>Pede senha do gerente</td>

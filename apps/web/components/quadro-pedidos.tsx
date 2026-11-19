@@ -192,6 +192,9 @@ export function QuadroPedidos({
   const [abertoId, setAbertoId] = useState<string | null>(null);
   // arrastar o cartão para outra coluna (D-091): só para onde o pedido pode ir; cancelar continua pelo pedido (pede motivo)
   const [arrastando, setArrastando] = useState<PedidoRow | null>(null);
+  // celular: o quadro vira colunas deslizantes; a barra de status mostra onde se está e leva a cada coluna
+  const quadroRef = useRef<HTMLDivElement>(null);
+  const [colunaVisivel, setColunaVisivel] = useState(0);
   const [alvo, setAlvo] = useState<StatusPedido | null>(null);
   const [erroArrasto, setErroArrasto] = useState<string | null>(null);
   const podeSoltar = (para: StatusPedido) => !!arrastando && para !== 'cancelado' && para !== arrastando.status && transicaoValida(arrastando.status, para, arrastando.tipo);
@@ -424,7 +427,21 @@ export function QuadroPedidos({
       <SugestaoLotes prontos={abertos.filter((p) => p.status === 'pronto' && p.tipo === 'entrega').map((p) => ({ id: p.id, loja_id: p.loja_id }))} />
 
       {erroArrasto && <p className="erro" role="alert" style={{ margin: 0 }}>{erroArrasto}</p>}
-      <div className="qk" role="region" aria-label="Quadro de pedidos" data-arrastando={arrastando ? '' : undefined}>
+      <nav className="qk-ir" aria-label="Colunas do quadro">
+        {[...COLUNAS, 'concluido' as StatusPedido, 'cancelado' as StatusPedido].map((status, i) => {
+          const n = COLUNAS.includes(status) ? abertos.filter((p) => p.status === status).length : encerrados.filter((p) => p.status === status).length;
+          return (
+            <button key={status} type="button" data-status={status} aria-current={colunaVisivel === i || undefined}
+              onClick={() => { const q = quadroRef.current; const col = q?.children[i] as HTMLElement | undefined; if (q && col) q.scrollTo({ left: col.offsetLeft - q.offsetLeft, behavior: 'smooth' }); }}>
+              <i className="qk-ponto" aria-hidden />
+              {status === 'novo' ? 'Aguardando' : status === 'concluido' ? 'Concluídos' : status === 'cancelado' ? 'Cancelados' : STATUS_ROTULO[status]}
+              <span className="qk-ir-n">{n}</span>
+            </button>
+          );
+        })}
+      </nav>
+      <div className="qk" ref={quadroRef} role="region" aria-label="Quadro de pedidos" data-arrastando={arrastando ? '' : undefined}
+        onScroll={(e) => { const q = e.currentTarget; const larg = (q.children[0] as HTMLElement | undefined)?.offsetWidth ?? 1; const i = Math.round(q.scrollLeft / (larg + 12)); if (i !== colunaVisivel) setColunaVisivel(i); }}>
           {[...COLUNAS, 'concluido' as StatusPedido, 'cancelado' as StatusPedido].map((status) => {
             const lista = COLUNAS.includes(status) ? abertos.filter((p) => p.status === status) : encerrados.filter((p) => p.status === status);
             return (

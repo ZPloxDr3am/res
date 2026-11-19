@@ -20,7 +20,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1795064379.4102848,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/ISSUE_TEMPLATE/teste.yml": {
@@ -144,8 +144,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/avaliacoes/page.tsx": {
-    "mtime": 1795064518.3458717,
-    "seen": 1795064592.4357183,
+    "mtime": 1795064692.1753643,
+    "seen": 1795066573.9003432,
     "ast_hash": "45906db3d1f50fad1824c7b343d0e703",
     "semantic_hash": ""
   },
@@ -216,8 +216,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/delivery/page.tsx": {
-    "mtime": 1795064512.4194996,
-    "seen": 1795064592.4357336,
+    "mtime": 1795064692.1753643,
+    "seen": 1795066573.9006066,
     "ast_hash": "5d924f6149f058cf94901972a68cac94",
     "semantic_hash": ""
   },
@@ -228,8 +228,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/entregas/page.tsx": {
-    "mtime": 1795064512.419811,
-    "seen": 1795064592.4357357,
+    "mtime": 1795064692.1753643,
+    "seen": 1795066573.900629,
     "ast_hash": "79a63bba5c465372dce36c5be8c737fc",
     "semantic_hash": ""
   },
@@ -252,8 +252,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/evento/page.tsx": {
-    "mtime": 1795064512.4201431,
-    "seen": 1795064592.4357402,
+    "mtime": 1795064692.1753643,
+    "seen": 1795066573.900691,
     "ast_hash": "9b084186b4ba5d12269c2b23ad1f3c59",
     "semantic_hash": ""
   },
@@ -264,8 +264,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/fidelidade/page.tsx": {
-    "mtime": 1795064493.045145,
-    "seen": 1795064592.4357421,
+    "mtime": 1795064692.1753643,
+    "seen": 1795066573.9007125,
     "ast_hash": "4f6602a31c32b6ffdc13dcc4f0531889",
     "semantic_hash": ""
   },
@@ -294,8 +294,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/gestao/page.tsx": {
-    "mtime": 1795064512.420453,
-    "seen": 1795064592.4357474,
+    "mtime": 1795064692.1753643,
+    "seen": 1795066573.900796,
     "ast_hash": "cd7e471559551e346ae8746a7dc5cd22",
     "semantic_hash": ""
   },
@@ -384,8 +384,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/relatorios/page.tsx": {
-    "mtime": 1795064493.040781,
-    "seen": 1795064592.4357634,
+    "mtime": 1795064692.1753643,
+    "seen": 1795066573.901071,
     "ast_hash": "50f8938f76e423559ea477eb3833cdbb",
     "semantic_hash": ""
   },
@@ -408,14 +408,14 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/salao/page.tsx": {
-    "mtime": 1795064493.0347142,
-    "seen": 1795064592.4357677,
+    "mtime": 1795064692.1753643,
+    "seen": 1795066573.9011316,
     "ast_hash": "72724227d080ced0658b33936e926549",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/salao/qr/page.tsx": {
-    "mtime": 1795064566.6585476,
-    "seen": 1795064592.4357684,
+    "mtime": 1795064692.1753643,
+    "seen": 1795066573.9011328,
     "ast_hash": "b89142006b171a225e31fa21b9c0ddfc",
     "semantic_hash": ""
   },
@@ -426,8 +426,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/turbo/page.tsx": {
-    "mtime": 1795064493.0454156,
-    "seen": 1795064592.4357703,
+    "mtime": 1795064692.1753643,
+    "seen": 1795066573.9011543,
     "ast_hash": "5af5326fea05404ac4bbd7434b60277f",
     "semantic_hash": ""
   },
@@ -864,8 +864,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/cadastro/primeiros-passos.tsx": {
-    "mtime": 1795064493.045861,
-    "seen": 1795064592.4358423,
+    "mtime": 1795064692.1753643,
+    "seen": 1795066573.9030309,
     "ast_hash": "3b3dcc6af4477e8fc3c0998df8198bc5",
     "semantic_hash": ""
   },
@@ -906,8 +906,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/cardapio/editor-cardapio.tsx": {
-    "mtime": 1795064493.0363348,
-    "seen": 1795064592.4358494,
+    "mtime": 1795064692.1793642,
+    "seen": 1795066573.9031434,
     "ast_hash": "5ded79f9cbf0e377b6dda3de729faca5",
     "semantic_hash": ""
   },
@@ -948,14 +948,14 @@
     "semantic_hash": ""
   },
   "apps/web/components/cardapio/organizador.tsx": {
-    "mtime": 1795064493.0368688,
-    "seen": 1795064592.4358568,
+    "mtime": 1795064692.1793642,
+    "seen": 1795066573.9032533,
     "ast_hash": "db8da13a09de460cea5b4430752aad55",
     "semantic_hash": ""
   },
   "apps/web/components/clientes/lista-clientes.tsx": {
-    "mtime": 1795064493.0448072,
-    "seen": 1795064592.435858,
+    "mtime": 1795064692.1833642,
+    "seen": 1795066573.903255,
     "ast_hash": "b7c63a4834d02ccaa1d1f58f890a3195",
     "semantic_hash": ""
   },
@@ -1128,8 +1128,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/evento/evento.tsx": {
-    "mtime": 1795064512.421047,
-    "seen": 1795064592.4358869,
+    "mtime": 1795064692.1833642,
+    "seen": 1795066573.9038153,
     "ast_hash": "e0dfbdbc6daaddab46b2151bb6e6727e",
     "semantic_hash": ""
   },
@@ -1362,8 +1362,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/novo-pedido.tsx": {
-    "mtime": 1795064512.4214582,
-    "seen": 1795064592.4359255,
+    "mtime": 1795064692.1833642,
+    "seen": 1795066573.904542,
     "ast_hash": "14e97c464424479f6ff26f15b05d8458",
     "semantic_hash": ""
   },
@@ -1380,8 +1380,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/promocoes/painel-promocoes.tsx": {
-    "mtime": 1795064493.037767,
-    "seen": 1795064592.4359286,
+    "mtime": 1795064692.1833642,
+    "seen": 1795066573.9045815,
     "ast_hash": "a8635df78280c428ec1f413e2a039243",
     "semantic_hash": ""
   },
@@ -3240,8 +3240,8 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1795064587.7417872,
-    "seen": 1795064592.4362397,
+    "mtime": 1795064692.1833642,
+    "seen": 1795066573.9100888,
     "ast_hash": "40c900cd9bf57a38e0f871a976a9817f",
     "semantic_hash": ""
   },
@@ -3288,8 +3288,8 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795064573.73536,
-    "seen": 1795064592.4362483,
+    "mtime": 1795066565.3681173,
+    "seen": 1795066573.9102316,
     "ast_hash": "29eefa19da919d7ba2f615338a5af564",
     "semantic_hash": ""
   },

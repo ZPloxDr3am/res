@@ -710,3 +710,87 @@ body:has(.s-menu) .qp-selo-cliente[data-tipo='fiel'] { background: var(--s-info-
 .s-pagina > .s-titulo + .s-subtitulo { margin-top: calc(var(--s-1) - var(--s-6)); }
 .s-pagina span.s-subtitulo { display: block; }
 .s-gestao .pr-abas button[aria-selected='true'] span { color: inherit; opacity: 0.85; }
+
+/* ───────────── Auditoria final (D-121) — responsividade, acabamento e acessibilidade ───────────── */
+
+/* 1. Nada empurra a página para os lados: o conteúdo encolhe e só tabelas/listas marcadas rolam */
+body:has(.s-menu) main.conteudo, .s-pagina, .s-pagina > *, .s-cartao, .s-dupla > *, .s-composicao > *, .s-kpis > *, .s-pagina .cartao { min-width: 0; }
+.s-pagina .tabela-rolagem, .s-pagina .s-tabela-rolagem { max-width: 100%; overscroll-behavior-x: contain; }
+.s-pagina img, .s-pagina svg, .s-pagina video, .s-pagina canvas { max-width: 100%; }
+.s-pagina :is(h1, h2, h3, p, strong, td, li) { overflow-wrap: anywhere; }
+.s-pagina .s-titulo { overflow-wrap: break-word; }
+
+/* 2. Botões que são cartões: o botão global centraliza e não quebra linha; aqui o texto alinha à esquerda e quebra */
+body:has(.s-menu) :is(.cdn-card-corpo, .produto-botao, .cl-topo, .pr-abas button, .av-card, .np-sugestoes-clientes button, .cd-produto-principal, .opcao-cartao, .est-modo-opcoes button) {
+  justify-content: normal; justify-items: stretch; white-space: normal; text-align: left;
+}
+body:has(.s-menu) .cl-topo { justify-content: flex-start; }
+body:has(.s-menu) .np-produto-texto strong { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+body:has(.s-menu) .est-modo-opcoes button { min-width: 0; }
+
+/* 3. Links com cara de botão/cartão não herdam a cor de link (texto tomate sobre carvão, títulos em tomate) */
+.s-pagina :is(a.botao, a.mini, a.ap-cartao, a.cartao) { color: var(--s-texto); }
+.s-pagina a.botao-primario, .s-pagina a.botao-primario:visited { color: var(--s-acao-texto); }
+
+/* 4. Promoções: as cinco opções cabem numa linha no notebook, texto alinhado à esquerda */
+.s-gestao .pr-abas { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+.s-gestao .pr-abas button { border-radius: var(--s-raio); border-color: var(--s-borda); }
+
+/* 5. Relatórios: números em cor neutra, sem emoji de enfeite; cor só onde há julgamento (selo bom/atenção/ruim) */
+.s-gestao .rel-kpi-icone { display: none; }
+.s-gestao .rel-kpi strong { color: var(--s-texto) !important; }
+.s-gestao .rel-kpi-selo { font-size: var(--s-t-12); }
+.s-gestao .rel-kpi[data-cor='verde'] .rel-kpi-selo { background: var(--s-sucesso-fundo); color: var(--s-sucesso); }
+.s-gestao .rel-kpi[data-cor='laranja'] .rel-kpi-selo { background: var(--s-atencao-fundo); color: var(--s-atencao); }
+.s-gestao .rel-kpi[data-cor='vermelho'] .rel-kpi-selo { background: var(--s-erro-fundo); color: var(--s-erro); }
+
+/* 6. Delivery: vitrine mostra o estado real; fechada em tom neutro */
+.vt-status[data-fechada] { color: var(--s-texto-3); }
+
+/* 7. Resumo: de quais lojas vêm os números */
+.s-escopo { margin: calc(var(--s-2) - var(--s-6)) 0 0; font-size: var(--s-t-13); color: var(--s-texto-2); }
+.s-escopo strong { color: var(--s-texto); }
+
+/* 8. Impressoras: tabela quebra texto no notebook e vira lista no celular/tablet */
+.s-gestao .tabela-empilha td { white-space: normal; }
+@media (max-width: 900px) {
+  .s-gestao .tabela-empilha thead { display: none; }
+  .s-gestao .tabela-empilha, .s-gestao .tabela-empilha tbody, .s-gestao .tabela-empilha tr, .s-gestao .tabela-empilha td { display: block; width: 100%; }
+  .s-gestao .tabela-empilha tr { padding: var(--s-3) 0; border-bottom: 1px solid var(--s-borda); }
+  .s-gestao .tabela-empilha td { border: 0; height: auto; padding: 2px 0; text-align: left; }
+  .s-gestao .tabela-empilha td[data-rotulo]::before { content: attr(data-rotulo) ': '; color: var(--s-texto-3); font-size: var(--s-t-12); }
+  .s-gestao .tabela-empilha td.tabela-acoes { padding-top: var(--s-2); }
+}
+
+/* 9. Pedidos no celular: barra de status (onde estou / ir para) + colunas deslizantes com a próxima aparecendo */
+.qk-ir { display: none; }
+@media (max-width: 700px) {
+  .s-quadro .qk-ir { display: flex; gap: var(--s-2); overflow-x: auto; scrollbar-width: none; padding: 2px; margin: 0 calc(-1 * var(--s-4)); padding-inline: var(--s-4); position: sticky; top: 0; z-index: 3; background: var(--s-fundo); padding-block: var(--s-2); }
+  .s-quadro .qk-ir::-webkit-scrollbar { display: none; }
+  .s-quadro .qk-ir button { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 var(--s-3); border-radius: 999px; border: 0; background: var(--s-superficie); box-shadow: inset 0 0 0 1px var(--s-borda); color: var(--s-texto-2); font-size: var(--s-t-13); font-weight: 600; white-space: nowrap; }
+  .s-quadro .qk-ir button[aria-current] { color: var(--s-texto); box-shadow: inset 0 0 0 1.5px var(--s-texto); }
+  .s-quadro .qk-ir .qk-ir-n { min-width: 20px; padding: 0 6px; border-radius: 999px; background: var(--s-superficie-2); font-variant-numeric: tabular-nums; }
+  .s-quadro .qk-ir button[data-status='novo'] .qk-ponto { background: var(--sino-tomate); }
+  .s-quadro .qk-ir button[data-status='em_preparo'] .qk-ponto { background: var(--s-atencao); }
+  .s-quadro .qk-ir button[data-status='pronto'] .qk-ponto { background: var(--s-sucesso); }
+  .s-quadro .qk-ir button[data-status='em_entrega'] .qk-ponto { background: var(--s-info); }
+  .s-quadro .qk-ir button[data-status='concluido'] .qk-ponto, .s-quadro .qk-ir button[data-status='cancelado'] .qk-ponto { background: var(--s-texto-3); }
+  .s-quadro .qk { grid-auto-columns: calc(100% - 44px); scroll-snap-type: x mandatory; scroll-padding-inline: 0; overscroll-behavior-x: contain; }
+  .s-quadro .qk-coluna { scroll-snap-align: start; }
+}
+
+/* 10. Acessibilidade comum: foco visível em tudo que é clicável, alvo mínimo no toque, texto mínimo de 12 px */
+body:has(.s-menu) :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--s-texto); outline-offset: 2px; }
+@media (pointer: coarse) {
+  body:has(.s-menu) .s-pagina :is(button, .botao, select, input:not([type='checkbox']):not([type='radio'])) { min-height: 44px; }
+  body:has(.s-menu) .s-pagina .mini { min-height: 40px; }
+}
+/* filas que rolam de lado no celular avisam que há mais: a borda direita esmaece */
+@media (max-width: 700px) {
+  .s-quadro .qp-filtros-quadro, .s-quadro .qk-ir, .s-pagina .s-segmentos, .s-gestao .abas, .s-gestao .segmentos { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
+}
+/* barra de baixo do celular: 5 colunas iguais; rótulo longo ("Evento / Aniversário") vira reticências em vez de empurrar a barra para fora da tela */
+@media (max-width: 700px) {
+  .s-menu .menu-barra { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .s-menu .menu-barra > li, .s-menu .menu-barra .menu-item { min-width: 0; }
+}

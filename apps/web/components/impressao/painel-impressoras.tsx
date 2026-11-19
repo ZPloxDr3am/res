@@ -111,7 +111,7 @@ function Agente({ dados }: { dados: DadosPainelImpressoras }) {
     <section className="cartao grade" style={{ gap: '0.6rem' }}>
       <div className="linha" style={{ alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
         <div className="grade" style={{ gap: '0.15rem', flex: '1 1 20rem' }}>
-          <strong>RES Impressão · impressão automática</strong>
+          <strong>Programa de impressão · impressão automática</strong>
           {dados.lojasGrupo.length > 1 && <span className="dica">Um computador atende os pedidos de todas as lojas do grupo ({dados.lojasGrupo.join(', ')}).</span>}
           <span className="dica">
             {algumOnline
@@ -174,7 +174,7 @@ function Agente({ dados }: { dados: DadosPainelImpressoras }) {
           >
             {dados.agentes.length ? '+ Conectar outro computador' : 'Conectar computador'}
           </button>
-          <a className="botao" href={LINK_AGENTE}>Baixar RES Impressão (.exe)</a>
+          <a className="botao" href={LINK_AGENTE}>Baixar programa de impressão (.exe)</a>
         </div>
       )}
 
@@ -234,20 +234,20 @@ function AbaImpressoras({ dados }: { dados: DadosPainelImpressoras }) {
       {dados.impressoras.length === 0 && editando !== 'nova' && <p className="dica" style={{ margin: 0 }}>Nenhuma impressora cadastrada.</p>}
       {dados.impressoras.length > 0 && (
         <div className="tabela-rolagem">
-          <table className="tabela">
+          <table className="tabela tabela-empilha">
             <thead><tr><th>Situação</th><th>Nome</th><th>Modelo</th><th>Ligação</th><th>Papel</th><th></th></tr></thead>
             <tbody>
               {dados.impressoras.map((i) => (
                 <tr key={i.id} style={{ opacity: i.ativo ? 1 : 0.55 }}>
-                  <td>
+                  <td data-rotulo="Situação">
                     <span className={`selo ${agenteOnline(i.ultimo_sinal) ? 'selo-presencial' : ''}`}>{agenteOnline(i.ultimo_sinal) ? '● Online' : '○ Sem agente'}</span>
                     {i.ultimo_erro && <div className="erro" style={{ fontSize: '0.8rem' }}>{i.ultimo_erro}</div>}
                   </td>
-                  <td><strong>{i.nome}</strong></td>
-                  <td>{nomeModelo(i.modelo)} <span className="dica">({i.protocolo}, pág. {i.pagina_codigo})</span></td>
-                  <td>{i.conexao === 'usb' ? 'USB' : 'Rede'}{i.endereco ? <span className="dica"> · {i.endereco}</span> : ''}</td>
-                  <td>{i.colunas <= 32 ? '58 mm' : '80 mm'} <span className="dica">· {i.colunas} col.</span></td>
-                  <td className="num" style={{ whiteSpace: 'nowrap' }}>
+                  <td data-rotulo="Nome"><strong>{i.nome}</strong></td>
+                  <td data-rotulo="Modelo">{nomeModelo(i.modelo)} <span className="dica">({i.protocolo}, pág. {i.pagina_codigo})</span></td>
+                  <td data-rotulo="Ligação">{i.conexao === 'usb' ? 'USB' : 'Rede'}{i.endereco ? <span className="dica"> · {i.endereco}</span> : ''}</td>
+                  <td data-rotulo="Papel">{i.colunas <= 32 ? '58 mm' : '80 mm'} <span className="dica">· {i.colunas} col.</span></td>
+                  <td className="num tabela-acoes" style={{ whiteSpace: 'nowrap' }}>
                     <button type="button" className="mini" disabled={teste.pendente} onClick={() => teste.imprimir(() => imprimirTeste(i.id))}>🖨 Testar</button>{' '}
                     {dados.podeEditar && <button type="button" className="mini" onClick={() => setEditando(i.id)}>Editar</button>}
                   </td>
@@ -366,7 +366,7 @@ function FormImpressora({ inicial, id, fechar, windows }: { inicial: DadosImpres
           <span className="dica">
             {d.conexao === 'usb'
               ? windows.length
-                ? 'Lista vinda do computador conectado (RES Impressão).'
+                ? 'Lista vinda do computador conectado (programa de impressão).'
                 : 'Exatamente como aparece em Configurações → Impressoras do Windows. Conectando o computador, ela aparece numa lista.'
               : 'Porta padrão das térmicas de rede: 9100.'}
           </span>
