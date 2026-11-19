@@ -127,7 +127,22 @@ Na prévia, com dados reais:
 
 Não testado aqui: leitor de tela real (NVDA/VoiceOver), aparelhos reais, navegadores Safari/Firefox reais e o favicon em abas reais. Ficam na lista de verificação do Brand Book.
 
-## 5. Fase 5 (depois da aprovação)
+## 5. Fase 5 — em andamento
+
+### 5.1 Pedidos (quadro) — aprovado pelo dono em 19/11/2026 (PR #144)
+- **Cabeçalho**: "Operação" acima do título; seletor uma loja × todas as lojas; controles do topo (som, aceite automático, retirada pronta sozinha, movimento, pausa, avisar clientes, novo pedido), todos com 40 px de altura.
+- **Indicadores do turno** em quatro cartões: ativos (e quantos novos), preparo médio, entrega média e passando do prazo. Este último fica em vermelho de erro quando há atraso.
+- **Filtros** num painel só: chips neutros; o chip ligado usa a cor de ação. "Atrasados" fica em erro e "Prontos sem motoboy" em atenção.
+- **Colunas** neutras, cada uma com um ponto de cor na etapa: Aguardando em tomate, Em preparo em atenção, Pronto em sucesso, Saiu em informação, e as encerradas em neutro.
+- **Cartões**:
+  - **novo** tem marcador tomate, selo "NOVO", pulso leve (desligado para quem pede menos movimento) e o botão de ação já preenchido;
+  - **atrasado** tem marcador e borda em erro, mais o texto "⚠ Atrasado";
+  - **cancelado** fica apagado, com o número riscado;
+  - a ação do cartão tem **44 px** de altura (toque).
+- **Tempos longos legíveis**: `duracaoCurta` no core mostra "9 d 20 h" no lugar de "14174 min" e "236h48". Coberto por teste.
+- Mesmos dados, ações, arrastar e soltar, filtros e alertas. Só a apresentação mudou.
+
+### Próximas telas
 Ordem sugerida, pelo uso no pico:
 1. Pedidos (quadro) e Novo pedido: densidade de toque, estados de pedido novo/atrasado/cancelado.
 2. Caixa.

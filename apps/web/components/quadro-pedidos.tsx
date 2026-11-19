@@ -18,6 +18,7 @@ import {
   SEGMENTOS,
   STATUS_ROTULO,
   tempoDecorrido,
+  duracaoCurta,
   TIPO_ROTULO,
   transicaoValida,
   type StatusPedido,
@@ -311,13 +312,14 @@ export function QuadroPedidos({
   );
 
   return (
-    <div className="grade">
-      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <div className="grade" style={{ gap: '0.1rem' }}>
-          <h1 style={{ margin: 0 }}>Pedidos</h1>
+    <div className="s-pagina s-quadro">
+      <header className="s-cabecalho">
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Operação</p>
+          <h1 className="s-titulo">Pedidos</h1>
           {lojas.length > 1 && <VisaoLojas todas={todas} lojaAtual={lojaAtual} total={lojas.length} />}
         </div>
-        <div className="linha qp-controles" style={{ alignItems: 'center' }}>
+        <div className="linha qp-controles">
           <button type="button" onClick={alternarSom} aria-pressed={som}>
             {som ? '🔔 Som ligado' : '🔕 Ligar som'}
           </button>
@@ -356,7 +358,7 @@ export function QuadroPedidos({
           <AvisarTodos pedidos={pedidos} nomeMarca={nomeMarca} fuso={fuso} />
           <BotaoNovoPedido />
         </div>
-      </div>
+      </header>
       <ResumoTopo pedidos={pedidos} estados={estadosLojas} prazoEntrega={prazoEntrega} tempoPreparo={tempoPreparo} />
       {!todas && <PausaLoja pausa={pausa} fuso={fuso} lojaNome={lojaAtual} modo="faixa" />}
       {!todas && <MovimentoLoja movimento={movimento} fuso={fuso} tempoPreparo={tempoPreparo} modo="faixa" />}
@@ -432,8 +434,8 @@ export function QuadroPedidos({
                 onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setAlvo((a) => (a === status ? null : a)); }}
                 onDrop={(e) => { e.preventDefault(); soltar(status); }}>
                 <h2>
-                  <span>{status === 'novo' ? 'Aguardando' : status === 'concluido' ? 'Concluídos' : status === 'cancelado' ? 'Cancelados' : STATUS_ROTULO[status]}</span>
-                  <span className="qk-n">{lista.length}</span>
+                  <span className="qk-titulo"><i className="qk-ponto" aria-hidden />{status === 'novo' ? 'Aguardando' : status === 'concluido' ? 'Concluídos' : status === 'cancelado' ? 'Cancelados' : STATUS_ROTULO[status]}</span>
+                  <span className="qk-n" data-tem={lista.length > 0 || undefined}>{lista.length}</span>
                 </h2>
                 <div className="qk-lista">
                   {lista.map((p) => (
@@ -535,13 +537,14 @@ function CartaoCompacto({ p, tempoPreparo, prazoMin, fuso, local, cor, onAbrir, 
         <span className="qk-topo">
           <span className="qk-icone" title={TIPO_ROTULO[p.tipo]} aria-hidden>{icone}</span>
           <strong>#{p.numero}</strong>
+          {p.status === 'novo' && <span className="qk-novo">Novo</span>}
           {p.externo_canal && <span className={`selo selo-canal selo-${p.externo_canal}`}>{nomeCanal(p.externo_canal)}{p.externo_codigo ? ` ${p.externo_codigo}` : ''}</span>}
           {p.origem === 'cardapio_digital' && <span className="qk-tag">Online</span>}
           <span className="qk-mais" aria-hidden>⋮</span>
         </span>
         <AvisosCanal p={p} compacto />
         {agendado && <span className="qk-linha qk-agendado">📅 {rotuloHorario(agendado, fuso)}</span>}
-        {atrasado && aberto && <span className="qk-linha qk-atraso">⚠ Atrasado{sit?.estado === 'atrasado' ? ` ${sit.minutos} min` : ''}</span>}
+        {atrasado && aberto && <span className="qk-linha qk-atraso">⚠ Atrasado{sit?.estado === 'atrasado' ? ` ${duracaoCurta(sit.minutos)}` : ''}</span>}
         <span className="qk-linha qk-cliente">
           <strong>{p.cliente_nome}</strong>
           {p.cliente_telefone && <span className="dica">{telefone(p.cliente_telefone)}</span>}
@@ -691,7 +694,7 @@ function CartaoPedido({
       )}
       {sit && prazo != null && (
         <div className={`selo-prazo ${sit.estado}`} title={`Prometido para ${horaCurta(prazo)}${agendado ? ' (agendado)' : ` (pedido + ${prazoMin} min)`}`}>
-          {sit.estado === 'atrasado' ? `⚠ Atrasado ${sit.minutos} min` : sit.estado === 'perto' ? `⏱ Faltam ${sit.minutos} min` : `⏱ Entregar até ${horaCurta(prazo)}`}
+          {sit.estado === 'atrasado' ? `⚠ Atrasado ${duracaoCurta(sit.minutos)}` : sit.estado === 'perto' ? `⏱ Faltam ${sit.minutos} min` : `⏱ Entregar até ${horaCurta(prazo)}`}
           {p.status === 'em_entrega' && p.previsao_chegada ? ` · chega ~${horaCurta(p.previsao_chegada)}` : ''}
         </div>
       )}
@@ -1160,10 +1163,10 @@ function ResumoTopo({ pedidos, estados, prazoEntrega, tempoPreparo }: { pedidos:
   return (
     <div className="grade" style={{ gap: 'var(--e2)' }}>
       <div className="qp-resumo" role="status" aria-label="Resumo das últimas 12 horas">
-        <span><b>{t.ativos}</b> ativos{t.novos ? <em> · {t.novos} novo{t.novos === 1 ? '' : 's'}</em> : null}</span>
-        <span title="Média de aceito até pronto, últimas 12 h"><b>{minTxt(t.preparoMin)}</b> preparo médio</span>
-        <span title="Média de saiu até entregue, últimas 12 h"><b>{minTxt(t.entregaMin)}</b> entrega média</span>
-        <span data-alerta={t.atrasados > 0 || undefined}><b>{t.atrasados}</b> passando do prazo</span>
+        <span><small>Ativos</small><b>{t.ativos}</b>{t.novos ? <em>{t.novos} novo{t.novos === 1 ? '' : 's'}</em> : null}</span>
+        <span title="Média de aceito até pronto, últimas 12 h"><small>Preparo médio</small><b>{minTxt(t.preparoMin)}</b></span>
+        <span title="Média de saiu até entregue, últimas 12 h"><small>Entrega média</small><b>{minTxt(t.entregaMin)}</b></span>
+        <span data-alerta={t.atrasados > 0 || undefined}><small>Passando do prazo</small><b>{t.atrasados}</b></span>
       </div>
     </div>
   );
