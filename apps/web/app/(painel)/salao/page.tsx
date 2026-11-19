@@ -16,10 +16,11 @@ export default async function PaginaSalao() {
     carregarDadosNovoPedido(ctx.lojaId, ctx.marcas.filter((m) => !m.evento), ctx.papel),
   ]);
   return (
-    <div className="grade">
-      <div>
-        <h1 style={{ marginBottom: 0 }}>🍽️ Salão · {ctx.lojaNome}</h1>
-        <p className="dica" style={{ margin: 0 }}>Toque na mesa para abrir, lançar itens (vão direto para a cozinha) e fechar a conta.</p>
+    <div className="s-pagina s-gestao grade">
+      <div className="s-cabecalho-texto">
+        <p className="s-sobretitulo">Operação</p>
+        <h1 className="s-titulo">Salão · {ctx.lojaNome}</h1>
+        <p className="s-subtitulo">Toque na mesa para abrir, lançar itens (vão direto para a cozinha) e fechar a conta.</p>
       </div>
       {mapa.error ? <p className="cartao dica">{mapa.error.message}</p> : <Salao lojaId={ctx.lojaId} mapa={mapa.data as MapaSalao} dados={dados} />}
     </div>

@@ -10,8 +10,9 @@ export default async function Avaliacoes({ searchParams }: { searchParams: Promi
   const ctx = await contextoLoja();
   if (ctx.papel !== 'dono' && ctx.papel !== 'gerente') {
     return (
-      <div className="grade">
-        <h1>Avaliações</h1>
+      <div className="s-pagina s-gestao grade">
+        <p className="s-sobretitulo">Inteligência</p>
+        <h1 className="s-titulo">Avaliações</h1>
         <p className="cartao dica">Só o dono ou o gerente veem as avaliações.</p>
       </div>
     );
@@ -21,11 +22,12 @@ export default async function Avaliacoes({ searchParams }: { searchParams: Promi
   const supabase = await criarClienteServidor();
   const { data, error } = await supabase.rpc('avaliacoes_painel', { p_loja: ctx.lojaId, p_dias: dias });
   return (
-    <div className="grade">
-      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <div className="grade" style={{ gap: '0.1rem' }}>
-          <h1 style={{ margin: 0 }}>Avaliações</h1>
-          <span className="dica">O cliente avalia na página do pedido, depois de entregue. Nota 4 ou 5 recebe o convite para o Google; nota baixa avisa aqui na hora.</span>
+    <div className="s-pagina s-gestao grade">
+      <div className="s-cabecalho">
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Inteligência</p>
+          <h1 className="s-titulo">Avaliações</h1>
+          <span className="s-subtitulo">O cliente avalia na página do pedido, depois de entregue. Nota 4 ou 5 recebe o convite para o Google; nota baixa avisa aqui na hora.</span>
         </div>
         <div className="linha" style={{ gap: '0.35rem' }}>
           {[7, 30, 90].map((d) => (

@@ -378,11 +378,12 @@ export function Organizador({ cardapio, marcas }: { cardapio: Cardapio; marcas: 
   const fantasmaSetor = arraste?.tipo === 'setor' ? cat.get(arraste.id) : undefined;
 
   return (
-    <div className="grade org">
+    <div className="s-pagina s-gestao grade org">
       <div className="org-topo">
-        <div>
-          <h1 style={{ margin: 0 }}>Organizar cardápio</h1>
-          <p className="dica" style={{ margin: 0 }}>
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Gestão · Cardápio</p>
+          <h1 className="s-titulo">Organizar cardápio</h1>
+          <p className="s-subtitulo">
             Arraste pela alça <span className="org-alca-exemplo">⠿</span> para mudar a ordem ou levar a outra categoria (também dá para soltar em cima do nome da categoria, à esquerda). A ordem daqui é a que o cliente vê.
           </p>
         </div>

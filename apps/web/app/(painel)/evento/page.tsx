@@ -12,8 +12,9 @@ export default async function Evento() {
   const ctx = await contextoLoja();
   if (ctx.papel !== 'dono' && ctx.papel !== 'gerente') {
     return (
-      <div className="grade">
-        <h1>Evento / Aniversário</h1>
+      <div className="s-pagina s-gestao grade">
+        <p className="s-sobretitulo">Gestão</p>
+        <h1 className="s-titulo">Evento / Aniversário</h1>
         <p className="cartao dica">Só o dono ou o gerente montam o cardápio de evento.</p>
       </div>
     );

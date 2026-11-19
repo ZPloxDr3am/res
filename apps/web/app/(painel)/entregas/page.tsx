@@ -97,8 +97,9 @@ export default async function Entregas({ searchParams }: { searchParams: Promise
   }
 
   return (
-    <div className="grade">
-      <h1>Entregas</h1>
+    <div className="s-pagina s-gestao grade">
+      <p className="s-sobretitulo">Operação</p>
+      <h1 className="s-titulo">Entregas</h1>
       <nav className="abas nao-imprimir" aria-label="Entregas">
         <Link href="/entregas" role="tab" aria-selected={aba === 'aovivo'} className="aba-link">Ao vivo</Link>
         <Link href="/entregas?aba=bairros" role="tab" aria-selected={aba === 'bairros'} className="aba-link">Bairros e preços</Link>

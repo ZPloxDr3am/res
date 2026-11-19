@@ -73,8 +73,9 @@ export function PainelEvento({
 }) {
   const [aberto, setAberto] = useState<string | null>(null);
   return (
-    <div className="grade">
-      <h1>Evento / Aniversário</h1>
+    <div className="s-pagina s-gestao grade">
+      <p className="s-sobretitulo">Gestão</p>
+      <h1 className="s-titulo">Evento / Aniversário</h1>
       {erro && <p className="erro">{erro}</p>}
       <Explicacao temEvento={!!evento} />
       {!evento ? (

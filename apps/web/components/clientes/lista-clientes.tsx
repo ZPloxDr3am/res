@@ -95,11 +95,12 @@ export function ListaClientes({ inicial }: { inicial: ListagemClientes }) {
   const atual = segmento ? SEG.get(segmento) : null;
 
   return (
-    <div className="grade">
-      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'end', flexWrap: 'wrap', gap: '0.6rem' }}>
-        <div>
-          <h1 style={{ marginBottom: 0 }}>Clientes</h1>
-          <p className="dica" style={{ margin: 0 }}>Salvos sozinhos a cada pedido com telefone, para as lojas do grupo. Os segmentos se atualizam sozinhos a cada pedido.</p>
+    <div className="s-pagina s-gestao grade">
+      <div className="s-cabecalho">
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Inteligência</p>
+          <h1 className="s-titulo">Clientes</h1>
+          <p className="s-subtitulo">Salvos sozinhos a cada pedido com telefone, para as lojas do grupo. Os segmentos se atualizam sozinhos a cada pedido.</p>
         </div>
         <button type="button" onClick={exportar} disabled={exportando}>
           {exportando ? 'Exportando…' : `⬇ Exportar ${atual ? atual.rotulo.toLowerCase() : 'todos'} (CSV)`}

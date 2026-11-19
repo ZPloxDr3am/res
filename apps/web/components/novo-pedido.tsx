@@ -294,8 +294,8 @@ export function NovoPedido({
   }, [aoMudar, nItens, totalRascunho, cliente.nome]);
 
   return (
-    <div className="grade">
-      {!embutido && <h1>{salao ? `Pedido — ${salao.rotulo}` : 'Novo pedido'}</h1>}
+    <div className={embutido ? 'grade' : 's-pagina s-gestao grade'}>
+      {!embutido && <><p className="s-sobretitulo">Operação</p><h1 className="s-titulo">{salao ? `Pedido — ${salao.rotulo}` : 'Novo pedido'}</h1></>}
       <div className="grade grade-2">
         {/* ---------------- cardápio */}
         <section className="grade" style={{ alignContent: 'start', gridColumn: 'span 1' }}>
