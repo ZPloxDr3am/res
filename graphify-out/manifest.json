@@ -2851,8 +2851,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1795059048.7053509,
-    "ast_hash": "",
+    "seen": 1795062544.466227,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/workflows/e2e.yml": {
@@ -3606,9 +3606,9 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795058662.1040595,
-    "seen": 1795059048.7061005,
-    "ast_hash": "b488c2688d62129479323d7fe4ecb1ea",
+    "mtime": 1795062540.7804055,
+    "seen": 1795062544.4669137,
+    "ast_hash": "843ebc5aae0a9a137ffbd19066873fc9",
     "semantic_hash": ""
   },
   "apps/web/public/marca/apple-touch-icon.png": {
