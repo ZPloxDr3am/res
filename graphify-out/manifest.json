@@ -19,7 +19,7 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1795063121.787155,
+    "seen": 1795063743.4447525,
     "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
@@ -150,8 +150,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/caixa/[id]/page.tsx": {
-    "mtime": 1795063075.739245,
-    "seen": 1795063121.7871826,
+    "mtime": 1795063653.6273272,
+    "seen": 1795063660.7812297,
     "ast_hash": "cf67bf8f65cda49d0a9ff0492f80c4e4",
     "semantic_hash": ""
   },
@@ -882,8 +882,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/caixa/painel-caixa.tsx": {
-    "mtime": 1795062963.8191605,
-    "seen": 1795063121.787311,
+    "mtime": 1795063653.6273272,
+    "seen": 1795063660.783857,
     "ast_hash": "15a76509311d568b4cba37a4eb6d0dd3",
     "semantic_hash": ""
   },
@@ -1302,9 +1302,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/kds/kds.tsx": {
-    "mtime": 1794495630.59221,
-    "seen": 1795062708.6630611,
-    "ast_hash": "921c6ac242173056df52797f02382b82",
+    "mtime": 1795063690.2361357,
+    "seen": 1795063743.4451272,
+    "ast_hash": "e73123305308045638fb5aa51a72e029",
     "semantic_hash": ""
   },
   "apps/web/components/logo-sino.tsx": {
@@ -1776,8 +1776,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1795063110.167784,
-    "seen": 1795063121.7875168,
+    "mtime": 1795063739.8233302,
+    "seen": 1795063743.4452658,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": ""
   },
@@ -3288,9 +3288,9 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795063118.1625948,
-    "seen": 1795063121.7877877,
-    "ast_hash": "430ee28eb0f638ab3f8bfb83d22f5608",
+    "mtime": 1795063708.010567,
+    "seen": 1795063743.445797,
+    "ast_hash": "5eaa0830fe4d2e697c99e469f0fbf306",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/whatsapp-api.md": {
