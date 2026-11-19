@@ -1776,8 +1776,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1795067408.4761477,
-    "seen": 1795067412.6057649,
+    "mtime": 1795067916.5961657,
+    "seen": 1795068396.2826495,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": ""
   },
@@ -3240,9 +3240,9 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1795064692.1833642,
-    "seen": 1795066573.9100888,
-    "ast_hash": "40c900cd9bf57a38e0f871a976a9817f",
+    "mtime": 1795068292.6562183,
+    "seen": 1795068396.2829363,
+    "ast_hash": "84048db0c3bc5291546493760a48a228",
     "semantic_hash": ""
   },
   "docs/comercial/README.md": {
@@ -3252,9 +3252,9 @@
     "semantic_hash": ""
   },
   "docs/decisoes.md": {
-    "mtime": 1795058662.1040595,
-    "seen": 1795062708.6633823,
-    "ast_hash": "efc6b4423534b4f217379ddf06de9e8c",
+    "mtime": 1795068245.6441774,
+    "seen": 1795068396.28294,
+    "ast_hash": "4cc47ad8371e48da28f649c30c815fdf",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/COMECE-AQUI.md": {
@@ -3288,9 +3288,9 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795066565.3681173,
-    "seen": 1795066573.9102316,
-    "ast_hash": "29eefa19da919d7ba2f615338a5af564",
+    "mtime": 1795068342.688181,
+    "seen": 1795068396.2829492,
+    "ast_hash": "b216803b33860ab782e34b7cba1fdc3f",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/whatsapp-api.md": {
@@ -3657,6 +3657,12 @@
     "mtime": 1795058662.1027014,
     "seen": 1795062708.6634421,
     "ast_hash": "29478d3fd4db3842368fb2eec85e1b87",
+    "semantic_hash": ""
+  },
+  "docs/qualidade/roteiros/responsividade-sino.md": {
+    "mtime": 1795068185.2241755,
+    "seen": 1795068396.2830207,
+    "ast_hash": "30bd8b421b6ef6a54d1c42ec657b6139",
     "semantic_hash": ""
   }
 }

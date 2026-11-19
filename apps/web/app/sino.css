@@ -847,3 +847,5 @@ body:has(.s-menu) :is(.seg-n, .est-toque-dica, .est-sit, .vt-foto .mini, .salao-
 @media (max-width: 420px) {
   .s-contexto { white-space: normal; flex-wrap: wrap; row-gap: 0; min-height: 0; padding-block: var(--s-1); border-radius: var(--s-raio); max-width: 100%; }
 }
+/* grades internas dos cartões também encolhem (o gráfico "Desempenho por loja" rolava, mas a grade em volta guardava a largura mínima dele) */
+.s-pagina :is(.grade, .colunas, .abas-metrica, details) { min-width: 0; max-width: 100%; }
