@@ -1,6 +1,6 @@
 with f as (
   select 'função' tipo, n.nspname||'.'||p.proname||'('||pg_get_function_identity_arguments(p.oid)||')' objeto,
-         md5(p.prosrc||'|'||p.prosecdef::text||'|'||coalesce(array_to_string(p.proconfig,','),'')||'|'||p.provolatile::text) h
+         md5(replace(p.prosrc, chr(13), '')||'|'||p.prosecdef::text||'|'||coalesce(array_to_string(p.proconfig,','),'')||'|'||p.provolatile::text) h
     from pg_proc p join pg_namespace n on n.oid=p.pronamespace
    where n.nspname in ('public','private') and p.prokind in ('f','p') and not exists (select 1 from pg_depend d where d.classid = 'pg_proc'::regclass and d.objid = p.oid and d.deptype = 'e') and not exists (select 1 from pg_depend d where d.classid = 'pg_proc'::regclass and d.objid = p.oid and d.deptype = 'e')
 ), t as (
