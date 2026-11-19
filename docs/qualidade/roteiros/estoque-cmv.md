@@ -11,6 +11,7 @@ Pré-condição: loja de teste (ou a sua, em horário sem movimento), usuário d
 | 5 | Perda: digitar quantidade e motivo | Mostra "Valor perdido: R$ X" antes de salvar; após salvar, saldo cai | |
 | 6 | Contagem: digitar quantidade diferente do saldo | Mostra faltando/sobrando em qtd e R$; após salvar, saldo = contado | |
 | 7 | Meu estoque → tocar num produto → Montar ficha | Abre o editor da ficha; custo da ficha e custo/preço calculados | |
+| 7a | No campo do insumo, digitar parte do nome (ex.: "muss", "acucar" sem acento) | A lista mostra só os insumos que combinam, com unidade e categoria; ↓/↑ e Enter escolhem; Esc volta ao escolhido; no celular a busca ocupa a linha inteira | |
 | 8 | Sabores, bordas e adicionais → ficha de um sabor | Ficha salva; meio a meio baixa metade | |
 | 9 | Fazer um pedido com esse produto e concluir | Insumos baixam conforme a ficha (Movimentações → tipo venda) | |
 | 10 | Cancelar esse pedido | Baixa é estornada | |
