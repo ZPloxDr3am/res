@@ -874,3 +874,11 @@ body:has(.s-menu) :is(.seg-n, .est-toque-dica, .est-sit, .vt-foto .mini, .salao-
 .busca-insumo-nome { color: var(--s-texto, inherit); font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .busca-insumo-info { color: var(--s-texto-2, #666); font-size: var(--s-t-12, 12px); white-space: nowrap; }
 .busca-insumo-lista .busca-insumo-vazio { cursor: default; color: var(--s-texto-2, #666); }
+.busca-insumo-lista { min-width: min(22rem, calc(100vw - 2rem)); }
+@media (max-width: 560px) {
+  /* celular: a busca ocupa a linha inteira; quantidade, unidade e custo vão para baixo */
+  .linha:has(> .busca-insumo) { flex-wrap: wrap !important; }
+  .linha > .busca-insumo { flex-basis: 100% !important; }
+  .busca-insumo-lista li { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .busca-insumo-info { white-space: normal; }
+}
