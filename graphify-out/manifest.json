@@ -20,7 +20,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1795066969.536951,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/ISSUE_TEMPLATE/teste.yml": {
@@ -216,8 +216,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/delivery/page.tsx": {
-    "mtime": 1795066647.7318459,
-    "seen": 1795066969.5370138,
+    "mtime": 1795100927.7249634,
+    "seen": 1795101170.7657423,
     "ast_hash": "c76e83fc33edc5d1b75c842e9d3ff465",
     "semantic_hash": ""
   },
@@ -396,8 +396,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/resumo/page.tsx": {
-    "mtime": 1795066673.9952202,
-    "seen": 1795066969.537059,
+    "mtime": 1795100927.7249634,
+    "seen": 1795101170.7666552,
     "ast_hash": "9612eae89afbe57efc003ac77e058d58",
     "semantic_hash": ""
   },
@@ -960,8 +960,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/delivery/vitrine.tsx": {
-    "mtime": 1795066647.7322762,
-    "seen": 1795066969.5372198,
+    "mtime": 1795100927.7249634,
+    "seen": 1795101170.7692432,
     "ast_hash": "c97c22a72b036a1f79e1ccbf67e992f7",
     "semantic_hash": ""
   },
@@ -1146,8 +1146,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/fidelidade/programa.tsx": {
-    "mtime": 1795066710.2676158,
-    "seen": 1795066969.5372672,
+    "mtime": 1795100927.7249634,
+    "seen": 1795101170.7700357,
     "ast_hash": "2cae3ed184e6a85ba067d7be7e23104b",
     "semantic_hash": ""
   },
@@ -1290,8 +1290,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/impressao/painel-impressoras.tsx": {
-    "mtime": 1795066710.2673984,
-    "seen": 1795066969.537302,
+    "mtime": 1795100927.7289634,
+    "seen": 1795101170.7706099,
     "ast_hash": "17d51a978b8608dbfdafd47d820ccdc3",
     "semantic_hash": ""
   },
@@ -1380,8 +1380,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/promocoes/painel-promocoes.tsx": {
-    "mtime": 1795066710.267966,
-    "seen": 1795066969.5373244,
+    "mtime": 1795100927.7289634,
+    "seen": 1795101170.7710154,
     "ast_hash": "e4d7bfd91f2f85f8101c635eb06112e2",
     "semantic_hash": ""
   },
@@ -1452,8 +1452,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1795066724.3635464,
-    "seen": 1795066969.537343,
+    "mtime": 1795100927.7289634,
+    "seen": 1795101170.7713006,
     "ast_hash": "fd05296cffcfd7e592aab560bce115d9",
     "semantic_hash": ""
   },
@@ -1470,14 +1470,14 @@
     "semantic_hash": ""
   },
   "apps/web/components/resumo/grafico-lojas.tsx": {
-    "mtime": 1795067359.156497,
-    "seen": 1795067412.6057053,
+    "mtime": 1795100927.7289634,
+    "seen": 1795101170.7713573,
     "ast_hash": "654a5155ec89309de1d289237aa9c5ff",
     "semantic_hash": ""
   },
   "apps/web/components/resumo/meta-mes.tsx": {
-    "mtime": 1795066673.9945753,
-    "seen": 1795066969.5373485,
+    "mtime": 1795100927.7289634,
+    "seen": 1795101170.7713597,
     "ast_hash": "67cd3c75178a448964d810769fc44e07",
     "semantic_hash": ""
   },
@@ -1776,8 +1776,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1795067916.5961657,
-    "seen": 1795068396.2826495,
+    "mtime": 1795070760.5402675,
+    "seen": 1795101170.7730112,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": ""
   },
@@ -3240,8 +3240,8 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1795068292.6562183,
-    "seen": 1795068396.2829363,
+    "mtime": 1795100927.7289634,
+    "seen": 1795101170.7787766,
     "ast_hash": "84048db0c3bc5291546493760a48a228",
     "semantic_hash": ""
   },
@@ -3252,9 +3252,9 @@
     "semantic_hash": ""
   },
   "docs/decisoes.md": {
-    "mtime": 1795068245.6441774,
-    "seen": 1795068396.28294,
-    "ast_hash": "4cc47ad8371e48da28f649c30c815fdf",
+    "mtime": 1795100927.7289634,
+    "seen": 1795101170.7787998,
+    "ast_hash": "6c9cb40e0892622f25e2d970cb997419",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/COMECE-AQUI.md": {
@@ -3288,8 +3288,8 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795068342.688181,
-    "seen": 1795068396.2829492,
+    "mtime": 1795100927.7289634,
+    "seen": 1795101170.7789576,
     "ast_hash": "b216803b33860ab782e34b7cba1fdc3f",
     "semantic_hash": ""
   },
@@ -3660,9 +3660,15 @@
     "semantic_hash": ""
   },
   "docs/qualidade/roteiros/responsividade-sino.md": {
-    "mtime": 1795068185.2241755,
-    "seen": 1795068396.2830207,
+    "mtime": 1795100927.7289634,
+    "seen": 1795101170.7795284,
     "ast_hash": "30bd8b421b6ef6a54d1c42ec657b6139",
+    "semantic_hash": ""
+  },
+  "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzzz_isolamento.sql": {
+    "mtime": 1795101964.0336437,
+    "seen": 1795102523.0274746,
+    "ast_hash": "35d93794a818d27d6112f1ca862e6272",
     "semantic_hash": ""
   }
 }
