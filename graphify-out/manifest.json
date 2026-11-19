@@ -1068,9 +1068,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/estoque/fichas.tsx": {
-    "mtime": 1794610291.995394,
-    "seen": 1795062708.6630273,
-    "ast_hash": "59ed48bb75de904426013517d60a0891",
+    "mtime": 1795106494.804163,
+    "seen": 1795106532.4515166,
+    "ast_hash": "b5e24612f283ebabfbc9b7a36720f025",
     "semantic_hash": ""
   },
   "apps/web/components/estoque/importar-nfe.tsx": {
@@ -1776,8 +1776,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1795103092.797092,
-    "seen": 1795103102.9465892,
+    "mtime": 1795106956.9228313,
+    "seen": 1795106961.7235289,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": ""
   },
@@ -3240,9 +3240,9 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1795104317.9146745,
-    "seen": 1795104326.9680371,
-    "ast_hash": "3291c0319038d204b9ee105843092cbd",
+    "mtime": 1795106915.036465,
+    "seen": 1795106961.7239065,
+    "ast_hash": "ebd8ab071620b6f6086db0845a0493ec",
     "semantic_hash": ""
   },
   "docs/comercial/README.md": {
@@ -3252,9 +3252,9 @@
     "semantic_hash": ""
   },
   "docs/decisoes.md": {
-    "mtime": 1795105761.6947603,
-    "seen": 1795105771.1169453,
-    "ast_hash": "c3f1fb259b9f091e5a9bb40e7ceef038",
+    "mtime": 1795106915.036465,
+    "seen": 1795106961.7239099,
+    "ast_hash": "72b41e7b3fef12469235655890ade597",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/COMECE-AQUI.md": {
@@ -3402,9 +3402,9 @@
     "semantic_hash": ""
   },
   "docs/qualidade/roteiros/estoque-cmv.md": {
-    "mtime": 1794355880.8227193,
-    "seen": 1795062708.6634047,
-    "ast_hash": "2a37f4d5a48d6c1526f3ee3d3407c406",
+    "mtime": 1795106915.0361645,
+    "seen": 1795106961.7239406,
+    "ast_hash": "0c799bf3bc5950bbc01eaae932cc2f69",
     "semantic_hash": ""
   },
   "docs/qualidade/roteiros/financeiro-automatico.md": {
@@ -3678,8 +3678,8 @@
     "semantic_hash": ""
   },
   "scripts/conferencia/conferir-producao.sql": {
-    "mtime": 1795105744.8189251,
-    "seen": 1795105771.1141424,
+    "mtime": 1795106172.0267847,
+    "seen": 1795106532.4520586,
     "ast_hash": "c43f3ddd0b9a69528fb37286458c85a1",
     "semantic_hash": ""
   },
@@ -3732,21 +3732,27 @@
     "semantic_hash": ""
   },
   "supabase/migrations/20261119190000_rls_por_conjunto.sql": {
-    "mtime": 1795105536.2350714,
-    "seen": 1795105771.1159668,
+    "mtime": 1795106172.0267847,
+    "seen": 1795106532.4522836,
     "ast_hash": "a7d51f7c67aebb92cbaa3e564067be20",
     "semantic_hash": ""
   },
   "supabase/migrations/20261119191000_relatorio_operacao_rapido.sql": {
-    "mtime": 1795105670.7296863,
-    "seen": 1795105771.1159685,
+    "mtime": 1795106172.0267847,
+    "seen": 1795106532.4522855,
     "ast_hash": "d30736b3dc5de845fda3405ce7ffcd68",
     "semantic_hash": ""
   },
   "scripts/reverter/d124-rls.sql": {
-    "mtime": 1795105910.0027692,
-    "seen": 1795105925.2549284,
+    "mtime": 1795106172.0267847,
+    "seen": 1795106532.452071,
     "ast_hash": "0725c6230506e6e409244a8d761db529",
+    "semantic_hash": ""
+  },
+  "apps/web/components/estoque/busca-insumo.tsx": {
+    "mtime": 1795106490.7228036,
+    "seen": 1795106532.4515026,
+    "ast_hash": "7608a6cb4fdd82955c9eef83c1b80a6f",
     "semantic_hash": ""
   }
 }

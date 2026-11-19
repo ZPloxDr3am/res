@@ -3,6 +3,7 @@
 Uma seção por semana, escrita na revisão de sexta. Linguagem de cliente.
 
 ## Semana 47 (16–20/11/2026)
+- **Ficha técnica mais rápida de montar**: no lugar da lista longa, é só digitar parte do nome do insumo ("muss", "calab") e escolher. Funciona sem acento e com as setas do teclado.
 - **Pedido de app não se perde mais**: se um pedido do iFood, 99Food, Keeta ou aiqfome chegar e der erro ao entrar, o SINO tenta de novo sozinho nos minutos seguintes, sem ninguém precisar clicar em Reprocessar.
 
 ## Semana 46 (09–13/11/2026)

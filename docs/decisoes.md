@@ -1134,3 +1134,14 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 | Contar todos os pedidos visíveis | 5,2 s | 0,02 s |
 | Relatório de Operação, 30 dias | 2,6 s | 0,77 s |
 | Resumo, 90 dias | 0,25 s | 0,17 s |
+
+## D-125 — Ficha técnica: busca do insumo digitando (19/11/2026)
+- **Pedido do dono:** no editor da ficha técnica, o insumo era escolhido numa lista suspensa com todos os insumos da loja. Agora se busca digitando.
+- **Como ficou (`components/estoque/busca-insumo.tsx`):**
+  - Campo com lista (`role="combobox"`). A busca ignora acento e maiúsculas e procura no nome e na categoria.
+  - Mostra primeiro os nomes que começam com o termo, até 50 resultados, com a unidade e a categoria.
+  - Marca "já na ficha" no insumo que já está em outra linha.
+  - Teclado: ↓/↑ e Enter escolhem; Esc volta ao escolhido.
+  - No celular, a busca ocupa a linha inteira.
+- **Junto:** o selo "Sem ficha" (e os outros selos de situação do Estoque) passou aos tokens SINO. No tema escuro ele ficava claro sobre claro.
+- Não muda dados nem regras: a ficha salva continua igual (`salvar_ficha`).
