@@ -4,9 +4,9 @@
 
    Camadas (de baixo para cima):
    1. Marca (aprovado, 09-cores/sino-cores.css): tomate, tomate texto, carvão, creme, branco.
-   2. Interface (C1 · EM AVALIAÇÃO): neutros Carvão 900–100 e cores de estado. Ficam todas
-      aqui, num bloco só: aprovar C1 = nada muda; mudar C1 = trocar só este bloco.
-      As variantes para o tema escuro (marcadas "C1-escuro") são propostas desta fase:
+   2. Interface (C1 · aprovado pelo dono em 19/11/2026): neutros Carvão 900–100 e cores de estado. Ficam todas
+      aqui, num bloco só: mudar C1 = trocar só este bloco.
+      As variantes para o tema escuro (marcadas "C1-escuro") foram propostas nesta fase e aprovadas junto:
       C1 só define o tema claro.
    3. Semânticos (--s-*): o que os componentes usam. Nenhum componente usa cor solta.
 
@@ -24,7 +24,7 @@
   --sino-creme: #FFF7EF;
   --sino-branco: #FFFFFF;
 
-  /* 2 · interface (C1, em avaliação) */
+  /* 2 · interface (C1, aprovado em 19/11/2026) */
   --sino-carvao-900: #1C1A1F;
   --sino-carvao-700: #3B3640;
   --sino-carvao-500: #6A6170;

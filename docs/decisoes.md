@@ -1036,4 +1036,5 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
   - a tela de carregamento mostra o símbolo oficial;
   - os textos do painel trocam "RES" por "SINO";
   - **não mudam** o cardápio do cliente (`/c`), o painel da empresa, os documentos jurídicos (termos e privacidade), os nomes dos apps instalados (RES Motoboy, RES Impressão), os cabeçalhos `X-RES-*` da API nem o identificador do Pix.
-- A reorganização visual de cada módulo (fase 5) espera a aprovação do Resumo. Plano, auditoria, riscos e reversão estão em `docs/desenvolvimento/design-system-sino.md`.
+- **Aprovado pelo dono em 19/11/2026**, depois de testar a prévia: o Resumo, o menu, o tema e as cores. Isso inclui as cores de interface **C1**, com as variantes do tema escuro propostas aqui, que passam a valer no software. Para mudar uma cor depois, basta editar o bloco de C1 em `sino.css`.
+- A reorganização visual de cada módulo (fase 5) segue com os mesmos componentes, começando pelo quadro de Pedidos. Plano, auditoria, riscos e reversão estão em `docs/desenvolvimento/design-system-sino.md`.

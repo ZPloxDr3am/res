@@ -1,6 +1,6 @@
 # Design System SINO no software (D-120)
 
-Fase 1 a 4 do pedido de 18/11/2026: auditoria, fundação, página Resumo como referência e validação. A **fase 5 (expandir para os outros módulos) só começa depois da aprovação do Resumo**.
+Fase 1 a 4 do pedido de 18/11/2026: auditoria, fundação, página Resumo como referência e validação. **Aprovado pelo dono em 19/11/2026**, incluindo as cores de interface C1; a fase 5 (expandir para os outros módulos) está liberada.
 
 Fontes: Brand Book SINO v1.2 (26 p.), pacote SINO-Marca-v1.2 (só pastas 01–09) e o documento de transição para o Design System.
 
@@ -33,7 +33,7 @@ Fontes: Brand Book SINO v1.2 (26 p.), pacote SINO-Marca-v1.2 (só pastas 01–09
 1. **Marca (aprovada)**: tomate `#F0532B`, tomate texto `#C43B17`, carvão `#1C1A1F`, creme `#FFF7EF`, branco.
 2. **Interface (C1, EM AVALIAÇÃO)**: Carvão 900–100, Sucesso `#1E7A4C`, Atenção `#9A6200`, Erro `#B42318`, Informação `#2456C9`. Todos num bloco só: aprovar C1 não muda nada; trocar C1 é editar só esse bloco.
    - **C1-escuro** (proposta desta fase, C1 não define o tema escuro): `#55C98F`, `#E8A33A`, `#FF8C8C`, `#8DB0FF` e neutros `#141216`, `#242128`, `#2C2830`, `#A69DAB`. Todos ≥ 6,5 : 1 sobre o carvão.
-   - **Até a decisão sobre C1, este trabalho fica só na prévia** (o pacote da marca diz para não usar C1 em produção antes de aprovar).
+   - **C1 aprovado pelo dono em 19/11/2026**, com as variantes escuras.
 3. **Semânticos `--s-*`**: o que os componentes usam (fundo, superfície, borda, texto 1–3, link, ação, destaque, foco, estados, menu).
 
 Regras aplicadas:
@@ -107,7 +107,7 @@ Mesmas RPCs, mesmos cálculos, mesmos componentes de gráfico e meta. Mudou só 
 | Impressão | O menu continua escondido no `@media print`. |
 | Celular e tablet | Mesma estrutura (barra de baixo, menu de ícones); só cores e alvos de 48 px na barra. |
 | Peso da página | +48 KB (Inter woff2), só no painel, sem pré-carregar. |
-| C1 em produção antes de aprovar | A prévia não vai para a main sem a decisão sobre C1. |
+| C1 em produção antes de aprovar | Aprovado em 19/11/2026, antes do merge. |
 
 **Reversão**: o trabalho está num branch e num PR só (`func/121-design-system-sino`). Reverter o PR volta tudo, e não há migração de banco.
 
