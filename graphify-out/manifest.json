@@ -20,7 +20,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1795064222.2422087,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/ISSUE_TEMPLATE/teste.yml": {
@@ -120,8 +120,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/aplicativos/page.tsx": {
-    "mtime": 1795064164.488777,
-    "seen": 1795064222.2422314,
+    "mtime": 1795064356.1033523,
+    "seen": 1795064362.9549375,
     "ast_hash": "0afdc9a639a8927504e91b20e8eb579c",
     "semantic_hash": ""
   },
@@ -132,8 +132,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/assinatura/page.tsx": {
-    "mtime": 1795064164.4892235,
-    "seen": 1795064222.2422335,
+    "mtime": 1795064356.1033523,
+    "seen": 1795064362.9549596,
     "ast_hash": "6a8cfee99ea8dfedb96c5c9d3b4b40ed",
     "semantic_hash": ""
   },
@@ -342,8 +342,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/lojas/page.tsx": {
-    "mtime": 1795064164.4894404,
-    "seen": 1795064222.2422707,
+    "mtime": 1795064356.1033523,
+    "seen": 1795064362.955724,
     "ast_hash": "c95590f4322aa757dc6262cc5f47936a",
     "semantic_hash": ""
   },
@@ -1290,8 +1290,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/impressao/painel-impressoras.tsx": {
-    "mtime": 1795064164.4900296,
-    "seen": 1795064222.2424345,
+    "mtime": 1795064356.1033523,
+    "seen": 1795064362.958851,
     "ast_hash": "616393130195bd106403489ba45ca9f7",
     "semantic_hash": ""
   },
@@ -3288,8 +3288,8 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795064187.2133865,
-    "seen": 1795064222.2428124,
+    "mtime": 1795064356.1033523,
+    "seen": 1795064362.9645784,
     "ast_hash": "32f84d1cf3488ca4824d715793f0661f",
     "semantic_hash": ""
   },
