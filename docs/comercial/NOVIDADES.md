@@ -2,6 +2,9 @@
 
 Uma seção por semana, escrita na revisão de sexta. Linguagem de cliente.
 
+## Semana 47 (16–20/11/2026)
+- **Pedido de app não se perde mais**: se um pedido do iFood, 99Food, Keeta ou aiqfome chegar e der erro ao entrar, o SINO tenta de novo sozinho nos minutos seguintes, sem ninguém precisar clicar em Reprocessar.
+
 ## Semana 46 (09–13/11/2026)
 - **Todas as telas usáveis no celular** (D-121): nada anda para os lados; no quadro de Pedidos, uma barra de status leva a cada coluna; o Resumo diz de quais lojas são os números; relatórios mais limpos; vitrine do Delivery mostra se a loja está aberta ou fechada de verdade.
 - **Todas as telas no padrão SINO**: Caixa, Cozinha, Financeiro, Estoque, Configurações e as demais telas ganharam o mesmo cabeçalho, abas e cartões; na cozinha e no caixa os botões ficaram maiores para tocar no balcão, e o caixa fechado não aparece mais em vermelho.
