@@ -453,3 +453,44 @@ body:has(.s-menu) .qp-visao button[aria-checked='true'],
 body:has(.s-menu) .pp-barra span { background: var(--sino-tomate); }
 body:has(.s-menu) .qk-acao:hover,
 body:has(.s-menu) .qk-cartao[data-status='novo'] .qk-acao { background: var(--s-acao); color: var(--s-acao-texto); }
+
+/* ---------------------------------------------------------------------
+   Correções de 19/11 (dono: Aplicativos e Assinatura)
+   1. Variáveis que algumas telas usam sem estarem definidas: caíam no
+      branco/verde fixo e quebravam o tema escuro (cartões de plano brancos).
+   2. Selos e avisos com cores claras fixas: passam a usar as cores de
+      estado SINO, que se ajustam ao tema.
+   3. Cartões de Aplicativos: o botão herdava "não quebrar linha" e a
+      descrição passava por baixo do selo "Disponível".
+   --------------------------------------------------------------------- */
+body:has(.s-menu), .s-tela { --fundo-cartao: var(--s-superficie); --sucesso: var(--s-sucesso); --verde: var(--s-sucesso); }
+
+body:has(.s-menu) .ap-cartao { white-space: normal; text-align: left; align-items: center; }
+body:has(.s-menu) .ap-texto strong { overflow-wrap: anywhere; }
+body:has(.s-menu) .ap-texto .dica { overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+body:has(.s-menu) .ap-sit { align-self: center; white-space: nowrap; }
+body:has(.s-menu) .ap-sit[data-tom='ok'] { background: var(--s-sucesso-fundo); color: var(--s-sucesso); }
+body:has(.s-menu) .ap-sit[data-tom='livre'] { background: var(--s-info-fundo); color: var(--s-info); }
+body:has(.s-menu) .ap-sit[data-tom='off'] { background: var(--s-atencao-fundo); color: var(--s-atencao); }
+body:has(.s-menu) .ap-cartao[data-breve] { background: var(--s-superficie-2); }
+body:has(.s-menu) .ap-fundo { background: rgb(20 18 22 / 0.55); }
+
+body:has(.s-menu) .plano-cartao { background: var(--s-superficie); border-color: var(--s-borda); color: var(--s-texto); }
+body:has(.s-menu) .plano-cartao[data-atual] { border-color: var(--s-destaque); box-shadow: 0 0 0 1px var(--s-destaque); }
+body:has(.s-menu) .plano-cartao h3 { font-family: var(--s-fonte); font-weight: 600; }
+body:has(.s-menu) .plano-preco { font-weight: 600; letter-spacing: -0.02em; }
+body:has(.s-menu) .plano-preco small { color: var(--s-texto-3); }
+body:has(.s-menu) .plano-lista li { color: var(--s-texto); }
+body:has(.s-menu) .plano-lista li[data-nao] { color: var(--s-texto-3); }
+body:has(.s-menu) .plano-selo { background: var(--s-superficie-realce); color: var(--s-texto); box-shadow: inset 0 0 0 1px var(--s-borda); }
+body:has(.s-menu) .plano-cartao[data-atual] .plano-selo { background: var(--s-acao); color: var(--s-acao-texto); box-shadow: none; }
+
+body:has(.s-menu) .cmv-aviso[data-tom='alerta'],
+body:has(.s-menu) .pix-espera { background: var(--s-atencao-fundo); color: var(--s-texto); box-shadow: inset 3px 0 0 var(--s-atencao); }
+body:has(.s-menu) .api-segredo { background: var(--s-atencao-fundo); border-color: color-mix(in srgb, var(--s-atencao) 45%, transparent); }
+body:has(.s-menu) .mg-selo { background: var(--s-atencao-fundo); color: var(--s-atencao); }
+body:has(.s-menu) .mg-selo[data-selo='recomendado'] { background: var(--s-info-fundo); color: var(--s-info); }
+body:has(.s-menu) .mg-selo[data-selo='novo'] { background: var(--s-superficie-realce); color: var(--s-texto); }
+body:has(.s-menu) .qp-selo-cliente[data-tipo='novo'] { background: var(--s-sucesso-fundo); color: var(--s-sucesso); }
+body:has(.s-menu) .qp-selo-cliente[data-tipo='volta'] { background: var(--s-atencao-fundo); color: var(--s-atencao); }
+body:has(.s-menu) .qp-selo-cliente[data-tipo='fiel'] { background: var(--s-info-fundo); color: var(--s-info); }
