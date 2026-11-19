@@ -1068,10 +1068,13 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
     - A tela de Impressoras passa a dizer "Programa de impressão".
     - O programa instalado continua "RES Impressão" até sair uma versão nova.
     - A tabela de impressoras quebra texto no notebook e vira lista abaixo de 900 px.
+- **Achado técnico:** o cabeçalho fixo (sticky) das tabelas fazia o Chrome do celular alargar a página, mesmo com a tabela rolando dentro do cartão. Em 320 px, o Resumo abria com 490 px. A correção é `contain: paint` nos contêineres de rolagem.
 - **Investigado e não alterado (depende do dono):**
   - Há pedidos de teste parados "em preparo" desde 08/11 em lojas reais ("Cliente Teste iFood", "TESTE Cliente…"). Eles entram em "Passando do prazo" e nos ativos.
   - O cálculo de atraso está certo: os pedidos estão de fato abertos há 10 dias.
   - Para limpar, o dono cancela ou conclui esses pedidos. O sistema não os altera sozinho.
+  - Esses pedidos também distorcem os Relatórios: "Em preparo" mostra média de 3.851 min.
+  - Erro de hidratação do React (#418) no quadro de Pedidos: já existia em produção antes desta etapa, provavelmente por um texto de tempo calculado diferente no servidor e no navegador. Não afeta o uso; está registrado como pendência.
 - **Validação:**
   - Typecheck, build, testes de regras (126 de 127; a falha é anterior a esta mudança) e testes do banco (97).
   - Auditoria automática em 320, 375, 390, 428, 768, 1280 e 1440 px, sem rolagem lateral involuntária.
