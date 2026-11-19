@@ -19,7 +19,7 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1795105773.7243786,
+    "seen": 1795107258.50173,
     "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
@@ -1068,8 +1068,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/estoque/fichas.tsx": {
-    "mtime": 1794610291.995394,
-    "seen": 1795062708.6630273,
+    "mtime": 1795107195.4290783,
+    "seen": 1795107203.6734385,
     "ast_hash": "59ed48bb75de904426013517d60a0891",
     "semantic_hash": ""
   },
@@ -1350,9 +1350,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/nav-painel.tsx": {
-    "mtime": 1795058662.095625,
-    "seen": 1795062708.6630678,
-    "ast_hash": "8e63b771ac86fda8842b8b5ba353eab4",
+    "mtime": 1795107239.7221994,
+    "seen": 1795107258.5021105,
+    "ast_hash": "4113f78a246c4a23053387685b291019",
     "semantic_hash": ""
   },
   "apps/web/components/negociacoes-ifood.tsx": {
@@ -1776,8 +1776,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1795103092.797092,
-    "seen": 1795103102.9465892,
+    "mtime": 1795106956.9228313,
+    "seen": 1795107203.6766822,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": ""
   },
@@ -3240,8 +3240,8 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1795104317.9146745,
-    "seen": 1795104326.9680371,
+    "mtime": 1795107195.4290783,
+    "seen": 1795107203.682901,
     "ast_hash": "3291c0319038d204b9ee105843092cbd",
     "semantic_hash": ""
   },
@@ -3252,8 +3252,8 @@
     "semantic_hash": ""
   },
   "docs/decisoes.md": {
-    "mtime": 1795105761.6947603,
-    "seen": 1795105771.1169453,
+    "mtime": 1795107195.4290783,
+    "seen": 1795107203.6829278,
     "ast_hash": "c3f1fb259b9f091e5a9bb40e7ceef038",
     "semantic_hash": ""
   },
@@ -3402,8 +3402,8 @@
     "semantic_hash": ""
   },
   "docs/qualidade/roteiros/estoque-cmv.md": {
-    "mtime": 1794355880.8227193,
-    "seen": 1795062708.6634047,
+    "mtime": 1795107195.4290783,
+    "seen": 1795107203.6835418,
     "ast_hash": "2a37f4d5a48d6c1526f3ee3d3407c406",
     "semantic_hash": ""
   },
@@ -3678,8 +3678,8 @@
     "semantic_hash": ""
   },
   "scripts/conferencia/conferir-producao.sql": {
-    "mtime": 1795105744.8189251,
-    "seen": 1795105771.1141424,
+    "mtime": 1795106172.0267847,
+    "seen": 1795107203.6788948,
     "ast_hash": "c43f3ddd0b9a69528fb37286458c85a1",
     "semantic_hash": ""
   },
@@ -3732,20 +3732,20 @@
     "semantic_hash": ""
   },
   "supabase/migrations/20261119190000_rls_por_conjunto.sql": {
-    "mtime": 1795105536.2350714,
-    "seen": 1795105771.1159668,
+    "mtime": 1795106172.0267847,
+    "seen": 1795107203.681378,
     "ast_hash": "a7d51f7c67aebb92cbaa3e564067be20",
     "semantic_hash": ""
   },
   "supabase/migrations/20261119191000_relatorio_operacao_rapido.sql": {
-    "mtime": 1795105670.7296863,
-    "seen": 1795105771.1159685,
+    "mtime": 1795106172.0267847,
+    "seen": 1795107203.6813807,
     "ast_hash": "d30736b3dc5de845fda3405ce7ffcd68",
     "semantic_hash": ""
   },
   "scripts/reverter/d124-rls.sql": {
-    "mtime": 1795105910.0027692,
-    "seen": 1795105925.2549284,
+    "mtime": 1795106172.0267847,
+    "seen": 1795107203.678983,
     "ast_hash": "0725c6230506e6e409244a8d761db529",
     "semantic_hash": ""
   }
