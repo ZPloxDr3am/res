@@ -1115,3 +1115,22 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - **Como avisa:** uma mensagem com tudo junto, por **e-mail (Resend)** e **WhatsApp (CallMeBot)**. Cada aviso sai uma vez (`private.alertas_enviados`, guardado 30 dias). O texto traz só o resumo, sem dado de cliente.
 - **Configuração:** as chaves ficam no **Vault do Supabase** e são cadastradas pelo dono. Sem chave, nada sai e o aviso espera. `public.testar_alertas()` manda um teste (equipe RES ou o SQL Editor). Passo a passo: `docs/desenvolvimento/alertas-equipe.md`.
 - **Escolha do WhatsApp:** o CallMeBot é gratuito e serve para aviso interno, sem conta na Meta. Quando o WhatsApp oficial estiver ligado, dá para trocar.
+
+## D-124 — RLS calculada uma vez por consulta e relatório de Operação mais rápido (19/11/2026)
+- **Por quê:** P2 da auditoria. As políticas chamavam `private.tem_permissao`, `e_membro`, `e_gestor` ou `e_membro_grupo` em **cada linha**. Com 120 mil pedidos, a consulta de 2 lojas levava 2 s.
+- **O que mudou (`20261119190000_rls_por_conjunto.sql`):**
+  - Quatro funções novas devolvem a lista de lojas do usuário: `private.lojas_permitidas(recurso)`, `lojas_membro()`, `lojas_gestor()` e `lojas_grupo_membro()`. Usam as mesmas regras das antigas, que continuam existindo.
+  - As 85 políticas do esquema `public` que usavam o padrão antigo agora usam `loja_id = ANY (((SELECT private.lojas_…()))::uuid[])`, calculado uma vez por consulta.
+  - A troca é automática (regex sobre `pg_policies`) e pode rodar de novo.
+- **Equivalência conferida:** antes e depois, cada um dos 106 usuários dos testes e o anônimo contaram as linhas visíveis de todas as 104 tabelas e views. Foram 11.128 comparações, com 0 diferenças. O teste de isolamento (D-122) e a suíte do banco passam.
+- **Relatório de Operação (`20261119191000_relatorio_operacao_rapido.sql`):**
+  - "Clientes novos" conferia o histórico uma vez por pedido; agora confere uma vez por telefone.
+  - O resultado é igual ao da versão anterior, com o JSON idêntico em 5 períodos com 2 a 664 clientes novos.
+- **Medido no banco local (376 mil pedidos, 2 lojas com 60 mil cada, mesma máquina):**
+
+| Consulta | Antes | Depois |
+|---|---|---|
+| Últimos 200 pedidos de 2 lojas (com RLS) | 2,0 s | 0,11 s |
+| Contar todos os pedidos visíveis | 5,2 s | 0,02 s |
+| Relatório de Operação, 30 dias | 2,6 s | 0,77 s |
+| Resumo, 90 dias | 0,25 s | 0,17 s |
