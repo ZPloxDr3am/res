@@ -120,7 +120,7 @@
     --s-atencao-fundo: color-mix(in srgb, var(--sino-atencao-escuro) 12%, var(--s-superficie));
     --s-erro-fundo: color-mix(in srgb, var(--sino-erro-escuro) 12%, var(--s-superficie));
     --s-info-fundo: color-mix(in srgb, var(--sino-informacao-escuro) 12%, var(--s-superficie));
-    --s-sombra: none;
+    --s-sombra: 0 0 #0000;   /* nunca 'none': entra em listas de sombra */
     --s-sombra-camada: 0 16px 40px -12px rgb(0 0 0 / 0.6), 0 0 0 1px var(--s-borda);
     --s-menu-fundo: var(--sino-carvao-950);
     --s-menu-borda: #2A262F;
@@ -149,7 +149,7 @@
   --s-atencao-fundo: color-mix(in srgb, var(--sino-atencao-escuro) 12%, var(--s-superficie));
   --s-erro-fundo: color-mix(in srgb, var(--sino-erro-escuro) 12%, var(--s-superficie));
   --s-info-fundo: color-mix(in srgb, var(--sino-informacao-escuro) 12%, var(--s-superficie));
-  --s-sombra: none;
+  --s-sombra: 0 0 #0000;   /* nunca 'none': entra em listas de sombra */
   --s-sombra-camada: 0 16px 40px -12px rgb(0 0 0 / 0.6), 0 0 0 1px var(--s-borda);
   --s-menu-fundo: var(--sino-carvao-950);
   --s-menu-borda: #2A262F;
