@@ -20,7 +20,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1795103108.9559839,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/ISSUE_TEMPLATE/teste.yml": {
@@ -438,8 +438,8 @@
     "semantic_hash": ""
   },
   "apps/web/app/api/marketplace/ifood/sincronizar/route.ts": {
-    "mtime": 1795102931.6824458,
-    "seen": 1795103102.9416482,
+    "mtime": 1795104317.9146745,
+    "seen": 1795104326.958429,
     "ast_hash": "adc50d1e1575b05ab2c35b5a01714e21",
     "semantic_hash": ""
   },
@@ -3240,8 +3240,8 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1795103038.472292,
-    "seen": 1795103102.9515414,
+    "mtime": 1795104317.9146745,
+    "seen": 1795104326.9680371,
     "ast_hash": "3291c0319038d204b9ee105843092cbd",
     "semantic_hash": ""
   },
@@ -3252,8 +3252,8 @@
     "semantic_hash": ""
   },
   "docs/decisoes.md": {
-    "mtime": 1795103803.8186443,
-    "seen": 1795103808.0762472,
+    "mtime": 1795104317.9186745,
+    "seen": 1795104326.9680574,
     "ast_hash": "98e842cd0ecf477f893ab2fb3329e13f",
     "semantic_hash": ""
   },
@@ -3665,52 +3665,10 @@
     "ast_hash": "30bd8b421b6ef6a54d1c42ec657b6139",
     "semantic_hash": ""
   },
-  "apps/web/lib/marketplace/reprocesso.ts": {
-    "mtime": 1795102924.589082,
-    "seen": 1795103102.9462507,
-    "ast_hash": "96812623f29d937c85eecd7b002364a5",
-    "semantic_hash": ""
-  },
-  "scripts/conferencia/conferir-producao.sql": {
-    "mtime": 1795103798.523677,
-    "seen": 1795103808.075993,
-    "ast_hash": "167a765cc8f6ec54b1bc72a85aa2811d",
-    "semantic_hash": ""
-  },
-  "scripts/conferencia/gerar.sh": {
-    "mtime": 1795103013.6904817,
-    "seen": 1795103102.9483125,
-    "ast_hash": "44ae8cf5fd1d381e81aa06d6ebf7d13a",
-    "semantic_hash": ""
-  },
-  "scripts/conferencia/impressao-digital.sql": {
-    "mtime": 1795103728.81768,
-    "seen": 1795103739.341436,
-    "ast_hash": "d091308a9d4e619da9382d2e248433c0",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261119160000_reprocesso_eventos_apps.sql": {
-    "mtime": 1795102957.1670547,
-    "seen": 1795103102.9504926,
-    "ast_hash": "c16d9ca263d3340d312055168303fccd",
-    "semantic_hash": ""
-  },
-  "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzzy_reprocesso_eventos.sql": {
-    "mtime": 1795102949.4130836,
-    "seen": 1795103102.9512885,
-    "ast_hash": "b31e94b932740b3665fb5c3aa5485214",
-    "semantic_hash": ""
-  },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzzz_isolamento.sql": {
     "mtime": 1795102825.2850761,
     "seen": 1795103102.9512906,
     "ast_hash": "35d93794a818d27d6112f1ca862e6272",
-    "semantic_hash": ""
-  },
-  "supabase/migrations/20261119170000_rls_tabelas_privadas.sql": {
-    "mtime": 1795103755.285503,
-    "seen": 1795103808.0761118,
-    "ast_hash": "613692f73040185b6f8990ff9e8dc256",
     "semantic_hash": ""
   }
 }
