@@ -10,7 +10,7 @@ const pct = (v: number) => `${v.toLocaleString('pt-BR', { maximumFractionDigits:
 const ler = (s: string) => Number(s.replace(/\./g, '').replace(',', '.'));
 
 /** 🎯 Meta do mês com projeção pela média de cada dia da semana (D-064). */
-export function MetaMes({ dados, podeEditar }: { dados: DadosMeta; podeEditar: string[] }) {
+export function MetaMes({ dados, podeEditar, escopo }: { dados: DadosMeta; podeEditar: string[]; escopo?: string }) {
   const m = calcularMeta(dados);
   const [editando, setEditando] = useState(false);
   const [valores, setValores] = useState<Record<string, string>>(() =>
@@ -56,7 +56,10 @@ export function MetaMes({ dados, podeEditar }: { dados: DadosMeta; podeEditar: s
     return (
       <section className="cartao grade meta-mes" style={{ gap: '0.5rem' }}>
         <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <strong>🎯 Meta de {nomeMes}</strong>
+          <span>
+            <strong>🎯 Meta de {nomeMes}</strong>
+            {escopo && <span className="dica"> · {escopo}</span>}
+          </span>
           {editaveis.length > 0 && !editando && <button type="button" className="mini botao-primario" onClick={() => setEditando(true)}>Definir meta</button>}
         </div>
         {!editando && (
@@ -80,6 +83,7 @@ export function MetaMes({ dados, podeEditar }: { dados: DadosMeta; podeEditar: s
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
         <span>
           <strong>🎯 Meta de {nomeMes}: {formatarReais(m.meta)}</strong>
+          {escopo && <span className="dica"> · {escopo}</span>}
           {m.semMeta.length > 0 && <span className="dica"> · sem meta: {m.semMeta.join(', ')}</span>}
         </span>
         {editaveis.length > 0 && !editando && <button type="button" className="mini" onClick={() => setEditando(true)}>Mudar meta</button>}

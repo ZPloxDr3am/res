@@ -1038,3 +1038,45 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
   - **não mudam** o cardápio do cliente (`/c`), o painel da empresa, os documentos jurídicos (termos e privacidade), os nomes dos apps instalados (RES Motoboy, RES Impressão), os cabeçalhos `X-RES-*` da API nem o identificador do Pix.
 - **Aprovado pelo dono em 19/11/2026**, depois de testar a prévia: o Resumo, o menu, o tema e as cores. Isso inclui as cores de interface **C1**, com as variantes do tema escuro propostas aqui, que passam a valer no software. Para mudar uma cor depois, basta editar o bloco de C1 em `sino.css`.
 - A reorganização visual de cada módulo (fase 5) segue com os mesmos componentes, começando pelo quadro de Pedidos. Plano, auditoria, riscos e reversão estão em `docs/desenvolvimento/design-system-sino.md`.
+
+## D-121 — Auditoria final de UI/UX do SINO: responsividade, acabamento e acessibilidade (19/11/2026)
+- **Contexto:** o dono enviou os 29 prints para avaliação externa. Pediu uma etapa de qualidade sem redesenhar: celular sem conteúdo cortado, correção dos pontos já vistos (prints 03, 08, 09, 12, 15, 16, 17, 20 e 21), informação coerente e acessibilidade.
+- **Decisões (só apresentação; nenhuma regra, consulta, API ou banco mudou):**
+  - **Página sem rolagem lateral:**
+    - O conteúdo encolhe (`min-width: 0` na página, nos cartões e nas grades).
+    - Tabelas largas rolam dentro do próprio cartão, inclusive a tabela "Ver em tabela" do gráfico do Resumo, que esticava a página no celular.
+    - A barra de baixo usa 5 colunas iguais; um nome longo vira "…".
+    - O selo de contexto do Resumo quebra linha em telas de 320 a 420 px.
+  - **Pedidos no celular:**
+    - Barra de status fixa no topo com contagens, que mostra a coluna atual e leva a cada coluna.
+    - Colunas deslizantes com a próxima aparecendo pela borda.
+    - "Loja em uso / Todas" em duas metades iguais.
+    - Filas que rolam de lado esmaecem na borda direita.
+  - **Botões que são cartões:** o estilo global de botão centraliza e não quebra linha. Nesses cartões, o texto alinha à esquerda e quebra:
+    - cartão do cardápio, produto do novo pedido, cliente, opções de promoção e de estoque, avaliação.
+  - **Links com cara de botão ou cartão** usam a cor de texto ou de ação, não a cor de link. Isso explicava o texto tomate sobre carvão em "Colocar produto em promoção" e os títulos em tomate em Aplicativos.
+  - **Relatórios:** números em cor neutra, sem emoji nos cartões. A cor fica só nos selos de julgamento, na curva ABC e nas porcentagens, com os tokens de estado.
+  - **Salão:** mesas e selos com os tokens de estado: livre usa sucesso e ocupada usa erro.
+  - **Selos:** iFood em #C8101E para passar AA com texto branco. Chips de segmento com texto na cor do tema.
+  - **Texto mínimo:** `--s-t-12` passa a ser `max(0.75rem, 12px)`, porque a raiz tem 15 px. Selos, contadores e textos de apoio usam esse mínimo.
+  - **Foco visível:** contorno de 2 px em tudo que é clicável.
+  - **Alvo de toque:** em telas de toque, botões e campos têm pelo menos 44 px, e os botões `mini` pelo menos 40 px.
+  - **Informação:**
+    - O Resumo diz sempre de quais lojas vêm os indicadores, a meta, a composição e os gráficos. A meta também mostra o escopo.
+    - A vitrine do Delivery mostra o estado real (Aberto ou Fechado agora). Antes era um texto fixo de exemplo, que contradizia o bloco do link.
+  - **Nomenclatura:**
+    - A tela de Impressoras passa a dizer "Programa de impressão".
+    - O programa instalado continua "RES Impressão" até sair uma versão nova.
+    - A tabela de impressoras quebra texto no notebook e vira lista abaixo de 900 px.
+- **Achado técnico:** o cabeçalho fixo (sticky) das tabelas fazia o Chrome do celular alargar a página, mesmo com a tabela rolando dentro do cartão. Em 320 px, o Resumo abria com 490 px. A correção é `contain: paint` nos contêineres de rolagem.
+- **Investigado e não alterado (depende do dono):**
+  - Há pedidos de teste parados "em preparo" desde 08/11 em lojas reais ("Cliente Teste iFood", "TESTE Cliente…"). Eles entram em "Passando do prazo" e nos ativos.
+  - O cálculo de atraso está certo: os pedidos estão de fato abertos há 10 dias.
+  - Para limpar, o dono cancela ou conclui esses pedidos. O sistema não os altera sozinho.
+  - Esses pedidos também distorcem os Relatórios: "Em preparo" mostra média de 3.851 min.
+  - Erro de hidratação do React (#418) no quadro de Pedidos: já existia em produção antes desta etapa, provavelmente por um texto de tempo calculado diferente no servidor e no navegador. Não afeta o uso; está registrado como pendência.
+- **Validação:**
+  - Typecheck, build, testes de regras (126 de 127; a falha é anterior a esta mudança) e testes do banco (97).
+  - Auditoria automática em 320, 375, 390, 428, 768, 1280 e 1440 px, sem rolagem lateral involuntária.
+  - Verificação de contraste, tamanho de texto, alvo de toque e nome acessível.
+  - Roteiro manual: `docs/qualidade/roteiros/responsividade-sino.md`.

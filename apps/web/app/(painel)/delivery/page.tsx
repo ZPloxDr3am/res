@@ -70,7 +70,7 @@ export default async function Delivery() {
       </p>
       {lista.map((m) => (
         <div key={m.id} className="grade">
-          <FormVitrine marcaId={m.id} lojaId={ctx.lojaId} nome={m.nome} link={m.link} inicial={m.vitrine} />
+          <FormVitrine marcaId={m.id} lojaId={ctx.lojaId} nome={m.nome} link={m.link} inicial={m.vitrine} aberta={m.abertaAgora} />
           <FormDelivery marcaId={m.id} nome={m.nome} link={m.link} qr={m.qr} abertaAgora={m.abertaAgora} inicial={m.config} outrosCardapios={Math.max(0, (cardapiosDoGrupo ?? 1) - 1)} />
         </div>
       ))}

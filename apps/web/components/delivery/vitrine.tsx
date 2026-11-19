@@ -7,7 +7,7 @@ import { salvando } from '@/components/tempo-real';
 const CORES = ['#c8102e', '#e4572e', '#f2a541', '#1d6a50', '#2b59c3', '#6b3fa0', '#1f1f1f'];
 
 /** Vitrine do cardápio digital (D-045): o cliente vê a capa, o logo e a cor desta marca. */
-export function FormVitrine({ marcaId, lojaId, nome, link, inicial }: { marcaId: string; lojaId: string; nome: string; link: string; inicial: Vitrine }) {
+export function FormVitrine({ marcaId, lojaId, nome, link, inicial, aberta }: { marcaId: string; lojaId: string; nome: string; link: string; inicial: Vitrine; aberta: boolean }) {
   const [v, setV] = useState<Vitrine>(inicial);
   const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null);
   const [pendente, iniciar] = useTransition();
@@ -30,7 +30,8 @@ export function FormVitrine({ marcaId, lojaId, nome, link, inicial }: { marcaId:
           <Foto rotulo="Logo" classe="vt-logo" url={v.logo_url} id={`marca-${marcaId}-logo`} lojaId={lojaId} aoMudar={(u) => muda({ logo_url: u })} />
           <div className="grade" style={{ gap: '0.1rem' }}>
             <strong style={{ fontSize: '1.2rem' }}>{nome}</strong>
-            <span className="vt-status">Aberto agora</span>
+            {/* mesmo estado do cardápio publicado (horários da loja), não um texto fixo de exemplo */}
+            <span className="vt-status" data-fechada={aberta ? undefined : ''}>{aberta ? 'Aberto agora' : 'Fechado agora'}</span>
           </div>
         </div>
       </div>

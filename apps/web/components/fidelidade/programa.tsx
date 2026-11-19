@@ -78,7 +78,7 @@ export function ProgramaFidelidade({ painel }: { painel: PainelFidelidade }) {
         <div className="linha">
           <label>% de volta<input type="number" min={0} max={50} step={0.5} value={c.cashbackPct} onChange={(e) => muda('cashbackPct', num(e.target.value) || 0)} style={{ width: '6rem' }} /></label>
           <label>Saldo mínimo para usar (R$)<input inputMode="decimal" defaultValue={reais(c.cashbackMinimo)} onBlur={(e) => muda('cashbackMinimo', Math.max(0, lerReais(e.target.value) || 0))} style={{ width: '7rem' }} /></label>
-          <label>Usar no máximo (% do pedido)<input type="number" min={1} max={100} placeholder="sem limite" value={c.cashbackMaxPct ?? ''} onChange={(e) => muda('cashbackMaxPct', e.target.value === '' ? null : Math.min(100, Math.max(1, num(e.target.value) || 1)))} style={{ width: '7rem' }} /></label>
+          <label>Usar no máximo (% do pedido)<input type="number" min={1} max={100} placeholder="sem limite" value={c.cashbackMaxPct ?? ''} onChange={(e) => muda('cashbackMaxPct', e.target.value === '' ? null : Math.min(100, Math.max(1, num(e.target.value) || 1)))} style={{ width: '9rem' }} /></label>
         </div>
         <Validade rotulo="Prazo para o cliente usar o cashback" dias={c.cashbackValidadeDias} aoMudar={(d) => muda('cashbackValidadeDias', d)} />
         <p className="fid-exemplo">

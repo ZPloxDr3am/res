@@ -145,6 +145,7 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
   // contexto explícito: a loja em uso (menu) pode ser outra; os números desta tela são das lojas do filtro
   const lojaUnica = lojaFiltro === 'todas' ? (ctx.lojas.length === 1 ? ctx.lojas[0] : null) : ctx.lojas.find((l) => l.id === lojaFiltro) ?? null;
   const consolidado = !lojaUnica;
+  const escopo = consolidado ? `${ids.length} lojas somadas` : lojaUnica!.nome;
   const atualizadoAs = new Date().toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' });
   const rotuloPeriodo = preset === 'personalizado' ? 'Período escolhido' : PRESET_ROTULO[preset];
   const datas = periodo.de === periodo.ate ? dataBR(periodo.de) : `${dataBR(periodo.de)} a ${dataBR(periodo.ate)}`;
@@ -211,6 +212,15 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
         </div>
       )}
 
+      {/* de quais lojas vêm os números: sempre explícito (a loja em uso no menu pode ser outra) */}
+      <p className="s-escopo">
+        {consolidado ? (
+          <>Indicadores, meta, composição e gráficos somam <strong>{ids.length} lojas</strong>: {ctx.lojas.filter((l) => ids.includes(l.id)).map((l) => l.nome).join(', ')}.</>
+        ) : (
+          <>Indicadores, meta, composição e gráficos são só de <strong>{lojaUnica!.nome}</strong>.</>
+        )}
+      </p>
+
       {/* o que o dono precisa ver em segundos: os quatro números, o faturamento em destaque */}
       <section className="s-kpis" aria-label="Indicadores do período">
         <Kpi
@@ -274,7 +284,7 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
               <CartaoBomDia dados={bomDia as BomDia} loja={ctx.lojaNome} />
             </div>
           ) : null}
-          {dm ? <MetaMes key={`${lojaFiltro}-${(dm as DadosMeta).mes}`} dados={dm as DadosMeta} podeEditar={podeMeta} /> : null}
+          {dm ? <MetaMes key={`${lojaFiltro}-${(dm as DadosMeta).mes}`} dados={dm as DadosMeta} podeEditar={podeMeta} escopo={escopo} /> : null}
         </div>
       )}
 
