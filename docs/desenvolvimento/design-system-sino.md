@@ -168,10 +168,16 @@ Em cada tela: trocar a classe da raiz para `s-pagina`, os componentes para os `s
 - No escuro, o texto sobre as faixas coloridas fica carvão (contraste AA com as cores claras do C1-escuro).
 - Lógica da fila, bip, modo sem internet e estações sem nenhuma mudança.
 
-### 5.4 Financeiro e Estoque (em validação)
+### 5.4 Financeiro e Estoque — aprovado pelo dono em 19/11/2026 (PR #147)
 
 - As duas páginas dentro de `.s-pagina .s-gestao`, com cabeçalho "Gestão · Financeiro" / "Gestão · Estoque" (o subtítulo do estoque mantém insumos, valor e itens acabando).
 - Abas e segmentos no padrão SINO (aba ativa com marca tomate embaixo), rolando de lado no celular em vez de quebrar linha.
 - Cartões de número do financeiro no formato KPI; cores de receita / despesa / "vence hoje" passam a ser sucesso / erro / atenção do C1 (as variáveis `--fin-*` são remapeadas só dentro da página).
 - Cabeçalhos de tabela em caixa alta pequena, números tabulares.
 - Nenhuma consulta, conta, DRE, CMV ou ação mudou.
+
+### 5.5 Configurações (em validação)
+
+- Aplicativos, Impressoras, Lojas e equipe e Assinatura dentro de `.s-pagina .s-gestao`, com cabeçalho "Configurações · …" e o mesmo subtítulo de antes.
+- Abas (inclusive as de Impressoras, que usam `aria-current`) no padrão SINO; cartões, tabelas e selos herdam o visual das telas de Gestão.
+- Nenhuma integração, impressora, permissão de equipe ou cobrança mudou.

@@ -68,11 +68,14 @@ const ABAS: { id: Aba; rotulo: string }[] = [
 
 export function PainelImpressoras({ aba, dados }: { aba: Aba; dados: DadosPainelImpressoras }) {
   return (
-    <div className="grade">
-      <div className="grade" style={{ gap: '0.15rem' }}>
-        <h1 style={{ margin: 0 }}>Impressoras</h1>
-        <span className="dica">Cadastre as impressoras da loja, diga o que cada uma imprime e ajuste o cupom de cada marca.</span>
-      </div>
+    <div className="s-pagina s-gestao">
+      <header className="s-cabecalho">
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Configurações</p>
+          <h1 className="s-titulo">Impressoras</h1>
+          <p className="s-subtitulo">Cadastre as impressoras da loja, diga o que cada uma imprime e ajuste o cupom de cada marca.</p>
+        </div>
+      </header>
       <nav className="abas" aria-label="Seções">
         {ABAS.map((a) => (
           <Link key={a.id} href={`/impressoras?aba=${a.id}`} aria-current={aba === a.id ? 'page' : undefined} className={aba === a.id ? 'aba-ativa' : undefined}>

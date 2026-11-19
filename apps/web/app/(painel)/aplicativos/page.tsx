@@ -88,11 +88,14 @@ export default async function PaginaAplicativos() {
   const h = await headers();
   const origem = `${h.get('x-forwarded-proto') ?? 'https'}://${h.get('host') ?? 'res-iqzs.vercel.app'}`;
   return (
-    <div className="grade">
-      <div>
-        <h1 style={{ marginBottom: 0 }}>Aplicativos</h1>
-        <p className="dica" style={{ margin: 0 }}>Integrações de {ctx.lojaNome}: ligue o que fizer sentido para a sua operação.</p>
-      </div>
+    <div className="s-pagina s-gestao">
+      <header className="s-cabecalho">
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Configurações</p>
+          <h1 className="s-titulo">Aplicativos</h1>
+          <p className="s-subtitulo">Integrações de {ctx.lojaNome}: ligue o que fizer sentido para a sua operação.</p>
+        </div>
+      </header>
       {error || !data ? <p className="cartao dica">{error?.message ?? 'Sem acesso.'}</p> : <Aplicativos dados={data as PainelAplicativos} origem={origem} api={(api.data as PainelApi | null) ?? null} mp={(mp.data as StatusMp | null) ?? null} ifood={ifood} od={od} clientes={clientes} modulos={modulos} />}
     </div>
   );

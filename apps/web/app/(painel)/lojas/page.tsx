@@ -84,8 +84,13 @@ export default async function Lojas({ searchParams }: { searchParams: Promise<{ 
   const inicial = sp.loja && lojas.some((l) => l.id === sp.loja) ? sp.loja : fichaInicial ? ((fichas ?? []).find((f) => f.id === fichaInicial)!.loja_id as string) : ctx.lojaId;
 
   return (
-    <div className="grade">
-      <h1>Lojas e equipe</h1>
+    <div className="s-pagina s-gestao">
+      <header className="s-cabecalho">
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Configurações</p>
+          <h1 className="s-titulo">Lojas e equipe</h1>
+        </div>
+      </header>
       <nav className="abas nao-imprimir" aria-label="Lojas e equipe">
         {ABAS.map(([k, r]) => (
           <Link key={k} href={k === 'lojas' ? '/lojas' : `/lojas?aba=${k}`} role="tab" aria-selected={aba === k} className="aba-link">
