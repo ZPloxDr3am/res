@@ -20,7 +20,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1795105034.759873,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/ISSUE_TEMPLATE/teste.yml": {
@@ -3252,9 +3252,9 @@
     "semantic_hash": ""
   },
   "docs/decisoes.md": {
-    "mtime": 1795105019.8587162,
-    "seen": 1795105029.8924415,
-    "ast_hash": "8f651af62ebb20fb839dfe60eacee4f3",
+    "mtime": 1795105761.6947603,
+    "seen": 1795105771.1169453,
+    "ast_hash": "c3f1fb259b9f091e5a9bb40e7ceef038",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/COMECE-AQUI.md": {
@@ -3678,9 +3678,9 @@
     "semantic_hash": ""
   },
   "scripts/conferencia/conferir-producao.sql": {
-    "mtime": 1795105019.5507162,
-    "seen": 1795105029.885983,
-    "ast_hash": "8826e5b046a9466b052b893a9a47c3ac",
+    "mtime": 1795105744.8189251,
+    "seen": 1795105771.1141424,
+    "ast_hash": "c43f3ddd0b9a69528fb37286458c85a1",
     "semantic_hash": ""
   },
   "scripts/conferencia/gerar.sh": {
@@ -3708,14 +3708,14 @@
     "semantic_hash": ""
   },
   "supabase/migrations/20261119180000_alertas_equipe.sql": {
-    "mtime": 1795104964.8913038,
-    "seen": 1795105029.8891532,
+    "mtime": 1795105339.5147352,
+    "seen": 1795105771.1159644,
     "ast_hash": "2cef58b7aacc4de0516e33332de6b474",
     "semantic_hash": ""
   },
   "supabase/tests/99zzzzzzzzzzzzzzzzzzzzzzzzzzzzx_alertas.sql": {
-    "mtime": 1795104889.657781,
-    "seen": 1795105029.8920596,
+    "mtime": 1795105339.5147352,
+    "seen": 1795105771.116634,
     "ast_hash": "ebed609250d8a18e5a2783506167a3c1",
     "semantic_hash": ""
   },
@@ -3726,9 +3726,21 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/alertas-equipe.md": {
-    "mtime": 1795104964.8917203,
-    "seen": 1795105029.892549,
+    "mtime": 1795105339.4987352,
+    "seen": 1795105771.1170266,
     "ast_hash": "14b550d71886de6e97da20c23b33c98a",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261119190000_rls_por_conjunto.sql": {
+    "mtime": 1795105536.2350714,
+    "seen": 1795105771.1159668,
+    "ast_hash": "a7d51f7c67aebb92cbaa3e564067be20",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261119191000_relatorio_operacao_rapido.sql": {
+    "mtime": 1795105670.7296863,
+    "seen": 1795105771.1159685,
+    "ast_hash": "d30736b3dc5de845fda3405ce7ffcd68",
     "semantic_hash": ""
   }
 }
