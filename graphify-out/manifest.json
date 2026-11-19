@@ -20,7 +20,7 @@
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
     "seen": 1795063743.4447525,
-    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
+    "ast_hash": "",
     "semantic_hash": ""
   },
   ".github/ISSUE_TEMPLATE/teste.yml": {
@@ -1302,8 +1302,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/kds/kds.tsx": {
-    "mtime": 1795063690.2361357,
-    "seen": 1795063743.4451272,
+    "mtime": 1795063869.3353348,
+    "seen": 1795063876.3115819,
     "ast_hash": "e73123305308045638fb5aa51a72e029",
     "semantic_hash": ""
   },
@@ -3288,8 +3288,8 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795063708.010567,
-    "seen": 1795063743.445797,
+    "mtime": 1795063869.3353348,
+    "seen": 1795063876.3187783,
     "ast_hash": "5eaa0830fe4d2e697c99e469f0fbf306",
     "semantic_hash": ""
   },
