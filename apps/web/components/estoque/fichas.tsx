@@ -5,6 +5,7 @@ import { copiarFicha, salvarFicha, sugerirFichaIA } from '@/app/(painel)/estoque
 import { salvando } from '@/components/tempo-real';
 import { nomeOpcao, type GrupoRow, type ProdutoRow } from '@/lib/cardapio-dados';
 import { n, type Insumo, type ItemFicha } from '@/lib/estoque';
+import { BuscaInsumo } from '@/components/estoque/busca-insumo';
 
 export type Alvo = { tipo: 'produto'; id: string; nome: string; preco: number | null } | { tipo: 'opcao'; id: string; nome: string; grupo: string; pizza: boolean };
 const chave = (a: Alvo) => `${a.tipo}:${a.id}`;
@@ -106,10 +107,7 @@ export function Editor({ alvo, insumos, atual, lojaId, outrasLojas = false, aoSa
         const i = ins(l.insumo);
         return (
           <div key={k} className="linha" style={{ alignItems: 'center', flexWrap: 'nowrap' }}>
-            <select value={l.insumo} onChange={(e) => setLinhas(linhas.map((x, j) => (j === k ? { ...x, insumo: e.target.value } : x)))} aria-label="Insumo" style={{ flex: '1 1 auto', minWidth: 0 }}>
-              <option value="">Escolha o insumo…</option>
-              {insumos.map((x) => <option key={x.id} value={x.id}>{x.nome}</option>)}
-            </select>
+            <BuscaInsumo insumos={insumos} valor={l.insumo} usados={linhas.map((x) => x.insumo)} aoEscolher={(id) => setLinhas(linhas.map((x, j) => (j === k ? { ...x, insumo: id } : x)))} />
             <input inputMode="decimal" value={l.qtd} onChange={(e) => setLinhas(linhas.map((x, j) => (j === k ? { ...x, qtd: e.target.value } : x)))} placeholder="0,000" aria-label="Quantidade" style={{ width: '6.5rem' }} />
             <span className="dica" style={{ width: '2rem' }}>{i?.unidade.toLowerCase() ?? ''}</span>
             <span style={{ width: '5.5rem', textAlign: 'right' }} className="dica">{custoLinha(l) > 0 ? formatarReais(Math.round(custoLinha(l))) : ''}</span>

@@ -854,3 +854,23 @@ body:has(.s-menu) :is(.seg-n, .est-toque-dica, .est-sit, .vt-foto .mini, .salao-
 .s-pagina :is(.s-tabela-rolagem, .tabela-rolagem) { contain: paint; }
 .s-gestao .tabela-empilha .selo { white-space: nowrap; }
 @media (max-width: 700px) { .s-quadro .qp-visao button { display: block; text-align: center; padding-inline: var(--s-2); } }
+
+/* Estoque: selos de situação (data-est) nos tokens SINO, legíveis nos dois temas (o "Sem ficha" ficava claro sobre claro no escuro) */
+.s-pagina :is(.seg-chip, .est-sit)[data-est='critico'] { --c: var(--s-erro); --f: var(--s-erro-fundo); color: var(--s-erro); background: var(--s-erro-fundo); }
+.s-pagina :is(.seg-chip, .est-sit)[data-est='baixo'] { --c: var(--s-atencao); --f: var(--s-atencao-fundo); color: var(--s-atencao); background: var(--s-atencao-fundo); }
+.s-pagina :is(.seg-chip, .est-sit)[data-est='regular'] { --c: var(--s-sucesso); --f: var(--s-sucesso-fundo); color: var(--s-sucesso); background: var(--s-sucesso-fundo); }
+.s-pagina .seg-chip[data-est] .seg-n { background: var(--s-superficie); color: var(--s-texto); }
+
+/* Ficha técnica: busca de insumo com lista (D-125) */
+.busca-insumo input { width: 100%; }
+.busca-insumo-lista {
+  position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 4px);
+  max-height: 16rem; overflow-y: auto; margin: 0; padding: 0.25rem; list-style: none;
+  background: var(--s-superficie, #fff); border: 1px solid var(--s-borda, #d9d9d9); border-radius: 10px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+}
+.busca-insumo-lista li { display: flex; justify-content: space-between; gap: 0.75rem; align-items: baseline; padding: 0.5rem 0.65rem; border-radius: 8px; cursor: pointer; min-height: 40px; }
+.busca-insumo-lista li.ativo { background: var(--s-superficie-2, #f2f2f2); box-shadow: inset 3px 0 0 var(--s-acao, #e8552d); }
+.busca-insumo-nome { color: var(--s-texto, inherit); font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.busca-insumo-info { color: var(--s-texto-2, #666); font-size: var(--s-t-12, 12px); white-space: nowrap; }
+.busca-insumo-lista .busca-insumo-vazio { cursor: default; color: var(--s-texto-2, #666); }
