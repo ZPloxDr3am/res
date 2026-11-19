@@ -834,7 +834,7 @@ body:has(.s-menu) .selo-ifood, body:has(.s-menu) .selo-canal.selo-ifood { backgr
 .s-gestao .rel-abc-resumo [data-classe='A'] { border-left-color: var(--s-sucesso); }
 .s-gestao .rel-abc-resumo [data-classe='B'] { border-left-color: var(--s-atencao); }
 .s-gestao .cartao :is(b, strong)[style*='color'] { color: var(--s-texto) !important; }
-.s-gestao .tabela :is(th, td) { font-size: max(var(--s-t-12), 0.8125rem); }
+.s-pagina .tabela :is(th, td) { font-size: max(var(--s-t-12), 0.8125rem); }
 /* textos auxiliares que ficavam abaixo de 12 px */
 body:has(.s-menu) :is(.seg-n, .est-toque-dica, .est-sit, .vt-foto .mini, .salao-info, .ap-sit, .plano-selo) { font-size: var(--s-t-12); }
 /* Clientes/Aplicativos: chips de segmento mantêm o fundo de cor, mas o texto é sempre o do tema (AA) */
