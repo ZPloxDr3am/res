@@ -19,8 +19,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1795063980.7870705,
-    "ast_hash": "",
+    "seen": 1795064222.2422087,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/ISSUE_TEMPLATE/teste.yml": {
@@ -120,9 +120,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/aplicativos/page.tsx": {
-    "mtime": 1794701210.698044,
-    "seen": 1795062708.662877,
-    "ast_hash": "dc2e0e0b856832eb7b3cb815fdd05104",
+    "mtime": 1795064164.488777,
+    "seen": 1795064222.2422314,
+    "ast_hash": "0afdc9a639a8927504e91b20e8eb579c",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/assinatura/actions.ts": {
@@ -132,9 +132,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/assinatura/page.tsx": {
-    "mtime": 1795058662.091625,
-    "seen": 1795062708.6628795,
-    "ast_hash": "4c65d2fa1476c9bd003d40f728b7de3b",
+    "mtime": 1795064164.4892235,
+    "seen": 1795064222.2422335,
+    "ast_hash": "6a8cfee99ea8dfedb96c5c9d3b4b40ed",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/avaliacoes/actions.ts": {
@@ -342,9 +342,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/lojas/page.tsx": {
-    "mtime": 1794352198.3278365,
-    "seen": 1795062708.6629186,
-    "ast_hash": "edd3c6d82fd646ef1290ea4b48d3661d",
+    "mtime": 1795064164.4894404,
+    "seen": 1795064222.2422707,
+    "ast_hash": "c95590f4322aa757dc6262cc5f47936a",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/pedidos/actions.ts": {
@@ -1290,9 +1290,9 @@
     "semantic_hash": ""
   },
   "apps/web/components/impressao/painel-impressoras.tsx": {
-    "mtime": 1792789863.7000446,
-    "seen": 1795062708.6630597,
-    "ast_hash": "9439b60dbcfd2a40924f68d27e3c8b7c",
+    "mtime": 1795064164.4900296,
+    "seen": 1795064222.2424345,
+    "ast_hash": "616393130195bd106403489ba45ca9f7",
     "semantic_hash": ""
   },
   "apps/web/components/impressao/usar-impressao.ts": {
@@ -1776,8 +1776,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1795063976.7993386,
-    "seen": 1795063980.7873893,
+    "mtime": 1795064218.5633473,
+    "seen": 1795064222.2425203,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": ""
   },
@@ -3288,9 +3288,9 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795064131.7273443,
-    "seen": 1795064138.6608956,
-    "ast_hash": "fe87cd32567a811e57bf61c32a6abf7c",
+    "mtime": 1795064187.2133865,
+    "seen": 1795064222.2428124,
+    "ast_hash": "32f84d1cf3488ca4824d715793f0661f",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/whatsapp-api.md": {
