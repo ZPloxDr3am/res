@@ -137,14 +137,17 @@ export default async function Estoque({ searchParams }: { searchParams: Promise<
 
   const baixos = p.insumos.filter((i) => i.controla && (n(i.saldo) <= 0 || (i.minimo != null && n(i.saldo) <= n(i.minimo)))).length;
   return (
-    <div className="grade">
-      <div>
-        <h1 style={{ marginBottom: 0 }}>Estoque{p.compartilhado ? ' do grupo' : ` · ${ctx.lojaNome}`}</h1>
-        <p className="dica" style={{ margin: 0 }}>
+    <div className="s-pagina s-gestao">
+      <header className="s-cabecalho">
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Gestão</p>
+          <h1 className="s-titulo">Estoque{p.compartilhado ? ' do grupo' : ` · ${ctx.lojaNome}`}</h1>
+          <p className="s-subtitulo">
           Entra pela NF-e do fornecedor, sai sozinho a cada pedido concluído (pela ficha técnica).
           {p.insumos.length > 0 && <> {p.insumos.length} insumos · {formatarReais(n(p.valor_estoque))} em estoque{baixos ? ` · ${baixos} acabando` : ''}.</>}
-        </p>
-      </div>
+          </p>
+        </div>
+      </header>
       {p.pode_escolher && <ModoEstoque compartilhado={p.compartilhado} podeMudar={p.pode_mudar_modo} lojas={p.lojas} />}
       <nav className="abas nao-imprimir" aria-label="Estoque">
         <Link href="/estoque" role="tab" aria-selected={aba === 'meu'} className="aba-link">Meu estoque</Link>
