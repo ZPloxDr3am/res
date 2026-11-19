@@ -129,7 +129,7 @@ Não testado aqui: leitor de tela real (NVDA/VoiceOver), aparelhos reais, navega
 
 ## 5. Fase 5 — em andamento
 
-### 5.1 Pedidos (quadro) — prévia em 19/11/2026
+### 5.1 Pedidos (quadro) — aprovado pelo dono em 19/11/2026 (PR #144)
 - **Cabeçalho**: "Operação" acima do título; seletor uma loja × todas as lojas; controles do topo (som, aceite automático, retirada pronta sozinha, movimento, pausa, avisar clientes, novo pedido), todos com 40 px de altura.
 - **Indicadores do turno** em quatro cartões: ativos (e quantos novos), preparo médio, entrega média e passando do prazo. Este último fica em vermelho de erro quando há atraso.
 - **Filtros** num painel só: chips neutros; o chip ligado usa a cor de ação. "Atrasados" fica em erro e "Prontos sem motoboy" em atenção.

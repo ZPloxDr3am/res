@@ -708,9 +708,15 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
+<<<<<<< HEAD
     "mtime": 1795062571.5477648,
     "seen": 1795062577.6983936,
     "ast_hash": "e3b1a8edd687d5925c06263da036b77d",
+=======
+    "mtime": 1795062553.6992316,
+    "seen": 1795062559.8724566,
+    "ast_hash": "1fe773665f20f3a28eaff97aa86aa23a",
+>>>>>>> origin/main
     "semantic_hash": ""
   },
   "apps/web/components/resumo/grafico-lojas.tsx": {
@@ -877,7 +883,11 @@
   },
   "apps/web/next-env.d.ts": {
     "mtime": 1795059044.7516387,
+<<<<<<< HEAD
     "seen": 1795059048.705824,
+=======
+    "seen": 1795061084.4407656,
+>>>>>>> origin/main
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": "8ccf37b0657b4213f1c10db5c78e039a"
   },
@@ -1032,10 +1042,17 @@
     "semantic_hash": ""
   },
   "packages/core/src/pedido.ts": {
+<<<<<<< HEAD
     "mtime": 1795062571.555765,
     "seen": 1795062577.7009082,
     "ast_hash": "e640b6b12b5b10b2290f499afb4beda3",
     "semantic_hash": ""
+=======
+    "mtime": 1795062553.7077641,
+    "seen": 1795062559.8741493,
+    "ast_hash": "bd24e9280524a705629f4e61fc16e110",
+    "semantic_hash": "bd24e9280524a705629f4e61fc16e110"
+>>>>>>> origin/main
   },
   "packages/core/src/periodo.ts": {
     "mtime": 1792786116.8359847,
@@ -1146,10 +1163,17 @@
     "semantic_hash": "06f3caba10d485b4a94ed7f0ecb0c795"
   },
   "packages/core/test/pedido.test.ts": {
+<<<<<<< HEAD
     "mtime": 1795062571.555765,
     "seen": 1795062577.7017827,
     "ast_hash": "d0012d92893971cd11c1e4dc433c1e3f",
     "semantic_hash": ""
+=======
+    "mtime": 1795062553.7077641,
+    "seen": 1795062559.874764,
+    "ast_hash": "1fb1eac36e0a586c964c621cc673bcd5",
+    "semantic_hash": "1fb1eac36e0a586c964c621cc673bcd5"
+>>>>>>> origin/main
   },
   "packages/core/test/periodo.test.ts": {
     "mtime": 1792786116.836486,
@@ -3577,85 +3601,143 @@
   },
   "apps/web/components/logo-sino.tsx": {
     "mtime": 1795058662.095625,
+<<<<<<< HEAD
     "seen": 1795059048.7057128,
+=======
+    "seen": 1795061084.439414,
+>>>>>>> origin/main
     "ast_hash": "70c3020740563c28350e239628e2a789",
     "semantic_hash": ""
   },
   "apps/web/components/resumo/filtro-lojas.tsx": {
     "mtime": 1795058662.095625,
+<<<<<<< HEAD
     "seen": 1795059048.7057488,
+=======
+    "seen": 1795061084.4398549,
+>>>>>>> origin/main
     "ast_hash": "99865ada8ddda1b8cdc7996d1821b22f",
     "semantic_hash": ""
   },
   "apps/web/components/seletor-tema.tsx": {
     "mtime": 1795058662.095625,
+<<<<<<< HEAD
     "seen": 1795059048.7057586,
+=======
+    "seen": 1795061084.4399674,
+>>>>>>> origin/main
     "ast_hash": "ce9cea952e456d3c50686d1383023854",
     "semantic_hash": ""
   },
   "apps/web/app/fontes/LICENSE-Inter.txt": {
     "mtime": 1795058662.091625,
+<<<<<<< HEAD
     "seen": 1795059048.7060857,
+=======
+    "seen": 1795061084.445033,
+>>>>>>> origin/main
     "ast_hash": "2f3fe7618c3332ad553a6eec42709ca4",
     "semantic_hash": ""
   },
   "apps/web/app/fontes/LICENSE-Outfit.txt": {
     "mtime": 1795058662.091625,
+<<<<<<< HEAD
     "seen": 1795059048.7060866,
+=======
+    "seen": 1795061084.445035,
+>>>>>>> origin/main
     "ast_hash": "716dd4b87dd9eddd9f3b88b565e361e4",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
+<<<<<<< HEAD
     "mtime": 1795062571.5477648,
     "seen": 1795062577.706233,
     "ast_hash": "843ebc5aae0a9a137ffbd19066873fc9",
+=======
+    "mtime": 1795062553.6992316,
+    "seen": 1795062559.8779547,
+    "ast_hash": "b488c2688d62129479323d7fe4ecb1ea",
+>>>>>>> origin/main
     "semantic_hash": ""
   },
   "apps/web/public/marca/apple-touch-icon.png": {
     "mtime": 1795058662.1026008,
+<<<<<<< HEAD
     "seen": 1795059048.7061596,
+=======
+    "seen": 1795061084.4462113,
+>>>>>>> origin/main
     "ast_hash": "393c44e0e20c3f4d3c92e83d44ef5c9f",
     "semantic_hash": ""
   },
   "apps/web/public/marca/favicon.svg": {
     "mtime": 1795058662.1027014,
+<<<<<<< HEAD
     "seen": 1795059048.7061608,
+=======
+    "seen": 1795061084.446213,
+>>>>>>> origin/main
     "ast_hash": "61f0fcd7174e20f5cb263f6045ade456",
     "semantic_hash": ""
   },
   "apps/web/public/marca/sino-logotipo-horizontal-cor.svg": {
     "mtime": 1795058662.1027014,
+<<<<<<< HEAD
     "seen": 1795059048.706162,
+=======
+    "seen": 1795061084.4462147,
+>>>>>>> origin/main
     "ast_hash": "af4994f19bb91968a17a3e6ebe87569b",
     "semantic_hash": ""
   },
   "apps/web/public/marca/sino-logotipo-horizontal-negativo.svg": {
     "mtime": 1795058662.1027014,
+<<<<<<< HEAD
     "seen": 1795059048.706163,
+=======
+    "seen": 1795061084.4462159,
+>>>>>>> origin/main
     "ast_hash": "839de58f6741ed02472a075f9bc35f43",
     "semantic_hash": ""
   },
   "apps/web/public/marca/sino-simbolo-24px-negativo.svg": {
     "mtime": 1795058662.1027014,
+<<<<<<< HEAD
     "seen": 1795059048.706164,
+=======
+    "seen": 1795061084.4462175,
+>>>>>>> origin/main
     "ast_hash": "9b05294bc40c91482d25db73816209d7",
     "semantic_hash": ""
   },
   "apps/web/public/marca/sino-simbolo-32px-negativo.svg": {
     "mtime": 1795058662.1027014,
+<<<<<<< HEAD
     "seen": 1795059048.7061648,
+=======
+    "seen": 1795061084.4462187,
+>>>>>>> origin/main
     "ast_hash": "64f7bedbe440707bbc5f1ff918c4c731",
     "semantic_hash": ""
   },
   "apps/web/public/marca/sino-simbolo-48px-cor.svg": {
     "mtime": 1795058662.1027014,
+<<<<<<< HEAD
     "seen": 1795059048.7061658,
+=======
+    "seen": 1795061084.4462197,
+>>>>>>> origin/main
     "ast_hash": "83975548f44de30b5e665c05b076be2a",
     "semantic_hash": ""
   },
   "apps/web/public/marca/sino-simbolo-48px-negativo.svg": {
     "mtime": 1795058662.1027014,
+<<<<<<< HEAD
     "seen": 1795059048.7061667,
+=======
+    "seen": 1795061084.446221,
+>>>>>>> origin/main
     "ast_hash": "29478d3fd4db3842368fb2eec85e1b87",
     "semantic_hash": ""
   }
