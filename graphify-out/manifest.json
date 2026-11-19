@@ -1638,9 +1638,9 @@
     "semantic_hash": "10b96ed1172796d205dc3975d2845c05"
   },
   "docs/decisoes.md": {
-    "mtime": 1795058211.5174785,
-    "seen": 1795058261.2328367,
-    "ast_hash": "4bd9cb6c6290c5c00cdd64a036df175d",
+    "mtime": 1795058547.992041,
+    "seen": 1795058561.8946667,
+    "ast_hash": "efc6b4423534b4f217379ddf06de9e8c",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/icones/ic_launcher-hdpi.png": {
@@ -2790,9 +2790,9 @@
     "semantic_hash": ""
   },
   "docs/comercial/NOVIDADES.md": {
-    "mtime": 1794701877.466068,
-    "seen": 1794701884.874134,
-    "ast_hash": "5202b01e6bd1578c8b8a9ba362ea6627",
+    "mtime": 1795058547.9927185,
+    "seen": 1795058561.894664,
+    "ast_hash": "41c4746289b1be32642d6978e5a2f489",
     "semantic_hash": ""
   },
   "docs/comercial/README.md": {
@@ -3636,9 +3636,9 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795058211.5177357,
-    "seen": 1795058261.232844,
-    "ast_hash": "82daabf9eea5028af228b3096967c609",
+    "mtime": 1795058547.9929502,
+    "seen": 1795058561.8946726,
+    "ast_hash": "b488c2688d62129479323d7fe4ecb1ea",
     "semantic_hash": ""
   },
   "apps/web/components/logo-sino.tsx": {
