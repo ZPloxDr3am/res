@@ -19,8 +19,8 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1795064222.2422087,
-    "ast_hash": "",
+    "seen": 1795064379.4102848,
+    "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
   ".github/ISSUE_TEMPLATE/teste.yml": {
@@ -3288,9 +3288,9 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795064356.1033523,
-    "seen": 1795064362.9645784,
-    "ast_hash": "32f84d1cf3488ca4824d715793f0661f",
+    "mtime": 1795064375.8893683,
+    "seen": 1795064379.4108794,
+    "ast_hash": "f391eb22687b0388c06aa58069704fb7",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/whatsapp-api.md": {
