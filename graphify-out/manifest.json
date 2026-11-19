@@ -708,8 +708,8 @@
     "semantic_hash": "5dcf916bb057fc9c58592fbd506ed345"
   },
   "apps/web/components/quadro-pedidos.tsx": {
-    "mtime": 1795061076.4566345,
-    "seen": 1795061084.4398348,
+    "mtime": 1795062553.6992316,
+    "seen": 1795062559.8724566,
     "ast_hash": "1fe773665f20f3a28eaff97aa86aa23a",
     "semantic_hash": ""
   },
@@ -1032,8 +1032,8 @@
     "semantic_hash": ""
   },
   "packages/core/src/pedido.ts": {
-    "mtime": 1795061076.4637113,
-    "seen": 1795061084.4415898,
+    "mtime": 1795062553.7077641,
+    "seen": 1795062559.8741493,
     "ast_hash": "bd24e9280524a705629f4e61fc16e110",
     "semantic_hash": "bd24e9280524a705629f4e61fc16e110"
   },
@@ -1146,8 +1146,8 @@
     "semantic_hash": "06f3caba10d485b4a94ed7f0ecb0c795"
   },
   "packages/core/test/pedido.test.ts": {
-    "mtime": 1795061076.4677114,
-    "seen": 1795061084.4422274,
+    "mtime": 1795062553.7077641,
+    "seen": 1795062559.874764,
     "ast_hash": "1fb1eac36e0a586c964c621cc673bcd5",
     "semantic_hash": "1fb1eac36e0a586c964c621cc673bcd5"
   },
@@ -3606,8 +3606,8 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795058662.1040595,
-    "seen": 1795061084.4452684,
+    "mtime": 1795062553.6992316,
+    "seen": 1795062559.8779547,
     "ast_hash": "b488c2688d62129479323d7fe4ecb1ea",
     "semantic_hash": ""
   },
