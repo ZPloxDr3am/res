@@ -45,12 +45,12 @@ export function CaixaEntradaNFe({ caixa, abrindo, darEntrada }: { caixa: Situaca
         <div>
           <h2 style={{ margin: 0 }}>📥 Receber as notas de compra automaticamente</h2>
           <p className="dica" style={{ margin: '0.2rem 0 0' }}>
-            Com o <b>certificado digital A1 da empresa (e-CNPJ)</b>, o RES busca sozinho na SEFAZ, a cada hora, as notas que os fornecedores emitiram para o CNPJ desta loja.
+            Com o <b>certificado digital A1 da empresa (e-CNPJ)</b>, o SINO busca sozinho na SEFAZ, a cada hora, as notas que os fornecedores emitiram para o CNPJ desta loja.
             Você só confere e dá entrada no estoque, sem procurar o XML no e-mail.
           </p>
         </div>
         <ul className="dica" style={{ margin: 0, paddingLeft: '1.2rem' }}>
-          <li>Para baixar o XML completo, o RES registra na SEFAZ a <b>Ciência da Operação</b> (aviso de que a empresa viu a nota; não confirma nem recusa a compra).</li>
+          <li>Para baixar o XML completo, o SINO registra na SEFAZ a <b>Ciência da Operação</b> (aviso de que a empresa viu a nota; não confirma nem recusa a compra).</li>
           <li>O certificado e a senha ficam guardados criptografados no servidor e não aparecem mais na tela. Dá para desconectar quando quiser.</li>
           <li>A SEFAZ entrega notas dos últimos 90 dias e só permite uma nova busca a cada hora quando não há novidade.</li>
         </ul>

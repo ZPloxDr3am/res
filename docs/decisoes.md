@@ -1013,3 +1013,28 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - **Rappi, eventos**: o cancelamento e a conclusão vêm só dos campos de nome/tipo/status do evento. Antes, qualquer texto com "cancel" (por exemplo, um campo `cancel_reason` vazio) cancelaria o pedido. São até 10 pedidos por tique, por causa do limite de chamadas.
 - **Rappi, pagamento**: tudo o que não é dinheiro, maquininha da loja ou vale foi pago no app e entra como "online" (Pix, cartão no app, carteiras). Assim, o DRE, a conferência da maquininha e o repasse não esperam esse dinheiro na loja.
 - **Open Delivery**: salvar a conexão e gerar a chave agora só valem para conexões Open Delivery (antes, a mudança era aplicada a qualquer conexão da loja antes da conferência). URL do app vazia dá mensagem clara.
+
+## D-120 — Design System SINO no software: fundação, menu e página Resumo (18/11/2026)
+- **Marca**: o software adota a identidade SINO (Brand Book v1.2).
+  - Logotipo e favicon **oficiais**, copiados sem alteração para `apps/web/public/marca`; o favicon fica só no painel, nunca no cardápio do cliente.
+  - Inter em toda a interface nova; Outfit só para telas de marca (fontes locais, licença OFL).
+- **Cores** (`apps/web/app/sino.css`) em três camadas: marca aprovada → interface **C1 (em avaliação)** → semânticos `--s-*`.
+  - C1 e a proposta para o tema escuro ficam num bloco só.
+  - **Este trabalho não vai para a main antes da decisão sobre C1**: o pacote da marca proíbe C1 em produção antes de aprovado.
+- **Tema** claro/escuro com escolha por aparelho (Auto · Claro · Escuro, no rodapé do menu), aplicado antes de pintar, em todas as telas: os blocos de tema escuro do `globals.css` passam a obedecer à escolha, sem mudar a especificidade de nenhuma regra.
+- **Menu** nas famílias da marca, mais Configurações: Operação, Gestão, Inteligência e Configurações. Só muda o agrupamento: rotas, permissões, planos e barra do celular são os mesmos.
+  - O menu é carvão nos dois temas, mostra "Loja em uso" e marca o ativo por peso, marcador tomate e fundo.
+- **Resumo** é a página de referência:
+  - indicadores primeiro, com o faturamento em destaque;
+  - etiqueta de contexto (consolidado × uma loja) e a hora da atualização;
+  - período com o atalho ativo e "comparado com…";
+  - filtro de lojas que troca na hora sem perder o período;
+  - pendências marcadas como da **loja em uso**.
+  - Mesmas RPCs e cálculos; as telas antigas não mudam (aparência nova só em `.s-menu` e `.s-pagina`, `globals.css` intacto).
+- **Ajuste do mesmo dia (pedido do dono: "vários botões na cor antiga" e carregamento com "RES")**:
+  - todas as telas do painel do restaurante, mais login, cadastro, boas-vindas e erro, passam a usar as cores e a fonte SINO, só pelas variáveis (`body:has(.s-menu)` e `.s-tela`). A estrutura de cada tela não muda. Onde a cor antiga significava "deu certo", entra a cor de sucesso;
+  - a tela de carregamento mostra o símbolo oficial;
+  - os textos do painel trocam "RES" por "SINO";
+  - **não mudam** o cardápio do cliente (`/c`), o painel da empresa, os documentos jurídicos (termos e privacidade), os nomes dos apps instalados (RES Motoboy, RES Impressão), os cabeçalhos `X-RES-*` da API nem o identificador do Pix.
+- **Aprovado pelo dono em 19/11/2026**, depois de testar a prévia: o Resumo, o menu, o tema e as cores. Isso inclui as cores de interface **C1**, com as variantes do tema escuro propostas aqui, que passam a valer no software. Para mudar uma cor depois, basta editar o bloco de C1 em `sino.css`.
+- A reorganização visual de cada módulo (fase 5) segue com os mesmos componentes, começando pelo quadro de Pedidos. Plano, auditoria, riscos e reversão estão em `docs/desenvolvimento/design-system-sino.md`.

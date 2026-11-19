@@ -103,7 +103,7 @@ export function ConvitesRes({ convites, modo, origem }: { convites: Convite[]; m
                         {!c.usado_em && !vencido && (
                           <span className="linha" style={{ gap: 'var(--e2)', justifyContent: 'flex-end' }}>
                             <button type="button" className="mini" onClick={() => copiar(linkConvite(c.codigo))}>{copiado === linkConvite(c.codigo) ? 'Copiado ✓' : 'Copiar link'}</button>
-                            <a className="botao mini" href={`https://wa.me/?text=${encodeURIComponent(`Seu convite para o RES: ${linkConvite(c.codigo)} (código ${c.codigo})`)}`} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                            <a className="botao mini" href={`https://wa.me/?text=${encodeURIComponent(`Seu convite para o SINO: ${linkConvite(c.codigo)} (código ${c.codigo})`)}`} target="_blank" rel="noopener noreferrer">WhatsApp</a>
                             <button type="button" className="mini dica" disabled={pendente} onClick={() => fazer(cancelarConvite(c.codigo), `Convite ${c.codigo} cancelado.`)}>Cancelar</button>
                           </span>
                         )}

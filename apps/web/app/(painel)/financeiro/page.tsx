@@ -273,7 +273,7 @@ export default async function Financeiro({ searchParams }: { searchParams: Promi
         {error && <p className="erro">{error.message}</p>}
         {meses.length > 0 && <TabelaDre meses={meses} ate={ate || 12} />}
         <p className="dica" style={{ margin: 0 }}>
-          Por competência (o mês a que a conta pertence). Vendas = pedidos concluídos no RES. Taxas calculadas pelas suas taxas em <Link href="/financeiro?aba=cadastros">Cadastros</Link> (nos pedidos dos apps de delivery, pela comissão do app, quando cadastrada).
+          Por competência (o mês a que a conta pertence). Vendas = pedidos concluídos no SINO. Taxas calculadas pelas suas taxas em <Link href="/financeiro?aba=cadastros">Cadastros</Link> (nos pedidos dos apps de delivery, pela comissão do app, quando cadastrada).
           Custo das vendas vem do <Link href="/estoque">estoque</Link> (CMV real, ⓔ) quando houver movimento no mês; senão, das contas lançadas em &quot;Custo das vendas&quot;. Contas sem categoria entram em despesas operacionais.
         </p>
       </>

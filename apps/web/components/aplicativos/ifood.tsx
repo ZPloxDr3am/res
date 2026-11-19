@@ -117,7 +117,7 @@ export function PainelIfoodApp({ d }: { d: PainelIfood }) {
       {msg && <p className={msg.ok ? 'dica' : 'erro'} role="status" style={{ margin: 0 }}>{msg.t}</p>}
 
       <section className="grade" style={{ gap: '0.5rem' }}>
-        <strong>3. Itens do iFood × produtos do RES {semLigacao.length > 0 && <span className="fin-selo" data-sit="hoje">{semLigacao.length} sem ligação</span>}</strong>
+        <strong>3. Itens do iFood × produtos do SINO {semLigacao.length > 0 && <span className="fin-selo" data-sit="hoje">{semLigacao.length} sem ligação</span>}</strong>
         <span className="dica">Cada item que chega do iFood é ligado a um produto daqui (pelo código ou pelo mesmo nome) para a ficha técnica baixar o estoque. Ligue os que ficaram sem.</span>
         {d.itens.filter((i) => i.tipo === 'item').length === 0 ? (
           <span className="dica">Nenhum item recebido ainda.</span>
@@ -141,7 +141,7 @@ export function PainelIfoodApp({ d }: { d: PainelIfood }) {
 
       {d.saida.length > 0 && (
         <section className="grade" style={{ gap: '0.4rem' }}>
-          <strong>4. O que o RES avisou ao iFood</strong>
+          <strong>4. O que o SINO avisou ao iFood</strong>
           <ul className="qp-fila">
             {d.saida.map((s) => (
               <li key={s.id}>
@@ -176,7 +176,7 @@ export function PainelIfoodApp({ d }: { d: PainelIfood }) {
           <li>✅ Pedido entra uma vez só (eventos repetidos descartados) e cai no quadro com som</li>
           <li>✅ Entrega imediata, entrega agendada (data e hora no cartão) e retirada (aviso de pronto)</li>
           <li>✅ Confirmar, pronto, saiu e cancelar voltam para o iFood; cancelamento pede um motivo da lista do iFood</li>
-          <li>✅ Cancelado pelo cliente/iFood ou mudado em outro app atualiza o RES</li>
+          <li>✅ Cancelado pelo cliente/iFood ou mudado em outro app atualiza o SINO</li>
           <li>✅ Código de retirada, bandeira do cartão, troco, cupom (quem paga), observações e CPF/CNPJ na tela e no cupom</li>
           <li>✅ Token renovado só perto de vencer; webhook com assinatura; busca a cada 30 s como reserva</li>
           <li>✅ Plataforma de Negociação: cancelamento após a entrega, no preparo, por atraso e reembolso parcial aparecem no topo do quadro com prazo, e a loja aceita, recusa ou faz contraproposta (reembolso ou mais tempo)</li>
@@ -184,8 +184,8 @@ export function PainelIfoodApp({ d }: { d: PainelIfood }) {
           <li>✅ Busca automática a cada 30 s assim que houver loja em produção (segredo guardado no Vault do Supabase)</li>
           <li>✅ Webhook responde 202 na hora e processa depois; KEEPALIVE deixa online só a loja aberta (pausa e horário)</li>
           <li>✅ Aviso no quadro do tempo que falta para aceitar (8 min) e faixa de cancelamento solicitado</li>
-          <li>✅ Pedido e endereço alterados pelo iFood atualizam o RES; entregador do iFood aparece no pedido</li>
-          <li>✅ Pausar a loja no RES pausa no iFood; eventos com erro podem ser reprocessados aqui</li>
+          <li>✅ Pedido e endereço alterados pelo iFood atualizam o SINO; entregador do iFood aparece no pedido</li>
+          <li>✅ Pausar a loja no SINO pausa no iFood; eventos com erro podem ser reprocessados aqui</li>
           <li>📄 Passo a passo da conta e da homologação: docs/integracoes/ifood-homologacao.md</li>
         </ul>
       </details>

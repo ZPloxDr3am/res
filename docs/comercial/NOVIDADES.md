@@ -3,6 +3,7 @@
 Uma seção por semana, escrita na revisão de sexta. Linguagem de cliente.
 
 ## Semana 46 (09–13/11/2026)
+- **Nova marca: SINO.** O sistema ganhou a identidade SINO: novo logotipo, cores e fonte em todas as telas, menu organizado em Operação, Gestão e Inteligência, e a escolha de tema claro, escuro ou automático no rodapé do menu. O Resumo foi redesenhado: os números principais vêm primeiro, e a tela mostra se você está vendo uma loja ou todas somadas.
 - **Comissão dos apps no financeiro**: cadastre a comissão e a taxa de cada app de delivery, e o DRE passa a mostrar o custo real dos pedidos deles. O extrato do banco compara o repasse que o app devia pagar com o que caiu na conta.
 - **Delivery Much e Rappi**: os pedidos dos dois apps também caem no quadro, e aceitar, pronto e cancelar voltam para o app. E todo app de delivery ganhou um **simulador**: crie um pedido de teste igual ao do app para treinar a equipe antes de ligar de verdade.
 - **99Food, Keeta e aiqfome**: o RES fala o padrão Open Delivery. O app lê o seu cardápio direto do RES e os pedidos caem no quadro com o selo de cada app; aceitar, pronto, saiu e cancelar voltam para o app sozinhos. Em Aplicativos, crie a conexão e cole os dados que o app te passar.

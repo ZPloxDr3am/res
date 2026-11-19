@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { headers } from 'next/headers';
 import { entrar } from './actions';
+import { LogoSino } from '@/components/logo-sino';
 
 export default async function Login({ searchParams }: { searchParams: Promise<{ erro?: string; aviso?: string; voltar?: string }> }) {
   const { erro, aviso, voltar } = await searchParams;
@@ -9,11 +10,11 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
   const host = (h.get('x-forwarded-host') ?? h.get('host') ?? '').toLowerCase();
   const empresa = !!process.env.EMPRESA_HOST && host === process.env.EMPRESA_HOST.toLowerCase();
   return (
-    <main className="conteudo" style={{ maxWidth: 420, marginTop: '8vh' }}>
+    <main className="conteudo s-tela" style={{ maxWidth: 420, marginTop: '8vh' }}>
       <div className="cartao grade">
         <div>
-          <div className="marca-res" style={{ fontSize: '1.6rem' }}>RES</div>
-          <p className="dica">{empresa ? 'Painel da empresa RES. Acesso só da equipe.' : 'Pedidos, cardápio e gestão do seu restaurante.'}</p>
+          <LogoSino />
+          <p className="dica">{empresa ? 'Painel da empresa SINO. Acesso só da equipe.' : 'Pedidos, cardápio e gestão do seu restaurante.'}</p>
         </div>
         {erro && <p className="erro" role="alert">{erro}</p>}
         {aviso && <p className="dica" role="status">{aviso}</p>}

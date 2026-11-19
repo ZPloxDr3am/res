@@ -100,7 +100,7 @@ export function Aplicativos({ dados, origem, api, mp, ifood = null, od = null, c
                 (api ? (aberto.tipo === 'api' ? <PainelApiAberta api={api} origem={origem} /> : <PainelMcp api={api} origem={origem} />) : <p className="dica">Só gestores da loja mexem nas chaves de API.</p>)}
               {(aberto.tipo === 'breve' || aberto.tipo === 'depois') && (
                 <div className="grade">
-                  <p style={{ margin: 0 }}>{aberto.tipo === 'depois' ? 'Combinado para mais tarde.' : 'Ainda não está disponível no RES.'}</p>
+                  <p style={{ margin: 0 }}>{aberto.tipo === 'depois' ? 'Combinado para mais tarde.' : 'Ainda não está disponível no SINO.'}</p>
                   {aberto.nota && <p className="dica" style={{ margin: 0 }}>{aberto.nota}</p>}
                 </div>
               )}

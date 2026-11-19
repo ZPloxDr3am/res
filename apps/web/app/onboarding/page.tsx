@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import { montarLojaDoCadastro, type PedidoDeLoja } from '@/app/cadastro/actions';
+import { LogoSino } from '@/components/logo-sino';
 
 async function criarLoja(form: FormData) {
   'use server';
@@ -46,11 +47,11 @@ export default async function Onboarding({ searchParams }: { searchParams: Promi
   // sem dados do cadastro: conta nova só pelo cadastro com convite (D-082)
   if (!cadastro) {
     return (
-      <main className="conteudo" style={{ maxWidth: 480, marginTop: '8vh' }}>
+      <main className="conteudo s-tela" style={{ maxWidth: 480, marginTop: '8vh' }}>
         <div className="cartao grade">
-          <div className="marca-res" style={{ fontSize: '1.6rem' }}>RES</div>
+          <LogoSino />
           <h1 style={{ margin: 0 }}>Sua conta ainda não tem restaurante</h1>
-          <p style={{ margin: 0 }}>Se você foi convidado para a equipe de uma loja, peça para o dono ou gerente reenviar o convite para este e-mail. Para cadastrar um restaurante novo, use o código de convite do time do RES.</p>
+          <p style={{ margin: 0 }}>Se você foi convidado para a equipe de uma loja, peça para o dono ou gerente reenviar o convite para este e-mail. Para cadastrar um restaurante novo, use o código de convite do time do SINO.</p>
           <a className="botao botao-primario" href="/cadastro">Cadastrar com convite</a>
           <form action="/auth/sair" method="post"><button className="botao" style={{ width: '100%' }}>Sair</button></form>
         </div>
@@ -58,7 +59,7 @@ export default async function Onboarding({ searchParams }: { searchParams: Promi
     );
   }
   return (
-    <main className="conteudo" style={{ maxWidth: 520, marginTop: '6vh' }}>
+    <main className="conteudo s-tela" style={{ maxWidth: 520, marginTop: '6vh' }}>
       <form action={criarLoja} className="cartao grade">
         <h1>Vamos cadastrar seu restaurante</h1>
         <p className="dica">Uma loja é a sua cozinha. Dentro dela você pode ter várias marcas, cada uma com seu cardápio.</p>

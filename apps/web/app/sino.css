@@ -1,0 +1,497 @@
+/* =====================================================================
+   SINO · Design System do software (D-120) — fundação
+   Fonte: Brand Book SINO v1.2 + documento de transição para o Design System.
+
+   Camadas (de baixo para cima):
+   1. Marca (aprovado, 09-cores/sino-cores.css): tomate, tomate texto, carvão, creme, branco.
+   2. Interface (C1 · aprovado pelo dono em 19/11/2026): neutros Carvão 900–100 e cores de estado. Ficam todas
+      aqui, num bloco só: mudar C1 = trocar só este bloco.
+      As variantes para o tema escuro (marcadas "C1-escuro") foram propostas nesta fase e aprovadas junto:
+      C1 só define o tema claro.
+   3. Semânticos (--s-*): o que os componentes usam. Nenhum componente usa cor solta.
+
+   Escopo: menu lateral e página Resumo redesenhados; nas outras telas do painel, só as
+   cores e a fonte (variáveis antigas apontam para as SINO). Redesenho por módulo: fase 5.
+   Tema: html[data-tema="claro" | "escuro"]; sem atributo = segue o sistema. Os blocos de
+   tema escuro do globals.css também obedecem à escolha.
+   ===================================================================== */
+
+:root {
+  /* 1 · marca (aprovado) */
+  --sino-tomate: #F0532B;
+  --sino-tomate-texto: #C43B17;
+  --sino-carvao: #1C1A1F;
+  --sino-creme: #FFF7EF;
+  --sino-branco: #FFFFFF;
+
+  /* 2 · interface (C1, aprovado em 19/11/2026) */
+  --sino-carvao-900: #1C1A1F;
+  --sino-carvao-700: #3B3640;
+  --sino-carvao-500: #6A6170;
+  --sino-carvao-300: #BDB3C2;
+  --sino-carvao-200: #E7E1DB;
+  --sino-carvao-100: #F4F1EE;
+  --sino-sucesso: #1E7A4C;
+  --sino-atencao: #9A6200;
+  --sino-erro: #B42318;
+  --sino-informacao: #2456C9;
+  /* C1-escuro (proposta desta fase; todas ≥ 6,5 : 1 sobre o carvão) */
+  --sino-carvao-950: #141216;
+  --sino-carvao-850: #242128;
+  --sino-carvao-800: #2C2830;
+  --sino-carvao-400: #A69DAB;
+  --sino-sucesso-escuro: #55C98F;
+  --sino-atencao-escuro: #E8A33A;
+  --sino-erro-escuro: #FF8C8C;
+  --sino-informacao-escuro: #8DB0FF;
+
+  /* tipografia: Inter em toda a interface; Outfit só em telas de marca */
+  --s-fonte: var(--fonte-inter), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --s-fonte-marca: var(--fonte-outfit), var(--fonte-inter), system-ui, sans-serif;
+  /* escala do Brand Book (p. 15): 12 · 14 · 16 · 20 · 24 · 32 */
+  --s-t-12: 0.75rem; --s-t-13: 0.8125rem; --s-t-14: 0.875rem; --s-t-16: 1rem; --s-t-20: 1.25rem; --s-t-24: 1.5rem; --s-t-32: 2rem;
+  /* espaço: base 4 px (4 · 8 · 12 · 16 · 24 · 32 · 48) */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-6: 24px; --s-8: 32px; --s-12: 48px;
+  /* raios 6 · 10 · 16 */
+  --s-raio-p: 6px; --s-raio: 10px; --s-raio-g: 16px;
+  --s-controle: 40px;            /* densidade padrão (gestão) */
+  --s-controle-toque: 48px;      /* PDV, KDS, garçom */
+  --s-movimento: 160ms;
+
+  /* 3 · semânticos — tema claro */
+  --s-fundo: var(--sino-carvao-100);
+  --s-superficie: var(--sino-branco);
+  --s-superficie-2: #FAF8F6;
+  --s-superficie-realce: var(--sino-creme);
+  --s-borda: var(--sino-carvao-200);
+  --s-borda-forte: #8F8794;                 /* bordas de campo: 3,5 : 1 no branco */
+  --s-texto: var(--sino-carvao-900);
+  --s-texto-2: var(--sino-carvao-700);
+  --s-texto-3: var(--sino-carvao-500);      /* 5,9 : 1 no branco */
+  --s-link: var(--sino-tomate-texto);       /* tomate nunca em texto pequeno no claro */
+  --s-acao: var(--sino-carvao-900);         /* botão principal no claro: carvão, texto creme */
+  --s-acao-hover: var(--sino-carvao-700);
+  --s-acao-texto: var(--sino-creme);
+  --s-destaque: var(--sino-tomate);         /* identidade: marcador ativo, foco, pedido novo */
+  --s-foco: 0 0 0 2px var(--s-superficie), 0 0 0 4px var(--sino-tomate);
+  --s-sucesso: var(--sino-sucesso);
+  --s-atencao: var(--sino-atencao);
+  --s-erro: var(--sino-erro);
+  --s-info: var(--sino-informacao);
+  --s-sucesso-fundo: color-mix(in srgb, var(--sino-sucesso) 9%, var(--s-superficie));
+  --s-atencao-fundo: color-mix(in srgb, var(--sino-atencao) 10%, var(--s-superficie));
+  --s-erro-fundo: color-mix(in srgb, var(--sino-erro) 8%, var(--s-superficie));
+  --s-info-fundo: color-mix(in srgb, var(--sino-informacao) 8%, var(--s-superficie));
+  --s-desabilitado: 0.48;
+  --s-sombra: 0 1px 2px rgb(28 26 31 / 0.06);
+  --s-sombra-camada: 0 16px 40px -16px rgb(28 26 31 / 0.32), 0 0 0 1px var(--s-borda);
+
+  /* menu lateral: carvão nos dois temas (Brand Book p. 18) */
+  --s-menu-fundo: var(--sino-carvao-900);
+  --s-menu-borda: #2E2A33;
+  --s-menu-texto: var(--sino-carvao-300);   /* 8,5 : 1 */
+  --s-menu-texto-forte: var(--sino-creme);
+  --s-menu-rotulo: var(--sino-carvao-400);  /* 6,6 : 1 */
+  --s-menu-hover: #29252E;
+  --s-menu-ativo: #2F2A34;
+}
+
+/* tema escuro: pelo sistema (sem escolha) ou escolhido */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='claro']) {
+    --s-fundo: var(--sino-carvao-950);
+    --s-superficie: var(--sino-carvao-900);
+    --s-superficie-2: var(--sino-carvao-850);
+    --s-superficie-realce: var(--sino-carvao-800);
+    --s-borda: #332F38;
+    --s-borda-forte: #7A7280;
+    --s-texto: var(--sino-creme);
+    --s-texto-2: var(--sino-carvao-300);
+    --s-texto-3: var(--sino-carvao-400);
+    --s-link: var(--sino-tomate);             /* 4,9 : 1 no carvão */
+    --s-acao: var(--sino-tomate);             /* ação principal em fundo escuro: tomate, texto carvão */
+    --s-acao-hover: #FF6B45;
+    --s-acao-texto: var(--sino-carvao-900);
+    --s-sucesso: var(--sino-sucesso-escuro);
+    --s-atencao: var(--sino-atencao-escuro);
+    --s-erro: var(--sino-erro-escuro);
+    --s-info: var(--sino-informacao-escuro);
+    --s-sucesso-fundo: color-mix(in srgb, var(--sino-sucesso-escuro) 12%, var(--s-superficie));
+    --s-atencao-fundo: color-mix(in srgb, var(--sino-atencao-escuro) 12%, var(--s-superficie));
+    --s-erro-fundo: color-mix(in srgb, var(--sino-erro-escuro) 12%, var(--s-superficie));
+    --s-info-fundo: color-mix(in srgb, var(--sino-informacao-escuro) 12%, var(--s-superficie));
+    --s-sombra: none;
+    --s-sombra-camada: 0 16px 40px -12px rgb(0 0 0 / 0.6), 0 0 0 1px var(--s-borda);
+    --s-menu-fundo: var(--sino-carvao-950);
+    --s-menu-borda: #2A262F;
+    color-scheme: dark;
+  }
+}
+:root[data-tema='escuro'] {
+  --s-fundo: var(--sino-carvao-950);
+  --s-superficie: var(--sino-carvao-900);
+  --s-superficie-2: var(--sino-carvao-850);
+  --s-superficie-realce: var(--sino-carvao-800);
+  --s-borda: #332F38;
+  --s-borda-forte: #7A7280;
+  --s-texto: var(--sino-creme);
+  --s-texto-2: var(--sino-carvao-300);
+  --s-texto-3: var(--sino-carvao-400);
+  --s-link: var(--sino-tomate);
+  --s-acao: var(--sino-tomate);
+  --s-acao-hover: #FF6B45;
+  --s-acao-texto: var(--sino-carvao-900);
+  --s-sucesso: var(--sino-sucesso-escuro);
+  --s-atencao: var(--sino-atencao-escuro);
+  --s-erro: var(--sino-erro-escuro);
+  --s-info: var(--sino-informacao-escuro);
+  --s-sucesso-fundo: color-mix(in srgb, var(--sino-sucesso-escuro) 12%, var(--s-superficie));
+  --s-atencao-fundo: color-mix(in srgb, var(--sino-atencao-escuro) 12%, var(--s-superficie));
+  --s-erro-fundo: color-mix(in srgb, var(--sino-erro-escuro) 12%, var(--s-superficie));
+  --s-info-fundo: color-mix(in srgb, var(--sino-informacao-escuro) 12%, var(--s-superficie));
+  --s-sombra: none;
+  --s-sombra-camada: 0 16px 40px -12px rgb(0 0 0 / 0.6), 0 0 0 1px var(--s-borda);
+  --s-menu-fundo: var(--sino-carvao-950);
+  --s-menu-borda: #2A262F;
+  color-scheme: dark;
+}
+:root[data-tema='claro'] { color-scheme: light; }
+
+/* ---------------------------------------------------------------------
+   Utilitários
+   --------------------------------------------------------------------- */
+.s-so-leitor { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.s-num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }
+
+/* ---------------------------------------------------------------------
+   Menu lateral (todas as telas do painel do restaurante)
+   Famílias da marca: Operação · Gestão · Inteligência (+ Configurações).
+   Ativo: peso, marcador tomate e fundo — nunca só a cor.
+   --------------------------------------------------------------------- */
+.menu.s-menu {
+  background: var(--s-menu-fundo); border-right: 1px solid var(--s-menu-borda); color: var(--s-menu-texto);
+  font-family: var(--s-fonte); color-scheme: dark; padding: var(--s-4) var(--s-3) var(--s-3); gap: var(--s-4);
+}
+.s-menu .menu-topo { gap: var(--s-3); padding: var(--s-1) var(--s-2) 0; border: 0; }
+.s-menu .s-logo { display: block; line-height: 0; }
+.s-menu .s-logo img { width: 128px; height: auto; }          /* logotipo principal: mínimo 120 px */
+.s-menu .s-logo .s-logo-simbolo { display: none; width: 32px; height: 32px; }
+.s-menu .s-loja-uso { display: grid; gap: 2px; }
+.s-menu .s-loja-uso > .s-rotulo { font-size: var(--s-t-12); font-weight: 500; color: var(--s-menu-rotulo); }
+.s-menu .menu-loja { color: var(--s-menu-texto-forte); font-weight: 600; font-size: var(--s-t-14); padding: 0; }
+.s-menu .menu-marcas { color: var(--s-menu-rotulo); font-size: var(--s-t-12); }
+.s-menu .seletor-loja select {
+  background: var(--s-menu-hover); color: var(--s-menu-texto-forte); border: 1px solid #4A4450; border-radius: var(--s-raio);
+  height: 36px; font: 600 var(--s-t-14) var(--s-fonte);
+}
+.s-menu .seletor-loja select:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--sino-tomate); }
+.s-menu .menu-secoes { gap: var(--s-4); }
+.s-menu .menu-secao-titulo {
+  font: 600 0.6875rem/1.2 var(--s-fonte); letter-spacing: 0.08em; text-transform: uppercase; color: var(--s-menu-rotulo);
+  padding: 0 var(--s-3) var(--s-1);
+}
+.s-menu .menu-secao[data-ativa] .menu-secao-titulo { color: var(--s-menu-texto-forte); }
+.s-menu .menu-secao[data-familia='config'] { padding-top: var(--s-3); border-top: 1px solid var(--s-menu-borda); }
+.s-menu .menu-item {
+  min-height: 34px; padding: 0 var(--s-3); gap: 10px; border-radius: var(--s-raio-p); color: var(--s-menu-texto);
+  font: 450 var(--s-t-14) var(--s-fonte); transition: background-color var(--s-movimento), color var(--s-movimento);
+}
+.s-menu .menu-item svg { width: 18px; height: 18px; opacity: 0.9; }
+.s-menu .menu-item:hover { background: var(--s-menu-hover); color: var(--s-menu-texto-forte); }
+.s-menu .menu-item[aria-current='page'] { background: var(--s-menu-ativo); color: var(--s-menu-texto-forte); font-weight: 600; }
+.s-menu .menu-item[aria-current='page']::before { left: calc(-1 * var(--s-3)); top: 7px; bottom: 7px; width: 3px; background: var(--sino-tomate); }
+.s-menu .menu-item:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--sino-tomate); }
+.s-menu .menu-item[data-travado] { opacity: 0.6; }
+.s-menu .menu-item[data-pendente] { color: var(--sino-tomate); }
+.s-menu nav { scrollbar-color: #4A4450 transparent; scrollbar-width: thin; }
+.s-menu .menu-rodape { border-top: 1px solid var(--s-menu-borda); padding-top: var(--s-2); }
+.s-menu .menu-rodape .menu-item[aria-expanded='true'] { background: var(--s-menu-hover); color: var(--s-menu-texto-forte); }
+.s-menu .menu-versao { color: var(--s-menu-rotulo); font-family: var(--s-fonte); }
+.s-menu .menu-pop { background: var(--s-superficie); color: var(--s-texto); }
+.s-menu .s-tema { display: flex; gap: 2px; padding: 3px; margin: 0 0 var(--s-2); border-radius: var(--s-raio); background: var(--s-menu-hover); }
+.s-menu .s-tema button {
+  flex: 1; min-height: 28px; padding: 0 var(--s-1); border: 0; border-radius: var(--s-raio-p); background: none;
+  color: var(--s-menu-texto); font: 500 var(--s-t-12) var(--s-fonte);
+}
+.s-menu .s-tema button:hover:not(:disabled) { background: none; color: var(--s-menu-texto-forte); }
+.s-menu .s-tema button[aria-pressed='true'] { background: var(--s-menu-ativo); color: var(--s-menu-texto-forte); font-weight: 600; box-shadow: inset 0 -2px 0 var(--sino-tomate); }
+.s-menu .s-tema button:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--sino-tomate); }
+
+/* tablet: só ícones */
+@media (max-width: 1000px) and (min-width: 701px) {
+  .s-menu .s-logo img.s-logo-principal { display: none; }
+  .s-menu .s-logo .s-logo-simbolo { display: block; margin: 0 auto; }
+  .s-menu .s-loja-uso { display: none; }
+  .s-menu .menu-item[aria-current='page']::before { left: -0.5rem; }
+  .s-menu .s-tema { display: none; }
+}
+/* celular: barra de baixo em carvão */
+@media (max-width: 700px) {
+  .menu.s-menu { border-top: 1px solid var(--s-menu-borda); border-right: 0; padding: var(--s-1) var(--s-1) calc(var(--s-1) + env(safe-area-inset-bottom)); }
+  .s-menu .menu-item { font-size: 0.6875rem; min-height: 48px; }
+  .s-menu .menu-item[aria-current='page'] { box-shadow: inset 0 3px 0 var(--sino-tomate); }
+}
+/* folha "Mais" do celular */
+.menu-folha .s-logo-folha { width: 96px; height: auto; }
+
+/* ---------------------------------------------------------------------
+   Todas as telas do painel do restaurante (e login, cadastro, erro) com as cores e a fonte SINO
+   (pedido do dono em 18/11: nada de botão na cor antiga). Só variáveis:
+   a estrutura de cada tela continua a mesma até a fase 5 redesenhar.
+   O cardápio do cliente (/c) e o painel da empresa não entram.
+   As variáveis que dependem de outras (foco, sombras) são redefinidas
+   aqui também, porque o valor herdado já vem calculado.
+   --------------------------------------------------------------------- */
+body:has(.s-menu), .s-tela {
+  --fundo: var(--s-fundo); --superficie: var(--s-superficie); --superficie-2: var(--s-superficie-2);
+  --texto: var(--s-texto); --texto-suave: var(--s-texto-3); --texto-fraco: var(--s-texto-3);
+  --borda: var(--s-borda); --borda-forte: var(--s-borda-forte);
+  --primaria: var(--s-acao); --primaria-forte: var(--s-acao-hover); --primaria-texto: var(--s-acao-texto);
+  --primaria-fundo: var(--s-superficie-realce); --destaque: var(--s-atencao); --erro: var(--s-erro);
+  --foco: var(--s-foco);
+  --sombra: var(--s-sombra); --sombra-cartao: var(--s-sombra), 0 0 0 1px var(--s-borda); --sombra-alta: var(--s-sombra-camada);
+  --fonte: var(--fonte-inter); --fonte-display: var(--fonte-inter);
+  background: var(--s-fundo); color: var(--s-texto); font-family: var(--s-fonte);
+}
+/* login, cadastro e erro: fundo da página inteira no padrão SINO */
+body:has(.s-tela) { background: var(--s-fundo); }
+.s-tela { background: none; }
+/* onde a cor antiga queria dizer "deu certo", agora é a cor de sucesso (não a de ação) */
+body:has(.s-menu) .var.boa,
+body:has(.s-menu) .api-envios li[data-st='ok'] span:last-child { color: var(--s-sucesso); }
+body:has(.s-menu) .pr-selo.ok { background: var(--s-sucesso-fundo); color: var(--s-sucesso); }
+body:has(.s-menu) .faixa-conexao[data-ok] { background: var(--sino-sucesso); }
+body:has(.s-menu) .faixa-conta[data-tipo='ativa'] { background: var(--s-sucesso-fundo); box-shadow: inset 3px 0 0 var(--s-sucesso); }
+/* tela de carregamento: símbolo oficial SINO */
+.s-carregando { min-height: 60vh; display: grid; place-content: center; justify-items: center; gap: var(--s-4); opacity: 0; animation: s-aparece 0.2s ease-out 0.12s forwards; }
+.s-carregando-simbolo { width: 48px; height: 48px; }
+.s-carregando-simbolo[data-fundo='escuro'] { display: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-tema='claro']) .s-carregando-simbolo[data-fundo='claro'] { display: none; } :root:not([data-tema='claro']) .s-carregando-simbolo[data-fundo='escuro'] { display: block; } }
+:root[data-tema='escuro'] .s-carregando-simbolo[data-fundo='claro'] { display: none; }
+:root[data-tema='escuro'] .s-carregando-simbolo[data-fundo='escuro'] { display: block; }
+.s-carregando-barra { width: 8rem; height: 3px; border-radius: 999px; background: var(--s-borda); overflow: hidden; }
+.s-carregando-barra span { display: block; width: 40%; height: 100%; border-radius: 999px; background: var(--sino-tomate); animation: carregando-barra 1.1s ease-in-out infinite; }
+.s-carregando-texto { font-size: var(--s-t-13); color: var(--s-texto-3); }
+@keyframes s-aparece { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .s-carregando-barra span { animation: none; } }
+
+/* ---------------------------------------------------------------------
+   Página no padrão SINO (.s-pagina): Resumo é a referência
+   Os componentes antigos dentro dela (meta do mês, gráficos, resumo da
+   manhã) recebem os tokens SINO pelos nomes antigos: mesma lógica,
+   aparência nova.
+   --------------------------------------------------------------------- */
+.painel:has(.s-pagina) { background: var(--s-fundo); }
+.painel:has(.s-pagina) > .conteudo { max-width: 1360px; }
+.s-pagina {
+  --fundo: var(--s-fundo); --superficie: var(--s-superficie); --superficie-2: var(--s-superficie-2);
+  --texto: var(--s-texto); --texto-suave: var(--s-texto-3); --texto-fraco: var(--s-texto-3);
+  --borda: var(--s-borda); --borda-forte: var(--s-borda-forte);
+  --primaria: var(--s-acao); --primaria-forte: var(--s-acao-hover); --primaria-texto: var(--s-acao-texto);
+  --primaria-fundo: var(--s-superficie-realce); --destaque: var(--s-atencao); --erro: var(--s-erro);
+  --foco: var(--s-foco); --raio: var(--s-raio-g); --raio-controle: var(--s-raio); --controle-altura: var(--s-controle);
+  --sombra: var(--s-sombra); --sombra-cartao: var(--s-sombra), 0 0 0 1px var(--s-borda); --sombra-alta: var(--s-sombra-camada);
+  --fonte: var(--fonte-inter); --fonte-display: var(--fonte-inter);
+  display: grid; gap: var(--s-6); font-family: var(--s-fonte); color: var(--s-texto); font-size: var(--s-t-14); line-height: 1.5;
+}
+.s-pagina a { color: var(--s-link); }
+.s-pagina a:focus-visible, .s-pagina button:focus-visible, .s-pagina input:focus-visible, .s-pagina select:focus-visible { outline: none; box-shadow: var(--s-foco); }
+
+/* cabeçalho da tela */
+.s-cabecalho { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--s-3) var(--s-6); }
+.s-cabecalho-texto { display: grid; gap: var(--s-1); min-width: 0; }
+.s-sobretitulo { margin: 0; font-size: var(--s-t-12); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--s-texto-3); }
+.s-titulo { margin: 0; font: 600 var(--s-t-32)/1.25 var(--s-fonte); letter-spacing: -0.02em; color: var(--s-texto); }
+.s-subtitulo { margin: 0; font-size: var(--s-t-14); color: var(--s-texto-2); }
+.s-subtitulo strong { color: var(--s-texto); font-weight: 600; }
+
+/* contexto: de que lojas são os números da tela */
+.s-contexto { display: inline-flex; align-items: center; gap: var(--s-2); min-height: 32px; padding: 0 var(--s-3); border-radius: 999px; background: var(--s-superficie); box-shadow: inset 0 0 0 1px var(--s-borda); font-size: var(--s-t-13); color: var(--s-texto-2); white-space: nowrap; }
+.s-contexto strong { color: var(--s-texto); font-weight: 600; }
+.s-contexto svg { flex: none; color: var(--s-texto-3); }
+
+/* barra de filtros */
+.s-filtros { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); padding: var(--s-3); border-radius: var(--s-raio-g); background: var(--s-superficie); box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda); }
+.s-filtros form { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); margin: 0 0 0 auto; }
+.s-filtros .s-separador { width: 1px; align-self: stretch; background: var(--s-borda); }
+.s-segmentos { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: var(--s-raio); background: var(--s-fundo); }
+.s-segmentos a { display: inline-flex; align-items: center; min-height: 32px; padding: 0 var(--s-3); border-radius: var(--s-raio-p); color: var(--s-texto-2); font-size: var(--s-t-14); font-weight: 500; text-decoration: none; white-space: nowrap; transition: background-color var(--s-movimento), color var(--s-movimento); }
+.s-segmentos a:hover { color: var(--s-texto); }
+.s-segmentos a[aria-current] { background: var(--s-superficie); color: var(--s-texto); font-weight: 600; box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda), inset 0 -2px 0 var(--s-destaque); }
+.s-campo { display: inline-flex; align-items: center; gap: var(--s-2); margin: 0; color: var(--s-texto-3); font-size: var(--s-t-13); font-weight: 500; }
+.s-pagina .s-campo input, .s-pagina .s-campo select, .s-pagina .s-select {
+  min-height: 36px; padding: 0 var(--s-3); border: 1px solid var(--s-borda-forte); border-radius: var(--s-raio); background: var(--s-superficie);
+  color: var(--s-texto); font: 500 var(--s-t-14) var(--s-fonte); font-variant-numeric: tabular-nums;
+}
+.s-pagina .s-select { padding-right: var(--s-8); }
+
+/* botões */
+.s-botao { display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2); min-height: 36px; padding: 0 var(--s-4); border-radius: var(--s-raio); border: 1px solid var(--s-borda-forte); background: var(--s-superficie); color: var(--s-texto); font: 600 var(--s-t-14) var(--s-fonte); cursor: pointer; text-decoration: none; white-space: nowrap; transition: background-color var(--s-movimento), border-color var(--s-movimento); }
+.s-botao:hover:not(:disabled) { background: var(--s-superficie-2); border-color: var(--s-texto-3); }
+.s-botao-primario { background: var(--s-acao); border-color: var(--s-acao); color: var(--s-acao-texto); }
+.s-botao-primario:hover:not(:disabled) { background: var(--s-acao-hover); border-color: var(--s-acao-hover); }
+.s-botao:disabled { opacity: var(--s-desabilitado); cursor: not-allowed; }
+
+/* cartões */
+.s-cartao { display: grid; gap: var(--s-3); align-content: start; padding: var(--s-4) var(--s-6) var(--s-6); border-radius: var(--s-raio-g); background: var(--s-superficie); box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda); min-width: 0; }
+.s-cartao-topo { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--s-2) var(--s-4); }
+.s-cartao-titulo { margin: 0; font: 600 var(--s-t-16)/1.3 var(--s-fonte); color: var(--s-texto); letter-spacing: -0.005em; }
+.s-cartao-nota { margin: 0; font-size: var(--s-t-12); color: var(--s-texto-3); }
+
+/* indicadores (KPI): o mais importante primeiro, maior */
+.s-kpis { display: grid; gap: var(--s-4); grid-template-columns: minmax(0, 1.35fr) repeat(3, minmax(0, 1fr)); }
+.s-kpi { display: grid; gap: var(--s-2); align-content: start; padding: var(--s-4) var(--s-4) var(--s-4) var(--s-6); border-radius: var(--s-raio-g); background: var(--s-superficie); box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda); min-width: 0; }
+.s-kpi-topo { display: flex; justify-content: space-between; align-items: center; gap: var(--s-2); }
+.s-kpi-rotulo { margin: 0; font-size: var(--s-t-14); font-weight: 600; color: var(--s-texto-2); }
+.s-kpi-valor { margin: 0; font: 600 var(--s-t-32)/1.1 var(--s-fonte); letter-spacing: -0.025em; font-variant-numeric: tabular-nums; color: var(--s-texto); white-space: nowrap; }
+.s-kpi-comparacao { margin: 0; font-size: var(--s-t-13); color: var(--s-texto-2); }
+.s-kpi-comparacao b { color: var(--s-texto); font-weight: 600; font-variant-numeric: tabular-nums; }
+.s-kpi-detalhe { margin: 0; font-size: var(--s-t-13); color: var(--s-texto-3); line-height: 1.5; }
+.s-kpi-detalhe b { color: var(--s-texto-2); font-weight: 600; font-variant-numeric: tabular-nums; }
+.s-kpi-ajuda { margin: var(--s-1) 0 0; padding-top: var(--s-2); border-top: 1px solid var(--s-borda); font-size: var(--s-t-12); color: var(--s-texto-3); }
+.s-kpi[data-principal] { box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda), inset 3px 0 0 var(--s-destaque); }
+.s-kpi[data-principal] .s-kpi-valor { font-size: clamp(2rem, 2.6vw, 2.5rem); }
+@media (max-width: 1180px) { .s-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1180px) and (min-width: 561px) { .s-kpi[data-principal] .s-kpi-valor { font-size: var(--s-t-32); } }
+@media (max-width: 560px) { .s-kpis { grid-template-columns: 1fr; } .s-kpi[data-principal] .s-kpi-valor { font-size: var(--s-t-32); } }
+
+/* variação: seta + sinal + texto, cor só reforça */
+.s-var { display: inline-flex; align-items: center; gap: 3px; padding: 2px var(--s-2); border-radius: 999px; font-size: var(--s-t-12); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.s-var[data-tom='bom'] { color: var(--s-sucesso); background: var(--s-sucesso-fundo); }
+.s-var[data-tom='ruim'] { color: var(--s-erro); background: var(--s-erro-fundo); }
+.s-var[data-tom='neutro'] { color: var(--s-texto-3); background: var(--s-superficie-2); box-shadow: inset 0 0 0 1px var(--s-borda); }
+.s-var svg { flex: none; }
+
+/* faixa do meio: atenção do dia + meta */
+.s-dupla { display: grid; gap: var(--s-4); grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+.s-dupla > :only-child { grid-column: 1 / -1; }
+@media (max-width: 1000px) { .s-dupla { grid-template-columns: 1fr; } }
+
+/* componentes antigos dentro da página SINO */
+.s-pagina .cartao { border: 0; border-radius: var(--s-raio-g); background: var(--s-superficie); box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda); padding: var(--s-4) var(--s-6) var(--s-6); }
+.s-pagina .dica, .s-pagina .kpi-frase { color: var(--s-texto-3); font-size: var(--s-t-13); }
+.s-pagina .kpi-frase b { color: var(--s-texto); }
+.s-pagina h2, .s-pagina h3 { font-family: var(--s-fonte); }
+.s-pagina button, .s-pagina .botao { font-family: var(--s-fonte); border-radius: var(--s-raio); }
+.s-pagina a.botao:not(.botao-primario) { color: var(--s-texto); text-decoration: none; }
+.s-pagina .botao-primario, .s-pagina button.botao-primario { box-shadow: none; }
+.s-pagina .kpi-valor { font-family: var(--s-fonte); font-weight: 600; letter-spacing: -0.02em; }
+.s-pagina .abas-metrica { background: var(--s-fundo); }
+.s-pagina .abas-metrica button[aria-pressed='true'] { background: var(--s-superficie); color: var(--s-texto); box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda), inset 0 -2px 0 var(--s-destaque); }
+.s-pagina .coluna-valor { font-family: var(--s-fonte); font-weight: 600; }
+
+/* resumo do dia (D-105) no padrão SINO: alerta claro, sem competir com os números */
+.s-pagina .bom-dia { box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda), inset 3px 0 0 var(--s-atencao); gap: var(--s-2); }
+.s-pagina .bom-dia ul { margin: var(--s-1) 0 0; padding: 0; list-style: none; display: grid; gap: var(--s-1); }
+.s-pagina .bom-dia li a { display: flex; align-items: center; min-height: 32px; padding: 0 var(--s-3); border-radius: var(--s-raio-p); background: var(--s-atencao-fundo); color: var(--s-texto); font-weight: 500; text-decoration: none; }
+.s-pagina .bom-dia li a:hover { background: color-mix(in srgb, var(--s-atencao) 18%, var(--s-superficie)); }
+
+/* tabelas compactas: números à direita, alinhados */
+.s-tabela-rolagem { overflow-x: auto; margin: 0 calc(-1 * var(--s-6)); padding: 0 var(--s-6); }
+.s-tabela { width: 100%; border-collapse: collapse; font-size: var(--s-t-14); font-variant-numeric: tabular-nums; }
+.s-tabela th, .s-tabela td { padding: 0 var(--s-3); height: 40px; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--s-borda); }
+.s-tabela th { height: 36px; font-size: var(--s-t-12); font-weight: 600; color: var(--s-texto-3); background: var(--s-superficie-2); border-bottom-color: var(--s-borda); }
+.s-tabela th:first-child { border-radius: var(--s-raio-p) 0 0 var(--s-raio-p); }
+.s-tabela th:last-child { border-radius: 0 var(--s-raio-p) var(--s-raio-p) 0; }
+.s-tabela .num { text-align: right; }
+.s-tabela tbody tr:hover td { background: var(--s-superficie-2); }
+.s-tabela tfoot td { font-weight: 600; border-bottom: 0; color: var(--s-texto); }
+.s-tabela .s-loja { display: inline-flex; align-items: center; gap: var(--s-2); font-weight: 500; }
+.s-barra-part { display: inline-block; width: 56px; height: 6px; margin-right: var(--s-2); border-radius: 999px; background: var(--s-superficie-2); box-shadow: inset 0 0 0 1px var(--s-borda); overflow: hidden; vertical-align: middle; }
+.s-barra-part > span { display: block; height: 100%; background: var(--s-texto-2); border-radius: 999px; }
+
+/* estados */
+.s-vazio { display: grid; gap: var(--s-2); justify-items: start; padding: var(--s-6); border-radius: var(--s-raio-g); background: var(--s-superficie); box-shadow: inset 0 0 0 1px var(--s-borda); color: var(--s-texto-2); }
+.s-alerta { display: flex; gap: var(--s-3); align-items: flex-start; padding: var(--s-3) var(--s-4); border-radius: var(--s-raio); font-size: var(--s-t-14); }
+.s-alerta svg { flex: none; margin-top: 2px; }
+.s-alerta[data-tom='erro'] { background: var(--s-erro-fundo); color: var(--s-texto); box-shadow: inset 3px 0 0 var(--s-erro); }
+.s-alerta[data-tom='erro'] svg { color: var(--s-erro); }
+.s-alerta[data-tom='info'] { background: var(--s-info-fundo); color: var(--s-texto); box-shadow: inset 3px 0 0 var(--s-info); }
+.s-alerta[data-tom='info'] svg { color: var(--s-info); }
+
+@media (max-width: 700px) {
+  .s-titulo { font-size: var(--s-t-24); }
+  .s-cartao, .s-pagina .cartao { padding: var(--s-4); }
+  .s-tabela-rolagem { margin: 0 calc(-1 * var(--s-4)); padding: 0 var(--s-4); }
+  .s-filtros { padding: var(--s-2); }
+  .s-segmentos { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; scrollbar-width: none; }
+  .s-filtros form { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .s-pagina *, .s-menu * { transition: none !important; } }
+
+/* Resumo: composição das vendas e cabeçalho de linha da tabela */
+.s-composicao { display: grid; gap: var(--s-3); grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.s-composicao-item { display: grid; gap: var(--s-2); align-content: start; padding: var(--s-3) var(--s-4); border-radius: var(--s-raio); background: var(--s-superficie-2); box-shadow: inset 0 0 0 1px var(--s-borda); min-width: 0; }
+.s-kpi-valor.s-kpi-valor-m { font-size: var(--s-t-24); }
+.s-composicao-lista { list-style: none; margin: 0; padding: var(--s-2) 0 0; border-top: 1px solid var(--s-borda); display: grid; gap: var(--s-1); font-size: var(--s-t-13); }
+.s-composicao-lista li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s-2); align-items: center; }
+.s-composicao-nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; color: var(--s-texto-2); }
+.s-composicao-lista .s-num { white-space: nowrap; display: inline-flex; gap: var(--s-1); align-items: center; }
+@media (max-width: 1480px) { .s-composicao { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .s-composicao { grid-template-columns: 1fr; } }
+.s-tabela tbody th { font-size: inherit; font-weight: 500; color: var(--s-texto); background: none; border-radius: 0; }
+.s-tabela tbody tr:hover th { background: var(--s-superficie-2); }
+.s-pagina .cor-loja { margin-right: 0; width: 10px; height: 10px; border-radius: 3px; }
+.s-pagina .s-composicao-nome .cor-loja { margin-right: var(--s-2); }
+.s-cartao-nota strong { color: var(--s-texto); font-weight: 600; }
+/* meta do mês no padrão SINO */
+.s-pagina .meta-mes { border-left: 0; box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda), inset 3px 0 0 var(--s-destaque); }
+.s-pagina .meta-mes[data-ok] { box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda), inset 3px 0 0 var(--s-sucesso); }
+.s-pagina .meta-barra { height: 10px; background: var(--s-superficie-2); box-shadow: inset 0 0 0 1px var(--s-borda); }
+.s-pagina .meta-feito { background: var(--s-texto-2); }
+.s-pagina .meta-mes[data-ok] .meta-feito { background: var(--s-sucesso); }
+.s-pagina .meta-hoje { background: var(--s-destaque); }
+.s-pagina .meta-numeros b { font-family: var(--s-fonte); font-weight: 600; }
+
+/* cores fixas antigas de "selecionado" (laranja e branco): passam para a ação SINO,
+   com o texto que dá contraste nos dois temas (creme sobre carvão; carvão sobre tomate) */
+body:has(.s-menu) .qp-visao { border-color: var(--s-borda); }
+body:has(.s-menu) .qp-visao button[aria-checked='true'],
+:is(body:has(.s-menu), .s-tela) .cad-tipo[aria-checked='true'],
+:is(body:has(.s-menu), .s-tela) .cad-form .qp-chip[aria-checked='true'],
+:is(body:has(.s-menu), .s-tela) .cad-etapas li[data-atual] .cad-etapa-num { background: var(--s-acao); border-color: var(--s-acao); color: var(--s-acao-texto); }
+:is(body:has(.s-menu), .s-tela) .cad-etapas li[data-atual] button { border-color: var(--s-acao); background: var(--s-superficie-realce); }
+body:has(.s-menu) .pp-barra span { background: var(--sino-tomate); }
+body:has(.s-menu) .qk-acao:hover,
+body:has(.s-menu) .qk-cartao[data-status='novo'] .qk-acao { background: var(--s-acao); color: var(--s-acao-texto); }
+
+/* ---------------------------------------------------------------------
+   Correções de 19/11 (dono: Aplicativos e Assinatura)
+   1. Variáveis que algumas telas usam sem estarem definidas: caíam no
+      branco/verde fixo e quebravam o tema escuro (cartões de plano brancos).
+   2. Selos e avisos com cores claras fixas: passam a usar as cores de
+      estado SINO, que se ajustam ao tema.
+   3. Cartões de Aplicativos: o botão herdava "não quebrar linha" e a
+      descrição passava por baixo do selo "Disponível".
+   --------------------------------------------------------------------- */
+body:has(.s-menu), .s-tela { --fundo-cartao: var(--s-superficie); --sucesso: var(--s-sucesso); --verde: var(--s-sucesso); }
+
+body:has(.s-menu) .ap-cartao { white-space: normal; text-align: left; align-items: center; }
+body:has(.s-menu) .ap-texto strong { overflow-wrap: anywhere; }
+body:has(.s-menu) .ap-texto .dica { overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+body:has(.s-menu) .ap-sit { align-self: center; white-space: nowrap; }
+body:has(.s-menu) .ap-sit[data-tom='ok'] { background: var(--s-sucesso-fundo); color: var(--s-sucesso); }
+body:has(.s-menu) .ap-sit[data-tom='livre'] { background: var(--s-info-fundo); color: var(--s-info); }
+body:has(.s-menu) .ap-sit[data-tom='off'] { background: var(--s-atencao-fundo); color: var(--s-atencao); }
+body:has(.s-menu) .ap-cartao[data-breve] { background: var(--s-superficie-2); }
+body:has(.s-menu) .ap-fundo { background: rgb(20 18 22 / 0.55); }
+
+body:has(.s-menu) .plano-cartao { background: var(--s-superficie); border-color: var(--s-borda); color: var(--s-texto); }
+body:has(.s-menu) .plano-cartao[data-atual] { border-color: var(--s-destaque); box-shadow: 0 0 0 1px var(--s-destaque); }
+body:has(.s-menu) .plano-cartao h3 { font-family: var(--s-fonte); font-weight: 600; }
+body:has(.s-menu) .plano-preco { font-weight: 600; letter-spacing: -0.02em; }
+body:has(.s-menu) .plano-preco small { color: var(--s-texto-3); }
+body:has(.s-menu) .plano-lista li { color: var(--s-texto); }
+body:has(.s-menu) .plano-lista li[data-nao] { color: var(--s-texto-3); }
+body:has(.s-menu) .plano-selo { background: var(--s-superficie-realce); color: var(--s-texto); box-shadow: inset 0 0 0 1px var(--s-borda); }
+body:has(.s-menu) .plano-cartao[data-atual] .plano-selo { background: var(--s-acao); color: var(--s-acao-texto); box-shadow: none; }
+
+body:has(.s-menu) .cmv-aviso[data-tom='alerta'],
+body:has(.s-menu) .pix-espera { background: var(--s-atencao-fundo); color: var(--s-texto); box-shadow: inset 3px 0 0 var(--s-atencao); }
+body:has(.s-menu) .api-segredo { background: var(--s-atencao-fundo); border-color: color-mix(in srgb, var(--s-atencao) 45%, transparent); }
+body:has(.s-menu) .mg-selo { background: var(--s-atencao-fundo); color: var(--s-atencao); }
+body:has(.s-menu) .mg-selo[data-selo='recomendado'] { background: var(--s-info-fundo); color: var(--s-info); }
+body:has(.s-menu) .mg-selo[data-selo='novo'] { background: var(--s-superficie-realce); color: var(--s-texto); }
+body:has(.s-menu) .qp-selo-cliente[data-tipo='novo'] { background: var(--s-sucesso-fundo); color: var(--s-sucesso); }
+body:has(.s-menu) .qp-selo-cliente[data-tipo='volta'] { background: var(--s-atencao-fundo); color: var(--s-atencao); }
+body:has(.s-menu) .qp-selo-cliente[data-tipo='fiel'] { background: var(--s-info-fundo); color: var(--s-info); }

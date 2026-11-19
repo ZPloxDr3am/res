@@ -1,17 +1,11 @@
-/** Enquanto a próxima tela carrega: a marca RES animada (mostra que o clique foi recebido). */
+/** Enquanto a próxima tela carrega (D-120): o símbolo oficial SINO (desenho próprio de 48 px) e uma barra de progresso. */
 export default function Carregando() {
   return (
-    <div className="carregando-res" role="status" aria-live="polite">
-      <div className="carregando-marca" aria-hidden="true">
-        <span className="carregando-selo" />
-        <span className="carregando-letras">
-          <span>R</span>
-          <span>E</span>
-          <span>S</span>
-        </span>
-      </div>
-      <span className="carregando-barra" aria-hidden="true"><span /></span>
-      <span className="carregando-texto">Carregando…</span>
+    <div className="s-carregando" role="status" aria-live="polite">
+      <img className="s-carregando-simbolo" data-fundo="claro" src="/marca/sino-simbolo-48px-cor.svg" alt="" width={48} height={48} />
+      <img className="s-carregando-simbolo" data-fundo="escuro" src="/marca/sino-simbolo-48px-negativo.svg" alt="" width={48} height={48} />
+      <span className="s-carregando-barra" aria-hidden="true"><span /></span>
+      <span className="s-carregando-texto">Carregando…</span>
     </div>
   );
 }

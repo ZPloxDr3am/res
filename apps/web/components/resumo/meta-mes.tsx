@@ -120,7 +120,7 @@ export function MetaMes({ dados, podeEditar }: { dados: DadosMeta; podeEditar: s
           </span>
         )}
       </div>
-      {!m.temHistorico && m.mesAtual && <span className="dica">A projeção fica mais precisa depois de 2 semanas de vendas no RES (passa a usar a média de cada dia da semana).</span>}
+      {!m.temHistorico && m.mesAtual && <span className="dica">A projeção fica mais precisa depois de 2 semanas de vendas no SINO (passa a usar a média de cada dia da semana).</span>}
       {editor}
     </section>
   );

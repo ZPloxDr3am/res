@@ -70,7 +70,7 @@ export function Assinatura({ d, pixAutomatico }: { d: DadosAssinatura; pixAutoma
     : d.situacao === 'teste'
       ? { rotulo: 'Teste grátis', texto: `Tudo liberado até ${data(d.teste_ate)}. Depois segue no plano escolhido abaixo.` }
       : d.situacao === 'suspensa'
-        ? { rotulo: 'Suspensa', texto: 'Fale com o time do RES pelo Suporte.' }
+        ? { rotulo: 'Suspensa', texto: 'Fale com o time do SINO pelo Suporte.' }
         : { rotulo: d.liberada ? 'Ativa' : 'Vencida', texto: d.liberada ? `Paga até ${data(d.pago_ate)}.` : 'Novos pedidos pausados até o pagamento.' };
 
   const recursos = d.catalogo.filter((m) => m.cobranca === 'conta' || m.cobranca === 'loja');
@@ -126,7 +126,7 @@ export function Assinatura({ d, pixAutomatico }: { d: DadosAssinatura; pixAutoma
                   <span className="dica" role="status">Esperando o pagamento… a tela atualiza sozinha.</span>
                 </div>
               ) : pix?.estado === 'manual' || !pixAutomatico ? (
-                <p className="dica" style={{ margin: 0 }}>Para pagar, fale com o time do RES pelo Suporte (no menu): enviamos o Pix e a conta é liberada assim que cair.</p>
+                <p className="dica" style={{ margin: 0 }}>Para pagar, fale com o time do SINO pelo Suporte (no menu): enviamos o Pix e a conta é liberada assim que cair.</p>
               ) : (
                 <>
                   {pix?.estado === 'erro' && <p className="erro" style={{ margin: 0 }}>{pix.mensagem}</p>}
@@ -212,7 +212,7 @@ export function Assinatura({ d, pixAutomatico }: { d: DadosAssinatura; pixAutoma
                     <td>{reais(comCiclo(Number(m.preco)))}</td>
                     <td>
                       {a && ajustePeloRes ? (
-                        <span className="dica">{a.ligado ? 'Cortesia do RES' : 'Bloqueado pelo RES'}</span>
+                        <span className="dica">{a.ligado ? 'Cortesia do SINO' : 'Bloqueado pelo SINO'}</span>
                       ) : (
                         <button type="button" className={ligado ? 'botao' : 'botao-primario'} disabled={pendente} onClick={() => rodar(() => contratarAdicional(m.id, !ligado))}>
                           {ligado ? 'Remover' : 'Contratar'}

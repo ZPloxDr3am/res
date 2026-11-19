@@ -23,7 +23,7 @@ export function PainelCanaisCliente({ d }: { d: Dados }) {
   return (
     <div className="grade" style={{ gap: '1rem' }}>
       <p className="dica" style={{ margin: 0 }}>
-        O RES busca os pedidos do Delivery Much e da Rappi a cada 30 segundos e põe no quadro. Aceitar, pronto e cancelar voltam para o app.
+        O SINO busca os pedidos do Delivery Much e da Rappi a cada 30 segundos e põe no quadro. Aceitar, pronto e cancelar voltam para o app.
         {' '}{d.configurado.deliverymuch ? '✅ Delivery Much configurado no servidor.' : '🧪 Delivery Much ainda sem credenciais de integrador: só modo teste.'}
         {' '}{d.configurado.rappi ? '✅ Rappi configurada no servidor.' : '🧪 Rappi ainda sem credenciais de aliado: só modo teste.'}
       </p>

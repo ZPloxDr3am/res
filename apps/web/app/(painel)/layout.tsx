@@ -9,6 +9,13 @@ import { headers } from 'next/headers';
 import { moduloDaRota } from '@res/core';
 import { ModuloTravado } from '@/components/modulo-travado';
 import { AvisoAvaliacao } from '@/components/avaliacoes/aviso';
+import type { Metadata } from 'next';
+
+// Ícone da aba: favicon oficial SINO (Brand Book v1.2, pasta 07). Só no painel: o cardápio do cliente é da loja.
+export const metadata: Metadata = {
+  title: 'SINO — Gestão do restaurante',
+  icons: { icon: [{ url: '/marca/favicon.ico', sizes: '16x16 32x32 48x48' }, { url: '/marca/favicon.svg', type: 'image/svg+xml' }], apple: '/marca/apple-touch-icon.png' },
+};
 
 export default async function PainelLayout({ children }: { children: React.ReactNode }) {
   const ctx = await contextoLoja();
@@ -35,15 +42,23 @@ export default async function PainelLayout({ children }: { children: React.React
   return (
     <PedidoFlutuanteProvider lojaId={ctx.lojaId}>
     <div className="painel">
-      <aside className="menu" aria-label="Menu principal">
+      <aside className="menu s-menu" aria-label="Menu principal">
         <div className="menu-topo">
-          <span className="marca-res">RES</span>
-          {ctx.lojas.length > 1 ? (
-            <SeletorLoja lojas={ctx.lojas} atual={ctx.lojaId} />
-          ) : (
-            <span className="menu-loja" title={ctx.lojaNome}>{ctx.lojaNome}</span>
-          )}
-          {ctx.marcas.length > 1 && <span className="dica menu-marcas">{ctx.marcas.map((m) => m.nome).join(' · ')}</span>}
+          {/* logotipo oficial SINO (arquivo da marca, nunca redesenhado); no tablet, o símbolo de 32 px */}
+          <div className="s-logo">
+            <img className="s-logo-principal" src="/marca/sino-logotipo-horizontal-negativo.svg" alt="SINO" width={128} height={42} />
+            <img className="s-logo-simbolo" src="/marca/sino-simbolo-32px-negativo.svg" alt="" width={32} height={32} />
+          </div>
+          {/* a loja em uso vale para operar; os relatórios podem somar outras lojas e dizem isso na própria tela */}
+          <div className="s-loja-uso">
+            <span className="s-rotulo">Loja em uso</span>
+            {ctx.lojas.length > 1 ? (
+              <SeletorLoja lojas={ctx.lojas} atual={ctx.lojaId} />
+            ) : (
+              <span className="menu-loja" title={ctx.lojaNome}>{ctx.lojaNome}</span>
+            )}
+            {ctx.marcas.length > 1 && <span className="dica menu-marcas">{ctx.marcas.map((m) => m.nome).join(' · ')}</span>}
+          </div>
         </div>
         <nav>
           <NavPainel lojas={ctx.lojas.map((l) => ({ id: l.id, nome: l.nome }))} lojaAtual={ctx.lojaId} lojaNome={ctx.lojaNome} primeirosPassos={primeirosPassos} modulos={modulos} dono={ctx.papel === 'dono'}
@@ -72,7 +87,7 @@ function FaixaConta({ s }: { s: { situacao: string; teste_ate: string | null; pa
   if (!s.liberada) {
     return (
       <div className="faixa-conta" data-tipo="pausada" role="alert">
-        <strong>Novos pedidos pausados.</strong> {s.situacao === 'teste' ? 'O teste grátis terminou.' : s.situacao === 'suspensa' ? 'A conta está suspensa.' : 'A assinatura venceu.'} Seus dados continuam aqui. {s.situacao === 'suspensa' ? 'Fale com o time do RES (Suporte, no menu) para reativar.' : <>Pague em <a href="/assinatura">Assinatura</a> e tudo volta na hora.</>}
+        <strong>Novos pedidos pausados.</strong> {s.situacao === 'teste' ? 'O teste grátis terminou.' : s.situacao === 'suspensa' ? 'A conta está suspensa.' : 'A assinatura venceu.'} Seus dados continuam aqui. {s.situacao === 'suspensa' ? 'Fale com o time do SINO (Suporte, no menu) para reativar.' : <>Pague em <a href="/assinatura">Assinatura</a> e tudo volta na hora.</>}
       </div>
     );
   }

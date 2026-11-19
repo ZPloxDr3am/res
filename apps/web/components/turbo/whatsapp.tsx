@@ -88,7 +88,7 @@ function Conectar() {
         <label>ID da conta do WhatsApp Business<input value={waba} inputMode="numeric" onChange={(e) => setWaba(e.target.value)} autoComplete="off" /></label>
       </div>
       <label>Token permanente<input type="password" value={token} onChange={(e) => setToken(e.target.value)} autoComplete="off" spellCheck={false} />
-        <span className="dica">Fica guardado só no servidor do RES; nem a tela mostra de volta.</span></label>
+        <span className="dica">Fica guardado só no servidor do SINO; nem a tela mostra de volta.</span></label>
       {erro && <p className="erro" role="alert" style={{ margin: 0 }}>{erro}</p>}
       <div>
         <button type="button" className="botao-primario" disabled={pendente || !phone || !waba || token.length < 20} onClick={() => iniciar(async () => {

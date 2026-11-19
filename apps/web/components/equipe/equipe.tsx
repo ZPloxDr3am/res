@@ -9,6 +9,7 @@ import { salvando } from '@/components/tempo-real';
 import { FUNCOES, gerarSenha, iniciais, ORDEM_FUNCOES, PERMISSOES_EQUIPE, sugerirUsuario, type Papel } from '@/lib/equipe';
 import type { LojaInfo } from '@/components/gestao-lojas';
 import { MotoboyLink } from '@/components/equipe/motoboy-link';
+import { LogoSino } from '@/components/logo-sino';
 
 type Res = { ok: boolean; erro?: string; texto?: string } | null;
 export type Ficha = { id: string; nome: string; cpf: string | null; cargo: string | null; membroId: string | null; ativo: boolean };
@@ -199,7 +200,7 @@ function Lista({ loja, gestor, verCartao }: { loja: LojaEquipe; gestor: boolean;
         <section className="cartao grade eq-grupo" aria-label="Convites pendentes">
           <div>
             <h3 style={{ margin: 0 }}>✉️ Convites esperando a pessoa entrar</h3>
-            <p className="dica" style={{ margin: 0 }}>A pessoa precisa criar a conta (ou entrar) no RES com este e-mail. Ao entrar, ela já cai nesta loja.</p>
+            <p className="dica" style={{ margin: 0 }}>A pessoa precisa criar a conta (ou entrar) no SINO com este e-mail. Ao entrar, ela já cai nesta loja.</p>
           </div>
           <ul className="eq-lista">
             {loja.convites.map((c) => (
@@ -277,7 +278,7 @@ function Assistente({ loja, fechar, criado, fichaInicial }: { loja: LojaEquipe; 
         fd.set('email', email.trim());
         const res = await salvando(convidar(loja.id, fd));
         if (!res.ok) return setR(res);
-        setR({ ok: true, texto: `Convite criado. Avise ${nome.split(' ')[0]} para criar a conta no RES com o e-mail ${email.trim()}: ao entrar, já cai nesta loja.` });
+        setR({ ok: true, texto: `Convite criado. Avise ${nome.split(' ')[0]} para criar a conta no SINO com o e-mail ${email.trim()}: ao entrar, já cai nesta loja.` });
         setPasso(3);
       }
     });
@@ -355,7 +356,7 @@ function Assistente({ loja, fechar, criado, fichaInicial }: { loja: LojaEquipe; 
           </label>
 
           <fieldset className="eq-modos">
-            <legend>Como ela vai entrar no RES?</legend>
+            <legend>Como ela vai entrar no SINO?</legend>
             <label className="eq-modo" data-escolhido={modo === 'usuario' || undefined}>
               <input type="radio" name="modo" checked={modo === 'usuario'} onChange={() => setModo('usuario')} />
               <span>
@@ -367,7 +368,7 @@ function Assistente({ loja, fechar, criado, fichaInicial }: { loja: LojaEquipe; 
               <input type="radio" name="modo" checked={modo === 'email'} onChange={() => setModo('email')} />
               <span>
                 <b>Por convite no e-mail dela</b>
-                <span className="dica">Ela cria a própria senha. Bom para gerente ou quem já usa o RES em outra loja.</span>
+                <span className="dica">Ela cria a própria senha. Bom para gerente ou quem já usa o SINO em outra loja.</span>
               </span>
             </label>
           </fieldset>
@@ -496,7 +497,7 @@ export function CartaoAcesso({ c, fechar }: { c: Cartao; fechar: () => void }) {
     QRCode.toString(url, { type: 'svg', margin: 1, width: 150, errorCorrectionLevel: 'M' }).then(setQr).catch(() => setQr(''));
   }, [url]);
   const texto =
-    `Olá, ${c.nome.split(' ')[0]}! Seu acesso ao RES (${c.loja}):\n` +
+    `Olá, ${c.nome.split(' ')[0]}! Seu acesso ao SINO (${c.loja}):\n` +
     `Entre em: ${url}\nUsuário: ${c.usuario}\n` +
     (c.senha ? `Senha: ${c.senha}\n` : '') +
     (c.papel === 'entregador' ? `No Android, instale o app RES Motoboy: ${APK}\n` : '') +
@@ -517,7 +518,7 @@ export function CartaoAcesso({ c, fechar }: { c: Cartao; fechar: () => void }) {
       {c.senha && <p className="dica nao-imprimir" role="status" style={{ margin: 0 }}>✅ Acesso de {c.nome} pronto. <b>Anote ou imprima agora:</b> a senha não aparece de novo (se perder, é só trocar).</p>}
       <div className="eq-cartao-acesso">
         <div className="eq-cartao-topo">
-          <span className="marca-res">RES</span>
+          <LogoSino variante="cor" />
           <span>{c.loja}</span>
         </div>
         <div className="eq-cartao-corpo">
