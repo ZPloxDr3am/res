@@ -19,7 +19,7 @@
   },
   ".github/ISSUE_TEMPLATE/funcionalidade.yml": {
     "mtime": 1794355880.8183694,
-    "seen": 1795063743.4447525,
+    "seen": 1795063980.7870705,
     "ast_hash": "4b077974736cef5eae084aab55fdbd3b",
     "semantic_hash": ""
   },
@@ -240,9 +240,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/estoque/page.tsx": {
-    "mtime": 1794613010.6071675,
-    "seen": 1795062708.6628973,
-    "ast_hash": "8cf5997ca90944a9fc6ff3308b83fdfc",
+    "mtime": 1795063905.779596,
+    "seen": 1795063980.787117,
+    "ast_hash": "fd7bcdd30e981e0595723614dfbb3f8a",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/evento/actions.ts": {
@@ -276,9 +276,9 @@
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/financeiro/page.tsx": {
-    "mtime": 1795058662.091625,
-    "seen": 1795062708.6629078,
-    "ast_hash": "1824e3605de6f23b0811e0e0344f5870",
+    "mtime": 1795063905.77921,
+    "seen": 1795063980.7871232,
+    "ast_hash": "b579a52c9713c34ed6be3b8be883c01f",
     "semantic_hash": ""
   },
   "apps/web/app/(painel)/gestao/actions.ts": {
@@ -1302,8 +1302,8 @@
     "semantic_hash": ""
   },
   "apps/web/components/kds/kds.tsx": {
-    "mtime": 1795063690.2361357,
-    "seen": 1795063743.4451272,
+    "mtime": 1795063869.3353348,
+    "seen": 1795063876.3115819,
     "ast_hash": "e73123305308045638fb5aa51a72e029",
     "semantic_hash": ""
   },
@@ -1776,8 +1776,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1795063739.8233302,
-    "seen": 1795063743.4452658,
+    "mtime": 1795063976.7993386,
+    "seen": 1795063980.7873893,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": ""
   },
@@ -3288,9 +3288,9 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795063708.010567,
-    "seen": 1795063743.445797,
-    "ast_hash": "5eaa0830fe4d2e697c99e469f0fbf306",
+    "mtime": 1795063945.5240402,
+    "seen": 1795063980.7877405,
+    "ast_hash": "fe87cd32567a811e57bf61c32a6abf7c",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/whatsapp-api.md": {

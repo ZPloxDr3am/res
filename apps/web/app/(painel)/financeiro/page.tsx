@@ -57,8 +57,13 @@ export default async function Financeiro({ searchParams }: { searchParams: Promi
   const ctx = await contextoLoja();
   if (ctx.papel !== 'dono' && ctx.papel !== 'gerente') {
     return (
-      <div className="grade">
-        <h1>Financeiro</h1>
+      <div className="s-pagina s-gestao">
+        <header className="s-cabecalho">
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Gestão</p>
+          <h1 className="s-titulo">Financeiro</h1>
+        </div>
+      </header>
         <p className="cartao dica">Só o dono ou o gerente da loja acessam o Financeiro.</p>
       </div>
     );
@@ -88,8 +93,13 @@ export default async function Financeiro({ searchParams }: { searchParams: Promi
   ) : null;
   if (grupo && !esc.titular) {
     return (
-      <div className="grade">
-        <h1>Financeiro</h1>
+      <div className="s-pagina s-gestao">
+        <header className="s-cabecalho">
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Gestão</p>
+          <h1 className="s-titulo">Financeiro</h1>
+        </div>
+      </header>
         <p className="cartao dica">O financeiro deste grupo é controlado junto, para as {esc.lojasGrupo.length} lojas, pelo titular da conta.</p>
         {escolha}
       </div>
@@ -292,8 +302,13 @@ export default async function Financeiro({ searchParams }: { searchParams: Promi
   }
 
   return (
-    <div className="grade">
-      <h1>Financeiro</h1>
+    <div className="s-pagina s-gestao">
+      <header className="s-cabecalho">
+        <div className="s-cabecalho-texto">
+          <p className="s-sobretitulo">Gestão</p>
+          <h1 className="s-titulo">Financeiro</h1>
+        </div>
+      </header>
       <nav className="abas" aria-label="Financeiro">
         {ABAS.map(([k, r]) => (
           <Link key={k} href={qs({ aba: k === 'visao' ? undefined : k })} role="tab" aria-selected={aba === k} className="aba-link">

@@ -160,10 +160,18 @@ Em cada tela: trocar a classe da raiz para `s-pagina`, os componentes para os `s
 - Calculadora de cédulas com campos de 40 px e total em 24 px; relatório `/caixa/[id]` só troca o selo de situação (o resto fica igual por causa da impressão).
 - Nenhuma conta, rota ou chamada ao banco mudou.
 
-### 5.3 Cozinha / KDS (em validação)
+### 5.3 Cozinha / KDS — aprovado pelo dono em 19/11/2026 (PR #146)
 
 - `kds.tsx` dentro de `.s-pagina .s-kds`: cabeçalho "Operação · Cozinha" com o nome da estação; selo de conexão com ponto colorido (sem emoji de bolinha).
 - Cores de tempo mantidas (no prazo / metade / atrasado), agora em sucesso / atenção / erro do C1; cartão atrasado ganha contorno vermelho; pronto fica esmaecido.
 - Itens e botões com 48 px de altura (toque com luva/mão molhada); controles do topo com 44 px; botão de som diz "Som ligado/desligado".
 - No escuro, o texto sobre as faixas coloridas fica carvão (contraste AA com as cores claras do C1-escuro).
 - Lógica da fila, bip, modo sem internet e estações sem nenhuma mudança.
+
+### 5.4 Financeiro e Estoque (em validação)
+
+- As duas páginas dentro de `.s-pagina .s-gestao`, com cabeçalho "Gestão · Financeiro" / "Gestão · Estoque" (o subtítulo do estoque mantém insumos, valor e itens acabando).
+- Abas e segmentos no padrão SINO (aba ativa com marca tomate embaixo), rolando de lado no celular em vez de quebrar linha.
+- Cartões de número do financeiro no formato KPI; cores de receita / despesa / "vence hoje" passam a ser sucesso / erro / atenção do C1 (as variáveis `--fin-*` são remapeadas só dentro da página).
+- Cabeçalhos de tabela em caixa alta pequena, números tabulares.
+- Nenhuma consulta, conta, DRE, CMV ou ação mudou.
