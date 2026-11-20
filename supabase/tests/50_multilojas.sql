@@ -109,6 +109,8 @@ reset role;
 update public.pedidos set criado_em = '2026-10-20 15:00:00-03' where cliente_nome = 'B' and loja_id = pg_temp.id('loja1');
 update public.pedidos set status = 'cancelado', cancelado_em = now(), motivo_cancelamento = 't' where cliente_nome = 'C';
 update public.pedidos set criado_em = '2026-10-21 12:00:00-03' where cliente_nome in ('A', 'C');
+-- D-126: venda = concluído, pela data de conclusão
+update public.pedidos set status = 'concluido', concluido_em = criado_em + interval '30 minutes' where cliente_nome in ('A', 'B') and loja_id = pg_temp.id('loja1');
 
 select from pg_temp.como('00000000-0000-0000-0000-0000000000c7', 'ivo@example.com');
 insert into saida values ('r', public.resumo_vendas(array[pg_temp.id('loja1'), pg_temp.id('loja2'), pg_temp.id('loja3')], '2026-10-21 00:00:00-03', '2026-10-22 00:00:00-03'));
@@ -129,8 +131,8 @@ begin
     raise exception 'composição não fecha com o faturamento: %', r -> 'composicao';
   end if;
   if exists (select 1 from jsonb_array_elements(r -> 'composicao') x
-              where (x ->> 'produtos')::int + (x ->> 'frete')::int - (x ->> 'descontos')::int <> (x ->> 'total')::int) then
-    raise exception 'produtos + frete − descontos ≠ total: %', r -> 'composicao';
+              where (x ->> 'produtos')::int + (x ->> 'frete')::int - (x ->> 'descontos')::int + (x ->> 'acrescimos')::int <> (x ->> 'total')::int) then
+    raise exception 'produtos + frete − descontos + acréscimos ≠ total: %', r -> 'composicao';
   end if;
   if (select sum((x ->> 'total')::int) from jsonb_array_elements(r -> 'composicao_anterior') x) <> 5000 then raise exception 'composição anterior: %', r -> 'composicao_anterior'; end if;
 end $$;

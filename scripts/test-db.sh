@@ -30,6 +30,13 @@ for f in supabase/migrations/*.sql; do
   echo "migração: $(basename "$f")"
   "${PSQL[@]}" -f "$f"
 done
+SAIDA="$(mktemp)"
 for f in supabase/tests/[1-9]*.sql; do
-  "${PSQL[@]}" -f "$f"
+  "${PSQL[@]}" -f "$f" | tee -a "$SAIDA"
 done
+# muitos testes imprimem "ok …" ou "FALHOU …" em vez de abortar: FALHOU precisa derrubar o CI (D-126)
+if grep -q "FALHOU" "$SAIDA"; then
+  echo "ERRO: teste do banco falhou:" >&2
+  grep "FALHOU" "$SAIDA" >&2
+  exit 1
+fi

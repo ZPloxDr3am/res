@@ -1142,3 +1142,15 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
   - "há 12 min", "atrasado", "faltam N min para aceitar", "pausar até HH:MM" e a contagem das negociações do iFood eram calculados com `Date.now()` **durante a montagem**, então cada lado usava a própria hora.
 - **Correção:** `components/relogio.tsx` cria um relógio único do quadro. A página manda a hora em que o servidor a montou (`agoraServidor`), e a primeira montagem usa essa hora nos dois lados; depois, o relógio anda a cada 15 s com a hora do aparelho. Todos os componentes do quadro leem `useAgora()`, e toda hora formatada leva `timeZone` da loja. A contagem das negociações do iFood só começa depois de montar.
 - **Testes de regressão (`apps/web/test/hidratacao.test.ts`, entram no `npm test`):** monta um cartão em dois processos, com `TZ=UTC` e `TZ=America/Sao_Paulo`, e exige HTML idêntico. Uma guarda falha se `quadro-pedidos.tsx` ou `negociacoes-ifood.tsx` voltarem a ler o relógio na montagem ou formatarem hora sem fuso. Com o código antigo, o teste mostra 00:41 × 21:41.
+
+## D-126 — Faturamento com regra única e só para quem tem relatórios (20/11/2026)
+
+- **Decisão do dono (auditoria de 20/11, Issue #165):** venda = pedido **concluído**, pela **data de conclusão**, em todas as telas. Antes, o Resumo, a Meta, os Relatórios e o Bom dia contavam qualquer pedido não cancelado pela data de criação, e a Gestão e o Financeiro só os concluídos. Na Hamburgueria, em novembro, a diferença era de R$ 37,48 (um pedido parado em "pronto").
+- **Migração `20261120140000_faturamento_regra_unica.sql`** (cada função parte da versão mais recente):
+  - `metricas_vendas`, `composicao_vendas` e os dias do `resumo_vendas` (Resumo), `meta_vendas`, `relatorio_vendas`, `relatorio_operacao` e `resumo_manha` (Bom dia).
+  - Cancelamentos continuam pela data do pedido. Tempos, pico, canais, pagamentos, bairros e pessoas usam os concluídos do período.
+  - Operação passa a somar acréscimos (devolvia sempre 0), e a composição ganha `acrescimos`; o cartão "Acréscimos" do Resumo deixa de ficar zerado.
+  - Ficam como estão, de propósito: a API aberta (`api_vendas`, contrato com integradores), `margem_cardapio`, `relatorio_fidelidade`, totais do salão e perfis de cliente.
+- **Migração `20261120141000_faturamento_so_relatorios.sql`:** `faturamento_lojas` só devolve lojas em que a pessoa tem `relatorios`. Antes bastava ser membro (o motoboy lia R$ 742,26 da La Pizza). Só a Gestão usa essa função.
+- **Testes:** `supabase/tests/99…a_faturamento.sql` mostra que Resumo = Relatórios = Operação = Meta = Gestão, que o pedido aberto não entra, que o acréscimo soma e que motoboy e caixa não leem. Sem as migrações, os 4 falham. Os testes antigos de Resumo, Meta, Relatórios e Operação passaram a concluir os pedidos que contam como venda.
+- **`scripts/test-db.sh` falha quando algum teste imprime "FALHOU"**. Antes, essas linhas passavam com o CI verde.
