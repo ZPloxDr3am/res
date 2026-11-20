@@ -594,51 +594,51 @@
     "semantic_hash": ""
   },
   "apps/web/app/empresa/cobranca/page.tsx": {
-    "mtime": 1795183290.2190266,
-    "seen": 1795183983.4943244,
-    "ast_hash": "b9762f77aa89f3bb50bb4e214721f0af",
+    "mtime": 1795192707.8304577,
+    "seen": 1795192903.322341,
+    "ast_hash": "6c0a0a03d3998ec45125713b98a33cfc",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/configuracoes/page.tsx": {
-    "mtime": 1795183290.2190266,
-    "seen": 1795183983.4943259,
-    "ast_hash": "98274c9e9a53d1399d130b63325d5da1",
+    "mtime": 1795192720.8744252,
+    "seen": 1795192903.3223433,
+    "ast_hash": "bb1ddcf3407fd0352cea9368058b675a",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/convites/page.tsx": {
-    "mtime": 1795183290.2190266,
-    "seen": 1795183983.4943268,
-    "ast_hash": "f7c8d3486cf3c5ab49d055b954c1d6b3",
+    "mtime": 1795192707.829765,
+    "seen": 1795192903.3223457,
+    "ast_hash": "b14ab2365b7aee89a5296d26434ee313",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/erros/page.tsx": {
-    "mtime": 1795183290.2190266,
-    "seen": 1795183983.494328,
-    "ast_hash": "a3b028639412235822171f657266994d",
+    "mtime": 1795192707.8312757,
+    "seen": 1795192903.3223484,
+    "ast_hash": "c997801cb071f7ec13c0533253c916c9",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/layout.tsx": {
-    "mtime": 1795183290.2190266,
-    "seen": 1795183983.4943295,
-    "ast_hash": "ff0cc936ab44f6fb036d1f53daf4dc3a",
+    "mtime": 1795192672.468706,
+    "seen": 1795192903.3223503,
+    "ast_hash": "73729f1cf290d5652a9bb73054c520b8",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/page.tsx": {
-    "mtime": 1795183290.2190266,
-    "seen": 1795183983.4943306,
-    "ast_hash": "81b55deaa12300ea9083050133689129",
+    "mtime": 1795192707.8284352,
+    "seen": 1795192903.3223524,
+    "ast_hash": "28b1b6304675c7b3520a0df0e365cdfc",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/planos/page.tsx": {
-    "mtime": 1795183290.2190266,
-    "seen": 1795183983.4943316,
-    "ast_hash": "3f1cc34756c12f359dea5485d564cf18",
+    "mtime": 1795192707.8307612,
+    "seen": 1795192903.322355,
+    "ast_hash": "a9f42f51e70336db72a34c4826201dac",
     "semantic_hash": ""
   },
   "apps/web/app/empresa/restaurantes/page.tsx": {
-    "mtime": 1795183290.2190266,
-    "seen": 1795183983.4943328,
-    "ast_hash": "3ee41dbe4e5ff2ba401a040db9af8007",
+    "mtime": 1795192707.8291557,
+    "seen": 1795192903.3223565,
+    "ast_hash": "d07873840f4302659bdd303264605862",
     "semantic_hash": ""
   },
   "apps/web/app/equipe-res/page.tsx": {
@@ -966,21 +966,21 @@
     "semantic_hash": ""
   },
   "apps/web/components/empresa/cobranca.tsx": {
-    "mtime": 1795183290.2235968,
-    "seen": 1795183983.4943876,
-    "ast_hash": "3a4d8f257827e929641c436bc145023b",
+    "mtime": 1795192720.8760257,
+    "seen": 1795192903.3235552,
+    "ast_hash": "d5d5e2d1eb9a571e938188e46fab7da8",
     "semantic_hash": ""
   },
   "apps/web/components/empresa/config.tsx": {
-    "mtime": 1795183290.2242966,
-    "seen": 1795183983.494389,
-    "ast_hash": "f99c3162a97298968a6c80a22cd8a960",
+    "mtime": 1795192720.8753424,
+    "seen": 1795192903.3235574,
+    "ast_hash": "9421e63f966c3a9c9a32865ede980437",
     "semantic_hash": ""
   },
   "apps/web/components/empresa/nav.tsx": {
-    "mtime": 1795183290.2242966,
-    "seen": 1795183983.49439,
-    "ast_hash": "36af6bbe1282290dcc45e325c12a1144",
+    "mtime": 1795192661.8785095,
+    "seen": 1795192903.3235588,
+    "ast_hash": "0c3e3be21569b58752471ae27a9b3e06",
     "semantic_hash": ""
   },
   "apps/web/components/empresa/planos.tsx": {
@@ -1776,8 +1776,8 @@
     "semantic_hash": ""
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1795185294.4440513,
-    "seen": 1795185315.4187639,
+    "mtime": 1795192868.6647174,
+    "seen": 1795192903.3265038,
     "ast_hash": "8ccf37b0657b4213f1c10db5c78e039a",
     "semantic_hash": ""
   },
@@ -3180,9 +3180,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1795184744.4680185,
-    "seen": 1795185315.4224217,
-    "ast_hash": "01119ddc16652dbbb6d00e243134e0d9",
+    "mtime": 1795192882.571899,
+    "seen": 1795192903.3314402,
+    "ast_hash": "73623ee05ddf39a114ab7573231bd884",
     "semantic_hash": ""
   },
   "apps-mobile/motoboy/README.md": {
@@ -3252,9 +3252,9 @@
     "semantic_hash": ""
   },
   "docs/decisoes.md": {
-    "mtime": 1795185308.352052,
-    "seen": 1795185315.422658,
-    "ast_hash": "665b0f4fe7b75046ca4e73fd41e04f40",
+    "mtime": 1795192882.5487185,
+    "seen": 1795192903.33166,
+    "ast_hash": "7e16a99be5f6cebc0f49c8d388882c0b",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/COMECE-AQUI.md": {
@@ -3288,9 +3288,9 @@
     "semantic_hash": ""
   },
   "docs/desenvolvimento/design-system-sino.md": {
-    "mtime": 1795183290.2335367,
-    "seen": 1795183983.4949653,
-    "ast_hash": "b216803b33860ab782e34b7cba1fdc3f",
+    "mtime": 1795192882.5707834,
+    "seen": 1795192903.331801,
+    "ast_hash": "612fc8f83389c0187b773e7f6258d990",
     "semantic_hash": ""
   },
   "docs/desenvolvimento/whatsapp-api.md": {
@@ -3789,6 +3789,12 @@
     "mtime": 1795185129.3465586,
     "seen": 1795185315.422402,
     "ast_hash": "beb948fae7e37c3ea3af65e8c9369fd3",
+    "semantic_hash": ""
+  },
+  "apps/web/components/empresa/cabecalho.tsx": {
+    "mtime": 1795192686.4727068,
+    "seen": 1795192903.3235526,
+    "ast_hash": "c8e37992670aa274c8d7d990c5c889e7",
     "semantic_hash": ""
   }
 }
