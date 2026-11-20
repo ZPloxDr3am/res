@@ -102,7 +102,7 @@ No piloto, as migrações são aplicadas à mão no **SQL Editor** do Supabase (
 
 A pedido do dono (28/10), todo trabalho no projeto parte do mapa do **graphify**, versionado em `graphify-out/` (graph.json, GRAPH_REPORT.md).
 - Regras e instalação numa sessão nova estão no `CLAUDE.md` do repositório.
-- Instalação: `uv tool install "graphifyy[sql]"`. O acesso ao PyPI foi liberado em Configurações → Recursos → "Permitir acesso de rede externo".
+- Instalação: nas sessões do Claude na nuvem, `pip install --break-system-packages "graphifyy[sql]"` (sem `NO_PROXY`, que é bloqueado); no seu computador, `uv tool install "graphifyy[sql]"` também serve. O acesso ao PyPI foi liberado em Configurações → Recursos → "Permitir acesso de rede externo".
 - Consultas: `graphify query/path/explain`.
 - Depois de mudar código: `graphify update .`. O hook de commit atualiza só o código.
 - Ponto cego: chamadas `supabase.rpc('x')` não ligam às funções SQL. Procure em `supabase/migrations`, na versão mais recente da função.
