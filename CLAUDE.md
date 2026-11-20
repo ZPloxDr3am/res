@@ -14,11 +14,10 @@ Rules:
 - O dono pediu que **todo pedido neste projeto parta do mapa**: antes de ler código, consulte `graphify query` / `path` / `explain`; depois de mudar código, rode `graphify update .` e faça commit do `graphify-out/` junto com a mudança.
 - **Sessão nova sem graphify instalado** (o ambiente na nuvem é temporário):
   ```bash
-  NO_PROXY=localhost,127.0.0.1 no_proxy=localhost,127.0.0.1 uv tool install "graphifyy[sql]"   # [sql] é obrigatório: as migrações são o coração do sistema
-  export PATH="$HOME/.local/bin:$PATH"
+  pip install --break-system-packages "graphifyy[sql]"   # [sql] é obrigatório: as migrações são o coração do sistema
   graphify hook install   # reconstrói o mapa a cada commit (só o código, sem custo)
   ```
-  O `NO_PROXY` faz o uv passar pelo proxy da sessão (o acesso ao PyPI foi liberado nas Capacidades da conta).
+  A instalação passa pelo proxy da sessão (o acesso ao PyPI foi liberado nas Capacidades da conta). **Não use `NO_PROXY`/`no_proxy`** nem outra forma de contornar o proxy: o Claude Code bloqueia o comando (20/11/2026, Issue #163).
 - **Ponto cego conhecido:** o mapa não liga `supabase.rpc('nome_da_funcao')` do TypeScript à função SQL de mesmo nome, nem o agente de impressão ao banco. Para esses caminhos, procure o nome da função em `supabase/migrations` (vale a versão mais recente: cada migração que recria a função vira um nó separado).
 - Documentos (`README.md`, `docs/decisoes.md`) entram no mapa por leitura com IA. Quando mudarem bastante, rode `/graphify . --update` (gasta tokens); o hook de commit só atualiza o código.
 - O `graph.html` (mapa interativo) não vai para o repositório: gere com `graphify export html` quando precisar ver.
