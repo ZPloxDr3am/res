@@ -17,7 +17,7 @@ const outfit = localFont({ src: './fontes/Outfit.woff2', weight: '100 900', disp
 const TEMA = `try{var t=localStorage.getItem('sino-tema');if(t==='claro'||t==='escuro')document.documentElement.dataset.tema=t}catch(e){}`;
 
 export const metadata: Metadata = {
-  title: 'RES — Pedidos e gestão para restaurantes',
+  title: 'SINO — Pedidos e gestão para restaurantes',
   description: 'Cardápio, pedidos de delivery e salão, cozinha, entregas e gestão num só lugar.',
 };
 

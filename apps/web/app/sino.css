@@ -854,3 +854,46 @@ body:has(.s-menu) :is(.seg-n, .est-toque-dica, .est-sit, .vt-foto .mini, .salao-
 .s-pagina :is(.s-tabela-rolagem, .tabela-rolagem) { contain: paint; }
 .s-gestao .tabela-empilha .selo { white-space: nowrap; }
 @media (max-width: 700px) { .s-quadro .qp-visao button { display: block; text-align: center; padding-inline: var(--s-2); } }
+
+/* ===================== Painel da empresa SINO (D-127) =====================
+   Mesmo menu, tema e componentes do painel do restaurante (D-120/D-121).
+   O que é só da empresa: o selo "Empresa", o funil, os alertas e os erros. */
+.empresa-selo { display: inline-flex; align-items: center; justify-self: start; min-height: 22px; padding: 0 var(--s-2); border-radius: 999px; font-size: var(--s-t-12); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sino-tomate); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sino-tomate) 55%, transparent); }
+.menu-folha .empresa-selo { color: var(--s-destaque); box-shadow: inset 0 0 0 1px var(--s-destaque); }
+.painel-empresa .s-menu .menu-topo { padding-bottom: var(--s-2); }
+@media (max-width: 1000px) and (min-width: 701px) {
+  .painel-empresa .s-menu .menu-topo .empresa-selo { display: none; }
+}
+/* celular: o topo do menu da empresa some junto com o do restaurante; a folha "Mais" mostra o selo */
+.menu-folha .s-tema { justify-self: start; }
+
+/* Visão geral: funil e "Precisa de atenção" */
+.s-gestao .emp-funil { display: grid; gap: var(--s-3); }
+.s-gestao .emp-funil-linha { display: grid; grid-template-columns: 11rem minmax(0, 1fr) 3rem 3rem; gap: var(--s-3); align-items: center; font-size: var(--s-t-14); color: var(--s-texto-2); }
+.s-gestao .emp-funil-trilho { height: 10px; border-radius: 999px; background: var(--s-superficie-2); box-shadow: inset 0 0 0 1px var(--s-borda); overflow: hidden; }
+.s-gestao .emp-funil-trilho > span { display: block; height: 100%; border-radius: 999px; background: var(--s-texto-2); }
+.s-gestao .emp-funil-linha strong { text-align: right; font: 600 var(--s-t-16)/1 var(--s-fonte); font-variant-numeric: tabular-nums; color: var(--s-texto); }
+.s-gestao .emp-funil-linha > .dica { text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 700px) { .s-gestao .emp-funil-linha { grid-template-columns: 7rem minmax(0, 1fr) 2.5rem; } .s-gestao .emp-funil-linha > .dica { display: none; } }
+.emp-atencao { display: grid; gap: var(--s-3); min-width: 0; }
+.emp-atencao .s-vazio { margin: 0; }
+.s-gestao .emp-alerta { display: grid; gap: 2px; padding: var(--s-3) var(--s-4); border-radius: var(--s-raio); background: var(--s-superficie); color: var(--s-texto); box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda), inset 3px 0 0 var(--s-atencao); }
+.s-gestao .emp-alerta span { color: var(--s-texto-2); font-size: var(--s-t-14); }
+.s-gestao .emp-alerta[data-tipo='pausada'] { box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda), inset 3px 0 0 var(--s-erro); }
+.s-gestao a.emp-alerta:hover { box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda-forte), inset 3px 0 0 var(--s-erro); }
+
+/* Erros: servidor em erro, navegador em atenção (a cor só reforça; o texto diz a origem) */
+.s-gestao .emp-erro { padding: var(--s-3) var(--s-4); border-radius: var(--s-raio); background: var(--s-superficie); box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda), inset 3px 0 0 var(--s-atencao); min-width: 0; }
+.s-gestao .emp-erro[data-origem='servidor'] { box-shadow: var(--s-sombra), inset 0 0 0 1px var(--s-borda), inset 3px 0 0 var(--s-erro); }
+.s-gestao .emp-erro summary { cursor: pointer; display: grid; gap: 2px; list-style: none; }
+.s-gestao .emp-erro summary::-webkit-details-marker { display: none; }
+.s-gestao .emp-erro-msg { font-weight: 600; color: var(--s-texto); overflow-wrap: anywhere; }
+.s-gestao .emp-pilha { margin: var(--s-2) 0 0; padding: var(--s-3); background: var(--s-superficie-2); border-radius: var(--s-raio-p); font-size: var(--s-t-12); line-height: 1.45; overflow-x: auto; white-space: pre; max-height: 18rem; contain: paint; }
+
+/* Configurações: lista da equipe */
+.s-gestao .emp-equipe li { border-bottom-color: var(--s-borda); }
+
+/* "Sem acesso": mesma tela de marca do login */
+.emp-sem-acesso { min-height: 100dvh; display: grid; place-items: center; padding: var(--s-6) var(--s-4); }
+.emp-sem-acesso-cartao { width: min(100%, 440px); gap: var(--s-3); padding: var(--s-8) var(--s-6); }
+.emp-sem-acesso-cartao img { width: 128px; height: auto; margin-bottom: var(--s-2); }

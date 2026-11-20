@@ -27,8 +27,8 @@ export function ConfigEmpresa({ modo, equipe, eu, integracoes }: { modo: 'convit
       </section>
 
       <section className="cartao grade">
-        <h2 style={{ margin: 0 }}>Equipe RES</h2>
-        <p className="dica" style={{ margin: 0 }}>Quem acessa este painel: cria convites, ativa e suspende contas. A pessoa precisa ter entrado no RES pelo menos uma vez.</p>
+        <h2 style={{ margin: 0 }}>Equipe SINO</h2>
+        <p className="dica" style={{ margin: 0 }}>Quem acessa este painel: cria convites, ativa e suspende contas. A pessoa precisa ter entrado no SINO pelo menos uma vez.</p>
         <ul className="emp-equipe">
           {equipe.map((p) => (
             <li key={p.user_id}>
@@ -43,7 +43,7 @@ export function ConfigEmpresa({ modo, equipe, eu, integracoes }: { modo: 'convit
           style={{ alignItems: 'flex-end', flexWrap: 'wrap' }}
           onSubmit={(e) => {
             e.preventDefault();
-            fazer(adicionarEquipe(email), `${email} agora é da equipe RES.`, () => setEmail(''));
+            fazer(adicionarEquipe(email), `${email} agora é da equipe SINO.`, () => setEmail(''));
           }}
         >
           <label style={{ flex: '1 1 260px' }}>E-mail de login<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoCapitalize="none" spellCheck={false} /></label>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CabecalhoEmpresa, KpiEmpresa } from '@/components/empresa/cabecalho';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import type { ContaPlataforma } from '@/components/equipe-res/painel';
 
@@ -25,23 +26,20 @@ export default async function VisaoGeral() {
   ];
   const topo = Math.max(1, ...funil.map((f) => f.v));
   return (
-    <div className="grade">
-      <div>
-        <h1>Visão geral</h1>
-        <p className="dica">A plataforma hoje: restaurantes, situação das contas e uso nos últimos 7 dias.</p>
-      </div>
+    <div className="s-pagina s-gestao">
+      <CabecalhoEmpresa familia="Inteligência" titulo="Visão geral" subtitulo="A plataforma hoje: restaurantes, situação das contas e uso nos últimos 7 dias." />
 
-      <div className="kpis">
-        <div className="cartao kpi"><span className="dica">Restaurantes</span><span className="kpi-valor">{x.contas ?? 0}</span><span className="kpi-frase">{x.lojas ?? 0} lojas · {x.cardapio_aberto ?? 0} com cardápio aberto</span></div>
-        <div className="cartao kpi"><span className="dica">Em teste grátis</span><span className="kpi-valor">{x.em_teste ?? 0}</span><span className="kpi-frase">{x.teste_vencendo_3d ?? 0} vencem em até 3 dias</span></div>
-        <div className="cartao kpi"><span className="dica">Ativas</span><span className="kpi-valor">{x.ativas ?? 0}</span><span className="kpi-frase">{x.pausadas ?? 0} pausada(s)</span></div>
-        <div className="cartao kpi"><span className="dica">Pedidos em 7 dias</span><span className="kpi-valor">{x.pedidos_7d ?? 0}</span><span className="kpi-frase">em {x.lojas_com_pedido_7d ?? 0} loja(s)</span></div>
-      </div>
+      <section className="s-kpis" aria-label="Indicadores da plataforma">
+        <KpiEmpresa principal rotulo="Restaurantes" valor={x.contas ?? 0} detalhe={`${x.lojas ?? 0} lojas · ${x.cardapio_aberto ?? 0} com cardápio aberto`} />
+        <KpiEmpresa rotulo="Em teste grátis" valor={x.em_teste ?? 0} detalhe={`${x.teste_vencendo_3d ?? 0} vencem em até 3 dias`} />
+        <KpiEmpresa rotulo="Ativas" valor={x.ativas ?? 0} detalhe={`${x.pausadas ?? 0} pausada(s)`} />
+        <KpiEmpresa rotulo="Pedidos em 7 dias" valor={x.pedidos_7d ?? 0} detalhe={`em ${x.lojas_com_pedido_7d ?? 0} loja(s)`} />
+      </section>
 
-      <section className="cartao grade">
-        <div className="linha" style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
-          <h2 style={{ margin: 0 }}>Do convite ao primeiro pedido</h2>
-          <span className="dica">{x.convites_30d ?? 0} convites criados em 30 dias · {x.convites_abertos ?? 0} ainda sem uso</span>
+      <section className="s-cartao">
+        <div className="s-cartao-topo">
+          <h2 className="s-cartao-titulo">Do convite ao primeiro pedido</h2>
+          <p className="s-cartao-nota">{x.convites_30d ?? 0} convites criados em 30 dias · {x.convites_abertos ?? 0} ainda sem uso</p>
         </div>
         <div className="emp-funil">
           {funil.map((f, i) => (
@@ -55,9 +53,9 @@ export default async function VisaoGeral() {
         </div>
       </section>
 
-      <section className="grade" style={{ gap: 'var(--e3)' }}>
-        <h2 style={{ margin: 0 }}>Precisa de atenção</h2>
-        {vencendo.length === 0 && pausadas.length === 0 && erros24 === 0 && <p className="dica" style={{ margin: 0 }}>Nada urgente agora.</p>}
+      <section className="emp-atencao" aria-labelledby="emp-atencao-titulo">
+        <h2 id="emp-atencao-titulo" className="s-cartao-titulo">Precisa de atenção</h2>
+        {vencendo.length === 0 && pausadas.length === 0 && erros24 === 0 && <p className="s-vazio">Nada urgente agora.</p>}
         {erros24 > 0 && (
           <Link href="/empresa/erros?dias=1" className="cartao emp-alerta" data-tipo="pausada" style={{ textDecoration: 'none', color: 'inherit' }}>
             <strong>{erros24} erro(s) nas últimas 24 horas</strong>
