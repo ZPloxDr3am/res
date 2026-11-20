@@ -45,6 +45,7 @@ export default async function Pedidos({ searchParams }: { searchParams: Promise<
       <TempoReal lojaId={ctx.lojaId} tabelas={['pedidos', 'impressoes', 'marketplace_negociacoes']} reservaMs={20000} todasAsLojas={todas} />
       <NegociacoesIfood lista={(negs ?? []) as unknown as NegociacaoAberta[]} />
       <QuadroPedidos
+        agoraServidor={Date.now()}
         pedidos={pedidos}
         aceiteAutomatico={aceiteAutomatico}
         prontoAutoRetirada={prontoAutoRetirada}
