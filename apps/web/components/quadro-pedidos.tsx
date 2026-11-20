@@ -31,6 +31,7 @@ import { BotaoNovoPedido } from '@/components/pedido-flutuante';
 import { useImprimir } from '@/components/impressao/usar-impressao';
 import { cuponsPendentes, imprimirPedido } from '@/app/(painel)/impressoras/actions';
 import { SugestaoLotes } from '@/components/pedidos/sugestao-lotes';
+import { Relogio, useAgora } from '@/components/relogio';
 
 const COLUNAS: StatusPedido[] = ['novo', 'em_preparo', 'pronto', 'em_entrega'];
 
@@ -126,7 +127,16 @@ export function bipar() {
 /** Estado de cada loja no modo "todas as lojas" (D-087). */
 export type EstadoLoja = { id: string; aceite_automatico: boolean; pausa_ate: string | null; pausa_recado: string | null; movimento_min: number | null; movimento_ate: string | null; tempo_preparo_min: number | null };
 
-export function QuadroPedidos({
+/** Quadro de pedidos. `agoraServidor` = hora em que o servidor montou a página: a 1ª renderização usa ela dos dois lados (#418). */
+export function QuadroPedidos({ agoraServidor, ...props }: Parameters<typeof QuadroPedidosConteudo>[0] & { agoraServidor: number }) {
+  return (
+    <Relogio inicio={agoraServidor}>
+      <QuadroPedidosConteudo {...props} />
+    </Relogio>
+  );
+}
+
+function QuadroPedidosConteudo({
   pedidos,
   aceiteAutomatico,
   prontoAutoRetirada = false,
@@ -233,7 +243,8 @@ export function QuadroPedidos({
     if (novo) bipar();
   };
 
-  const agora = new Date();
+  const agoraMs = useAgora();
+  const agora = new Date(agoraMs);
   const fase = (p: PedidoRow) => faseAgendamento(p.agendado_para ? new Date(p.agendado_para) : null, tempoPreparo, agora);
   // agendado que ainda não chegou a hora fica fora das colunas
   // Pix do Mercado Pago ainda não pago (D-044): fica fora das colunas, sem bipe, até o pagamento
@@ -275,8 +286,8 @@ export function QuadroPedidos({
   const atrasadoPedido = (p: PedidoRow) => {
     if (!COLUNAS.includes(p.status)) return false;
     const ag = p.agendado_para ? Date.parse(p.agendado_para) : null;
-    const preparo = (p.status === 'em_preparo' || p.status === 'novo') && (ag ? Date.now() > ag : (Date.now() - Date.parse(p.aceito_em ?? p.criado_em)) / 60000 > tempoPreparo + (p.prazo_extra_min ?? 0));
-    const entrega = p.tipo === 'entrega' && situacaoPrazo(calcularPrazo(Date.parse(p.criado_em), ag, (prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)), Date.now()).estado === 'atrasado';
+    const preparo = (p.status === 'em_preparo' || p.status === 'novo') && (ag ? agoraMs > ag : (agoraMs - Date.parse(p.aceito_em ?? p.criado_em)) / 60000 > tempoPreparo + (p.prazo_extra_min ?? 0));
+    const entrega = p.tipo === 'entrega' && situacaoPrazo(calcularPrazo(Date.parse(p.criado_em), ag, (prazoEntrega[p.loja_id] ?? 35) + (p.prazo_extra_min ?? 0)), agoraMs).estado === 'atrasado';
     return preparo || entrega;
   };
   const situacoes = (p: PedidoRow): string[] => {
@@ -489,10 +500,10 @@ const PRAZO_ACEITE_MIN: Record<string, number> = { ifood: 8, deliverymuch: 15 };
 const nomeCanal = (c: string | null | undefined) => (c ? NOME_CANAL[c] ?? c : '');
 
 /** Minutos que faltam para o app cancelar um pedido não aceito (null se o canal não cancela sozinho). */
-function minutosParaAceitar(p: PedidoRow): number | null {
+function minutosParaAceitar(p: PedidoRow, agora: number): number | null {
   const lim = p.externo_canal ? PRAZO_ACEITE_MIN[p.externo_canal] : undefined;
   if (!lim || p.status !== 'novo') return null;
-  return Math.ceil(lim - (Date.now() - Date.parse(p.criado_em)) / 60000);
+  return Math.ceil(lim - (agora - Date.parse(p.criado_em)) / 60000);
 }
 const cancelamentoPendente = (p: PedidoRow) => !!p.canal_info?.cancelamento_solicitado && !p.canal_info.cancelamento_solicitado.negado && p.status !== 'cancelado';
 
@@ -500,7 +511,8 @@ const cancelamentoPendente = (p: PedidoRow) => !!p.canal_info?.cancelamento_soli
 function AvisosCanal({ p, compacto }: { p: PedidoRow; compacto?: boolean }) {
   if (!p.externo_canal) return null;
   const nome = nomeCanal(p.externo_canal);
-  const falta = minutosParaAceitar(p);
+  const agora = useAgora();
+  const falta = minutosParaAceitar(p, agora);
   const c = p.canal_info;
   const Tag = compacto ? 'span' : 'div';
   return (
@@ -536,11 +548,12 @@ function CartaoCompacto({ p, tempoPreparo, prazoMin, fuso, local, cor, onAbrir, 
   const [erro, setErro] = useState<string | null>(null);
   const aberto = !['concluido', 'cancelado'].includes(p.status);
   const avancar = aberto ? acaoAvancar(p.status, p.tipo) : null;
+  const agora = useAgora();
   const agendado = p.agendado_para ? new Date(p.agendado_para) : null;
   const atrasadoPreparo = (p.status === 'em_preparo' || p.status === 'novo') &&
-    (agendado ? Date.now() > agendado.getTime() : (Date.now() - new Date(p.aceito_em ?? p.criado_em).getTime()) / 60000 > tempoPreparo);
+    (agendado ? agora > agendado.getTime() : (agora - new Date(p.aceito_em ?? p.criado_em).getTime()) / 60000 > tempoPreparo);
   const prazo = p.tipo === 'entrega' && aberto ? calcularPrazo(Date.parse(p.criado_em), agendado ? agendado.getTime() : null, prazoMin) : null;
-  const sit = prazo != null ? situacaoPrazo(prazo, Date.now()) : null;
+  const sit = prazo != null ? situacaoPrazo(prazo, agora) : null;
   const atrasado = atrasadoPreparo || sit?.estado === 'atrasado';
   const cobrar = p.pagamento !== 'online' && !p.pago_em;
   const e = p.endereco;
@@ -560,7 +573,7 @@ function CartaoCompacto({ p, tempoPreparo, prazoMin, fuso, local, cor, onAbrir, 
           <span className="qk-mais" aria-hidden>⋮</span>
         </span>
         <AvisosCanal p={p} compacto />
-        {agendado && <span className="qk-linha qk-agendado">📅 {rotuloHorario(agendado, fuso)}</span>}
+        {agendado && <span className="qk-linha qk-agendado">📅 {rotuloHorario(agendado, fuso, new Date(agora))}</span>}
         {atrasado && aberto && <span className="qk-linha qk-atraso">⚠ Atrasado{sit?.estado === 'atrasado' ? ` ${duracaoCurta(sit.minutos)}` : ''}</span>}
         <span className="qk-linha qk-cliente">
           <strong>{p.cliente_nome}</strong>
@@ -569,7 +582,7 @@ function CartaoCompacto({ p, tempoPreparo, prazoMin, fuso, local, cor, onAbrir, 
         {e && <span className="qk-linha dica qk-end">📍 {e.bairro}{e.logradouro ? ` · ${e.logradouro}${e.numero ? `, ${e.numero}` : ''}` : ''}</span>}
         {p.entregador_nome && p.status === 'em_entrega' && <span className="qk-linha dica">🛵 {p.entregador_nome}</span>}
         <span className="qk-rodape">
-          <span className="qk-tempo" title={`Pedido às ${new Date(p.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: fuso })}`}>⏱ {tempoDecorrido(new Date(p.criado_em)).replace(/^há /, '')}</span>
+          <span className="qk-tempo" title={`Pedido às ${new Date(p.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: fuso })}`}>⏱ {tempoDecorrido(new Date(p.criado_em), new Date(agora)).replace(/^há /, '')}</span>
           <span className={cobrar ? 'qk-pag qk-cobrar' : 'qk-pag'} title={cobrar ? `Cobrar na entrega · ${PAGAMENTO_ROTULO[p.pagamento]}` : p.externo_canal && p.pagamento === 'online' ? `Pago no ${nomeCanal(p.externo_canal)}` : 'Pago'}>
             {cobrar ? '💰' : '✓'} {p.externo_canal && p.pagamento === 'online' ? nomeCanal(p.externo_canal) : PAG_CURTO[p.pagamento] ?? PAGAMENTO_ROTULO[p.pagamento]}
           </span>
@@ -658,14 +671,15 @@ function CartaoPedido({
   const impressao = useImprimir();
   const avancar = acaoAvancar(p.status, p.tipo);
   const aberto = !['concluido', 'cancelado'].includes(p.status);
+  const agora = useAgora();
   const agendado = p.agendado_para ? new Date(p.agendado_para) : null;
   // agendado: atrasa se passou do horário combinado; imediato: se passou do tempo de preparo
   const atrasado = (p.status === 'em_preparo' || p.status === 'novo') &&
-    (agendado ? Date.now() > agendado.getTime() : (Date.now() - new Date(p.aceito_em ?? p.criado_em).getTime()) / 60000 > tempoPreparo);
+    (agendado ? agora > agendado.getTime() : (agora - new Date(p.aceito_em ?? p.criado_em).getTime()) / 60000 > tempoPreparo);
 
   // prazo prometido ao cliente (D-028): laranja faltando 10 min, vermelho quando estoura
   const prazo = p.tipo === 'entrega' && aberto ? calcularPrazo(Date.parse(p.criado_em), agendado ? agendado.getTime() : null, prazoMin) : null;
-  const sit = prazo != null ? situacaoPrazo(prazo, Date.now()) : null;
+  const sit = prazo != null ? situacaoPrazo(prazo, agora) : null;
   const horaCurta = (t: number | string) => new Date(t).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: fuso });
 
   const mudar = (status: StatusPedido, m?: string) =>
@@ -685,7 +699,7 @@ function CartaoPedido({
         {p.origem === 'cardapio_digital' && <span className="selo selo-pizza" title="Feito pelo cliente no cardápio digital">Online</span>}
         {p.externo_canal && <span className={`selo selo-canal selo-${p.externo_canal}`} title={`Pedido do ${nomeCanal(p.externo_canal)}`}>{nomeCanal(p.externo_canal)}{p.externo_codigo ? ` #${p.externo_codigo}` : ''}</span>}
         <span className={atrasado ? 'atrasado' : 'dica'} title={atrasado ? (agendado ? 'Passou do horário agendado' : `Passou de ${tempoPreparo} min`) : undefined}>
-          {aberto ? tempoDecorrido(new Date(p.criado_em)) : STATUS_ROTULO[p.status]}
+          {aberto ? tempoDecorrido(new Date(p.criado_em), new Date(agora)) : STATUS_ROTULO[p.status]}
         </span>
       </div>
       {aguardaPix && (
@@ -716,8 +730,8 @@ function CartaoPedido({
         </div>
       )}
       {agendado && (
-        <div className="selo-agendado" title={`Pedido feito ${tempoDecorrido(new Date(p.criado_em))}`}>
-          ⏰ {p.tipo === 'entrega' ? 'Entregar' : 'Para'} {rotuloHorario(agendado, fuso)}
+        <div className="selo-agendado" title={`Pedido feito ${tempoDecorrido(new Date(p.criado_em), new Date(agora))}`}>
+          ⏰ {p.tipo === 'entrega' ? 'Entregar' : 'Para'} {rotuloHorario(agendado, fuso, new Date(agora))}
         </div>
       )}
       <div>
@@ -727,7 +741,7 @@ function CartaoPedido({
         {selo && <div className={`qp-selo-cliente`} data-tipo={selo.tipo} title={selo.titulo}>{selo.texto}</div>}
       </div>
       {p.entregador_nome && (p.status === 'em_entrega' || p.status === 'concluido') && (
-        <div className="selo-motoboy">🛵 {p.status === 'em_entrega' ? 'Saiu com' : 'Entregue por'} <strong>{p.entregador_nome}</strong>{p.saiu_em ? ` · ${new Date(p.saiu_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : ''}</div>
+        <div className="selo-motoboy">🛵 {p.status === 'em_entrega' ? 'Saiu com' : 'Entregue por'} <strong>{p.entregador_nome}</strong>{p.saiu_em ? ` · ${horaCurta(p.saiu_em)}` : ''}</div>
       )}
       {p.endereco && (
         <div className="dica">
@@ -764,7 +778,7 @@ function CartaoPedido({
       </ul>
       {p.observacao && <div className="dica">Obs. do pedido: {p.observacao}</div>}
       {p.externo_canal && <AvisosCanal p={p} />}
-      {p.externo_canal && <InfoMarketplace p={p} />}
+      {p.externo_canal && <InfoMarketplace p={p} fuso={fuso} />}
       <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'center', gap: '0.4rem' }}>
         <span className="dica">
           {p.externo_canal && p.pagamento === 'online' ? `Pago no ${nomeCanal(p.externo_canal)}` : PAGAMENTO_ROTULO[p.pagamento]}
@@ -959,11 +973,7 @@ function PausaLoja({ pausa, fuso, lojaNome, modo, lojaId }: { pausa: { ate: stri
   const [recado, setRecado] = useState(RECADOS_PAUSA[0]!);
   const [erro, setErro] = useState<string | null>(null);
   const [pendente, iniciar] = useTransition();
-  const [agora, setAgora] = useState(() => Date.now());
-  useEffect(() => {
-    const t = setInterval(() => setAgora(Date.now()), 15000);
-    return () => clearInterval(t);
-  }, []);
+  const agora = useAgora();
   const ate = pausa ? new Date(pausa.ate).getTime() : 0;
   const ativa = !!pausa && ate > agora;
   const hora = (t: number) => new Intl.DateTimeFormat('pt-BR', { timeZone: fuso, hour: '2-digit', minute: '2-digit' }).format(new Date(t));
@@ -1024,7 +1034,7 @@ function PausaLoja({ pausa, fuso, lojaNome, modo, lojaId }: { pausa: { ate: stri
               <input value={recado} maxLength={160} onChange={(e) => setRecado(e.target.value)} placeholder="Ou escreva o seu recado" aria-label="Recado" />
             </div>
             <button type="button" className="botao-primario qp-proximo" disabled={pendente} onClick={() => agir(minutos, recado)}>
-              ⏸ Pausar até {hora(Date.now() + minutos * 60000)}
+              ⏸ Pausar até {hora(agora + minutos * 60000)}
             </button>
             {erro && <p className="erro" role="alert" style={{ margin: 0 }}>{erro}</p>}
           </div>
@@ -1044,11 +1054,7 @@ function MovimentoLoja({ movimento, fuso, tempoPreparo, modo, lojaId }: { movime
   const [horas, setHoras] = useState<number | null>(2);
   const [erro, setErro] = useState<string | null>(null);
   const [pendente, iniciar] = useTransition();
-  const [agora, setAgora] = useState(() => Date.now());
-  useEffect(() => {
-    const t = setInterval(() => setAgora(Date.now()), 30000);
-    return () => clearInterval(t);
-  }, []);
+  const agora = useAgora();
   const ate = movimento ? Date.parse(movimento.ate) : 0;
   const ativo = !!movimento && ate > agora;
   const hora = (t: number) => new Intl.DateTimeFormat('pt-BR', { timeZone: fuso, hour: '2-digit', minute: '2-digit' }).format(new Date(t));
@@ -1109,7 +1115,7 @@ function MovimentoLoja({ movimento, fuso, tempoPreparo, modo, lojaId }: { movime
             </div>
             <p className="dica" style={{ margin: 0 }}>Preparo passa de {tempoPreparo} para <b>{tempoPreparo + min} min</b>.</p>
             <button type="button" className="botao-primario qp-proximo" disabled={pendente} onClick={() => agir(min, horas)}>
-              🔥 Ligar +{min} min {horas ? `até ${hora(Date.now() + horas * 3600_000)}` : 'até eu desligar'}
+              🔥 Ligar +{min} min {horas ? `até ${hora(agora + horas * 3600_000)}` : 'até eu desligar'}
             </button>
             {erro && <p className="erro" role="alert" style={{ margin: 0 }}>{erro}</p>}
           </div>
@@ -1120,7 +1126,7 @@ function MovimentoLoja({ movimento, fuso, tempoPreparo, modo, lojaId }: { movime
 }
 
 /** Dados que a homologação do iFood pede na tela (D-074): código de retirada, entrega do iFood, cupom e quem paga, CPF. */
-function InfoMarketplace({ p }: { p: PedidoRow }) {
+function InfoMarketplace({ p, fuso }: { p: PedidoRow; fuso: string }) {
   const r$ = (v: number) => (v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   return (
     <div className="qp-mkt">
@@ -1130,7 +1136,7 @@ function InfoMarketplace({ p }: { p: PedidoRow }) {
         </span>
       )}
       {p.entrega_marketplace && <span className="selo">🛵 Entrega pelo {nomeCanal(p.externo_canal)} (não precisa de motoboy)</span>}
-      {p.agendado_para && <span>📅 Agendado: <b>{new Date(p.agendado_para).toLocaleString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</b></span>}
+      {p.agendado_para && <span>📅 Agendado: <b>{new Date(p.agendado_para).toLocaleString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: fuso })}</b></span>}
       {(p.beneficios ?? []).map((b, i) => (
         <span key={i}>🎟️ {b.descricao ?? 'Cupom'}: −{r$(b.valor)} <span className="dica">({b.loja ? `loja paga ${r$(b.loja)}` : ''}{b.loja && b.marketplace ? ' · ' : ''}{b.marketplace ? `${nomeCanal(p.externo_canal)} paga ${r$(b.marketplace)}` : ''})</span></span>
       ))}
@@ -1165,11 +1171,7 @@ function VisaoLojas({ todas, lojaAtual, total }: { todas: boolean; lojaAtual: st
 const minTxt = (m: number | null) => (m == null ? '—' : m >= 60 ? `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}` : `${m} min`);
 
 function ResumoTopo({ pedidos, estados, prazoEntrega, tempoPreparo }: { pedidos: PedidoRow[]; estados: EstadoLoja[] | null; prazoEntrega: Record<string, number>; tempoPreparo: number }) {
-  const [agora, setAgora] = useState(() => Date.now());
-  useEffect(() => {
-    const t = setInterval(() => setAgora(Date.now()), 30000);
-    return () => clearInterval(t);
-  }, []);
+  const agora = useAgora();
   const preparoDe = (id: string) => estados?.find((e) => e.id === id)?.tempo_preparo_min ?? tempoPreparo;
   const r = useMemo(
     () => resumoQuadro(pedidos, { agora, prazoMin: (l, tipo) => (tipo === 'entrega' ? (prazoEntrega[l] ?? 35) + preparoDe(l) : preparoDe(l)) }),

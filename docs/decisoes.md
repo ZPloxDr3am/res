@@ -1134,3 +1134,11 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 | Contar todos os pedidos visíveis | 5,2 s | 0,02 s |
 | Relatório de Operação, 30 dias | 2,6 s | 0,77 s |
 | Resumo, 90 dias | 0,25 s | 0,17 s |
+
+## D-125 — Quadro de Pedidos sem divergência de hidratação (erro React #418) (20/11/2026)
+
+- **Causa:** a tela de Pedidos é montada no servidor da Vercel (UTC) e depois no navegador da loja (horário de Brasília). Dois tipos de texto saíam diferentes nos dois lados, e o React acusava o erro #418:
+  - a hora "Saiu com … · HH:MM" e a data do agendado do marketplace eram formatadas **sem fuso** (o servidor escrevia 00:41 e o navegador 21:41);
+  - "há 12 min", "atrasado", "faltam N min para aceitar", "pausar até HH:MM" e a contagem das negociações do iFood eram calculados com `Date.now()` **durante a montagem**, então cada lado usava a própria hora.
+- **Correção:** `components/relogio.tsx` cria um relógio único do quadro. A página manda a hora em que o servidor a montou (`agoraServidor`), e a primeira montagem usa essa hora nos dois lados; depois, o relógio anda a cada 15 s com a hora do aparelho. Todos os componentes do quadro leem `useAgora()`, e toda hora formatada leva `timeZone` da loja. A contagem das negociações do iFood só começa depois de montar.
+- **Testes de regressão (`apps/web/test/hidratacao.test.ts`, entram no `npm test`):** monta um cartão em dois processos, com `TZ=UTC` e `TZ=America/Sao_Paulo`, e exige HTML idêntico. Uma guarda falha se `quadro-pedidos.tsx` ou `negociacoes-ifood.tsx` voltarem a ler o relógio na montagem ou formatarem hora sem fuso. Com o código antigo, o teste mostra 00:41 × 21:41.

@@ -47,11 +47,14 @@ export function NegociacoesIfood({ lista }: { lista: NegociacaoAberta[] }) {
 }
 
 function Prazo({ ate }: { ate: string }) {
-  const [agora, setAgora] = useState(() => Date.now());
+  // null até montar: o servidor e a 1ª renderização do navegador mostram o mesmo texto (#418)
+  const [agora, setAgora] = useState<number | null>(null);
   useEffect(() => {
+    setAgora(Date.now());
     const t = setInterval(() => setAgora(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
+  if (agora == null) return <strong className="qp-neg-prazo">⏱ …</strong>;
   const s = Math.max(0, Math.floor((Date.parse(ate) - agora) / 1000));
   const txt = s <= 0 ? 'prazo encerrado' : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
   return <strong className="qp-neg-prazo" data-urgente={s < 120 || undefined}>⏱ {txt}</strong>;

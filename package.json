@@ -7,7 +7,7 @@
     "apps/*"
   ],
   "scripts": {
-    "test": "npm run test -w @res/core && npm run test -w @res/agente",
+    "test": "npm run test -w @res/core && npm run test -w @res/agente && npm run test -w @res/web",
     "test:db": "scripts/test-db.sh --local",
     "build": "npm run build -w @res/web",
     "dev": "npm run dev -w @res/web"
