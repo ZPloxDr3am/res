@@ -1154,3 +1154,16 @@ Teste com 450 mil pedidos, 2 lojas, 60 mesas, chamadas simultâneas e ataques co
 - **Migração `20261120141000_faturamento_so_relatorios.sql`:** `faturamento_lojas` só devolve lojas em que a pessoa tem `relatorios`. Antes bastava ser membro (o motoboy lia R$ 742,26 da La Pizza). Só a Gestão usa essa função.
 - **Testes:** `supabase/tests/99…a_faturamento.sql` mostra que Resumo = Relatórios = Operação = Meta = Gestão, que o pedido aberto não entra, que o acréscimo soma e que motoboy e caixa não leem. Sem as migrações, os 4 falham. Os testes antigos de Resumo, Meta, Relatórios e Operação passaram a concluir os pedidos que contam como venda.
 - **`scripts/test-db.sh` falha quando algum teste imprime "FALHOU"**. Antes, essas linhas passavam com o CI verde.
+
+## D-127 — Painel da empresa no Design System SINO (20/11/2026)
+- **Pedido do dono:** o painel da empresa (equipe SINO) segue o mesmo padrão visual do painel do restaurante, pelo mesmo processo (auditoria → aplicação → prévia → aprovação). Só apresentação: nenhuma RPC, regra, rota, permissão ou endereço (`EMPRESA_HOST`, D-083) mudou.
+- **Auditoria (Issue #167):** o menu não tinha `s-menu` e forçava o verde antigo (`#13201b`, `#6fd3ae`); logotipo em texto "RES" e aba "RES Empresa"; menu numa lista só; sem seletor de tema; cabeçalhos e indicadores no formato antigo; "Equipe RES" nos textos; no celular, sem barra de baixo.
+- **O que mudou:**
+  - Menu `s-menu` carvão com o logotipo oficial (símbolo de 32 px no tablet), selo "Empresa" em contorno tomate e as famílias da marca: **Inteligência** (Visão geral, Erros), **Gestão** (Restaurantes, Cobrança, Planos e preços, Convites) e **Configurações**. Rodapé com tema (Auto · Claro · Escuro), Sair e versão.
+  - Celular: barra de baixo (Visão geral, Restaurantes, Cobrança, Convites, Mais) e folha "Mais" com todas as telas, tema e Sair, iguais às do restaurante.
+  - Título da aba "SINO Empresa" e favicon oficial.
+  - As 7 telas em `s-pagina s-gestao` com cabeçalho SINO (família · título · subtítulo); indicadores da Visão geral e da Cobrança no formato `s-kpi` do Resumo.
+  - Funil, alertas e erros com os tokens de estado (atenção, erro); barras neutras, sem tomate de fundo.
+  - Tela "sem acesso" no padrão de marca do login.
+  - Textos: "Equipe RES" → "Equipe SINO", "entrou no RES" → "no SINO". Os nomes internos (`sou_equipe_res`, `equipe_res`) não mudam.
+- O verde do painel da empresa saiu do `globals.css`; os estilos novos ficam no fim do `sino.css`.

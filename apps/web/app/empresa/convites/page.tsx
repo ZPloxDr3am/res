@@ -1,3 +1,4 @@
+import { CabecalhoEmpresa } from '@/components/empresa/cabecalho';
 import { headers } from 'next/headers';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import { ConvitesRes, type Convite } from '@/components/equipe-res/painel';
@@ -15,11 +16,12 @@ export default async function Convites() {
   const aqui = `${h.get('x-forwarded-proto') ?? 'https'}://${h.get('x-forwarded-host') ?? h.get('host')}`;
   const origem = (process.env.RES_URL ?? (process.env.EMPRESA_HOST ? 'https://res-iqzs.vercel.app' : aqui)).replace(/\/$/, '');
   return (
-    <div className="grade">
-      <div>
-        <h1>Convites</h1>
-        <p className="dica">Cada convite libera um cadastro, uma vez, por 30 dias. Mande o link pelo WhatsApp depois de conversar com o restaurante.</p>
-      </div>
+    <div className="s-pagina s-gestao">
+      <CabecalhoEmpresa
+        familia="Gestão"
+        titulo="Convites"
+        subtitulo={<>Cada convite libera um cadastro, uma vez, por 30 dias. Mande o link pelo WhatsApp depois de conversar com o restaurante.</>}
+      />
       <ConvitesRes convites={(convites ?? []) as Convite[]} modo={modo === 'aberto' ? 'aberto' : 'convite'} origem={origem} />
     </div>
   );

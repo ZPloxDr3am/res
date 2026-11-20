@@ -1,3 +1,4 @@
+import { CabecalhoEmpresa } from '@/components/empresa/cabecalho';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import { RestaurantesRes, type ContaPlataforma } from '@/components/equipe-res/painel';
 import type { ModuloRes, PlanoRes } from '@res/core';
@@ -12,11 +13,12 @@ export default async function Restaurantes() {
     supabase.from('modulos_res').select('*').order('ordem'),
   ]);
   return (
-    <div className="grade">
-      <div>
-        <h1>Restaurantes</h1>
-        <p className="dica">Situação de cada conta, contato do responsável e uso. Plano e módulos de cada cliente ficam em “Plano”, no cartão dele.</p>
-      </div>
+    <div className="s-pagina s-gestao">
+      <CabecalhoEmpresa
+        familia="Gestão"
+        titulo="Restaurantes"
+        subtitulo={<>Situação de cada conta, contato do responsável e uso. Plano e módulos de cada cliente ficam em “Plano”, no cartão dele.</>}
+      />
       <RestaurantesRes contas={(data ?? []) as ContaPlataforma[]} planos={(planos.data ?? []) as PlanoRes[]} catalogo={(catalogo.data ?? []) as ModuloRes[]} />
     </div>
   );

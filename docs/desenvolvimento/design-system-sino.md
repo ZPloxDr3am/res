@@ -189,6 +189,13 @@ Em cada tela: trocar a classe da raiz para `s-pagina`, os componentes para os `s
 - Novo pedido dentro do Salão (embutido) continua sem o escopo da página, para não mudar o espaçamento da folha.
 - Só marcação de título e CSS; nenhuma lógica mudou.
 
+### 5.7 Painel da empresa (D-127, em validação)
+
+- Mesmo layout do restaurante: menu `s-menu` com logotipo oficial e selo "Empresa", famílias Inteligência · Gestão · Configurações, seletor de tema, barra de baixo e folha "Mais" no celular.
+- Telas em `.s-pagina .s-gestao` com `CabecalhoEmpresa` (`components/empresa/cabecalho.tsx`); indicadores com `KpiEmpresa` (= `s-kpi`).
+- Estilos próprios (selo, funil, alertas, erros, "sem acesso") no fim do `sino.css`, só com tokens `--s-*`.
+- Só apresentação: rotas, RPCs, permissões e o endereço separado (D-083) não mudaram.
+
 ## 6. Auditoria final de UI/UX (D-121, 19/11/2026)
 
 Regras que valem daqui em diante para qualquer tela nova:

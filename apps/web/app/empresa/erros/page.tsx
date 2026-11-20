@@ -1,4 +1,5 @@
 import { criarClienteServidor } from '@/lib/supabase/server';
+import { CabecalhoEmpresa } from '@/components/empresa/cabecalho';
 
 export const metadata = { title: 'Erros' };
 
@@ -16,18 +17,18 @@ export default async function Erros({ searchParams }: { searchParams: Promise<{ 
   const lista = (data ?? []) as ErroAgrupado[];
   const total = lista.reduce((t, e) => t + Number(e.vezes), 0);
   return (
-    <div className="grade">
-      <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-        <div>
-          <h1>Erros</h1>
-          <p className="dica" style={{ margin: 0 }}>{lista.length === 0 ? 'Nenhum erro registrado no período.' : `${total} ocorrência(s) de ${lista.length} erro(s) diferente(s). Os mais recentes primeiro.`}</p>
-        </div>
+    <div className="s-pagina s-gestao">
+      <CabecalhoEmpresa
+        familia="Inteligência"
+        titulo="Erros"
+        subtitulo={lista.length === 0 ? 'Nenhum erro registrado no período.' : `${total} ocorrência(s) de ${lista.length} erro(s) diferente(s). Os mais recentes primeiro.`}
+      >
         <nav className="abas" aria-label="Período">
           {[1, 7, 30].map((d) => (
             <a key={d} className="aba-link" href={`/empresa/erros?dias=${d}`} aria-selected={d === dias}>{d === 1 ? '24 horas' : `${d} dias`}</a>
           ))}
         </nav>
-      </div>
+      </CabecalhoEmpresa>
       {lista.map((e) => (
         <details key={e.hash} className="cartao emp-erro" data-origem={e.origem}>
           <summary>

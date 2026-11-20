@@ -1,9 +1,10 @@
+import { CabecalhoEmpresa } from '@/components/empresa/cabecalho';
 import { criarClienteServidor } from '@/lib/supabase/server';
 import { ConfigEmpresa } from '@/components/empresa/config';
 
 export const metadata = { title: 'Configurações' };
 
-/** Configurações da plataforma (D-083): cadastro, equipe RES e o que está ligado no servidor. */
+/** Configurações da plataforma (D-083): cadastro, equipe SINO e o que está ligado no servidor. */
 export default async function Configuracoes() {
   const supabase = await criarClienteServidor();
   const [{ data: equipe }, { data: modo }, { data: eu }] = await Promise.all([
@@ -18,11 +19,12 @@ export default async function Configuracoes() {
     { nome: 'WhatsApp do suporte', ok: !!process.env.NEXT_PUBLIC_SUPORTE_WHATSAPP, como: 'NEXT_PUBLIC_SUPORTE_WHATSAPP na Vercel (número com DDD) e redeploy.' },
   ];
   return (
-    <div className="grade">
-      <div>
-        <h1>Configurações</h1>
-        <p className="dica">Quem entra no RES, quem é da equipe e o que está ligado na plataforma.</p>
-      </div>
+    <div className="s-pagina s-gestao">
+      <CabecalhoEmpresa
+        familia="Configurações"
+        titulo="Configurações"
+        subtitulo={<>Quem entra no SINO, quem é da equipe e o que está ligado na plataforma.</>}
+      />
       <ConfigEmpresa
         modo={modo === 'aberto' ? 'aberto' : 'convite'}
         equipe={(equipe ?? []) as { user_id: string; email: string; criado_em: string }[]}

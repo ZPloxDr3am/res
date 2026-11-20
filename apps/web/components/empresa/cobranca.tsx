@@ -1,4 +1,5 @@
 'use client';
+import { KpiEmpresa } from '@/components/empresa/cabecalho';
 import { useState, useTransition } from 'react';
 import { reais } from '@res/core';
 import { acaoFatura } from '@/app/empresa/actions';
@@ -27,12 +28,12 @@ export function CobrancaRes({ d }: { d: DadosCobranca }) {
     });
   return (
     <div className="grade">
-      <div className="kpis">
-        <div className="cartao kpi"><span className="dica">Recebido (30 dias)</span><span className="kpi-valor">{reais(Number(d.mrr))}</span></div>
-        <div className="cartao kpi"><span className="dica">Previsto por mês</span><span className="kpi-valor">{reais(Number(d.previsto))}</span></div>
-        <div className="cartao kpi"><span className="dica">Contas pagantes</span><span className="kpi-valor">{d.contas_pagantes}</span><span className="kpi-frase">{d.lojas_pagantes} loja(s)</span></div>
-        <div className="cartao kpi"><span className="dica">Faturas vencidas</span><span className="kpi-valor">{vencidas.length}</span><span className="kpi-frase">{reais(vencidas.reduce((t, f) => t + Number(f.valor), 0))}</span></div>
-      </div>
+      <section className="s-kpis" aria-label="Indicadores da cobrança">
+        <KpiEmpresa principal rotulo="Recebido (30 dias)" valor={reais(Number(d.mrr))} />
+        <KpiEmpresa rotulo="Previsto por mês" valor={reais(Number(d.previsto))} />
+        <KpiEmpresa rotulo="Contas pagantes" valor={d.contas_pagantes} detalhe={`${d.lojas_pagantes} loja(s)`} />
+        <KpiEmpresa rotulo="Faturas vencidas" valor={vencidas.length} detalhe={reais(vencidas.reduce((t, f) => t + Number(f.valor), 0))} />
+      </section>
       {msg && <p className={msg.ok ? 'dica' : 'erro'} role="status" style={{ margin: 0 }}>{msg.t}</p>}
       <section className="cartao grade">
         <div className="linha" style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
