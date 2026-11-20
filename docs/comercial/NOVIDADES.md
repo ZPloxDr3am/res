@@ -3,6 +3,7 @@
 Uma seção por semana, escrita na revisão de sexta. Linguagem de cliente.
 
 ## Semana 47 (16–20/11/2026)
+- **Um faturamento só, em todas as telas** (D-126): Resumo, Meta, Relatórios, Operação, Bom dia e Gestão agora mostram o mesmo número. Conta como venda o pedido **concluído**, no dia em que foi concluído; pedido ainda na cozinha ou parado em "pronto" não infla mais o resultado. Os acréscimos (taxa de serviço) aparecem na composição das vendas. E só quem tem acesso a relatórios vê quanto a loja vendeu.
 - **Pedido de app não se perde mais**: se um pedido do iFood, 99Food, Keeta ou aiqfome chegar e der erro ao entrar, o SINO tenta de novo sozinho nos minutos seguintes, sem ninguém precisar clicar em Reprocessar.
 
 ## Semana 46 (09–13/11/2026)

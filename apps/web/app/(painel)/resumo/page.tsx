@@ -38,7 +38,7 @@ type Metricas = {
   balcao: number;
   online: number;
 };
-type Composicao = { loja_id: string; marca_id: string; marca: string; pedidos: number; produtos: number; frete: number; descontos: number; total: number };
+type Composicao = { loja_id: string; marca_id: string; marca: string; pedidos: number; produtos: number; frete: number; descontos: number; acrescimos?: number; total: number };
 type Resumo = {
   atual: Metricas[];
   anterior: Metricas[];
@@ -232,7 +232,7 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
           dinheiro
           quando={quando}
           detalhe={n > 1 ? <>Média de <b>{formatarReais(Math.round(fat / n))}</b> por dia.</> : null}
-          ajuda={<>Soma dos pedidos não cancelados, já com {formatarReais(taxas)} de frete.</>}
+          ajuda={<>Soma dos pedidos concluídos no período (pela hora em que foram concluídos), já com {formatarReais(taxas)} de frete.</>}
         />
         <Kpi
           rotulo="Pedidos"
@@ -306,7 +306,7 @@ export default async function Resumo({ searchParams }: { searchParams: Promise<{
       <section className="s-cartao" aria-labelledby="t-lojas">
         <div className="s-cartao-topo">
           <h2 id="t-lojas" className="s-cartao-titulo">Por loja</h2>
-          <p className="s-cartao-nota">Faturamento = pedidos não cancelados (inclui taxa de entrega). Variação {periodo.comparacao}.</p>
+          <p className="s-cartao-nota">Faturamento = pedidos concluídos no período, pela hora da conclusão (inclui taxa de entrega). Variação {periodo.comparacao}.</p>
         </div>
         <div className="s-tabela-rolagem">
           <table className="s-tabela">
@@ -454,17 +454,17 @@ function ComposicaoVendas({
   porLoja: boolean;
   quando: string;
 }) {
-  type Campo = 'produtos' | 'frete' | 'descontos';
-  const soma = (l: Composicao[], c: Campo, f?: (x: Composicao) => boolean) => l.filter((x) => !f || f(x)).reduce((s, x) => s + Number(x[c]), 0);
+  type Campo = 'produtos' | 'frete' | 'acrescimos' | 'descontos';
+  const soma = (l: Composicao[], c: Campo, f?: (x: Composicao) => boolean) => l.filter((x) => !f || f(x)).reduce((s, x) => s + Number(x[c] ?? 0), 0);
   // quebra: por loja (com a cor da loja) ou, numa loja só, por cardápio/marca
   const grupos = porLoja
     ? lojas.map((l) => ({ id: l.id, nome: l.nome, cor: l.cor as string | null, f: (x: Composicao) => x.loja_id === l.id }))
     : atual.map((c) => ({ id: c.marca_id, nome: c.marca, cor: null, f: (x: Composicao) => x.marca_id === c.marca_id }));
-  const total = soma(atual, 'produtos') + soma(atual, 'frete') - soma(atual, 'descontos');
+  const total = soma(atual, 'produtos') + soma(atual, 'frete') + soma(atual, 'acrescimos') - soma(atual, 'descontos');
   const cartoes: { campo: Campo | null; rotulo: string; sinal: string; inverso?: boolean; explica: string }[] = [
     { campo: 'produtos', rotulo: 'Produtos', sinal: '', explica: 'Valor dos itens vendidos, sem frete e antes dos descontos.' },
     { campo: 'frete', rotulo: 'Frete', sinal: '+', explica: 'Taxas de entrega cobradas dos clientes.' },
-    { campo: null, rotulo: 'Acréscimos', sinal: '+', explica: 'Taxa de serviço e acréscimos manuais. Entram com o caixa e o salão.' },
+    { campo: 'acrescimos', rotulo: 'Acréscimos', sinal: '+', explica: 'Taxa de serviço e acréscimos manuais (caixa e salão).' },
     { campo: 'descontos', rotulo: 'Descontos', sinal: '−', inverso: true, explica: 'Descontos dados nos pedidos. Menos é melhor.' },
   ];
 

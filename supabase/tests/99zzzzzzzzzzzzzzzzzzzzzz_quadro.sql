@@ -123,6 +123,8 @@ select case when pg_temp.v('pr0') = '0'
 
 -- 0065: meta de vendas
 \o /dev/null
+-- D-126: venda = concluído; a retirada do Caio (pronta) é entregue agora
+update public.pedidos set status = 'concluido', concluido_em = now() where loja_id = pg_temp.id('loja') and cliente_nome = 'Caio';
 select from pg_temp.como('00000000-0000-0000-0000-0000000003d1');
 select from public.salvar_meta_vendas(pg_temp.id('loja'), (date_trunc('month', now()) - interval '1 month')::date, 5000);
 insert into saida values ('meta', public.meta_vendas(array[pg_temp.id('loja')], now()::date));
@@ -150,7 +152,7 @@ reset role;
 select case when jsonb_array_length(pg_temp.v('rel') -> 'cancelados') = 1
              and pg_temp.v('rel') #>> '{cancelados,0,motivo}' = 'Cliente desistiu' and pg_temp.v('rel') #>> '{cancelados,0,etapa}' = 'novo'
              and pg_temp.v('rel') #>> '{cancelados,0,por}' = 'Rui'
-             and (pg_temp.v('rel') #>> '{produtos,0,qtd}')::int = (pg_temp.v('rel') ->> 'pedidos')::int - 1
+             and (pg_temp.v('rel') #>> '{produtos,0,qtd}')::int = (pg_temp.v('rel') ->> 'pedidos')::int and (pg_temp.v('rel') ->> 'pedidos')::int >= 1
              and pg_temp.v('rel_fora') = 'null'::jsonb
             then 'ok relatórios: curva ABC sem cancelados e cancelamentos com motivo, etapa e quem' else 'FALHOU relatorio ' || (pg_temp.v('rel') -> 'cancelados')::text || (pg_temp.v('rel') -> 'produtos')::text || (pg_temp.v('rel') ->> 'pedidos') end;
 
@@ -184,9 +186,12 @@ select case when (select desconto from public.pedidos where cliente_nome = 'Dani
 \o /dev/null
 reset role;
 update public.pedidos set criado_por = '00000000-0000-0000-0000-0000000003d1', origem = 'painel' where cliente_nome = 'Fê';
-update public.pedidos set status = 'concluido', aceito_em = criado_em + interval '2 minutes', pronto_em = criado_em + interval '20 minutes',
-       saiu_em = criado_em + interval '25 minutes', concluido_em = criado_em + interval '40 minutes', entregador_nome = 'Zé'
+update public.pedidos set criado_em = now() - interval '40 minutes', status = 'concluido', aceito_em = now() - interval '38 minutes', pronto_em = now() - interval '20 minutes',
+       saiu_em = now() - interval '15 minutes', concluido_em = now(), entregador_nome = 'Zé'
  where cliente_nome = 'Edu';
+-- D-126: o relatório soma só concluídos; os demais pedidos abertos do período são concluídos agora
+update public.pedidos set status = 'concluido', concluido_em = now(), entregador_nome = coalesce(entregador_nome, case when tipo = 'entrega' then 'Zé' end)
+ where loja_id = pg_temp.id('loja') and status not in ('concluido', 'cancelado');
 select from pg_temp.como('00000000-0000-0000-0000-0000000003d1');
 insert into saida values ('op', public.relatorio_operacao(array[pg_temp.id('loja')], now() - interval '1 day', now() + interval '1 minute'));
 reset role;

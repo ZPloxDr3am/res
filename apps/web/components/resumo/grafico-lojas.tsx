@@ -14,7 +14,7 @@ export type LojaDesempenho = {
 
 type Metrica = 'faturamento' | 'pedidos' | 'ticket';
 const METRICAS: { id: Metrica; rotulo: string; explica: string }[] = [
-  { id: 'faturamento', rotulo: 'Faturamento', explica: 'Quanto cada loja vendeu (pedidos não cancelados, com frete).' },
+  { id: 'faturamento', rotulo: 'Faturamento', explica: 'Quanto cada loja vendeu (pedidos concluídos, com frete).' },
   { id: 'pedidos', rotulo: 'Pedidos', explica: 'Quantos pedidos cada loja recebeu (sem os cancelados).' },
   { id: 'ticket', rotulo: 'Ticket médio', explica: 'Valor médio de cada pedido: faturamento ÷ pedidos.' },
 ];
